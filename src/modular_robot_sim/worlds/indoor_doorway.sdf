@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<sdf version="1.10">
+  <world name="indoor_doorway">
+    <physics name="physics" type="ignored"><max_step_size>0.002</max_step_size><real_time_factor>1</real_time_factor></physics>
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+    <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors"><render_engine>ogre2</render_engine></plugin>
+    <plugin filename="libtopology_joint_system.so" name="modular_robot_gz_plugins::TopologyJointSystem">
+      <parent_link>core::base_link</parent_link><command_topic>/topology_joint/command</command_topic>
+      <initial_child>pod_0::base_link</initial_child><initial_child>pod_1::base_link</initial_child>
+      <initial_child>pod_2::base_link</initial_child><initial_child>pod_3::base_link</initial_child>
+      <initial_child>pod_4::base_link</initial_child><initial_child>pod_5::base_link</initial_child>
+    </plugin>
+    <light name="sun" type="directional"><pose>0 0 10 0 0 0</pose><diffuse>0.8 0.8 0.8 1</diffuse><direction>-0.5 0.2 -1</direction></light>
+    <model name="ground"><static>true</static><link name="link"><collision name="collision"><geometry><plane><normal>0 0 1</normal><size>20 12</size></plane></geometry></collision><visual name="visual"><geometry><plane><normal>0 0 1</normal><size>20 12</size></plane></geometry><material><diffuse>0.65 0.65 0.65 1</diffuse></material></visual></link></model>
+    <model name="wall_lower"><static>true</static><pose>5 1.27 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>0.2 2.54 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.2 2.54 1</size></box></geometry></visual></link></model>
+    <model name="wall_upper"><static>true</static><pose>5 3.98 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>0.2 2.04 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.2 2.04 1</size></box></geometry></visual></link></model>
+    <model name="wall_west"><static>true</static><pose>0 2.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>0.2 5 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.2 5 1</size></box></geometry></visual></link></model>
+    <model name="wall_east"><static>true</static><pose>10 2.5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>0.2 5 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>0.2 5 1</size></box></geometry></visual></link></model>
+    <model name="wall_south"><static>true</static><pose>5 0 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>10 0.2 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>10 0.2 1</size></box></geometry></visual></link></model>
+    <model name="wall_north"><static>true</static><pose>5 5 0.5 0 0 0</pose><link name="link"><collision name="collision"><geometry><box><size>10 0.2 1</size></box></geometry></collision><visual name="visual"><geometry><box><size>10 0.2 1</size></box></geometry></visual></link></model>
+    <include><uri>model://sensor_core</uri><name>core</name><pose>1.0 2.75 0.18 0 0 0</pose></include>
+    <include><uri>model://drive_pod</uri><name>pod_0</name><pose>1.23 2.93 0.0 0 0 0</pose></include>
+    <include><uri>model://drive_pod</uri><name>pod_1</name><pose>1.23 2.57 0.0 0 0 0</pose></include>
+    <include><uri>model://drive_pod</uri><name>pod_2</name><pose>0.77 2.93 0.0 0 0 0</pose></include>
+    <include><uri>model://drive_pod</uri><name>pod_3</name><pose>0.77 2.57 0.0 0 0 0</pose></include>
+    <include><uri>model://drive_pod</uri><name>pod_4</name><pose>1.0 2.93 0.0 0 0 0</pose></include>
+    <include><uri>model://drive_pod</uri><name>pod_5</name><pose>1.0 2.57 0.0 0 0 0</pose></include>
+  </world>
+</sdf>

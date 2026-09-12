@@ -1,0 +1,12 @@
+geometry_msgs/PoseStamped goal
+---
+bool success
+string message
+float64 observed_time
+uint32 reconfiguration_count
+---
+string stage
+uint32 segment_index
+uint32 segment_count
+string morphology_id
+

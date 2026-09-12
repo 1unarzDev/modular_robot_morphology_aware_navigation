@@ -1,0 +1,11 @@
+build/
+install/
+log/
+.pytest_cache/
+__pycache__/
+*.pyc
+.coverage
+.devcontainer/docker-compose.override.yml
+artifacts/
+results/
+

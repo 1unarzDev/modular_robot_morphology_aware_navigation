@@ -1,0 +1,10 @@
+cmake_minimum_required(VERSION 3.16)
+project(modular_robot_gz_plugins)
+find_package(ament_cmake REQUIRED)
+find_package(gz-sim8 REQUIRED)
+add_library(topology_joint_system SHARED src/topology_joint_system.cc)
+target_compile_features(topology_joint_system PUBLIC cxx_std_17)
+target_link_libraries(topology_joint_system PRIVATE gz-sim8::gz-sim8)
+install(TARGETS topology_joint_system LIBRARY DESTINATION lib)
+ament_package()
+

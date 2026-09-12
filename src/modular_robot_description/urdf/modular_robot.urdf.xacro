@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="modular_robot">
+  <xacro:arg name="use_sim" default="true"/>
+  <xacro:property name="pi" value="3.141592653589793"/>
+
+  <xacro:macro name="box_link" params="name size mass xyz">
+    <link name="${name}">
+      <inertial><origin xyz="${xyz}"/><mass value="${mass}"/>
+        <inertia ixx="0.025" ixy="0" ixz="0" iyy="0.035" iyz="0" izz="0.045"/>
+      </inertial>
+      <visual><origin xyz="${xyz}"/><geometry><box size="${size}"/></geometry>
+        <material name="core_blue"><color rgba="0.08 0.25 0.55 1"/></material>
+      </visual>
+      <collision><origin xyz="${xyz}"/><geometry><box size="${size}"/></geometry></collision>
+    </link>
+  </xacro:macro>
+
+  <xacro:macro name="drive_pod" params="index x y yaw">
+    <link name="pod_${index}_link">
+      <inertial><mass value="2.1"/><inertia ixx="0.006" ixy="0" ixz="0" iyy="0.008" iyz="0" izz="0.009"/></inertial>
+      <visual><geometry><box size="0.18 0.14 0.10"/></geometry>
+        <material name="pod_orange"><color rgba="0.95 0.35 0.05 1"/></material></visual>
+      <collision><geometry><box size="0.18 0.14 0.10"/></geometry></collision>
+    </link>
+    <joint name="pod_${index}_dock" type="fixed">
+      <parent link="core/base_link"/><child link="pod_${index}_link"/>
+      <origin xyz="${x} ${y} 0.11" rpy="0 0 ${yaw}"/>
+    </joint>
+    <link name="pod_${index}_wheel">
+      <inertial><mass value="0.35"/><inertia ixx="0.0007" ixy="0" ixz="0" iyy="0.0012" iyz="0" izz="0.0007"/></inertial>
+      <visual><geometry><cylinder radius="0.06" length="0.035"/></geometry>
+        <material name="rubber"><color rgba="0.04 0.04 0.04 1"/></material></visual>
+      <collision><geometry><cylinder radius="0.06" length="0.035"/></geometry></collision>
+    </link>
+    <joint name="pod_${index}_wheel_joint" type="continuous">
+      <parent link="pod_${index}_link"/><child link="pod_${index}_wheel"/>
+      <origin xyz="0 ${0.0875 if y >= 0 else -0.0875} -0.035" rpy="1.5708 0 0"/>
+      <axis xyz="0 0 1"/>
+    </joint>
+  </xacro:macro>
+
+  <link name="base_footprint"/>
+  <joint name="base_footprint_joint" type="fixed">
+    <parent link="base_footprint"/><child link="core/base_link"/><origin xyz="0 0 0.09"/>
+  </joint>
+  <xacro:box_link name="core/base_link" size="0.26 0.20 0.12" mass="5.0" xyz="0 0 0"/>
+  <xacro:drive_pod index="0" x="0.18" y="0.22" yaw="0"/>
+  <xacro:drive_pod index="1" x="0.18" y="-0.22" yaw="0"/>
+  <xacro:drive_pod index="2" x="-0.18" y="0.22" yaw="0"/>
+  <xacro:drive_pod index="3" x="-0.18" y="-0.22" yaw="0"/>
+  <xacro:drive_pod index="4" x="0" y="0.10" yaw="1.5708"/>
+  <xacro:drive_pod index="5" x="0" y="-0.10" yaw="-1.5708"/>
+
+  <link name="core/lidar_link"><visual><geometry><cylinder radius="0.045" length="0.05"/></geometry></visual></link>
+  <joint name="lidar_joint" type="fixed"><parent link="core/base_link"/><child link="core/lidar_link"/><origin xyz="0 0 0.12"/></joint>
+  <link name="core/imu_link"/>
+  <joint name="imu_joint" type="fixed"><parent link="core/base_link"/><child link="core/imu_link"/><origin xyz="0 0 0.04"/></joint>
+
+  <gazebo reference="core/base_link"><material>Gazebo/Blue</material></gazebo>
+  <gazebo reference="core/lidar_link">
+    <sensor name="lidar" type="gpu_lidar">
+      <topic>scan</topic><update_rate>15</update_rate><lidar><scan><horizontal><samples>720</samples><resolution>1</resolution><min_angle>-${pi}</min_angle><max_angle>${pi}</max_angle></horizontal></scan><range><min>0.08</min><max>15.0</max><resolution>0.01</resolution></range><noise><type>gaussian</type><mean>0</mean><stddev>0.006</stddev></noise></lidar><always_on>true</always_on><visualize>true</visualize>
+    </sensor>
+  </gazebo>
+  <gazebo reference="core/imu_link"><sensor name="imu" type="imu"><topic>imu</topic><update_rate>100</update_rate><always_on>true</always_on></sensor></gazebo>
+</robot>
+

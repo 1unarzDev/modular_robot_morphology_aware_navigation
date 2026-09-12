@@ -1,0 +1,20 @@
+services:
+  dev:
+    image: ${ASTRO_IMAGE:-lunarzdev/astro:core}
+    pull_policy: ${ASTRO_PULL_POLICY:-missing}
+    container_name: morphology_navigation_dev
+    hostname: morphology-nav
+    privileged: true
+    network_mode: host
+    ipc: host
+    shm_size: 2gb
+    environment:
+      ROS_AUTOMATIC_DISCOVERY_RANGE: SUBNET
+      ROS_DOMAIN_ID: "43"
+      ROS_WS: /home/roboboat/morphology_ws
+    volumes:
+      - ${PWD}:/home/roboboat/morphology_ws
+    user: roboboat
+    working_dir: /home/roboboat/morphology_ws
+    command: sleep infinity
+

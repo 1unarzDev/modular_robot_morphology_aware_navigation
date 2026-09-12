@@ -1,0 +1,9 @@
+std_msgs/Header header
+string morphology_id
+string locomotion_mode
+string controller_id
+geometry_msgs/Polygon footprint
+float32 height
+modular_robot_msgs/ModuleGraph topology
+bool transition_active
+

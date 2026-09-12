@@ -1,0 +1,13 @@
+geometry_msgs/PoseStamped start
+geometry_msgs/PoseStamped goal
+string start_morphology
+float32 initial_epsilon
+---
+bool success
+string message
+modular_robot_msgs/HybridPlan plan
+---
+uint32 expanded_states
+float64 incumbent_cost
+float32 epsilon
+

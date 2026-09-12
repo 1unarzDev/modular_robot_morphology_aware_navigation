@@ -1,0 +1,13 @@
+string transition_id
+geometry_msgs/PoseStamped execution_pose
+---
+bool success
+string message
+string resulting_morphology
+float64 observed_time
+float64 observed_energy
+---
+string stage
+string active_pod
+float32 progress
+
