@@ -333,3 +333,30 @@ All artifacts in this section are engineering-only debug evidence.
   the retained sample size.
 - Updated the project status and critical path after the controller-ownership
   diagnosis. Confirmatory collection remains blocked at 0/432.
+
+## Single-owner articulated model prototype
+
+- Replaced the confirmatory world's six separately controlled top-level pod
+  models with six nested, detachable pod models under one `core` model.
+- Added `MultiPodDriveSystem`, the sole writer for all twelve uniquely named
+  wheel joints. Per-pod ROS command topics and self-mobile detached operation
+  remain unchanged. A 0.3 s command watchdog fails stopped.
+- Added encoder odometry at 50 Hz by integrating measured wheel-joint angle
+  increments. This restores the wheel-odometry observation path without using
+  model world pose for autonomy.
+- Updated topology seating to move the immediate nested pod model rather than
+  the complete top-level assembly, and updated generated worlds to use nested
+  pod scoped names.
+- Discarded an initially observed manual trace after process inspection found
+  two orphaned Gazebo servers in the same transport namespace. Both were
+  terminated and the isolated qualification was repeated through the ROS
+  bridge and assembly adapter.
+- Isolated compact qualification passed: positive yaw `+0.8961 rad` with
+  `0.0126 m` translation, negative yaw `-0.8793 rad` with `0.0121 m`
+  translation, and straight motion `0.7862 m` with effectively zero yaw.
+  Encoder odometry was observed at approximately 50 Hz. The raw engineering
+  artifact is `results/debug/articulated_owner_compact.json` and is excluded
+  from pilot and confirmatory evidence.
+- A detached pod moved independently in an isolated manual check. This is a
+  useful architecture check, but it is not yet a recorded round-trip or proof
+  that nested-model seating and logical-camera identification work end to end.

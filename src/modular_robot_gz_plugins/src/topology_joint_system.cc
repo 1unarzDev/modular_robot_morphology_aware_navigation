@@ -16,6 +16,8 @@
 #include <gz/sim/Util.hh>
 #include <gz/sim/components/DetachableJoint.hh>
 #include <gz/sim/components/Link.hh>
+#include <gz/sim/components/Model.hh>
+#include <gz/sim/components/ParentEntity.hh>
 #include <gz/transport/Node.hh>
 #include <sdf/Element.hh>
 
@@ -49,7 +51,12 @@ public:
       {
         const auto childName = child->Get<std::string>();
         this->pending.push_back({"attach", childName, std::nullopt});
-        const auto modelName = childName.substr(0, childName.find("::"));
+        const auto separator = childName.rfind("::");
+        const auto prefix = separator == std::string::npos ? std::string{} :
+          childName.substr(0, separator);
+        const auto previous = prefix.rfind("::");
+        const auto modelName = previous == std::string::npos ? prefix :
+          prefix.substr(previous + 2);
         this->trackedLinks.push_back({modelName, childName});
         this->childLinks.emplace(modelName, childName);
         child = child->GetNextElement("initial_child");
@@ -149,6 +156,22 @@ private:
     return found == matches.end() ? gz::sim::kNullEntity : *found;
   }
 
+  static gz::sim::Entity ImmediateModel(
+      gz::sim::Entity _entity, const gz::sim::EntityComponentManager &_ecm)
+  {
+    auto current = _entity;
+    while (current != gz::sim::kNullEntity)
+    {
+      const auto parent = _ecm.Component<gz::sim::components::ParentEntity>(current);
+      if (!parent)
+        return gz::sim::kNullEntity;
+      current = parent->Data();
+      if (_ecm.EntityHasComponentType(current, gz::sim::components::Model::typeId))
+        return current;
+    }
+    return gz::sim::kNullEntity;
+  }
+
   void Attach(const std::string &_childName, gz::sim::EntityComponentManager &_ecm)
   {
     if (this->joints.count(_childName) != 0)
@@ -185,7 +208,10 @@ private:
     // Preserve the mechanically established vertical level; the navigation
     // catalog specifies planar connector coordinates.
     seatedRelative.Pos().Z() = (parentPose.Inverse() * childPose).Pos().Z();
-    const auto modelEntity = gz::sim::topLevelModel(child, _ecm);
+    // In the articulated representation each pod is a nested model. Moving the
+    // top-level model would move the core and every pod; seat only the nested
+    // pod that owns this link.
+    const auto modelEntity = ImmediateModel(child, _ecm);
     if (modelEntity == gz::sim::kNullEntity)
       return;
     gz::sim::Model(modelEntity).SetWorldPoseCmd(_ecm, parentPose * seatedRelative);

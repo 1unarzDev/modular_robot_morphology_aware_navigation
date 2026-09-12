@@ -90,7 +90,7 @@ def export_confirmatory_sdf(
     SubElement(topology, "parent_link").text = "core::base_link"
     SubElement(topology, "command_topic").text = "/topology_joint/command"
     for pod in sorted(catalog.morphologies["compact_diff"].pod_poses):
-        SubElement(topology, "initial_child").text = f"{pod}::{pod}_base_link"
+        SubElement(topology, "initial_child").text = f"core::{pod}::{pod}_base_link"
 
     light = SubElement(world, "light", name="sun", type="directional")
     SubElement(light, "pose").text = "0 0 10 0 0 0"
@@ -116,10 +116,7 @@ def export_confirmatory_sdf(
         _box_model(world, box.name, box.center, box.size)
 
     start_x, start_y = scenario.grid.cell_center(*scenario.start)
-    _include(world, "model://sensor_core", "core", (start_x, start_y, 0.18, 0.0))
-    for pod, (x, y, yaw) in catalog.morphologies["compact_diff"].pod_poses.items():
-        _include(world, f"model://drive_{pod}", pod,
-                 (start_x + x, start_y + y, 0.0, yaw))
+    _include(world, "model://modular_robot", "core", (start_x, start_y, 0.18, 0.0))
 
     output.parent.mkdir(parents=True, exist_ok=True)
     ElementTree(sdf).write(output, encoding="unicode", xml_declaration=True)

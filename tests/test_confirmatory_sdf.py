@@ -19,8 +19,13 @@ def test_confirmatory_export_contains_robot_physics_constraints_and_manifest(tmp
     assert "gz-sim-logical-camera-system" in plugins
     includes = {item.findtext("name"): item.findtext("uri")
                 for item in world.findall("include")}
-    assert includes["core"] == "model://sensor_core"
-    assert includes["pod_5"] == "model://drive_pod_5"
+    assert includes["core"] == "model://modular_robot"
+    assert "pod_5" not in includes
+    topology = next(plugin for plugin in world.findall("plugin")
+                    if plugin.get("filename") == "libtopology_joint_system.so")
+    children = [item.text for item in topology.findall("initial_child")]
+    assert len(children) == 6
+    assert all(value.startswith("core::pod_") for value in children)
     assert world.find("model[@name='raised_transition_shelf']") is not None
     manifest = json.loads(manifest_path.read_text())
     assert manifest["layout_id"] == "combined_constraints-01"

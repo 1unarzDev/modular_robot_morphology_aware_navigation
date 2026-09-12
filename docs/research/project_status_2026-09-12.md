@@ -6,10 +6,11 @@ The project has a defensible research question, a substantial ROS/Gazebo
 platform slice, four executable planning methods, generated held-out worlds, a
 resumable mission runner, and a reproducible confirmatory analysis pipeline. It
 does not yet have conference evidence. Physical detach, connector seating, and
-redocking work in engineering runs, but the docked assembly cannot yet pass the
-motion gate reliably because DART merges separately controlled pod models into
-one skeleton. The evaluator and perceived 3D context are incomplete, and the
-frozen study contains zero terminal records.
+redocking work in engineering runs. A new single-owner articulated model passes
+the compact motion gate, closing the earlier DART controller-ownership failure
+for the initial morphology. End-to-end reconfiguration and post-transition
+narrow motion remain unqualified. The evaluator and perceived 3D context are
+incomplete, and the frozen study contains zero terminal records.
 
 The strongest paper contribution is the planner's decision boundary: it jointly
 selects route and morphology while admitting a reconfiguration edge only when
@@ -21,7 +22,7 @@ Cheng, and Tu prevent broader first-system claims.
 
 | Workstream | Current state | Evidence |
 |---|---|---|
-| Self-mobile platform | Six differential-drive pods; physical detach, connector seating, and redocking | Detached motion works; docked controller ownership blocks repeatable yaw and the 20-run gate |
+| Self-mobile platform | Six differential-drive pods under one stable wheel-joint owner; physical detach, connector seating, and redocking interfaces | Compact qualification passes and detached motion works; post-reconfiguration narrow round trip and 20-run gate remain open |
 | Topology safety | Observed topology revisions and `RECOVERY_REQUIRED`; drive inhibited after partial failure | Unit tests and live injected failure |
 | Sensing | Wheel odometry plus idealized connector cameras; covariance, visibility, source and staleness gates | Unit tests and live topics; no physical perception claim |
 | Hybrid planning | Weighted A* on `(x,y,heading,morphology)` plus explicit route-first baseline | Host golden tests |
@@ -193,15 +194,13 @@ confirmatory evidence count remains **0/432**.
 
 ## Revised implementation sequence after controller-ownership diagnosis
 
-### M0 — replace assembled wheel ownership
+### M0 — qualify replaced assembled wheel ownership (in progress)
 
-Model each confirmatory morphology as one articulated assembly with one
-controller owning every wheel joint. Preserve the six self-mobile pod models
-while detached and transfer state through explicit dock/undock interfaces. A
-transition succeeds only after connector seating, observed topology agreement,
-and the existing post-transition motion qualification. Compare at least two
-physics-compatible implementations in engineering runs and retain the rejected
-alternative and reason.
+The new representation keeps one model ownership tree and one controller for
+all wheel joints while nested pods remain independently drivable after detach.
+The compact motion qualification passes. A transition must still demonstrate
+connector seating, observed topology agreement, encoder and fiducial continuity,
+and the existing post-transition narrow motion qualification.
 
 Exit gate: 20 consecutive randomized compact-to-narrow-to-compact round trips,
 each passing forward, reverse, and both-yaw qualification, followed by the full
@@ -273,22 +272,23 @@ but is not yet reliable across residual latch geometries. Pod-local yaw,
 observed-wrench allocation, and passive center-pod experiments were tested and
 removed after they worsened coupling or immobilized the plant.
 
-The immediate research implementation task is therefore connector seating or a
-plant-identified robust allocation. Pilot collection remains prohibited. Batch
+The immediate research implementation task is now end-to-end validation of the
+single-owner representation. Pilot collection remains prohibited. Batch
 cleanup now explicitly terminates reparented Gazebo descendants, closing the
 observed simulator-contamination path for the exercised runs.
 
-## Updated mechanical root cause: merged controller ownership
+## Historical mechanical root cause and implemented correction
 
 Connector seating and estimator reanchoring now produce a repeatable catalog
 pose after latch. This removed residual pose error as the primary explanation.
-The remaining yaw failure follows controller ownership: DART merges fixed-joint
+The prior yaw failure followed controller ownership: DART merged fixed-joint
 children into one skeleton while six stock Gazebo DiffDrive systems continue to
 write commands independently. During opposing-side yaw tests, the resulting
 core translation matches the final pod command rather than the net array wrench.
 
-The next implementation must transfer wheel-joint ownership at topology commit:
-detached pods use their individual differential controllers; the assembled body
-uses one controller over all twelve uniquely named wheel joints. The existing
-post-transition qualification remains the admission gate and will verify that
-this controller provides signed yaw and uncoupled straight motion before Nav2.
+The articulated prototype now retains one controller over all twelve uniquely
+named wheel joints through both attached and detached states. Its isolated
+compact qualification provides signed yaw and uncoupled straight motion. The
+existing post-transition qualification remains the admission gate; the
+correction is not fully qualified until sensor-driven compact-to-narrow and
+reverse transitions pass with encoder and connector observations intact.
