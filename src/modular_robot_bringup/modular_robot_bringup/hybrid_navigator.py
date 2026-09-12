@@ -20,7 +20,9 @@ from rclpy.task import Future
 from std_srvs.srv import SetBool
 from tf2_ros import Buffer, TransformException, TransformListener
 
-from .qualification import PlanarPose, motion_delta, qualification_pass
+from .qualification import (
+    PlanarPose, goal_position_reached, motion_delta, qualification_pass,
+)
 
 
 class HybridNavigator(Node):
@@ -33,6 +35,7 @@ class HybridNavigator(Node):
         self.declare_parameter("costmap_footprint_timeout", 3.0)
         self.declare_parameter("costmap_footprint_padding", 0.01)
         self.declare_parameter("qualify_after_reconfiguration", True)
+        self.declare_parameter("terminal_position_tolerance", 0.15)
         qos = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL,
                          reliability=ReliabilityPolicy.RELIABLE)
         self.morphology: MorphologyState | None = None
@@ -205,14 +208,19 @@ class HybridNavigator(Node):
             if not execution_failed:
                 if replan_requested:
                     continue
-                result.success = True
-                result.message = "hybrid navigation completed"
-                result.observed_time = time.monotonic() - started
-                result.reconfiguration_count = reconfigurations
-                self._set_plan_metrics(
-                    result, selected_plans, planning_latency, expanded_states)
-                goal_handle.succeed()
-                return result
+                if not self._terminal_position_reached(goal_handle.request.goal):
+                    self.get_logger().error(
+                        "path follower reported success outside terminal position tolerance")
+                    execution_failed = True
+                else:
+                    result.success = True
+                    result.message = "hybrid navigation completed"
+                    result.observed_time = time.monotonic() - started
+                    result.reconfiguration_count = reconfigurations
+                    self._set_plan_metrics(
+                        result, selected_plans, planning_latency, expanded_states)
+                    goal_handle.succeed()
+                    return result
             self.get_logger().warning(f"execution failed; replanning attempt {attempt + 1}")
             execution_failures += 1
         result.message = "execution failed after replanning limit"
@@ -339,6 +347,16 @@ class HybridNavigator(Node):
         pose.pose.position.z = transform.transform.translation.z
         pose.pose.orientation = transform.transform.rotation
         return pose
+
+    def _terminal_position_reached(self, goal: PoseStamped) -> bool:
+        current = self._current_pose()
+        if current is None:
+            return False
+        return goal_position_reached(
+            PlanarPose(current.pose.position.x, current.pose.position.y, 0.0),
+            PlanarPose(goal.pose.position.x, goal.pose.position.y, 0.0),
+            float(self.get_parameter("terminal_position_tolerance").value),
+        )
 
     async def _plan(self, start, goal, planner_method):
         if not self.planner.wait_for_server(timeout_sec=3.0):

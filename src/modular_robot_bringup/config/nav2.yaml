@@ -23,8 +23,13 @@ controller_server:
     goal_checker:
       plugin: nav2_controller::SimpleGoalChecker
       xy_goal_tolerance: 0.12
-      yaw_goal_tolerance: 0.18
-      stateful: true
+      # Confirmatory missions specify a goal point, not a terminal attitude.
+      # The planner's final heading bin is incidental and must not force a long
+      # narrow body to rotate against nearby obstacles.
+      yaw_goal_tolerance: 3.14159
+      # Narrow-body rotation has measurable translation coupling. Recheck XY
+      # while aligning instead of latching an earlier position success.
+      stateful: false
     FollowPathDiff:
       plugin: nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController
       desired_linear_vel: 0.35
@@ -44,14 +49,14 @@ controller_server:
       max_angular_accel: 1.0
     FollowPathNarrow:
       plugin: nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController
-      desired_linear_vel: 0.25
-      lookahead_dist: 0.55
-      min_lookahead_dist: 0.3
-      max_lookahead_dist: 0.7
+      desired_linear_vel: 0.18
+      lookahead_dist: 0.8
+      min_lookahead_dist: 0.8
+      max_lookahead_dist: 0.8
       lookahead_time: 1.5
       rotate_to_heading_angular_vel: 0.4
       transform_tolerance: 0.2
-      use_velocity_scaled_lookahead_dist: true
+      use_velocity_scaled_lookahead_dist: false
       min_approach_linear_velocity: 0.05
       approach_velocity_scaling_dist: 0.6
       # RPP checks the full footprint against a footprint-inflated costmap,
@@ -60,9 +65,11 @@ controller_server:
       use_collision_detection: false
       max_allowed_time_to_collision_up_to_carrot: 1.0
       use_rotate_to_heading: true
-      # The long narrow body must align in the open staging workspace before
-      # entering a 0.5 m doorway; small yaw errors substantially widen its sweep.
-      rotate_to_heading_min_angle: 0.01
+      # The post-transition gate leaves less than about 0.06 rad heading error.
+      # A 0.01 rad threshold made RPP hunt after centimeter-scale localization
+      # corrections, accumulating lateral drift during repeated in-place yaw.
+      # Pursue through modest errors; reserve in-place alignment for large ones.
+      rotate_to_heading_min_angle: 0.2
       max_angular_accel: 4.0
     FollowPathAckermann:
       plugin: nav2_mppi_controller::MPPIController

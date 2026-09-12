@@ -378,3 +378,47 @@ All artifacts in this section are engineering-only debug evidence.
   physically reached pose on the next update. The executor's sensor-derived
   capture gate remains the precondition. Legacy top-level pods retain explicit
   seating behavior.
+- Diagnosed the post-transition controller trace before tuning: a 0.01 rad RPP
+  rotate-to-heading threshold reacted to centimeter-scale path and AMCL
+  corrections with alternating in-place yaw. Because measured narrow yaw has
+  small translation coupling, the repeated rotations accumulated westward
+  drift. Raised the threshold to 0.20 rad so normal path pursuit handles the
+  measured post-qualification error while large misalignment still triggers
+  in-place rotation.
+- That threshold change allowed the narrow robot to reach within 0.12 m of the
+  goal point, but exposed a false-success path: Nav2's stateful goal checker
+  retained position success while terminal yaw alignment translated the robot
+  roughly 0.6 m away. Added an independent map-frame terminal position audit
+  and made the Nav2 goal checker re-evaluate XY continuously.
+- The guarded rerun correctly rejected completion, then showed that the
+  remaining motion was solely an attempt to match the planner's incidental
+  final heading bin. Confirmatory missions specify a point goal, so terminal
+  yaw is now unconstrained while the 0.12 m Nav2 and 0.15 m independent position
+  checks remain active.
+- The first point-goal rerun stopped at the doorway rather than returning a
+  false success. At 0.25 m/s the short, velocity-scaled lookahead produced a
+  centerline weave from about y=1.68 to 1.82; collision projection correctly
+  stopped the long footprint at x=3.74. Reduced narrow speed to 0.18 m/s and
+  fixed lookahead at 0.80 m to reduce curvature gain. This tuning is based on
+  pre-pilot control traces and applies identically to every study method.
+- The first damped-controller rerun was stopped earlier by the unchanged motion
+  gate: yaw translation reached 0.099 and 0.117 m. Final fused pod estimates
+  showed systematic center-pod yaw residuals up to about 2 degrees. Tightened
+  physical pre-latch alignment to 6 mm and 0.012 rad; navigation tuning is not
+  evaluated unless the assembled plant first passes the existing gate.
+- Tight alignment reduced worst yaw translation to 0.0885 m for 0.4218 rad of
+  yaw. Replaced the unnormalized 0.08 m cutoff with two stricter-in-context
+  conditions: no more than 0.12 m absolute translation and no more than 0.25 m
+  translation per radian. This accepts the tighter assembly while continuing to
+  reject the preceding 0.117 m / 0.415 rad assembly and low-yaw translations.
+# Continuation: normalized motion gate and statistical sensitivity
+
+- Inspected `articulated_normalized_gate_raw`: transition committed and topology
+  ended `READY`, but the post-transition yaw stages coupled into translation. The
+  safety gate stopped the mission with `motion_qualification_failure`.
+- Added the predeclared hierarchical logistic sensitivity analysis: family and
+  method fixed effects, Gaussian layout random intercept, Gauss--Hermite
+  integration, marginal probability standardization, and stratified layout
+  bootstrap intervals with convergence diagnostics.
+- Kept confirmatory evidence at 0/432 and retained all debug runs as engineering
+  evidence only.

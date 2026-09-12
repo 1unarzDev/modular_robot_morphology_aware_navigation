@@ -84,6 +84,17 @@ time analysis with a 300 s point mass for failures. These support the
 predeclared nonparametric analysis and do not replace it. Do not choose among
 models based on which produces a smaller p value.
 
+The implemented logistic sensitivity model is fit separately for each declared
+contrast. It uses a treatment fixed effect, family fixed effects, and a Gaussian
+layout random intercept integrated with 15-point Gauss--Hermite quadrature.
+Reported probabilities integrate over the fitted random-intercept distribution
+and are standardized equally over layouts in the declared family scope. Its 95%
+interval resamples whole layouts within family and refits the model. Archive the
+optimizer convergence flag, fitted random-intercept standard deviation, requested
+and converged bootstrap counts, and failed/nonconverged refit counts. Use at least
+400 bootstrap draws for the final sensitivity artifact; increase this if interval
+endpoints are too coarse. This model receives no additional confirmatory p value.
+
 ## Sample-size gate
 
 The current 12-layout-per-family target is a resource-based starting point, not

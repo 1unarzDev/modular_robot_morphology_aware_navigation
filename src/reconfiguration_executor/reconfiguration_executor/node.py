@@ -40,8 +40,10 @@ class ReconfigurationExecutor(Node):
         # Match the declared connector capture envelope (3 degrees). The
         # previous 0.08 rad gate admitted visibly misaligned rigid arrays.
         self.declare_parameter("yaw_tolerance", 0.05236)
-        self.declare_parameter("relocation_position_tolerance", 0.008)
-        self.declare_parameter("relocation_yaw_tolerance", 0.025)
+        self.declare_parameter("relocation_position_tolerance", 0.006)
+        # The long 0.20 m track amplifies residual pod yaw into translation
+        # during body rotation. Require sub-degree alignment before latching.
+        self.declare_parameter("relocation_yaw_tolerance", 0.012)
         self.declare_parameter("max_pod_linear", 0.22)
         self.declare_parameter("max_pod_angular", 0.9)
         self.declare_parameter("post_latch_settle_timeout", 1.5)

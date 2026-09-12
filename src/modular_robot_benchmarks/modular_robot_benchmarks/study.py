@@ -64,6 +64,7 @@ def _parser() -> argparse.ArgumentParser:
     analysis.add_argument("--output", type=Path, required=True)
     analysis.add_argument("--bootstrap-draws", type=int, default=10000)
     analysis.add_argument("--permutation-draws", type=int, default=100000)
+    analysis.add_argument("--hierarchical-bootstrap-draws", type=int, default=400)
 
     power = commands.add_parser("power", help="run assumption-based prospective power simulation")
     power.add_argument("--layouts", type=int, required=True)
@@ -107,7 +108,8 @@ def main() -> None:
         result = study_status(StudyDesign.read_frozen(args.design), args.raw)
     elif args.command == "analyze":
         result = run_analysis(args.raw, StudyDesign.read_frozen(args.design), args.output,
-                              args.bootstrap_draws, args.permutation_draws)
+                              args.bootstrap_draws, args.permutation_draws,
+                              args.hierarchical_bootstrap_draws)
     elif args.command == "power":
         assumptions = PowerAssumptions(
             args.layouts, args.replicates, args.control_rate, args.treatment_rate,

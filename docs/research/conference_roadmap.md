@@ -30,7 +30,7 @@ workshop talks are discovery leads rather than completed publications.
 | Planner ablations | Route-first sequential adaptation and three coupled methods have explicit shared-stack implementations and structured transition decisions | Golden host tests; scenario and ROS mission validation pending |
 | Plan consistency | Plans carry method, map, topology, and meaningful sensing-signature revisions; navigator replans after a transition or revision change | Host/ROS build verification; live race/fault checks pending |
 | Nav2 footprint interface | Installed Jazzy graph uses `Polygon` input and `PolygonStamped` output | Live graph check |
-| Confirmatory statistics | Frozen-design model, immutable records, cluster bootstrap, paired randomization, Holm correction, failure taxonomy, calibration, power simulation, tables, and SVG figures | Tested analysis infrastructure |
+| Confirmatory statistics | Frozen-design model, immutable records, cluster bootstrap, paired randomization, Holm correction, hierarchical logistic sensitivity, failure taxonomy, calibration, conservative power grids, tables, and SVG figures | Tested analysis infrastructure; no confirmatory records |
 | Held-out worlds and runner | Parameterized SDF worlds/manifests and a resumable full-stack runner; latest smoke reaches readiness but online SLAM has not observed the distant doorway | Debug engineering only |
 | Main scientific claim | No balanced mission experiment completed | No result yet |
 
@@ -138,6 +138,35 @@ decisions improve completion under identical execution conditions.
 6. Freeze software and configuration artifacts, execute complete paired blocks,
    and release the immutable 432-record dataset only if the pilot retains the
    current design.
+
+## Next implementation phases from the current gate
+
+1. **Narrow-plant diagnosis:** log every wheel joint axis, steering-equivalent
+   contact direction, normal load, commanded/actual velocity, and pod pose during
+   the four-stage qualification. Compare successful and failed assemblies and fix
+   the physical allocation or seating mechanism. The exit condition is signed yaw
+   in both directions with the existing translation-per-yaw bound.
+2. **Round-trip automation:** add `narrow_to_compact`, randomize initial pose and
+   friction, and run 20 consecutive isolated round trips. Then execute detach,
+   relocation, latch, stale-observation, commit, cancellation, and partial-topology
+   fault injections. No pilot data may be collected at this stage.
+3. **Evaluator and provenance:** record synchronized full-geometry clearance and
+   collisions, autonomy-versus-truth localization error, prediction/outcome pairs,
+   recovery actions, process health, and container/configuration hashes. Add an
+   audit that rejects missing coverage and truth topics consumed by autonomy.
+4. **Decision-separation benchmark:** bind perceived 3D geometry, visibility, and
+   localization covariance to transition sites. Freeze neutral and targeted golden
+   layouts and generate route-signature/rejection-reason comparisons for all four
+   methods.
+5. **Disjoint pilot and design decision:** run unattended pilot blocks, set the
+   operational smallest useful completion gain without using the observed method
+   effect, freeze the nuisance grid, and run both prospective power scopes. Increase
+   independent layouts if every grid cell's Wilson lower bound does not reach 0.8.
+6. **Confirmatory collection and paper artifact:** freeze software and scenarios,
+   collect complete paired blocks, run the primary analysis once, and report the
+   hierarchical model as predeclared sensitivity. Produce figures, representative
+   sensor/topology videos, an artifact guide, and a limitations section covering
+   idealized logical cameras and simulated latches.
 
 ## Revised critical path after doorway traversal
 

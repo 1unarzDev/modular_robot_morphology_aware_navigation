@@ -1,5 +1,5 @@
 from modular_robot_bringup.qualification import (
-    PlanarPose, motion_delta, qualification_pass,
+    PlanarPose, goal_position_reached, motion_delta, qualification_pass,
 )
 
 
@@ -30,3 +30,21 @@ def test_qualification_accepts_signed_motion_with_bounded_cross_coupling():
         "reverse": {"forward_m": -0.11, "lateral_m": -0.01, "yaw_rad": -0.01},
     }
     assert qualification_pass(stages)
+
+
+def test_qualification_uses_yaw_normalized_translation_coupling():
+    stages = {
+        "positive_yaw": {"yaw_rad": 0.4, "translation_m": 0.09},
+        "negative_yaw": {"yaw_rad": -0.4, "translation_m": 0.09},
+        "forward": {"forward_m": 0.11, "lateral_m": 0.0, "yaw_rad": 0.0},
+        "reverse": {"forward_m": -0.11, "lateral_m": 0.0, "yaw_rad": 0.0},
+    }
+    assert qualification_pass(stages)
+    stages["positive_yaw"] = {"yaw_rad": 0.2, "translation_m": 0.09}
+    assert not qualification_pass(stages)
+
+
+def test_terminal_position_check_rejects_goal_checker_drift():
+    goal = PlanarPose(5.05, 1.75, 0.0)
+    assert goal_position_reached(PlanarPose(4.95, 1.78, 1.0), goal, 0.15)
+    assert not goal_position_reached(PlanarPose(4.87, 1.19, 1.4), goal, 0.15)

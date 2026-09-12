@@ -108,6 +108,11 @@ def test_analysis_retains_failures_and_computes_paired_contrasts():
     assert full["deadline_penalized_time_s"] == 42.0
     assert len(result["primary_contrasts"]) == 2
     assert len(result["secondary_contrasts"]) == 2
+    assert len(result["hierarchical_logistic_sensitivity"]) == 2
+    sensitivity = result["hierarchical_logistic_sensitivity"][0]
+    assert sensitivity["model"] == "binomial_logit_with_gaussian_layout_random_intercept"
+    assert sensitivity["marginal_probability_difference"] > 0
+    assert sensitivity["bootstrap_draws_completed"] >= 40
     assert result["primary_contrasts"][0]["layout_count"] == 6
     assert result["primary_contrasts"][0]["permutation_method"] == "exact_sign_flip"
     assert result["primary_contrasts"][0]["assignments"] == 64

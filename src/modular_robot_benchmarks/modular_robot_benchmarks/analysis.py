@@ -11,6 +11,7 @@ from statistics import fmean, median
 from typing import Callable, Iterable
 
 from .design import METHODS, SENSING_FAMILIES, StudyDesign
+from .hierarchical import hierarchical_logistic_contrast
 from .records import TrialRecord, TrialStore
 
 
@@ -206,7 +207,8 @@ def _contrast(records: list[TrialRecord], treatment: str, control: str,
 
 
 def analyze(records: list[TrialRecord], design: StudyDesign,
-            bootstrap_draws: int = 10000, permutation_draws: int = 100000) -> dict:
+            bootstrap_draws: int = 10000, permutation_draws: int = 100000,
+            hierarchical_bootstrap_draws: int = 40) -> dict:
     if bootstrap_draws < 40 or permutation_draws < 100:
         raise ValueError("analysis draw counts are too small")
     validate_records(records, design)
@@ -253,6 +255,14 @@ def analyze(records: list[TrialRecord], design: StudyDesign,
             "deadline_penalized_time_s", bootstrap_draws, None, 10100 + index,
         ))
 
+    hierarchical = []
+    for index, (treatment, control, families) in enumerate(PRIMARY_CONTRASTS):
+        hierarchical.append(hierarchical_logistic_contrast(
+            records, treatment, control, families,
+            bootstrap_draws=hierarchical_bootstrap_draws,
+            seed=12100 + index,
+        ))
+
     predictions_by_method: dict[str, list[tuple[float, int]]] = defaultdict(list)
     for record in records:
         predictions_by_method[record.spec.method].extend(zip(
@@ -297,6 +307,7 @@ def analyze(records: list[TrialRecord], design: StudyDesign,
         "trial_count": len(records), "layout_count": len({r.spec.layout_id for r in records}),
         "methods": method_rows, "primary_contrasts": primary,
         "secondary_contrasts": secondary,
+        "hierarchical_logistic_sensitivity": hierarchical,
         "failure_taxonomy": dict(sorted(Counter(
             r.terminal_status for r in records if not r.completed).items())),
         "transition_brier_score": fmean((p - y) ** 2 for p, y in predictions) if predictions else None,
@@ -374,6 +385,12 @@ def write_artifacts(result: dict, output: str | Path) -> None:
         rendered = "NA" if fraction is None else f"{fraction:.3f}"
         lines.append(
             f"| {method} | {value['paired_blocks_with_signatures']} | {rendered} |")
+    lines.extend(["", "## Hierarchical logistic sensitivity", "",
+                  "Marginal completion-probability differences from a binomial-logit model with a Gaussian layout random intercept. Intervals resample whole layouts within family.", "",
+                  "| Treatment − control | Marginal difference (95% cluster CI) | Layout SD |", "|---|---:|---:|"])
+    for row in result["hierarchical_logistic_sensitivity"]:
+        low, high = row["ci95_layout_bootstrap"]
+        lines.append(f"| {row['treatment']} − {row['control']} | {row['marginal_probability_difference']:.3f} [{low:.3f}, {high:.3f}] | {row['layout_random_intercept_sd']:.3f} |")
     lines.extend(["", "Structured transition rejection counts are retained in `analysis.json`."])
     (output / "results.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
@@ -382,7 +399,9 @@ def write_artifacts(result: dict, output: str | Path) -> None:
 
 
 def run_analysis(raw: str | Path, design: StudyDesign, output: str | Path,
-                 bootstrap_draws: int = 10000, permutation_draws: int = 100000) -> dict:
-    result = analyze(TrialStore(raw).load_all(), design, bootstrap_draws, permutation_draws)
+                 bootstrap_draws: int = 10000, permutation_draws: int = 100000,
+                 hierarchical_bootstrap_draws: int = 400) -> dict:
+    result = analyze(TrialStore(raw).load_all(), design, bootstrap_draws, permutation_draws,
+                     hierarchical_bootstrap_draws)
     write_artifacts(result, output)
     return result

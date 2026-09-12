@@ -27,8 +27,10 @@ def qualification_pass(stages: dict[str, dict[str, float]]) -> bool:
     return (
         positive["yaw_rad"] >= 0.10
         and negative["yaw_rad"] <= -0.10
-        and positive["translation_m"] <= 0.08
-        and negative["translation_m"] <= 0.08
+        and positive["translation_m"] <= 0.12
+        and negative["translation_m"] <= 0.12
+        and positive["translation_m"] / abs(positive["yaw_rad"]) <= 0.25
+        and negative["translation_m"] / abs(negative["yaw_rad"]) <= 0.25
         and forward["forward_m"] >= 0.08
         and reverse["forward_m"] <= -0.08
         and abs(forward["lateral_m"]) <= 0.08
@@ -36,3 +38,9 @@ def qualification_pass(stages: dict[str, dict[str, float]]) -> bool:
         and abs(forward["yaw_rad"]) <= 0.15
         and abs(reverse["yaw_rad"]) <= 0.15
     )
+
+
+def goal_position_reached(current: PlanarPose, goal: PlanarPose,
+                          tolerance: float) -> bool:
+    """Independent mission completion check in the common map frame."""
+    return tolerance > 0 and hypot(current.x - goal.x, current.y - goal.y) <= tolerance

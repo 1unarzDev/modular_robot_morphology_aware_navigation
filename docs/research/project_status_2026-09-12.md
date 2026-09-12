@@ -186,11 +186,24 @@ Evaluate tighter pre-latch alignment first, then allocation from observed pod
 orientations or a wider physically defensible track. Tune RPP only after the
 plant passes this gate. Keep the downstream collision monitor enabled.
 
-The analysis pipeline now reports exact sign-assignment counts and attainable
-p-value resolution, plus Monte Carlo standard error for simulated randomization
-p values. The confirmatory design hash remains
+The analysis pipeline now also implements the predeclared binomial-logit
+sensitivity model with method and family fixed effects, a Gaussian layout random
+intercept, quadrature-based likelihood, standardized marginal probability
+differences, and within-family layout-bootstrap intervals. It reports convergence
+and bootstrap-fit diagnostics. Exact sign-assignment counts, attainable p-value
+resolution, and Monte Carlo error remain part of the primary analysis. The
+confirmatory design hash remains
 `e9115d543af0969db7825398f7e2691361bdb536530d93e49db4528f21c51cf5` and the
 confirmatory evidence count remains **0/432**.
+
+The latest `articulated_normalized_gate_raw` run did not pass platform
+qualification. Reconfiguration committed with the topology in `READY`, but the
+positive and negative yaw stages produced only +0.0466 and -0.0741 rad while
+translating 0.0634 and 0.0697 m. The normalized coupling gate correctly inhibited
+assembled drive and emitted `motion_qualification_failure`. This is engineering
+evidence that residual narrow-assembly wheel geometry or contact loading remains
+run dependent; it is not a mission outcome and does not justify relaxing the
+safety gate.
 
 ## Revised implementation sequence after controller-ownership diagnosis
 
