@@ -25,6 +25,7 @@ class Morphology:
     height: float
     limits: Limits
     controller_id: str
+    experiment_supported: bool = False
 
     @property
     def radius(self) -> float:
@@ -59,6 +60,20 @@ class Catalog:
     def outgoing(self, morphology_id: str) -> tuple[Transition, ...]:
         return tuple(t for t in self.transitions if t.source == morphology_id)
 
+    def supported_experiment_subset(self) -> "Catalog":
+        """Return only morphologies backed by the current simulated mechanics."""
+        morphologies = {
+            key: value for key, value in self.morphologies.items()
+            if value.experiment_supported
+        }
+        transitions = tuple(
+            transition for transition in self.transitions
+            if transition.source in morphologies and transition.target in morphologies
+        )
+        if not morphologies:
+            raise ValueError("catalog has no experiment-supported morphologies")
+        return Catalog(morphologies, transitions, self.objective)
+
 
 def _positive(value: Any, field: str) -> float:
     number = float(value)
@@ -92,6 +107,7 @@ def load_catalog(path: str | Path) -> Catalog:
                 min_turning_radius=float(limits.get("min_turning_radius", 0.0)),
             ),
             controller_id=str(value["controller_id"]),
+            experiment_supported=value.get("experiment_support") == "simulated",
         )
 
     transitions = []
@@ -128,4 +144,3 @@ def load_catalog(path: str | Path) -> Catalog:
             unknown_space_risk=float(objective["unknown_space_risk"]),
         ),
     )
-

@@ -67,3 +67,16 @@ def test_grid_coarsening_preserves_obstacles_and_unknown_regions():
     assert coarse.value(0, 0) == OCCUPIED
     assert coarse.value(1, 1) == UNKNOWN
     assert coarse.revision == 7
+
+
+def test_motion_primitive_checks_swept_footprint_between_endpoints():
+    catalog = load_catalog(CATALOG).supported_experiment_subset()
+    grid = OccupancyGrid(50, 50, 0.05)
+    # Both endpoint headings fit; the intermediate rotation clips this cell.
+    grid.set_value(27, 21, OCCUPIED)
+    planner = MorphologyAStar(catalog, grid, heading_bins=4)
+    source = HybridState(20, 20, 0, "compact_diff")
+    target = HybridState(20, 20, 1, "compact_diff")
+    assert planner._state_is_free(source)
+    assert planner._state_is_free(target)
+    assert not planner._traversal_is_free(source, target)

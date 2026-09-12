@@ -29,7 +29,12 @@ class PlannerServer(Node):
         self.declare_parameter("heading_bins", 8)
         self.declare_parameter("planning_resolution", 0.1)
         self.declare_parameter("cost_model", "")
-        self._catalog = load_catalog(self.get_parameter("catalog").value)
+        self.declare_parameter("experiment_supported_only", True)
+        catalog = load_catalog(self.get_parameter("catalog").value)
+        self._catalog = (
+            catalog.supported_experiment_subset()
+            if self.get_parameter("experiment_supported_only").value else catalog
+        )
         self._grid: OccupancyGrid | None = None
         self._map_sub = self.create_subscription(
             OccupancyGridMsg, "/map", self._on_map, 1

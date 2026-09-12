@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from heapq import heappop, heappush
 from itertools import count
-from math import cos, hypot, pi, sin
+from math import ceil, cos, hypot, pi, sin
 from typing import Callable, Literal
 
 from .catalog import Catalog, Morphology, Transition
@@ -169,7 +169,7 @@ class MorphologyAStar:
                 (state.heading + dheading) % self.heading_bins,
                 state.morphology,
             )
-            if target == state or not self._state_is_free(target):
+            if target == state or not self._traversal_is_free(state, target):
                 continue
             distance = hypot(dx, dy) * self.grid.resolution
             angle = abs(dheading) * 2 * pi / self.heading_bins
@@ -188,6 +188,32 @@ class MorphologyAStar:
         wx, wy = self.grid.cell_center(state.x, state.y)
         morphology = self.catalog.morphologies[state.morphology]
         return self.grid.footprint_is_free(wx, wy, self._yaw(state.heading), morphology.footprint)
+
+    def _traversal_is_free(self, source: HybridState, target: HybridState) -> bool:
+        """Conservatively sample the swept footprint for one lattice primitive."""
+        if source.morphology != target.morphology:
+            return False
+        source_x, source_y = self.grid.cell_center(source.x, source.y)
+        target_x, target_y = self.grid.cell_center(target.x, target.y)
+        source_yaw = self._yaw(source.heading)
+        delta_heading = (target.heading - source.heading) % self.heading_bins
+        if delta_heading > self.heading_bins // 2:
+            delta_heading -= self.heading_bins
+        delta_yaw = delta_heading * 2.0 * pi / self.heading_bins
+        morphology = self.catalog.morphologies[source.morphology]
+        swept_distance = max(
+            hypot(target_x - source_x, target_y - source_y),
+            abs(delta_yaw) * morphology.radius,
+        )
+        samples = max(1, ceil(swept_distance / (0.25 * self.grid.resolution)))
+        for index in range(samples + 1):
+            fraction = index / samples
+            wx = source_x + fraction * (target_x - source_x)
+            wy = source_y + fraction * (target_y - source_y)
+            yaw = source_yaw + fraction * delta_yaw
+            if not self.grid.footprint_is_free(wx, wy, yaw, morphology.footprint):
+                return False
+        return True
 
     def _validate_transition(self, transition: Transition, state: HybridState) -> bool:
         wx, wy = self.grid.cell_center(state.x, state.y)

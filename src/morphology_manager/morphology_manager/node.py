@@ -6,7 +6,7 @@ import json
 import rclpy
 import yaml
 from ament_index_python.packages import get_package_share_directory
-from geometry_msgs.msg import Point32, PolygonStamped
+from geometry_msgs.msg import Point32, Polygon
 from modular_robot_msgs.msg import ModuleConnection, MorphologyState
 from modular_robot_msgs.srv import SetLocomotionMode
 from rclpy.node import Node
@@ -27,8 +27,9 @@ class MorphologyManager(Node):
         qos = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL,
                          reliability=ReliabilityPolicy.RELIABLE)
         self.publisher = self.create_publisher(MorphologyState, "morphology_state", qos)
-        self.local_footprint = self.create_publisher(PolygonStamped, "/local_costmap/footprint", qos)
-        self.global_footprint = self.create_publisher(PolygonStamped, "/global_costmap/footprint", qos)
+        # Nav2 Jazzy subscribes to Polygon on its footprint input topic.
+        self.local_footprint = self.create_publisher(Polygon, "/local_costmap/footprint", qos)
+        self.global_footprint = self.create_publisher(Polygon, "/global_costmap/footprint", qos)
         self.service = self.create_service(SetLocomotionMode, "set_locomotion_mode", self._set_mode)
         self.create_timer(1.0, self.publish_state)
         self.publish_state()
@@ -88,11 +89,8 @@ class MorphologyManager(Node):
     def publish_state(self) -> None:
         state = self._state()
         self.publisher.publish(state)
-        footprint = PolygonStamped()
-        footprint.header = state.header
-        footprint.polygon = state.footprint
-        self.local_footprint.publish(footprint)
-        self.global_footprint.publish(footprint)
+        self.local_footprint.publish(state.footprint)
+        self.global_footprint.publish(state.footprint)
 
 
 def main(args=None) -> None:
