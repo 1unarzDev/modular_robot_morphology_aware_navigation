@@ -122,7 +122,9 @@ def make_confirmatory_scenario(
         else:
             obstacles = (obstacle,)
             regions = (ObservabilityRegion(
-                band_x0, band_x1, 0.0, center_y + band_half_height,
+                # Preserve an upper, sensor-visible staging lane wide enough
+                # for the declared 1.0 m transition sweep.
+                band_x0, band_x1, 0.0, center_y - 0.25,
                 False, 0.04,
             ),)
 

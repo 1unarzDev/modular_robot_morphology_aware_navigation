@@ -122,7 +122,9 @@ class MorphologyManager(Node):
         message.locomotion_mode = value["locomotion_mode"]
         message.controller_id = value["controller_id"]
         message.height = float(value["height"])
-        for x, y in value["footprint"]:
+        # The planner catalog footprint includes operational clearance. Nav2
+        # receives the physical collision envelope and applies its own padding.
+        for x, y in value.get("navigation_footprint", value["footprint"]):
             message.footprint.points.append(Point32(x=float(x), y=float(y), z=0.0))
         modules = list(self.catalog["inventory"].keys())
         message.topology.module_ids = modules

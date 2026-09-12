@@ -138,3 +138,27 @@ decisions improve completion under identical execution conditions.
 6. Freeze software and configuration artifacts, execute complete paired blocks,
    and release the immutable 432-record dataset only if the pilot retains the
    current design.
+
+## Revised critical path after doorway traversal
+
+1. Instrument terminal relative pose, velocity, visibility, covariance, and
+   latch state for every pod after a successful transition.
+2. Qualify straight and both yaw directions in `narrow_tandem` immediately after
+   reconfiguration. Correct latch alignment or drive allocation until pure-yaw
+   commands no longer translate the body materially.
+3. Pass repeated round trips and the injected-failure matrix, then harden Gazebo
+   descendant cleanup so every trial starts with an isolated simulator.
+4. Complete evaluator-only synchronized 3D clearance, collision, localization,
+   transition prediction/outcome, and recovery telemetry.
+5. Bind sensor-derived location-dependent obstacles and observability to ROS
+   planner edges and generate the ablation decision-separation report.
+6. Run a disjoint unattended pilot, freeze the operational smallest effect of
+   interest and conservative nuisance grid, then make the prospective power and
+   design-size decision.
+7. Freeze software/configuration artifacts and collect complete paired blocks.
+
+The preserved collision-monitor trace changes the immediate priority. The
+narrow body already traverses the morphology-requiring doorway, but a nominal
+pure-yaw request produced about 3 m total forward travel, 0.56 m lateral drift,
+and little yaw. AMCL and odometry agree. Conference data collection remains
+blocked until the post-reconfiguration plant passes its motion qualification.

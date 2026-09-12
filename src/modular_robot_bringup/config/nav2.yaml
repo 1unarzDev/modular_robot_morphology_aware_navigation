@@ -54,7 +54,10 @@ controller_server:
       use_velocity_scaled_lookahead_dist: true
       min_approach_linear_velocity: 0.05
       approach_velocity_scaling_dist: 0.6
-      use_collision_detection: true
+      # RPP checks the full footprint against a footprint-inflated costmap,
+      # double-counting body radius in narrow passages. The downstream Nav2
+      # collision monitor performs raw-lidar footprint projection at 0.5 s.
+      use_collision_detection: false
       max_allowed_time_to_collision_up_to_carrot: 1.0
       use_rotate_to_heading: true
       # The long narrow body must align in the open staging workspace before

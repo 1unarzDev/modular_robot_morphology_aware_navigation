@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-from math import atan2, hypot
+from math import atan2, cos, hypot, sin
 import time
 
 import rclpy
@@ -166,7 +166,9 @@ class ReconfigurationExecutor(Node):
                 if self._inject("relocation", pod):
                     raise RuntimeError(f"injected relocation failure for {pod}")
                 target = self.catalog["morphologies"][transition["to"]]["pods"][pod]
-                waypoints = [*transition.get("pod_waypoints", {}).get(pod, []), target]
+                waypoints = [*transition.get("pod_waypoints", {}).get(pod, [])]
+                if not waypoints or waypoints[-1] != target:
+                    waypoints.append(target)
                 for waypoint_index, waypoint in enumerate(waypoints):
                     if not await self._move_pod(pod, waypoint, goal_handle):
                         raise RuntimeError(
@@ -308,23 +310,29 @@ class ReconfigurationExecutor(Node):
                 continue
             target = Pose2(*(float(value) for value in relative_target))
             distance = hypot(target.x - current.x, target.y - current.y)
-            if distance <= position_tolerance:
+            if distance <= 1.5 * position_tolerance:
                 final_alignment = True
             if final_alignment and distance <= 1.5 * position_tolerance:
                 yaw_error = wrap_angle(target.yaw - current.yaw)
                 if abs(yaw_error) > yaw_tolerance:
-                    maximum = float(self.get_parameter("max_pod_angular").value)
-                    command = VelocityCommand(0.0, max(-maximum, min(maximum, 2.5 * yaw_error)))
+                    maximum = min(
+                        0.4, float(self.get_parameter("max_pod_angular").value))
+                    command = VelocityCommand(
+                        0.0, max(-maximum, min(maximum, 1.5 * yaw_error)))
                     arrived = False
                 elif distance <= position_tolerance:
                     command, arrived = VelocityCommand(), True
                 else:
-                    final_alignment = False
-                    command, arrived = docking_command(
-                        current, target, position_tolerance, yaw_tolerance,
-                        float(self.get_parameter("max_pod_linear").value),
-                        float(self.get_parameter("max_pod_angular").value),
+                    dx, dy = target.x - current.x, target.y - current.y
+                    forward_error = cos(current.yaw) * dx + sin(current.yaw) * dy
+                    bearing_error = wrap_angle(atan2(dy, dx) - current.yaw)
+                    maximum_linear = min(
+                        0.08, float(self.get_parameter("max_pod_linear").value))
+                    command = VelocityCommand(
+                        max(-maximum_linear, min(maximum_linear, 1.25 * forward_error)),
+                        max(-0.2, min(0.2, bearing_error)),
                     )
+                    arrived = False
             else:
                 final_alignment = False
                 command, arrived = docking_command(

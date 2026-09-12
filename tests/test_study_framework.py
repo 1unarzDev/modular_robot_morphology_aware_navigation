@@ -91,11 +91,24 @@ def test_analysis_retains_failures_and_computes_paired_contrasts():
     assert len(result["secondary_contrasts"]) == 2
     assert result["primary_contrasts"][0]["layout_count"] == 6
     assert result["primary_contrasts"][0]["permutation_method"] == "exact_sign_flip"
+    assert result["primary_contrasts"][0]["assignments"] == 64
+    assert result["primary_contrasts"][0]["monte_carlo_standard_error"] is None
+    assert result["primary_contrasts"][0]["minimum_attainable_two_sided_p"] == 2 / 64
     assert result["transition_brier_score"] is not None
     assert result["transition_rejection_reasons_by_method"]["geometry_coupled"][
         "connector_not_visible"] > 0
     assert result["route_decision_disagreement_vs_full"]["geometry_coupled"][
         "different_route_or_transition_fraction"] == 1.0
+
+
+def test_large_contrast_reports_randomization_monte_carlo_error():
+    design = generate_design(layouts_per_family=8, replicates=1)
+    result = analyze(_records(design), design, bootstrap_draws=100, permutation_draws=200)
+    contrast = result["primary_contrasts"][0]
+    assert contrast["permutation_method"] == "monte_carlo_sign_flip_200_draws"
+    assert contrast["assignments"] == 200
+    assert contrast["monte_carlo_standard_error"] >= 0.0
+    assert contrast["minimum_attainable_two_sided_p"] is None
 
 
 def test_analysis_writes_reviewable_tables_and_dependency_free_figures(tmp_path):

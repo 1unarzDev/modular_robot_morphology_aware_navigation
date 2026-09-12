@@ -157,3 +157,34 @@ unattended runner, disjoint pilot, power/design decision, confirmatory blocks.
 Expanding to Ackermann, omni, crawler, articulated, or stacked morphologies
 before this sequence finishes would add platform claims without strengthening
 the stated navigation contribution.
+
+## Current status update: doorway traversal and narrow-drive blocker
+
+Revised longitudinal pod approaches completed all six relocations and committed
+`narrow_tandem` in about 43 simulated seconds. The subsequent
+`results/debug/pilot_raw_collision_monitor` run crossed the centered 0.70 m
+doorway with the sensor-driven collision monitor active. This closes the former
+immediate-departure blocker but remains engineering evidence.
+
+The post-doorway failure is now localized. From roughly 100--210 simulated
+seconds, Nav2 commanded essentially pure rotation (`linear_x=0`,
+`angular_z≈-0.20 rad/s`), while odometry advanced about 2.1 m, moved laterally
+about 0.54 m, and changed yaw by only about 0.03 rad. AMCL closely agrees with
+odometry. Each side received opposing speeds of only about 0.02 m/s because the
+narrow track is ±0.10 m. Residual dock yaw/contact asymmetry and insufficient
+yaw authority are therefore the leading mechanisms; localization correction is
+not the leading explanation.
+
+The next platform phase is to preserve all six sensor-derived terminal dock
+poses and relative velocities, then run straight and positive/negative yaw
+qualification immediately after reconfiguration. Assembled navigation must not
+resume unless yaw commands produce useful signed yaw with bounded translation.
+Evaluate tighter pre-latch alignment first, then allocation from observed pod
+orientations or a wider physically defensible track. Tune RPP only after the
+plant passes this gate. Keep the downstream collision monitor enabled.
+
+The analysis pipeline now reports exact sign-assignment counts and attainable
+p-value resolution, plus Monte Carlo standard error for simulated randomization
+p values. The confirmatory design hash remains
+`e9115d543af0969db7825398f7e2691361bdb536530d93e49db4528f21c51cf5` and the
+confirmatory evidence count remains **0/432**.

@@ -64,13 +64,22 @@ def docking_command(
         if abs(bearing_error) > 2.2:
             bearing_error = wrap_angle(bearing_error - (pi if bearing_error > 0 else -pi))
             direction = -1.0
+        # Couple the terminal heading into the approach. Without this beta
+        # term, short lateral moves arrive side-on and spend the timeout trying
+        # to rotate at the docking point.
+        travel_heading = atan2(dy, dx) + (pi if direction < 0 else 0.0)
+        terminal_error = wrap_angle(target.yaw - travel_heading)
         linear = 0.0
         if abs(bearing_error) < 0.9:
             linear = direction * min(max_linear, 1.25 * distance) * max(0.15, cos(bearing_error))
-        angular = max(-max_angular, min(max_angular, 2.8 * bearing_error))
+        angular = max(
+            -max_angular,
+            min(max_angular, 2.8 * bearing_error - terminal_error),
+        )
         return VelocityCommand(linear, angular), False
     yaw_error = wrap_angle(target.yaw - current.yaw)
     if abs(yaw_error) > yaw_tolerance:
-        angular = max(-max_angular, min(max_angular, 2.5 * yaw_error))
+        docking_angular = min(max_angular, 0.4)
+        angular = max(-docking_angular, min(docking_angular, 1.5 * yaw_error))
         return VelocityCommand(0.0, angular), False
     return VelocityCommand(), True

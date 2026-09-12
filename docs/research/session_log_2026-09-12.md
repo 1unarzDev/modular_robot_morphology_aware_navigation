@@ -220,3 +220,18 @@ are recorded and explained.
 - Added controller lifecycle `ACTIVE` to runner readiness. Readiness timeouts are
   now labeled `infrastructure_failure`, and partial transitions increment the
   reconfiguration-failure count.
+
+## Doorway traversal, drive diagnosis, and analysis precision
+
+- Revised longitudinal approaches completed all pod relocations and committed
+  the narrow topology in roughly 43 simulated seconds.
+- `pilot_raw_collision_monitor` crossed the centered doorway with the raw-lidar
+  collision monitor enabled, then failed progress beyond it.
+- During nominal pure negative yaw, odometry and AMCL both show large translation
+  and little rotation. Opposing pod commands were about ±0.02 m/s because of the
+  ±0.10 m track. Residual attachment error and low yaw authority are the leading
+  hypotheses.
+- The next engineering artifact must retain every terminal dock pose and qualify
+  straight/positive-yaw/negative-yaw motion after reconfiguration.
+- Confirmatory randomization output now includes exact assignment counts,
+  attainable exact p-value resolution, and Monte Carlo p-value standard error.

@@ -15,7 +15,10 @@ CATALOG = Path(__file__).parents[1] / "src/modular_robot_description/config/morp
 
 
 def doorway_grid():
-    grid = OccupancyGrid(40, 25, 0.1)
+    # Leave a full reconfiguration workspace on both sides of the wall. The
+    # 1.76 m narrow body and 1.0 m transition sweep must not be clipped by the
+    # artificial map boundary at the start or goal.
+    grid = OccupancyGrid(55, 25, 0.1)
     for y in range(grid.height):
         if not 10 <= y <= 16:
             grid.set_value(20, y, OCCUPIED)
@@ -25,7 +28,7 @@ def doorway_grid():
 def test_hybrid_plan_reconfigures_for_narrow_doorway():
     planner = MorphologyAStar(
         load_catalog(CATALOG).supported_experiment_subset(), doorway_grid(), heading_bins=4)
-    plan = planner.plan(HybridState(7, 13, 0, "compact_diff"), (32, 13), epsilon=2.5)
+    plan = planner.plan(HybridState(7, 13, 0, "compact_diff"), (42, 13), epsilon=2.5)
     transitions = [s.transition_id for s in plan.segments if s.kind == "reconfigure"]
     assert "compact_to_narrow" in transitions
     assert any(state.x == 20 and state.morphology == "narrow_tandem" for state in plan.states)
@@ -36,7 +39,7 @@ def test_fixed_compact_robot_cannot_cross_narrow_doorway():
     catalog = type(catalog)(catalog.morphologies, (), catalog.objective)
     planner = MorphologyAStar(catalog, doorway_grid(), heading_bins=4)
     with pytest.raises(NoPathError):
-        planner.plan(HybridState(7, 13, 0, "compact_diff"), (32, 13), epsilon=2.5)
+        planner.plan(HybridState(7, 13, 0, "compact_diff"), (42, 13), epsilon=2.5)
 
 
 def test_reconfiguration_needs_swept_volume_clearance():
@@ -113,8 +116,8 @@ def test_route_first_baseline_does_not_revise_route_for_transition_feasibility()
     validator = lambda transition, state: state.heading == 1
     joint = MorphologyAStar(catalog, grid, heading_bins=4,
                             transition_validator=validator)
-    assert joint.plan(start, (32, 13)).segments
+    assert joint.plan(start, (42, 13)).segments
     sequential = RouteFirstAdaptationPlanner(
         catalog, grid, heading_bins=4, transition_validator=validator)
     with pytest.raises(NoPathError, match="fixed spatial route"):
-        sequential.plan(start, (32, 13))
+        sequential.plan(start, (42, 13))

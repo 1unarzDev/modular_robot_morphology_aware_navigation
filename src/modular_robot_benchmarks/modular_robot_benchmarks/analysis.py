@@ -103,9 +103,9 @@ def _layout_bootstrap(records: list[TrialRecord], treatment: str, control: str,
     return estimates[int(0.025 * (draws - 1))], estimates[int(0.975 * (draws - 1))]
 
 
-def _layout_permutation_p(records: list[TrialRecord], treatment: str, control: str,
-                          families: frozenset[str] | None, metric: Metric,
-                          draws: int, seed: int) -> float:
+def _layout_permutation_test(records: list[TrialRecord], treatment: str, control: str,
+                             families: frozenset[str] | None, metric: Metric,
+                             draws: int, seed: int) -> dict:
     effects = [value for values in _paired_layout_effects(
         records, treatment, control, families, metric).values() for value in values]
     observed = abs(fmean(effects))
@@ -120,12 +120,29 @@ def _layout_permutation_p(records: list[TrialRecord], treatment: str, control: s
         for statistic in statistics:
             total += 1
             exceed += statistic >= observed - 1e-12
-        return exceed / total
+        probability = exceed / total
+        return {
+            "p_value": probability,
+            "method": "exact_sign_flip",
+            "assignments": total,
+            "monte_carlo_standard_error": None,
+            # A two-sided sign test cannot attain a nonzero p below the two
+            # equally extreme all-positive/all-negative assignments.
+            "minimum_attainable_two_sided_p": min(1.0, 2.0 / total),
+        }
     rng, exceed = Random(seed), 0
     for _ in range(draws):
         statistic = abs(fmean(effect * (-1 if rng.getrandbits(1) else 1) for effect in effects))
         exceed += statistic >= observed - 1e-12
-    return (exceed + 1) / (draws + 1)
+    probability = (exceed + 1) / (draws + 1)
+    return {
+        "p_value": probability,
+        "method": f"monte_carlo_sign_flip_{draws}_draws",
+        "assignments": draws,
+        "monte_carlo_standard_error": sqrt(
+            probability * (1.0 - probability) / (draws + 1)),
+        "minimum_attainable_two_sided_p": None,
+    }
 
 
 def _holm(p_values: list[float]) -> list[float]:
@@ -180,11 +197,11 @@ def _contrast(records: list[TrialRecord], treatment: str, control: str,
         "family_effects": {family: fmean(values) for family, values in sorted(grouped.items())},
     }
     if permutation_draws is not None:
-        row["permutation_p"] = _layout_permutation_p(
+        test = _layout_permutation_test(
             records, treatment, control, families, metric, permutation_draws, seed + 1000)
-        row["permutation_method"] = (
-            "exact_sign_flip" if row["layout_count"] <= 20
-            else f"monte_carlo_sign_flip_{permutation_draws}_draws")
+        row["permutation_p"] = test.pop("p_value")
+        row["permutation_method"] = test.pop("method")
+        row.update(test)
     return row
 
 

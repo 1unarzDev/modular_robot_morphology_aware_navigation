@@ -33,6 +33,7 @@ class MissionObservation:
     simulated_duration_s: float
     wall_duration_s: float
     reconfiguration_attempts: int = 0
+    reconfiguration_failures: int = 0
     mechanical_work_j: float = 0.0
     covariance_trace: list[float] = field(default_factory=list)
     topology_history: list[dict] = field(default_factory=list)
@@ -81,6 +82,7 @@ class MissionObserver(Node):
         self.execution_history: list[dict] = []
         self.pod_commands = {f"pod_{index}": 0.0 for index in range(6)}
         self.pod_signed_commands = {f"pod_{index}": 0.0 for index in range(6)}
+        self.pod_angular_commands = {f"pod_{index}": 0.0 for index in range(6)}
         self.body_command = Twist()
         self.work_proxy_j = 0.0
         self._previous_clock: float | None = None
@@ -156,6 +158,8 @@ class MissionObserver(Node):
                 "body_linear_x": float(self.body_command.linear.x),
                 "body_angular_z": float(self.body_command.angular.z),
                 **{pod: float(value) for pod, value in self.pod_signed_commands.items()},
+                **{f"{pod}_angular": float(value)
+                   for pod, value in self.pod_angular_commands.items()},
             })
             try:
                 transform = self.tf_buffer.lookup_transform(
@@ -214,6 +218,7 @@ class MissionObserver(Node):
     def _on_command(self, pod: str, message: Twist) -> None:
         self.pod_commands[pod] = abs(message.linear.x)
         self.pod_signed_commands[pod] = message.linear.x
+        self.pod_angular_commands[pod] = message.angular.z
 
     def navigation_ready(self) -> bool:
         now = time.monotonic()

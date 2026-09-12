@@ -104,6 +104,8 @@ class HybridNavigator(Node):
                     if execution_failures else planning_message)
                 self._set_plan_metrics(
                     result, selected_plans, planning_latency, expanded_states)
+                result.observed_time = time.monotonic() - started
+                result.reconfiguration_count = reconfigurations
                 goal_handle.abort()
                 return result
             plan = plan_result.plan

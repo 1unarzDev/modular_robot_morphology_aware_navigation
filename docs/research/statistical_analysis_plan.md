@@ -63,6 +63,12 @@ level; the bootstrap interval is the main uncertainty summary for the average
 effect. Report the Monte Carlo standard error of every simulated p value, and
 state when exact-test discreteness limits attainable p values.
 
+For exact tests, report the number of enumerated sign assignments and the
+minimum attainable nonzero two-sided p value. For Monte Carlo tests, report the
+number of sampled assignments and the binomial Monte Carlo standard error
+`sqrt(p(1-p)/(B+1))`. The analysis pipeline emits these quantities beside each
+unadjusted p value.
+
 For the secondary outcome, report treatment-minus-control differences in
 deadline-penalized seconds with the same stratified layout bootstrap. Negative
 values favor the treatment. Do not assign confirmatory p values to secondary or
@@ -134,6 +140,14 @@ planning and reconfiguration complexity), record the rationale, and then run
 power across a conservative range of nuisance assumptions. It must not define
 the threshold by rounding or otherwise adapting to the observed treatment
 effect.
+
+The pilot decision record must freeze a nuisance-assumption grid rather than a
+single optimistic power input. At minimum it spans the pilot-compatible control
+rate, layout logit standard deviation, and paired-noise fraction, plus one more
+adverse value for each. The retained design must meet target power for both
+primary scopes under the declared conservative combination. Pilot effect
+estimates may inform nuisance parameters; they may not define the treatment
+effect used for power.
 
 Raw terminal records are append-only JSON. Generated CSV, Markdown, and figures
 live in a separate derived directory. The synthetic `edge_observations.csv` is
