@@ -26,9 +26,9 @@ Cheng, and Tu prevent broader first-system claims.
 | Transition feasibility | Sequential world-frame trajectories with compound pod body/wheel collision bounds and structured rejection reasons | Host tests distinguish planar, 3D, and sensing cases |
 | Plan validity | Method/map/topology/sensing revisions; replan after reconfiguration or meaningful revision change | Host tests and nine-package ROS build |
 | Statistics | Frozen paired design, immutable records, layout bootstrap, sign-flip tests, Holm adjustment, calibration, power simulation, deterministic artifacts | Host tests; 0/432 confirmatory records |
-| Mission automation | Generated SDF/manifest per trial, isolated full-stack process, readiness gates, simulated/wall deadlines, immutable resumable records | Four debug smoke trials; no valid pilot records |
+| Mission automation | Generated SDF/manifest per trial, isolated full-stack process, readiness gates including fresh lidar and odometry, simulated/wall deadlines, immutable resumable records | Debug engineering runs only; no valid pilot records |
 
-Current automated verification: 67 host tests pass; all nine ROS packages build
+Current automated verification: 73 host tests pass; all nine ROS packages build
 and package smoke tests pass. The confirmatory design hash remains
 `e9115d543af0969db7825398f7e2691361bdb536530d93e49db4528f21c51cf5`.
 
@@ -38,37 +38,29 @@ input with a location-dependent prediction from the perceived environment;
 otherwise a future transition site would inherit observability measured at the
 robot's current location.
 
-The latest full-stack smoke trial reaches clock, map, TF, topology, and the
-navigation action, then terminates as `planning_failure` with
-`no morphology-agnostic spatial route`. Map padding removed the previous
-out-of-bounds failure. Online SLAM has not observed the distant doorway when the
-goal is issued. A generated prior 2D map with sensor-based localization is
-therefore required for the confirmatory navigation task. Online exploration may
-be evaluated separately because it changes the estimand and can obscure the
-route/morphology ablation.
+A dedicated motion qualification run now verifies ROS REP-103 signs in the
+physical array: commands of `+0.35` and `-0.35 rad/s` produced yaw changes of
+`+0.881` and `-0.821 rad`, and a straight command produced `+0.762 m` with
+negligible yaw. This rules out the plant sign convention as the cause of the
+earlier MPPI divergence.
 
-The prior-map implementation now starts map server and AMCL successfully and
-delivers the latched map to the planner. The latest preserved debug run found a
-hybrid plan (107 expanded states, 1.234 s cumulative planning latency) and began
-execution toward a compact-to-narrow transition at `(2.05, 1.85)`. Nav2 stopped
-after repeated collision-monitor approach limiting and reported no progress.
-This is the current end-to-end blocker. It is debug evidence only; instrumented
-pose/clearance traces are needed to determine whether the robot, its attached
-pods, or doorway geometry triggers the monitor.
+Both confirmatory morphologies now use regulated pure pursuit. In the latest
+valid full-stack debug run, AMCL, odometry, and the controller tracked the
+straight segment and reached the planned transition site near `(2.05, 1.85)`.
+An earlier compact-to-narrow transition failed after roughly 80 s and left the
+manager in `RECOVERY_REQUIRED`; the navigator incorrectly attempted the same
+transition four times. Current edits block planning and execution unless the
+observed state is `READY`, abort immediately after an unsafe partial transition,
+add phase/pod/relative-pose/covariance/visibility/latch diagnostics, require
+fresh scan and odometry at runner readiness, and classify transition and unsafe-
+topology failures separately.
 
-The first motion-instrumented repeat recorded 123 half-second samples. Pod
-commands were nonzero in 83 samples and odometry displacement was 1.739 m, but
-the chassis ended near `(1.98, 2.97)` rather than the intended transition at
-`(2.05, 1.85)`. Command delivery is working; assembled trajectory tracking or
-frame/kinematic consistency is not yet adequate. Resolve this before platform
-qualification or pilot collection.
-
-Planned-path telemetry confirms the requested route itself is straight: 45
-poses from `(0.65, 1.85)` to `(5.05, 1.85)`, all with zero yaw. The controller
-nevertheless sends persistently positive yaw commands as the physical chassis
-moves toward increasing `y`. The next controlled test must compare odometry yaw
-and AMCL map-frame yaw under a direct positive/negative angular command, then
-correct the component whose sign convention disagrees with ROS REP-103.
+After rebuilding, two combined-constraints engineering reruns each completed one
+compact-to-narrow transition and returned `READY`. Both then failed immediately
+when regulated pure pursuit predicted a collision on the post-transition
+traverse. The records contain one reconfiguration attempt; the remaining rapid
+retries are controller retries. Because neither transition failed, a deliberate
+partial-failure injection is still needed to qualify the unsafe-state branch.
 
 ## Phase 1 — platform qualification
 

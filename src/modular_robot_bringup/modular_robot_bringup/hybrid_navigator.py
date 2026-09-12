@@ -64,6 +64,12 @@ class HybridNavigator(Node):
                 result.message = "no morphology state received"
                 goal_handle.abort()
                 return result
+            if self.morphology.execution_state != MorphologyState.READY:
+                result.message = self._unsafe_state_message()
+                self._set_plan_metrics(
+                    result, selected_plans, planning_latency, expanded_states)
+                goal_handle.abort()
+                return result
             start = self._current_pose()
             if start is None:
                 result.message = "map-to-base transform unavailable"
@@ -91,6 +97,12 @@ class HybridNavigator(Node):
             execution_failed = False
             replan_requested = False
             for index, segment in enumerate(plan.segments):
+                if self.morphology.execution_state != MorphologyState.READY:
+                    result.message = self._unsafe_state_message()
+                    self._set_plan_metrics(
+                        result, selected_plans, planning_latency, expanded_states)
+                    goal_handle.abort()
+                    return result
                 if self.morphology.topology_revision != plan.topology_revision:
                     replan_requested = True
                     break
@@ -114,6 +126,18 @@ class HybridNavigator(Node):
                 else:
                     success = await self._follow(segment)
                 if not success:
+                    if (segment.kind == HybridSegment.RECONFIGURE and self.morphology
+                            and self.morphology.execution_state
+                            == MorphologyState.RECOVERY_REQUIRED):
+                        result.message = (
+                            "reconfiguration failed; observed topology requires recovery"
+                        )
+                        result.observed_time = time.monotonic() - started
+                        result.reconfiguration_count = reconfigurations
+                        self._set_plan_metrics(
+                            result, selected_plans, planning_latency, expanded_states)
+                        goal_handle.abort()
+                        return result
                     execution_failed = True
                     break
                 if replan_requested:
@@ -137,6 +161,15 @@ class HybridNavigator(Node):
         self._set_plan_metrics(result, selected_plans, planning_latency, expanded_states)
         goal_handle.abort()
         return result
+
+    def _unsafe_state_message(self) -> str:
+        state = self.morphology.execution_state if self.morphology else -1
+        names = {
+            MorphologyState.TRANSITIONING: "transitioning",
+            MorphologyState.RECOVERY_REQUIRED: "recovery required",
+            MorphologyState.STOPPED: "stopped",
+        }
+        return f"navigation blocked; observed topology state is {names.get(state, state)}"
 
     @staticmethod
     def _set_plan_metrics(result, plans, planning_latency, expanded_states):

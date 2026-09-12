@@ -10,6 +10,7 @@ from modular_robot_msgs.action import NavigateHybrid
 from modular_robot_msgs.msg import MorphologyState, RelativePoseEstimate
 from nav_msgs.msg import OccupancyGrid
 from nav_msgs.msg import Odometry
+from sensor_msgs.msg import LaserScan
 from rclpy.action import ActionClient
 from rclpy.duration import Duration
 from rclpy.executors import SingleThreadedExecutor
@@ -63,6 +64,8 @@ class MissionObserver(Node):
         self._last_covariance_sample: float | None = None
         self._last_motion_sample: float | None = None
         self.latest_odometry: Odometry | None = None
+        self.latest_odom_wall_time: float | None = None
+        self.latest_scan_wall_time: float | None = None
         self.odometry_history: list[dict[str, float]] = []
         self.command_history: list[dict[str, float]] = []
         self.localization_history: list[dict[str, float]] = []
@@ -82,6 +85,7 @@ class MissionObserver(Node):
         self.create_subscription(MorphologyState, "morphology_state", self._on_state, qos)
         self.create_subscription(OccupancyGrid, "/map", self._on_map, qos)
         self.create_subscription(Odometry, "/odom", self._on_odometry, qos_profile_sensor_data)
+        self.create_subscription(LaserScan, "/scan", self._on_scan, qos_profile_sensor_data)
         self.create_subscription(Twist, "/cmd_vel", self._on_body_command, 10)
         self.create_subscription(
             RelativePoseEstimate, "relative_pose_estimate", self._on_pose, 50)
@@ -139,6 +143,10 @@ class MissionObserver(Node):
 
     def _on_odometry(self, message: Odometry) -> None:
         self.latest_odometry = message
+        self.latest_odom_wall_time = time.monotonic()
+
+    def _on_scan(self, _message: LaserScan) -> None:
+        self.latest_scan_wall_time = time.monotonic()
 
     def _on_body_command(self, message: Twist) -> None:
         self.body_command = message
@@ -170,8 +178,13 @@ class MissionObserver(Node):
         self.pod_signed_commands[pod] = message.linear.x
 
     def navigation_ready(self) -> bool:
+        now = time.monotonic()
         if not (self.sim_time is not None and self.morphology is not None
-                and self.map_received and self.client.server_is_ready()):
+                and self.map_received and self.client.server_is_ready()
+                and self.latest_odom_wall_time is not None
+                and self.latest_scan_wall_time is not None
+                and now - self.latest_odom_wall_time < 1.0
+                and now - self.latest_scan_wall_time < 1.0):
             return False
         try:
             return self.tf_buffer.can_transform(

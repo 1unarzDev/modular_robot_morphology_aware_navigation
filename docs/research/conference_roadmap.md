@@ -117,3 +117,24 @@ coupling establishes shape-aware planning, 3D feasibility prevents executable-
 looking but invalid transitions, and sensing-aware feasibility shifts docking
 to observable workspaces. The mission experiment then measures whether those
 decisions improve completion under identical execution conditions.
+
+## Immediate execution order
+
+1. Rebuild the ROS workspace and rerun the preserved combined-constraints case.
+   Confirm that one failed transition produces one attempt and an immediate
+   unsafe-topology terminal record.
+2. Use executor diagnostics to repair pod relocation or docking; then pass 20
+   consecutive randomized compact-to-narrow-to-compact round trips and the
+   declared injected-failure matrix.
+3. Add evaluator-only synchronized truth, full-geometry clearance/collision,
+   transition prediction/outcome, process-health, and recovery telemetry. No
+   pilot starts until every declared analysis field has a measured source.
+4. Bind sensor-derived, location-dependent 3D obstacles and connector
+   observability to planner edges. Produce golden decision-separation cases and
+   neutral controls for all four methods.
+5. Run a disjoint unattended pilot, set the operational smallest effect of
+   interest, and archive prospective power and precision results. Re-freeze the
+   layout count if either contrast lacks power.
+6. Freeze software and configuration artifacts, execute complete paired blocks,
+   and release the immutable 432-record dataset only if the pilot retains the
+   current design.

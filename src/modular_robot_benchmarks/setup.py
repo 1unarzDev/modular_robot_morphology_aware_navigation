@@ -22,6 +22,7 @@ setup(
             "train_cost_model = modular_robot_benchmarks.train_cost_model:main",
             "morphology_study = modular_robot_benchmarks.study:main",
             "run_morphology_missions = modular_robot_benchmarks.mission_batch:main",
+            "qualify_assembly_motion = modular_robot_benchmarks.motion_qualification:main",
         ]
     },
     test_suite="unittest.TestSuite",

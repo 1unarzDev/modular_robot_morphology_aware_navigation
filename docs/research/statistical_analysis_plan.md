@@ -36,6 +36,13 @@ is deadline-penalized time: failed trials receive 300 s. Successful-run time is
 descriptive. Mechanical work remains separate from time so the paper does not
 hide a completion/work tradeoff in one scalar objective.
 
+The primary estimand is the layout-balanced average effect over the generated
+layout population in each declared family scope. Each layout receives equal
+weight after averaging its three paired disturbance replicates. This prevents
+replicates from being treated as independent environments. The all-family
+contrast weights layouts equally; because the frozen design has the same number
+of layouts per family, it also weights families equally.
+
 The two confirmatory contrasts are:
 
 - `sensing_feasibility_coupled` minus `geometry_coupled` over all families.
@@ -51,6 +58,10 @@ assignment when a contrast has at most 20 layouts (including small pilots);
 otherwise use the predeclared seeded Monte Carlo draw count and report that
 count with the result. Apply Holm correction to
 the two p values. Report effect sizes and intervals regardless of significance.
+The randomization test targets a sharp symmetry/null assumption at the layout
+level; the bootstrap interval is the main uncertainty summary for the average
+effect. Report the Monte Carlo standard error of every simulated p value, and
+state when exact-test discreteness limits attainable p values.
 
 For the secondary outcome, report treatment-minus-control differences in
 deadline-penalized seconds with the same stratified layout bootstrap. Negative
@@ -59,6 +70,13 @@ family-level results. Report family-level effects as heterogeneity diagnostics,
 not independent confirmatory tests. Estimate transition Brier scores and
 reliability bins separately by method so a pooled score cannot hide method
 differences.
+
+Before unblinding confirmatory outcomes, freeze two sensitivity analyses: (1) a
+paired hierarchical logistic model with method fixed effects and layout random
+intercepts, reported as marginal probability differences; and (2) a deadline-
+time analysis with a 300 s point mass for failures. These support the
+predeclared nonparametric analysis and do not replace it. Do not choose among
+models based on which produces a smaller p value.
 
 ## Sample-size gate
 
@@ -96,6 +114,18 @@ paired blocks in which each baseline selects a different route or transition
 site from `sensing_feasibility_coupled`. These checks establish that the
 ablations changed the intended decision mechanism; they do not replace the
 mission-completion estimand and receive no significance tests.
+
+For mechanism evidence, report transition prediction coverage as well as
+calibration: the number of attempted transitions with a logged probability,
+the Brier score by method, reliability bins with counts, and every structured
+rejection reason. Calibration is uninterpretable unless the executor logs both
+a pre-action prediction and a terminal outcome.
+
+Treat collision, clearance, localization error, and transition failures as
+secondary outcomes with explicit denominators. Define minimum clearance over
+the full robot geometry at synchronized evaluator timestamps. Localization RMSE
+compares the autonomy pose with evaluator-only truth after time alignment. No
+ground-truth stream may feed planning, control, recovery, or readiness.
 
 The smallest effect of interest is intentionally not filled in before the
 disjoint pilot. The pilot decision record must set it from operational value

@@ -140,12 +140,16 @@ class ReconfigurationExecutor(Node):
             return result
 
         started = time.monotonic()
+        active_pod = ""
+        phase = "begin"
         try:
             pods = transition.get("moved_pods", [])
             for index, pod in enumerate(pods):
+                active_pod = pod
                 if goal_handle.is_cancel_requested or self._inject("cancellation", pod):
                     raise asyncio.CancelledError
-                self._feedback(goal_handle, "unlatch", pod, index, len(pods))
+                phase = "unlatch"
+                self._feedback(goal_handle, phase, pod, index, len(pods))
                 if self._inject("stale_feedback", pod):
                     raise RuntimeError(f"injected stale feedback for {pod}")
                 if self._inject("detach", pod):
@@ -157,7 +161,8 @@ class ReconfigurationExecutor(Node):
                 if not await self._record_connector(pod, transition["from"], False, "detach confirmed"):
                     raise RuntimeError(f"manager rejected {pod} detach observation")
 
-                self._feedback(goal_handle, "relocate", pod, index, len(pods))
+                phase = "relocate"
+                self._feedback(goal_handle, phase, pod, index, len(pods))
                 if self._inject("relocation", pod):
                     raise RuntimeError(f"injected relocation failure for {pod}")
                 target = self.catalog["morphologies"][transition["to"]]["pods"][pod]
@@ -174,7 +179,8 @@ class ReconfigurationExecutor(Node):
                 if pre_latch_reasons:
                     raise RuntimeError(f"{pod} docking evidence rejected: {','.join(pre_latch_reasons)}")
 
-                self._feedback(goal_handle, "latch", pod, index, len(pods))
+                phase = "latch"
+                self._feedback(goal_handle, phase, pod, index, len(pods))
                 if self._inject("latch", pod):
                     raise RuntimeError(f"injected latch failure for {pod}")
                 since = self.event_counter
@@ -190,7 +196,8 @@ class ReconfigurationExecutor(Node):
                 if not await self._record_connector(pod, transition["to"], True, "latch confirmed"):
                     raise RuntimeError(f"manager rejected {pod} latch observation")
 
-            self._feedback(goal_handle, "commit", "", len(pods), len(pods))
+            phase, active_pod = "commit", ""
+            self._feedback(goal_handle, phase, active_pod, len(pods), len(pods))
             if self._inject("manager_commit"):
                 raise RuntimeError("injected manager commit failure")
             response = await self._commit(
@@ -206,8 +213,10 @@ class ReconfigurationExecutor(Node):
             goal_handle.canceled()
             return result
         except RuntimeError as exc:
-            await self._report_failure(transition["id"], str(exc))
-            result.message = f"transition failed; topology not committed: {exc}"
+            detail = self._failure_detail(active_pod, phase, str(exc))
+            self.get_logger().error(detail)
+            await self._report_failure(transition["id"], detail)
+            result.message = f"transition failed; topology not committed: {detail}"
             goal_handle.abort()
             return result
         finally:
@@ -224,6 +233,20 @@ class ReconfigurationExecutor(Node):
         result.observed_energy = float(transition["energy"])
         goal_handle.succeed()
         return result
+
+    def _failure_detail(self, pod: str, phase: str, reason: str) -> str:
+        fields = [f"phase={phase}", f"pod={pod or 'none'}", f"reason={reason}"]
+        estimate = self.estimates.get(pod)
+        if estimate is not None:
+            fields.extend([
+                f"relative_pose=({estimate.pose.x:.4f},{estimate.pose.y:.4f},{estimate.pose.yaw:.4f})",
+                f"covariance=({estimate.variance_x:.6g},{estimate.variance_y:.6g},{estimate.variance_yaw:.6g})",
+                f"connector_visible={str(estimate.connector_visible).lower()}",
+                f"sources={','.join(estimate.sources)}",
+            ])
+        joint = self.joint_events.get(pod)
+        fields.append(f"latch_observation={joint[0] if joint else 'missing'}")
+        return "; ".join(fields)
 
     async def _set_drive_enabled(self, enabled: bool) -> bool:
         if not self.drive_client.wait_for_service(timeout_sec=2.0):
@@ -451,7 +474,8 @@ def main(args=None) -> None:
     try:
         executor.spin()
     finally:
-        node._stop_all()
+        if rclpy.ok():
+            node._stop_all()
         node.destroy_node()
         if rclpy.ok():
             rclpy.shutdown()

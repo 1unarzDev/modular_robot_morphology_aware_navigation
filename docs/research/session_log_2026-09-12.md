@@ -132,3 +132,32 @@ docker exec morphology_navigation_dev bash -lc \
   confirmatory status remains 0 of 432 terminal records.
 - Logical cameras, magnetic capture, and latching remain idealized simulation
   mechanisms.
+
+## Navigation safety, statistical framework, and RPP reruns
+
+- Added `READY` gates before planning and every segment. A reconfiguration that
+  leaves `RECOVERY_REQUIRED` now aborts immediately instead of being replanned.
+- Added executor failure context: phase, active pod, relative pose, covariance,
+  connector visibility, sensing sources, and latest latch observation.
+- Added fresh `/scan` and `/odom` requirements to mission readiness and distinct
+  classification for docking and unsafe-topology outcomes.
+- Qualified assembled REP-103 motion signs: positive/negative yaw and straight
+  travel all passed in `results/debug/motion_qualification4/result.json`.
+- Moved confirmatory compact/narrow path following from MPPI to regulated pure
+  pursuit. RPP reaches the transition site reliably in current engineering runs.
+- Rebuilt all nine Jazzy packages and passed their package smoke tests.
+- Ran two dirty-worktree engineering cases for combined-constraints layout 00.
+  Both `feasibility_coupled` and `route_first_adaptation` completed one
+  compact-to-narrow transition and returned `READY`, so they did not exercise
+  the unsafe-state branch. Both then failed immediately on the post-transition
+  traverse because regulated pure pursuit predicted a collision. Each record
+  correctly contains one reconfiguration attempt; rapid retries were traversal
+  controller retries, not repeated transition attempts. These are debug records.
+- Expanded the statistical plan with the layout-balanced estimand, layout as the
+  independent unit, sensitivity-model freeze, calibration coverage, and precise
+  evaluator-only clearance/localization definitions.
+
+Current blocker: synchronize Nav2's post-transition footprint and local costmap
+with the new morphology, clear stale attached-body obstacles if present, and
+prove that the narrow morphology can depart the transition site. Then inject a
+partial transition failure to directly qualify the new unsafe-state gate.

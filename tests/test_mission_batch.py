@@ -16,3 +16,12 @@ def test_configuration_hash_covers_files_and_exact_parameters(tmp_path):
 def test_execution_failure_is_not_hidden_by_failed_replan():
     message = "execution failed; replanning failed: fixed route cannot be adapted"
     assert classify_terminal(False, message, False) == "controller_failure"
+
+
+def test_reconfiguration_failure_and_unsafe_topology_have_distinct_labels():
+    assert classify_terminal(
+        False, "reconfiguration failed; docking evidence rejected", False
+    ) == "docking_failure"
+    assert classify_terminal(
+        False, "reconfiguration failed; observed topology requires recovery", False
+    ) == "unsafe_topology"

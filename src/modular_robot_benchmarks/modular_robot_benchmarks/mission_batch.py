@@ -24,14 +24,17 @@ def classify_terminal(success: bool, message: str, timed_out: bool) -> str:
     if timed_out:
         return "timeout"
     lowered = message.lower()
+    if ("recovery required" in lowered or "requires recovery" in lowered
+            or "unsafe topology" in lowered):
+        return "unsafe_topology"
+    if "reconfiguration" in lowered or "dock" in lowered or "transition" in lowered or "latch" in lowered:
+        return "docking_failure"
     if "execution failed" in lowered or "controller" in lowered:
         return "controller_failure"
     if "plan" in lowered or "route" in lowered or "path" in lowered:
         return "planning_failure"
     if "localization" in lowered or "transform" in lowered:
         return "localization_lost"
-    if "dock" in lowered or "transition" in lowered or "latch" in lowered:
-        return "docking_failure"
     if "cancel" in lowered:
         return "cancelled"
     return "controller_failure"
