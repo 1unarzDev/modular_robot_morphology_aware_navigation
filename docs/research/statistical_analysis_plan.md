@@ -22,11 +22,14 @@ Only `compact_diff` and `narrow_tandem` enter confirmatory experiments.
 
 ## Design and outcomes
 
-The frozen target has 12 held-out layouts in each of three families, three
-stochastic replicates, and all four methods: 432 terminal records. Methods are
-randomized within each layout/replicate block. World, sensing, friction, and
-fault seeds are deterministically derived as independent streams; the same four
-seeds are paired across methods. Pilot layouts and seeds are disjoint.
+The target design has 12 held-out layouts in each of three families, three
+stochastic replicates, and all four methods: 432 terminal records. Freeze the
+generated JSON design before the confirmatory run and report its SHA-256 hash.
+Methods are randomized within each layout/replicate block. World, sensing,
+friction, and fault seeds are deterministically derived as independent streams;
+the same four seeds are paired across methods. Pilot layouts and seeds are
+disjoint. Layout is the independent sampling unit; replicates estimate
+within-layout disturbance sensitivity and do not inflate the layout count.
 
 The primary outcome is mission completion. The secondary mission-level outcome
 is deadline-penalized time: failed trials receive 300 s. Successful-run time is
@@ -41,9 +44,32 @@ The two confirmatory contrasts are:
 
 Report absolute paired completion-rate differences with 95% confidence
 intervals. Bootstrap whole layouts within each family, retaining every method
-and replicate in a sampled cluster. Obtain two-sided paired randomization p
+and replicate in a sampled cluster. Repeatedly sampled layouts retain their
+multiplicity. Obtain two-sided paired randomization p
 values by sign-flipping layout-level mean differences. Apply Holm correction to
 the two p values. Report effect sizes and intervals regardless of significance.
+
+For the secondary outcome, report treatment-minus-control differences in
+deadline-penalized seconds with the same stratified layout bootstrap. Negative
+values favor the treatment. Do not assign confirmatory p values to secondary or
+family-level results. Report family-level effects as heterogeneity diagnostics,
+not independent confirmatory tests. Estimate transition Brier scores and
+reliability bins separately by method so a pooled score cannot hide method
+differences.
+
+## Sample-size gate
+
+The current 12-layout-per-family target is a resource-based starting point, not
+yet a justified sample size. After the disjoint pilot, estimate the control
+completion rate, plausible treatment effect, layout-level logit variance, and
+paired disturbance correlation. Run the prospective hierarchical simulation
+implemented by `morphology_study power` for both primary contrast scopes: 36
+layouts for the all-family contrast and 24 layouts for the two sensing families.
+Use alpha 0.025 as a conservative Holm planning threshold. Archive assumptions,
+seed, Monte Carlo standard error, and output JSON. Increase layouts if either
+contrast has inadequate power for the predeclared smallest effect of interest.
+Do not tune the effect threshold to the pilot result, and do not report
+retrospective observed power.
 
 ## Diagnostics and exclusions
 
@@ -61,3 +87,9 @@ plot prospective precision or power; do not report retrospective observed power.
 Raw terminal records are append-only JSON. Generated CSV, Markdown, and figures
 live in a separate derived directory. The synthetic `edge_observations.csv` is
 excluded from this pipeline.
+
+The analysis command must reject incomplete designs, changed trial
+specifications, mixed commit/configuration/design hashes, and unpaired
+disturbance seeds. Figures and tables are deterministic derivatives of accepted
+terminal records. Any rerun for a declared infrastructure failure receives a
+new audit entry; the original terminal record remains immutable.

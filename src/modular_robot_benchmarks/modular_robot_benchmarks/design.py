@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 import hashlib
 import json
+from pathlib import Path
 from random import Random
 from typing import Iterable
 
@@ -61,6 +62,39 @@ class StudyDesign:
     @property
     def design_hash(self) -> str:
         return hashlib.sha256(self.canonical_json().encode("utf-8")).hexdigest()
+
+    def write_frozen(self, path: str | Path) -> Path:
+        """Create an immutable design file, or accept an identical existing file."""
+        path = Path(path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        payload = json.dumps(
+            {"design_hash": self.design_hash, "design": asdict(self)},
+            sort_keys=True, indent=2,
+        ) + "\n"
+        try:
+            stream = path.open("x", encoding="utf-8")
+        except FileExistsError:
+            if path.read_text(encoding="utf-8") != payload:
+                raise FileExistsError(f"refusing to overwrite frozen design: {path}")
+            return path
+        with stream:
+            stream.write(payload)
+        return path
+
+    @classmethod
+    def read_frozen(cls, path: str | Path) -> "StudyDesign":
+        with Path(path).open(encoding="utf-8") as stream:
+            envelope = json.load(stream)
+        value = dict(envelope["design"])
+        value["methods"] = tuple(value["methods"])
+        value["families"] = tuple(value["families"])
+        value["trials"] = tuple(TrialSpec(**trial) for trial in value["trials"])
+        design = cls(**value)
+        if envelope.get("design_hash") != design.design_hash:
+            raise ValueError("frozen design hash does not match its contents")
+        if set(design.methods) != set(METHODS):
+            raise ValueError("frozen design has an unsupported method set")
+        return design
 
 
 def generate_design(

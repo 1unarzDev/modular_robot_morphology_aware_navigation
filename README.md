@@ -64,9 +64,11 @@ geometry and applied by the six simulated differential-drive pods.
 
 During reconfiguration, assembled motion is inhibited and pods move one at a
 time. The executor waits for Gazebo to confirm detachment, drives the free pod
-to its catalog pose using world-pose feedback, verifies the detachable joint
-after relatching, and commits the new morphology atomically. A failed or
-cancelled transition leaves the manager's morphology unchanged.
+from topology-anchored wheel odometry and visibility-limited connector-camera
+estimates, verifies the detachable joint after relatching, and commits the new
+morphology only when observed topology matches the target. A failed or
+cancelled transition enters `RECOVERY_REQUIRED`; assembled drive remains
+inhibited until the observed topology is reconciled.
 
 The hybrid planner searches `(x, y, heading, morphology)` and accounts for
 traversal time, energy, failure probability, unknown-space exposure, oriented
@@ -76,28 +78,52 @@ responsive global search while Nav2 retains its 0.05 m execution costmaps.
 
 ## Verified behavior
 
-- Host planner and control tests: `python3 -m pytest -q` (16 passing).
+- Host planner, safety, sensing, validation, and study tests:
+  `python3 -m pytest -q` (51 passing on 2026-09-11).
 - Container build: all nine ROS packages build with `colcon build`.
 - Container package smoke tests: all nine packages pass `colcon test`.
 - Gazebo exposes lidar, RGB-D, IMU, odometry, TF, six pod command topics, joint
   acknowledgements, and module world-pose feedback.
 - A positive Nav2 command moves the complete latched assembly through physical
   wheel forces from its pods.
-- `compact_to_ackermann` physically moved and relatched four pods, then changed
-  the authoritative morphology after all acknowledgements. The observed run
-  took 13.9 s and final pod positions were within about 2.4 cm of targets.
+- An earlier `compact_to_ackermann` engineering run physically moved and
+  relatched four pods. This morphology is now excluded from confirmatory study
+  claims because the assembled fixed-angle pod mechanics do not implement true
+  Ackermann steering.
 - A live SLAM-map plan through the 0.42 m doorway contained compact traversal,
   `compact_to_narrow`, and narrow traversal. It expanded 51,886 hybrid states.
 - A top-level `NavigateHybrid` traversal completed through Nav2 in 41.6 s.
 
 ## Research limitations
 
-The detachable joints and pod locomotion use Gazebo physics, but the magnetic
-connector geometry, contact-guided final insertion, battery dynamics, and spine
-actuation remain idealized. Ackermann and articulated behavior are expressed by
-planner constraints and morphology-specific MPPI models; the pods themselves
-are fixed-angle differential units after docking. The sample cost-observation
-CSV is synthetic scaffolding and must be replaced with logged randomized trials
-before reporting learned-model results. Full doorway-crossing success under
-online SLAM corrections remains an evaluation target rather than a verified
-result.
+The detachable joints and pod locomotion use Gazebo physics, but connector
+cameras, magnetic capture, contact-guided final insertion, battery dynamics,
+and spine actuation remain idealized. Ackermann, omni, crawler, articulated,
+and stacking entries are future concepts rather than study conditions. The
+sample cost-observation CSV is synthetic scaffolding and is excluded from the
+confirmatory pipeline. A sensor-driven `compact_to_narrow` transition now
+completes, while the reverse qualification still fails intermittently during a
+pod relocation, so no confirmatory mission results are claimed. Full
+doorway-crossing success under sensor-based localization and
+online SLAM corrections remains an evaluation gate.
+
+## Study commands
+
+The frozen confirmatory schedule contains 432 paired terminal trials. The
+analysis refuses incomplete or mixed-manifest data and writes CSV, Markdown,
+JSON, and dependency-free SVG figures.
+
+```bash
+morphology_study status \
+  --design studies/confirmatory/design.json \
+  --raw results/confirmatory/raw
+
+morphology_study analyze \
+  --design studies/confirmatory/design.json \
+  --raw results/confirmatory/raw \
+  --output results/confirmatory/derived
+```
+
+See [`docs/research/conference_roadmap.md`](docs/research/conference_roadmap.md)
+for the evidence gates and [`docs/research/statistical_analysis_plan.md`](docs/research/statistical_analysis_plan.md)
+for the estimands and inference procedure.

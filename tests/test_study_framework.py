@@ -2,8 +2,9 @@ from dataclasses import replace
 
 import pytest
 
-from modular_robot_benchmarks.analysis import analyze, validate_records
-from modular_robot_benchmarks.design import METHODS, generate_design
+from modular_robot_benchmarks.analysis import analyze, validate_records, write_artifacts
+from modular_robot_benchmarks.design import METHODS, StudyDesign, generate_design
+from modular_robot_benchmarks.power import PowerAssumptions, estimate_power
 from modular_robot_benchmarks.records import TrialManifest, TrialRecord, TrialStore
 
 
@@ -34,6 +35,19 @@ def test_confirmatory_design_is_balanced_paired_and_randomized():
     assert len(block) == 4 and {spec.method for spec in block} == set(METHODS)
     assert len({(s.world_seed, s.sensing_seed, s.friction_seed, s.fault_seed) for s in block}) == 1
     assert len({spec.method_order for spec in block}) == 4
+
+
+def test_frozen_design_round_trip_is_hash_checked_and_immutable(tmp_path):
+    design = generate_design(layouts_per_family=2, replicates=1)
+    path = design.write_frozen(tmp_path / "design.json")
+    assert StudyDesign.read_frozen(path) == design
+    design.write_frozen(path)
+    with pytest.raises(FileExistsError, match="overwrite"):
+        generate_design(layouts_per_family=3, replicates=1).write_frozen(path)
+    value = path.read_text().replace(design.design_hash, "0" * 64, 1)
+    path.write_text(value)
+    with pytest.raises(ValueError, match="hash"):
+        StudyDesign.read_frozen(path)
 
 
 def test_trial_store_is_append_only_and_resumable(tmp_path):
@@ -67,7 +81,28 @@ def test_analysis_retains_failures_and_computes_paired_contrasts():
     assert full["completion_rate"] == 1.0
     assert full["deadline_penalized_time_s"] == 42.0
     assert len(result["primary_contrasts"]) == 2
+    assert len(result["secondary_contrasts"]) == 2
+    assert result["primary_contrasts"][0]["layout_count"] == 6
     assert result["transition_brier_score"] is not None
+
+
+def test_analysis_writes_reviewable_tables_and_dependency_free_figures(tmp_path):
+    design = generate_design(layouts_per_family=2, replicates=2)
+    result = analyze(_records(design), design, bootstrap_draws=100, permutation_draws=200)
+    write_artifacts(result, tmp_path)
+    assert (tmp_path / "results.md").is_file()
+    assert (tmp_path / "secondary_contrasts.csv").is_file()
+    assert "<svg" in (tmp_path / "figures" / "completion.svg").read_text()
+    assert (tmp_path / "figures" / "primary_effects.svg").is_file()
+
+
+def test_prospective_power_simulation_is_deterministic_and_labeled():
+    assumptions = PowerAssumptions(8, 2, 0.5, 0.8, 0.5, 0.7)
+    first = estimate_power(assumptions, simulations=100, randomization_draws=199, seed=42)
+    second = estimate_power(assumptions, simulations=100, randomization_draws=199, seed=42)
+    assert first == second
+    assert first["purpose"] == "prospective_design_only"
+    assert 0 <= first["estimated_power"] <= 1
 
 
 def test_success_requires_safe_terminal_topology():
