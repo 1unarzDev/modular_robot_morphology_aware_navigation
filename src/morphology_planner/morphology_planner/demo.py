@@ -10,12 +10,15 @@ def _catalog_path() -> Path:
 
 
 def main() -> None:
-    grid = OccupancyGrid(40, 25, 0.1)
+    # Leave room for the 1.76 m narrow body and its transition sweep on both
+    # sides of the wall.  The opening admits narrow_tandem but not compact_diff.
+    grid = OccupancyGrid(55, 25, 0.1)
     for y in range(grid.height):
-        if not 11 <= y <= 14:
+        if not 10 <= y <= 16:
             grid.set_value(20, y, OCCUPIED)
-    planner = MorphologyAStar(load_catalog(_catalog_path()), grid, heading_bins=8)
-    plans = planner.plan_anytime(HybridState(7, 13, 0, "compact_diff"), (32, 13))
+    catalog = load_catalog(_catalog_path()).supported_experiment_subset()
+    planner = MorphologyAStar(catalog, grid, heading_bins=4)
+    plans = planner.plan_anytime(HybridState(7, 13, 0, "compact_diff"), (42, 13))
     plan = plans[-1]
     morphologies = [plan.states[0].morphology]
     for segment in plan.segments:
