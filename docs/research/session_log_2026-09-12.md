@@ -38,6 +38,16 @@
   site. The controller then stopped near the upper wall. This rejects command
   starvation as the main explanation and makes assembled path tracking the
   next diagnosis target.
+- Added the complete planned route, signed body and pod commands, odometry yaw,
+  and map-frame localization history to terminal records. A successful repeat
+  confirmed the planned route is a straight 45-pose line at `y=1.85`, while
+  Nav2 issued persistently positive yaw commands and the chassis curved toward
+  the upper wall. This localizes the defect to controller feedback/frame or
+  angular-sign behavior rather than hybrid-route geometry.
+- Staggered Nav2 startup three seconds behind localization. One subsequent
+  trace attempt still received no odometry/TF despite map server and AMCL
+  reaching active state; it is retained as a debug infrastructure failure and
+  shows that startup health must explicitly require fresh odometry and scan.
 
 ## Scope
 

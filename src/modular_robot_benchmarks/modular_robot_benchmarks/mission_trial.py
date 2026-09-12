@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from math import atan2
 import time
 
 import rclpy
@@ -45,6 +46,8 @@ class MissionObservation:
     planned_transition_sites: list[dict] = field(default_factory=list)
     odometry_history: list[dict[str, float]] = field(default_factory=list)
     command_history: list[dict[str, float]] = field(default_factory=list)
+    planned_route: list[dict[str, float]] = field(default_factory=list)
+    localization_history: list[dict[str, float]] = field(default_factory=list)
 
 
 class MissionObserver(Node):
@@ -62,11 +65,14 @@ class MissionObserver(Node):
         self.latest_odometry: Odometry | None = None
         self.odometry_history: list[dict[str, float]] = []
         self.command_history: list[dict[str, float]] = []
+        self.localization_history: list[dict[str, float]] = []
         self.sensing_revision = 0
         self.map_received = False
         self.topology_history: list[dict] = []
         self.execution_history: list[dict] = []
         self.pod_commands = {f"pod_{index}": 0.0 for index in range(6)}
+        self.pod_signed_commands = {f"pod_{index}": 0.0 for index in range(6)}
+        self.body_command = Twist()
         self.work_proxy_j = 0.0
         self._previous_clock: float | None = None
         self.tf_buffer = Buffer()
@@ -76,6 +82,7 @@ class MissionObserver(Node):
         self.create_subscription(MorphologyState, "morphology_state", self._on_state, qos)
         self.create_subscription(OccupancyGrid, "/map", self._on_map, qos)
         self.create_subscription(Odometry, "/odom", self._on_odometry, qos_profile_sensor_data)
+        self.create_subscription(Twist, "/cmd_vel", self._on_body_command, 10)
         self.create_subscription(
             RelativePoseEstimate, "relative_pose_estimate", self._on_pose, 50)
         for pod in self.pod_commands:
@@ -106,12 +113,25 @@ class MissionObserver(Node):
             self.odometry_history.append({
                 "time_s": current, "x": float(pose.position.x),
                 "y": float(pose.position.y), "linear_x": float(twist.linear.x),
-                "angular_z": float(twist.angular.z),
+                "yaw": _yaw(pose.orientation), "angular_z": float(twist.angular.z),
             })
             self.command_history.append({
                 "time_s": current,
-                **{pod: float(value) for pod, value in self.pod_commands.items()},
+                "body_linear_x": float(self.body_command.linear.x),
+                "body_angular_z": float(self.body_command.angular.z),
+                **{pod: float(value) for pod, value in self.pod_signed_commands.items()},
             })
+            try:
+                transform = self.tf_buffer.lookup_transform(
+                    "map", "core/base_link", rclpy.time.Time())
+                self.localization_history.append({
+                    "time_s": current,
+                    "x": float(transform.transform.translation.x),
+                    "y": float(transform.transform.translation.y),
+                    "yaw": _yaw(transform.transform.rotation),
+                })
+            except TransformException:
+                pass
             self._last_motion_sample = current
 
     def _on_map(self, _message: OccupancyGrid) -> None:
@@ -119,6 +139,9 @@ class MissionObserver(Node):
 
     def _on_odometry(self, message: Odometry) -> None:
         self.latest_odometry = message
+
+    def _on_body_command(self, message: Twist) -> None:
+        self.body_command = message
 
     def _on_state(self, message: MorphologyState) -> None:
         previous_topology = self.morphology.topology_revision if self.morphology else None
@@ -144,6 +167,7 @@ class MissionObserver(Node):
 
     def _on_command(self, pod: str, message: Twist) -> None:
         self.pod_commands[pod] = abs(message.linear.x)
+        self.pod_signed_commands[pod] = message.linear.x
 
     def navigation_ready(self) -> bool:
         if not (self.sim_time is not None and self.morphology is not None
@@ -164,6 +188,13 @@ def execution_state_name(value: int) -> str:
         MorphologyState.RECOVERY_REQUIRED: "RECOVERY_REQUIRED",
         MorphologyState.STOPPED: "STOPPED",
     }.get(value, f"UNKNOWN_{value}")
+
+
+def _yaw(quaternion) -> float:
+    return atan2(
+        2.0 * (quaternion.w * quaternion.z + quaternion.x * quaternion.y),
+        1.0 - 2.0 * (quaternion.y * quaternion.y + quaternion.z * quaternion.z),
+    )
 
 
 def execute_mission(
@@ -255,4 +286,10 @@ def _observation(node, status, completed, message, simulated, wall_start, attemp
          if navigation_result else []),
         node.odometry_history,
         node.command_history,
+        ([{"x": pose.pose.position.x, "y": pose.pose.position.y,
+           "orientation_z": pose.pose.orientation.z,
+           "orientation_w": pose.pose.orientation.w}
+          for pose in navigation_result.planned_route_poses]
+         if navigation_result else []),
+        node.localization_history,
     )

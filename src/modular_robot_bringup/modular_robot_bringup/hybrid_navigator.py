@@ -163,6 +163,17 @@ class HybridNavigator(Node):
             "|".join(signature_parts).encode()).hexdigest()
         result.planned_transition_ids = [segment.transition_id for segment in transitions]
         result.planned_transition_poses = [segment.execution_pose for segment in transitions]
+        route_poses = []
+        for plan in plans:
+            for segment in plan.segments:
+                if segment.kind != HybridSegment.TRAVERSE:
+                    continue
+                for pose in segment.path.poses:
+                    if (not route_poses or
+                            pose.pose.position.x != route_poses[-1].pose.position.x or
+                            pose.pose.position.y != route_poses[-1].pose.position.y):
+                        route_poses.append(pose)
+        result.planned_route_poses = route_poses
 
     def _current_pose(self):
         try:

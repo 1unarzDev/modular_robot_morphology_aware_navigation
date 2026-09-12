@@ -2,7 +2,7 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, TimerAction
 from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PythonExpression
@@ -51,10 +51,10 @@ def generate_launch_description():
                  "use_sim_time": True, "autostart": True,
                  "node_names": ["map_server", "amcl"],
              }]),
-        IncludeLaunchDescription(
+        TimerAction(period=3.0, actions=[IncludeLaunchDescription(
             PythonLaunchDescriptionSource(os.path.join(nav2, "launch", "navigation_launch.py")),
             launch_arguments={"params_file": os.path.join(bringup, "config", "nav2.yaml"), "use_sim_time": "true"}.items(),
-        ),
+        )]),
         Node(package="morphology_manager", executable="morphology_manager", output="screen", parameters=[{"use_sim_time": True}]),
         Node(package="modular_robot_bringup", executable="assembly_drive_adapter", output="screen", parameters=[{"use_sim_time": True}]),
         Node(package="tf2_ros", executable="static_transform_publisher", name="lidar_static_tf",

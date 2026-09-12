@@ -63,6 +63,13 @@ the chassis ended near `(1.98, 2.97)` rather than the intended transition at
 frame/kinematic consistency is not yet adequate. Resolve this before platform
 qualification or pilot collection.
 
+Planned-path telemetry confirms the requested route itself is straight: 45
+poses from `(0.65, 1.85)` to `(5.05, 1.85)`, all with zero yaw. The controller
+nevertheless sends persistently positive yaw commands as the physical chassis
+moves toward increasing `y`. The next controlled test must compare odometry yaw
+and AMCL map-frame yaw under a direct positive/negative angular command, then
+correct the component whose sign convention disagrees with ROS REP-103.
+
 ## Phase 1 — platform qualification
 
 Continue repeated runs after the first revised round trip passed in 70.118 s
