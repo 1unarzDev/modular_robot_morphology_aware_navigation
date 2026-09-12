@@ -58,6 +58,7 @@ class HybridNavigator(Node):
         planning_latency = 0.0
         expanded_states = 0
         selected_plans = []
+        execution_failures = 0
         for attempt in range(int(self.get_parameter("max_replans").value) + 1):
             if self.morphology is None:
                 result.message = "no morphology state received"
@@ -76,7 +77,10 @@ class HybridNavigator(Node):
                     and "revision changed" in plan_result.message):
                 continue
             if plan_result is None or not plan_result.success:
-                result.message = plan_result.message if plan_result else "planner unavailable"
+                planning_message = plan_result.message if plan_result else "planner unavailable"
+                result.message = (
+                    f"execution failed; replanning failed: {planning_message}"
+                    if execution_failures else planning_message)
                 self._set_plan_metrics(
                     result, selected_plans, planning_latency, expanded_states)
                 goal_handle.abort()
@@ -126,6 +130,7 @@ class HybridNavigator(Node):
                 goal_handle.succeed()
                 return result
             self.get_logger().warning(f"execution failed; replanning attempt {attempt + 1}")
+            execution_failures += 1
         result.message = "execution failed after replanning limit"
         result.observed_time = time.monotonic() - started
         result.reconfiguration_count = reconfigurations

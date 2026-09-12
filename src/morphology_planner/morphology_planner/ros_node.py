@@ -48,11 +48,11 @@ class PlannerServer(Node):
         self._sensing_revision = 0
         self._sensing_signatures: dict[str, tuple] = {}
         self._sensing: dict[str, PodSensingState] = {}
-        self._map_sub = self.create_subscription(
-            OccupancyGridMsg, "/map", self._on_map, 1
-        )
         qos = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL,
                          reliability=ReliabilityPolicy.RELIABLE)
+        self._map_sub = self.create_subscription(
+            OccupancyGridMsg, "/map", self._on_map, qos
+        )
         self.create_subscription(
             MorphologyState, "morphology_state", self._on_morphology, qos)
         self.create_subscription(

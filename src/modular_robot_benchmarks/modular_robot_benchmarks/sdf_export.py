@@ -13,6 +13,27 @@ from .design import CONFIRMATORY_FAMILIES
 from .scenarios import FAMILIES, make_scenario
 
 
+def export_occupancy_map(grid, output_yaml: Path) -> tuple[Path, Path]:
+    """Export a deterministic Nav2 map; image rows use map-server y ordering."""
+    output_yaml.parent.mkdir(parents=True, exist_ok=True)
+    image_path = output_yaml.with_suffix(".pgm")
+    pixels = bytearray()
+    for y in reversed(range(grid.height)):
+        for x in range(grid.width):
+            value = grid.value(x, y)
+            pixels.append(0 if value >= OCCUPIED else (205 if value < 0 else 254))
+    image_path.write_bytes(
+        f"P5\n{grid.width} {grid.height}\n255\n".encode("ascii") + pixels)
+    output_yaml.write_text(
+        f"image: {image_path.name}\n"
+        f"mode: trinary\nresolution: {grid.resolution}\n"
+        f"origin: [{grid.origin_x}, {grid.origin_y}, 0.0]\n"
+        "negate: 0\noccupied_thresh: 0.65\nfree_thresh: 0.196\n",
+        encoding="utf-8",
+    )
+    return output_yaml, image_path
+
+
 def export_sdf(family: str, seed: int, output: Path) -> None:
     scenario = make_scenario(family, seed)
     sdf = Element("sdf", version="1.10")

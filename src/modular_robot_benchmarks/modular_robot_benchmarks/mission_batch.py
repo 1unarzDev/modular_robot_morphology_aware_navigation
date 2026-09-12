@@ -15,7 +15,26 @@ import time
 from .confirmatory_scenarios import make_confirmatory_scenario
 from .design import StudyDesign
 from .records import TrialManifest, TrialRecord, TrialStore
-from .sdf_export import export_confirmatory_sdf
+from .sdf_export import export_confirmatory_sdf, export_occupancy_map
+
+
+def classify_terminal(success: bool, message: str, timed_out: bool) -> str:
+    if success:
+        return "completed"
+    if timed_out:
+        return "timeout"
+    lowered = message.lower()
+    if "execution failed" in lowered or "controller" in lowered:
+        return "controller_failure"
+    if "plan" in lowered or "route" in lowered or "path" in lowered:
+        return "planning_failure"
+    if "localization" in lowered or "transform" in lowered:
+        return "localization_lost"
+    if "dock" in lowered or "transition" in lowered or "latch" in lowered:
+        return "docking_failure"
+    if "cancel" in lowered:
+        return "cancelled"
+    return "controller_failure"
 
 
 def configuration_hash(paths: list[Path], parameters: dict) -> str:
@@ -87,6 +106,9 @@ def run_batch(
         world_path, scenario_manifest = export_confirmatory_sdf(
             spec.family, layout_index, spec.world_seed,
             trial_artifacts / "world.sdf", catalog_path)
+        map_yaml, map_image = export_occupancy_map(
+            scenario.grid, trial_artifacts / "map.yaml")
+        start_x, start_y = scenario.grid.cell_center(*scenario.start)
         parameters = {
             "deadline_s": 300.0,
             "wall_watchdog_s": wall_watchdog_s,
@@ -98,8 +120,11 @@ def run_batch(
             catalog_path,
             root / "src/modular_robot_bringup/config/nav2.yaml",
             root / "src/modular_robot_bringup/config/slam.yaml",
+            root / "src/modular_robot_bringup/config/localization.yaml",
             world_path,
             scenario_manifest,
+            map_yaml,
+            map_image,
         ]
         manifest = TrialManifest(
             revision, configuration_hash(config_paths, parameters), design.design_hash,
@@ -113,7 +138,8 @@ def run_batch(
         launch_log = (trial_artifacts / "launch.log").open("w", encoding="utf-8")
         process = subprocess.Popen(
             ["ros2", "launch", "modular_robot_bringup", "demo.launch.py",
-             f"world:={world_path.resolve()}"],
+             f"world:={world_path.resolve()}", f"map:={map_yaml.resolve()}",
+             f"initial_x:={start_x}", f"initial_y:={start_y}"],
             cwd=root, stdout=launch_log, stderr=subprocess.STDOUT,
             text=True, start_new_session=True,
         )

@@ -18,6 +18,8 @@ from rclpy.qos import (
 from rosgraph_msgs.msg import Clock
 from tf2_ros import Buffer, TransformException, TransformListener
 
+from .mission_batch import classify_terminal
+
 
 @dataclass
 class MissionObservation:
@@ -65,7 +67,7 @@ class MissionObserver(Node):
         self.create_subscription(
             Clock, "/clock", self._on_clock, qos_profile_sensor_data)
         self.create_subscription(MorphologyState, "morphology_state", self._on_state, qos)
-        self.create_subscription(OccupancyGrid, "/map", self._on_map, 1)
+        self.create_subscription(OccupancyGrid, "/map", self._on_map, qos)
         self.create_subscription(
             RelativePoseEstimate, "relative_pose_estimate", self._on_pose, 50)
         for pod in self.pod_commands:
@@ -136,23 +138,6 @@ def execution_state_name(value: int) -> str:
         MorphologyState.RECOVERY_REQUIRED: "RECOVERY_REQUIRED",
         MorphologyState.STOPPED: "STOPPED",
     }.get(value, f"UNKNOWN_{value}")
-
-
-def classify_terminal(success: bool, message: str, timed_out: bool) -> str:
-    if success:
-        return "completed"
-    if timed_out:
-        return "timeout"
-    lowered = message.lower()
-    if "plan" in lowered or "route" in lowered or "path" in lowered:
-        return "planning_failure"
-    if "localization" in lowered or "transform" in lowered:
-        return "localization_lost"
-    if "dock" in lowered or "transition" in lowered or "latch" in lowered:
-        return "docking_failure"
-    if "cancel" in lowered:
-        return "cancelled"
-    return "controller_failure"
 
 
 def execute_mission(

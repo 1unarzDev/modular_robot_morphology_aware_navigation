@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from modular_robot_benchmarks.mission_batch import configuration_hash
+from modular_robot_benchmarks.mission_batch import classify_terminal, configuration_hash
 
 
 def test_configuration_hash_covers_files_and_exact_parameters(tmp_path):
@@ -11,3 +11,8 @@ def test_configuration_hash_covers_files_and_exact_parameters(tmp_path):
     assert baseline != configuration_hash([first, second], {"deadline": 301})
     second.write_text("changed")
     assert baseline != configuration_hash([first, second], {"deadline": 300})
+
+
+def test_execution_failure_is_not_hidden_by_failed_replan():
+    message = "execution failed; replanning failed: fixed route cannot be adapted"
+    assert classify_terminal(False, message, False) == "controller_failure"

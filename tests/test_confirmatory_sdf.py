@@ -2,7 +2,8 @@ import json
 from pathlib import Path
 from xml.etree.ElementTree import parse
 
-from modular_robot_benchmarks.sdf_export import export_confirmatory_sdf
+from modular_robot_benchmarks.confirmatory_scenarios import make_confirmatory_scenario
+from modular_robot_benchmarks.sdf_export import export_confirmatory_sdf, export_occupancy_map
 
 
 CATALOG = Path(__file__).parents[1] / "src/modular_robot_description/config/morphologies.yaml"
@@ -24,3 +25,15 @@ def test_confirmatory_export_contains_robot_physics_constraints_and_manifest(tmp
     manifest = json.loads(manifest_path.read_text())
     assert manifest["layout_id"] == "combined_constraints-01"
     assert manifest["world_seed"] == 8
+
+
+def test_occupancy_map_matches_scenario_grid_and_y_axis(tmp_path):
+    scenario = make_confirmatory_scenario("combined_constraints", 1, 42)
+    yaml_path, image_path = export_occupancy_map(scenario.grid, tmp_path / "map.yaml")
+    header, dimensions, maximum, pixels = image_path.read_bytes().split(b"\n", 3)
+    assert header == b"P5"
+    assert dimensions == f"{scenario.grid.width} {scenario.grid.height}".encode()
+    assert maximum == b"255"
+    assert set(pixels[:scenario.grid.width]) == {0}
+    assert set(pixels[-scenario.grid.width:]) == {0}
+    assert "image: map.pgm" in yaml_path.read_text()

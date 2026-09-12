@@ -47,6 +47,15 @@ therefore required for the confirmatory navigation task. Online exploration may
 be evaluated separately because it changes the estimand and can obscure the
 route/morphology ablation.
 
+The prior-map implementation now starts map server and AMCL successfully and
+delivers the latched map to the planner. The latest preserved debug run found a
+hybrid plan (107 expanded states, 1.234 s cumulative planning latency) and began
+execution toward a compact-to-narrow transition at `(2.05, 1.85)`. Nav2 stopped
+after repeated collision-monitor approach limiting and reported no progress.
+This is the current end-to-end blocker. It is debug evidence only; instrumented
+pose/clearance traces are needed to determine whether the robot, its attached
+pods, or doorway geometry triggers the monitor.
+
 ## Phase 1 — platform qualification
 
 Continue repeated runs after the first revised round trip passed in 70.118 s

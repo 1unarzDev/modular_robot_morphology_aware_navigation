@@ -18,6 +18,19 @@
 - Next experimental fix: provide generated prior occupancy maps while retaining
   sensor-based localization, then add evaluator-only truth metrics and a
   sensor-derived location-dependent 3D/observability context.
+- Implemented deterministic PGM/YAML prior-map export and AMCL launch with the
+  scenario's frozen initial pose. The map is identical across paired methods;
+  localization still consumes lidar and odometry rather than simulator pose.
+- Preserved three further debug trials. The first exposed ROS parameter-parser
+  rejection of aliases in the shared Nav2 YAML; localization now has a separate
+  anchor-free parameter file. The second exposed volatile subscribers missing
+  the latched map; planner and observer now request transient-local reliable
+  QoS. The third planned and began execution: 107 expanded states, 1.234 s
+  cumulative planning time, a compact-to-narrow site at approximately
+  `(2.05, 1.85)`, and 107.6 J of the declared rolling-work proxy. Nav2 then
+  reported no progress after repeated collision-monitor approach limiting.
+  A subsequent fixed-route replan failure previously obscured that controller
+  failure; terminal classification now retains the initiating execution fault.
 
 ## Scope
 
