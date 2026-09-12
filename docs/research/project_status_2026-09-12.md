@@ -288,7 +288,8 @@ core translation matches the final pod command rather than the net array wrench.
 
 The articulated prototype now retains one controller over all twelve uniquely
 named wheel joints through both attached and detached states. Its isolated
-compact qualification provides signed yaw and uncoupled straight motion. The
-existing post-transition qualification remains the admission gate; the
-correction is not fully qualified until sensor-driven compact-to-narrow and
-reverse transitions pass with encoder and connector observations intact.
+compact qualification provides signed yaw and uncoupled straight motion. One
+sensor-driven compact-to-narrow transition also completed and passed its narrow
+motion gate with encoder and connector observations intact. The run later
+failed path acquisition after qualification motions left the robot near a
+colliding start state; reverse transition and repeated round trips remain open.

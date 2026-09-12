@@ -51,12 +51,7 @@ public:
       {
         const auto childName = child->Get<std::string>();
         this->pending.push_back({"attach", childName, std::nullopt});
-        const auto separator = childName.rfind("::");
-        const auto prefix = separator == std::string::npos ? std::string{} :
-          childName.substr(0, separator);
-        const auto previous = prefix.rfind("::");
-        const auto modelName = previous == std::string::npos ? prefix :
-          prefix.substr(previous + 2);
+        const auto modelName = ModuleName(childName);
         this->trackedLinks.push_back({modelName, childName});
         this->childLinks.emplace(modelName, childName);
         child = child->GetNextElement("initial_child");
@@ -112,6 +107,15 @@ public:
   }
 
 private:
+  static std::string ModuleName(const std::string &_childName)
+  {
+    const auto separator = _childName.rfind("::");
+    const auto prefix = separator == std::string::npos ? std::string{} :
+      _childName.substr(0, separator);
+    const auto previous = prefix.rfind("::");
+    return previous == std::string::npos ? prefix : prefix.substr(previous + 2);
+  }
+
   void OnCommand(const gz::msgs::StringMsg &_message)
   {
     std::vector<std::string> fields;
@@ -187,7 +191,7 @@ private:
     const auto joint = _ecm.CreateEntity();
     _ecm.CreateComponent(joint, gz::sim::components::DetachableJoint({parent, child, "fixed"}));
     this->joints.emplace(_childName, joint);
-    this->PublishState("attached|" + _childName);
+    this->PublishState("attached|" + ModuleName(_childName));
   }
 
   void Seat(const std::string &_childName,
@@ -214,6 +218,15 @@ private:
     const auto modelEntity = ImmediateModel(child, _ecm);
     if (modelEntity == gz::sim::kNullEntity)
       return;
+    if (modelEntity != gz::sim::topLevelModel(child, _ecm))
+    {
+      // Gazebo cannot pose-command nested models. The executor has already
+      // driven the pod into the measured connector capture tolerance, so keep
+      // that physical pose and create the latch on the following update.
+      std::lock_guard<std::mutex> guard(this->mutex);
+      this->pending.push_back({"attach", _childName, std::nullopt});
+      return;
+    }
     gz::sim::Model(modelEntity).SetWorldPoseCmd(_ecm, parentPose * seatedRelative);
     // Allow the physics system one update to apply the seating pose before the
     // detachable fixed joint captures the transform.
@@ -228,7 +241,7 @@ private:
       return;
     _ecm.RequestRemoveEntity(found->second);
     this->joints.erase(found);
-    this->PublishState("detached|" + _childName);
+    this->PublishState("detached|" + ModuleName(_childName));
   }
 
   void PublishState(const std::string &_state)

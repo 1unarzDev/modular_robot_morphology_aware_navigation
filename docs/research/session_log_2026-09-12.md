@@ -360,3 +360,21 @@ All artifacts in this section are engineering-only debug evidence.
 - A detached pod moved independently in an isolated manual check. This is a
   useful architecture check, but it is not yet a recorded round-trip or proof
   that nested-model seating and logical-camera identification work end to end.
+- Fixed the nested topology-state payload to publish the module identifier
+  (`pod_0`) rather than its full scoped link path. The first clean mission then
+  completed all six physical relocations, committed `narrow_tandem`, retained
+  fused fiducial and wheel-encoder observations for every pod, and passed the
+  post-transition motion gate. Final pod position errors were under 8 mm and
+  yaw errors were within the 3-degree latch envelope.
+- The same engineering mission did not complete: after the qualification
+  motions, Nav2 oscillated in yaw, drifted back toward the west boundary, and a
+  hybrid replan correctly rejected the resulting start state as colliding. The
+  terminal record is `results/debug/articulated_transition_isolated_raw` with
+  130.344 simulated seconds, one successful reconfiguration, and `READY`
+  topology. This shifts the active diagnosis from wheel ownership to narrow
+  post-transition path acquisition and qualification-site clearance.
+- Gazebo rejects world-pose commands for nested models. Removed that unsupported
+  snap for the articulated representation: a fixed latch now captures the
+  physically reached pose on the next update. The executor's sensor-derived
+  capture gate remains the precondition. Legacy top-level pods retain explicit
+  seating behavior.
