@@ -59,8 +59,12 @@ After rebuilding, two combined-constraints engineering reruns each completed one
 compact-to-narrow transition and returned `READY`. Both then failed immediately
 when regulated pure pursuit predicted a collision on the post-transition
 traverse. The records contain one reconfiguration attempt; the remaining rapid
-retries are controller retries. Because neither transition failed, a deliberate
-partial-failure injection is still needed to qualify the unsafe-state branch.
+retries are controller retries. A later centered-door run produced a natural pod-0 relocation timeout and
+directly qualified the unsafe-state branch: one transition attempt, structured
+pod/pose/covariance/visibility/latch diagnostics, terminal
+`RECOVERY_REQUIRED`, and no retry. The active mechanical blocker is repeatable
+final-yaw convergence during pod relocation; revised arc waypoints await a valid
+lifecycle-active rerun. Post-transition narrow departure also remains unproven.
 
 ## Phase 1 — platform qualification
 

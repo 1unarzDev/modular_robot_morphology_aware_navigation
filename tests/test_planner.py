@@ -17,7 +17,7 @@ CATALOG = Path(__file__).parents[1] / "src/modular_robot_description/config/morp
 def doorway_grid():
     grid = OccupancyGrid(40, 25, 0.1)
     for y in range(grid.height):
-        if not 11 <= y <= 15:
+        if not 10 <= y <= 16:
             grid.set_value(20, y, OCCUPIED)
     return grid
 

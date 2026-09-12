@@ -184,3 +184,39 @@ Current inference: the post-transition failure is caused by local costmap
 content or discretized projected footprint collision, not a stale compact
 footprint. Preserve collision checking until the lethal cells and projected arc
 are recorded and explained.
+
+## In-process costmap evidence and benchmark clearance correction
+
+- Added `controller_diagnostics` to immutable trial records. It captures the
+  final local costmap class counts, up to 512 nearest high-cost cells, the robot
+  pose, and RPP collision arc when published.
+- Corrected the observer from unused `/local_costmap/costmap_raw`
+  (`nav2_msgs/Costmap`, no publisher in this stack) to Nav2's lazily published
+  `/local_costmap/costmap` (`nav_msgs/OccupancyGrid`) and enabled full costmap
+  publication.
+- The captured grid proved that the old 0.50 m doorway left only 0.05 m per side
+  around the padded narrow footprint. A few degrees of residual yaw consumed
+  that margin. An initial 0.60 m revision was off-center because it used an even
+  cell count. The final generator uses a centered seven-cell (0.70 m) opening.
+- Added a common 0.07-0.08 m operational safety envelope to the physical robot
+  bounds. Compact is 0.72 m wide and therefore strictly rejected; narrow is
+  0.54 m wide and retains 0.08 m per side. Updated planner fixture tests prove
+  compact-only failure and hybrid reconfiguration.
+- Tightened narrow RPP alignment to 0.01 rad and raised its angular acceleration
+  limit to overcome low-speed contact stiction. This still needs a successful
+  post-transition departure run.
+- Fixed executor diagnostics to use the estimator's `visible` field. Before the
+  fix, the formatter itself threw and could leave `TRANSITIONING`; afterward, a
+  real pod-0 relocation timeout produced a structured failure and correctly
+  entered `RECOVERY_REQUIRED`.
+- Full-stack evidence in `results/debug/pilot_raw_centered_door2` verifies one
+  reconfiguration attempt, terminal `unsafe_topology`, and no retry. Failure:
+  pod 0, relocation waypoint 3/3, pose `(0.7257, 0.1234, -0.9516)`, visible
+  fiducial/odometry estimate, detached latch observation.
+- Removed redundant +/-90-degree terminal waypoint headings and increased the
+  per-waypoint relocation timeout to 45 s with pod angular limit 0.9 rad/s. The
+  next attempted run was an infrastructure failure because Nav2 lifecycle
+  activation timed out; it yielded no mechanical evidence.
+- Added controller lifecycle `ACTIVE` to runner readiness. Readiness timeouts are
+  now labeled `infrastructure_failure`, and partial transitions increment the
+  reconfiguration-failure count.

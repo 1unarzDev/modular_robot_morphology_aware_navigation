@@ -84,7 +84,10 @@ def make_confirmatory_scenario(
     _border(grid)
     wall_x = round(3.0 / resolution) + rng.randrange(-1, 2)
     door_center = round(1.75 / resolution) + rng.randrange(-1, 2)
-    door_cells = max(5, round(0.5 / resolution))
+    # Use an odd cell count so the opening is centered on the route cell. The
+    # compact 0.70 m safety footprint is rejected at wall contact, while the
+    # narrow 0.52 m safety footprint retains 0.09 m clearance per side.
+    door_cells = max(7, round(0.7 / resolution))
     door_low = door_center - door_cells // 2
     for y in range(1, grid.height - 1):
         if not door_low <= y < door_low + door_cells:

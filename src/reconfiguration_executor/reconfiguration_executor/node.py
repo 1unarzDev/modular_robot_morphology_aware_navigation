@@ -34,12 +34,12 @@ class ReconfigurationExecutor(Node):
         )
         self.declare_parameter("catalog", default_catalog)
         self.declare_parameter("state_timeout", 3.0)
-        self.declare_parameter("relocation_timeout", 30.0)
+        self.declare_parameter("relocation_timeout", 45.0)
         self.declare_parameter("control_rate", 30.0)
         self.declare_parameter("position_tolerance", 0.025)
         self.declare_parameter("yaw_tolerance", 0.08)
         self.declare_parameter("max_pod_linear", 0.22)
-        self.declare_parameter("max_pod_angular", 0.65)
+        self.declare_parameter("max_pod_angular", 0.9)
         self.declare_parameter("post_latch_settle_timeout", 1.5)
         self.declare_parameter("docking_stable_samples", 3)
         self.declare_parameter("failure_injection", "")
@@ -241,7 +241,7 @@ class ReconfigurationExecutor(Node):
             fields.extend([
                 f"relative_pose=({estimate.pose.x:.4f},{estimate.pose.y:.4f},{estimate.pose.yaw:.4f})",
                 f"covariance=({estimate.variance_x:.6g},{estimate.variance_y:.6g},{estimate.variance_yaw:.6g})",
-                f"connector_visible={str(estimate.connector_visible).lower()}",
+                f"connector_visible={str(estimate.visible).lower()}",
                 f"sources={','.join(estimate.sources)}",
             ])
         joint = self.joint_events.get(pod)

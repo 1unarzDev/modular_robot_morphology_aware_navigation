@@ -43,7 +43,8 @@ morphologies:
   compact_diff:
     experiment_support: simulated
     locomotion_mode: differential
-    footprint: [[-0.33, -0.28], [0.33, -0.28], [0.33, 0.28], [-0.33, 0.28]]
+    # Physical envelope plus 0.07-0.08 m operational clearance per side.
+    footprint: [[-0.40, -0.36], [0.40, -0.36], [0.40, 0.36], [-0.40, 0.36]]
     height: 0.30
     center_of_mass: [0.0, 0.0, 0.13]
     limits: {linear: 0.9, angular: 1.6, acceleration: 1.2}
@@ -93,7 +94,8 @@ morphologies:
     locomotion_mode: differential
     # A long, staggered two-track arrangement. Pods remain on the ground and
     # clear the 0.20 m-wide core; the footprint includes their wheel envelopes.
-    footprint: [[-0.81, -0.19], [0.81, -0.19], [0.81, 0.19], [-0.81, 0.19]]
+    # Physical envelope plus 0.07-0.08 m operational clearance per side.
+    footprint: [[-0.88, -0.27], [0.88, -0.27], [0.88, 0.27], [-0.88, 0.27]]
     height: 0.30
     center_of_mass: [0.0, 0.0, 0.13]
     limits: {linear: 0.65, angular: 0.75, acceleration: 0.55}
@@ -152,12 +154,12 @@ transitions:
     swept_radius: 0.86
     moved_pods: [pod_0, pod_2, pod_1, pod_3, pod_4, pod_5]
     pod_waypoints:
-      pod_0: [[0.71, 0.18, 0.0], [0.71, 0.10, -1.5708]]
-      pod_2: [[-0.71, 0.18, 0.0], [-0.71, 0.10, -1.5708]]
-      pod_1: [[0.71, -0.18, 0.0], [0.71, -0.10, 1.5708]]
-      pod_3: [[-0.71, -0.18, 0.0], [-0.71, -0.10, 1.5708]]
-      pod_4: [[0.35, 0.18, 0.0], [0.35, 0.10, -1.5708]]
-      pod_5: [[-0.35, -0.18, 0.0], [-0.35, -0.10, 1.5708]]
+      pod_0: [[0.71, 0.18, 0.0], [0.71, 0.10, 0.0]]
+      pod_2: [[-0.71, 0.18, 0.0], [-0.71, 0.10, 0.0]]
+      pod_1: [[0.71, -0.18, 0.0], [0.71, -0.10, 0.0]]
+      pod_3: [[-0.71, -0.18, 0.0], [-0.71, -0.10, 0.0]]
+      pod_4: [[0.35, 0.18, 0.0], [0.35, 0.10, 0.0]]
+      pod_5: [[-0.35, -0.18, 0.0], [-0.35, -0.10, 0.0]]
   - id: narrow_to_compact
     from: narrow_tandem
     to: compact_diff
@@ -167,12 +169,12 @@ transitions:
     swept_radius: 0.86
     moved_pods: [pod_4, pod_5, pod_0, pod_2, pod_1, pod_3]
     pod_waypoints:
-      pod_4: [[0.35, 0.18, 1.5708], [0.35, 0.18, 0.0]]
-      pod_5: [[-0.35, -0.18, -1.5708], [-0.35, -0.18, 0.0]]
-      pod_0: [[0.71, 0.18, 1.5708], [0.71, 0.18, 0.0]]
-      pod_2: [[-0.71, 0.18, 1.5708], [-0.71, 0.18, 0.0]]
-      pod_1: [[0.71, -0.18, -1.5708], [0.71, -0.18, 0.0]]
-      pod_3: [[-0.71, -0.18, -1.5708], [-0.71, -0.18, 0.0]]
+      pod_4: [[0.35, 0.18, 0.0]]
+      pod_5: [[-0.35, -0.18, 0.0]]
+      pod_0: [[0.71, 0.18, 0.0]]
+      pod_2: [[-0.71, 0.18, 0.0]]
+      pod_1: [[0.71, -0.18, 0.0]]
+      pod_3: [[-0.71, -0.18, 0.0]]
   - {id: compact_to_long, from: compact_diff, to: long_crawler, time: 31.0, energy: 175.0, failure_probability: 0.06, swept_radius: 0.76, moved_pods: [pod_0, pod_1, pod_2, pod_3, pod_4, pod_5]}
   - {id: long_to_compact, from: long_crawler, to: compact_diff, time: 31.0, energy: 175.0, failure_probability: 0.06, swept_radius: 0.76, moved_pods: [pod_5, pod_4, pod_3, pod_2, pod_1, pod_0]}
   - {id: compact_to_articulated, from: compact_diff, to: articulated, time: 20.0, energy: 118.0, failure_probability: 0.04, swept_radius: 0.56, moved_pods: [pod_0, pod_1, pod_2, pod_3, pod_4, pod_5]}

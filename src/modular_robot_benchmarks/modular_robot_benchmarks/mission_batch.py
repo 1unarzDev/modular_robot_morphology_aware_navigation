@@ -176,6 +176,7 @@ def run_batch(
             command_history=observation.command_history,
             planned_route=observation.planned_route,
             localization_history=observation.localization_history,
+            controller_diagnostics=observation.controller_diagnostics,
             topology_history=observation.topology_history,
             execution_state_history=observation.execution_state_history,
             final_execution_state=observation.final_execution_state,

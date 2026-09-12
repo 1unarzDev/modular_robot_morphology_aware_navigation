@@ -49,6 +49,7 @@ class TrialRecord:
     command_history: list[dict[str, float]] = field(default_factory=list)
     planned_route: list[dict[str, float]] = field(default_factory=list)
     localization_history: list[dict[str, float]] = field(default_factory=list)
+    controller_diagnostics: dict[str, Any] = field(default_factory=dict)
     predicted_transition_probabilities: list[float] = field(default_factory=list)
     observed_transition_outcomes: list[int] = field(default_factory=list)
     planned_route_signature: str = ""

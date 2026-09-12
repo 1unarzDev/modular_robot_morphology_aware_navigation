@@ -1,15 +1,16 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from math import atan2
+from math import atan2, cos, sin
 import time
 
 import rclpy
 from geometry_msgs.msg import PoseStamped, Twist
+from lifecycle_msgs.msg import State
+from lifecycle_msgs.srv import GetState
 from modular_robot_msgs.action import NavigateHybrid
 from modular_robot_msgs.msg import MorphologyState, RelativePoseEstimate
-from nav_msgs.msg import OccupancyGrid
-from nav_msgs.msg import Odometry
+from nav_msgs.msg import OccupancyGrid, Odometry, Path
 from sensor_msgs.msg import LaserScan
 from rclpy.action import ActionClient
 from rclpy.duration import Duration
@@ -49,6 +50,7 @@ class MissionObservation:
     command_history: list[dict[str, float]] = field(default_factory=list)
     planned_route: list[dict[str, float]] = field(default_factory=list)
     localization_history: list[dict[str, float]] = field(default_factory=list)
+    controller_diagnostics: dict = field(default_factory=dict)
 
 
 class MissionObserver(Node):
@@ -71,6 +73,10 @@ class MissionObserver(Node):
         self.localization_history: list[dict[str, float]] = []
         self.sensing_revision = 0
         self.map_received = False
+        self.controller_active = False
+        self._controller_state_future = None
+        self.latest_local_costmap: OccupancyGrid | None = None
+        self.latest_collision_arc: Path | None = None
         self.topology_history: list[dict] = []
         self.execution_history: list[dict] = []
         self.pod_commands = {f"pod_{index}": 0.0 for index in range(6)}
@@ -84,6 +90,11 @@ class MissionObserver(Node):
             Clock, "/clock", self._on_clock, qos_profile_sensor_data)
         self.create_subscription(MorphologyState, "morphology_state", self._on_state, qos)
         self.create_subscription(OccupancyGrid, "/map", self._on_map, qos)
+        self.create_subscription(
+            OccupancyGrid, "/local_costmap/costmap",
+            self._on_local_costmap, 10)
+        self.create_subscription(
+            Path, "/lookahead_arc", self._on_collision_arc, 10)
         self.create_subscription(Odometry, "/odom", self._on_odometry, qos_profile_sensor_data)
         self.create_subscription(LaserScan, "/scan", self._on_scan, qos_profile_sensor_data)
         self.create_subscription(Twist, "/cmd_vel", self._on_body_command, 10)
@@ -93,6 +104,27 @@ class MissionObserver(Node):
             self.create_subscription(
                 Twist, f"/model/{pod}/cmd_vel",
                 lambda message, pod=pod: self._on_command(pod, message), 10)
+        self.controller_state_client = self.create_client(
+            GetState, "/controller_server/get_state")
+        self.create_timer(0.5, self._poll_controller_state)
+
+    def _poll_controller_state(self) -> None:
+        if (self._controller_state_future is not None
+                and not self._controller_state_future.done()):
+            return
+        if not self.controller_state_client.service_is_ready():
+            self.controller_active = False
+            return
+        self._controller_state_future = self.controller_state_client.call_async(
+            GetState.Request())
+        self._controller_state_future.add_done_callback(self._on_controller_state)
+
+    def _on_controller_state(self, future) -> None:
+        try:
+            self.controller_active = (
+                future.result().current_state.id == State.PRIMARY_STATE_ACTIVE)
+        except Exception:
+            self.controller_active = False
 
     def _on_clock(self, message: Clock) -> None:
         current = message.clock.sec + message.clock.nanosec * 1e-9
@@ -141,6 +173,12 @@ class MissionObserver(Node):
     def _on_map(self, _message: OccupancyGrid) -> None:
         self.map_received = True
 
+    def _on_local_costmap(self, message: OccupancyGrid) -> None:
+        self.latest_local_costmap = message
+
+    def _on_collision_arc(self, message: Path) -> None:
+        self.latest_collision_arc = message
+
     def _on_odometry(self, message: Odometry) -> None:
         self.latest_odometry = message
         self.latest_odom_wall_time = time.monotonic()
@@ -181,6 +219,7 @@ class MissionObserver(Node):
         now = time.monotonic()
         if not (self.sim_time is not None and self.morphology is not None
                 and self.map_received and self.client.server_is_ready()
+                and self.controller_active
                 and self.latest_odom_wall_time is not None
                 and self.latest_scan_wall_time is not None
                 and now - self.latest_odom_wall_time < 1.0
@@ -192,6 +231,61 @@ class MissionObserver(Node):
                 timeout=Duration(seconds=0.05))
         except TransformException:
             return False
+
+    def controller_diagnostic(self) -> dict:
+        """Compact final costmap/arc evidence for controller-failure diagnosis."""
+        grid = self.latest_local_costmap
+        odometry = self.latest_odometry
+        if grid is None or odometry is None:
+            return {"available": False}
+        info = grid.info
+        origin = info.origin
+        origin_yaw = _yaw(origin.orientation)
+        cos_yaw, sin_yaw = cos(origin_yaw), sin(origin_yaw)
+        robot = odometry.pose.pose.position
+        cells = []
+        counts = {"unknown": 0, "free": 0, "inflated": 0, "inscribed_or_lethal": 0}
+        for index, cost in enumerate(grid.data):
+            if cost < 0:
+                counts["unknown"] += 1
+                continue
+            if cost == 0:
+                counts["free"] += 1
+            elif cost >= 99:
+                counts["inscribed_or_lethal"] += 1
+            else:
+                counts["inflated"] += 1
+            if cost < 90:
+                continue
+            local_x = (index % info.width + 0.5) * info.resolution
+            local_y = (index // info.width + 0.5) * info.resolution
+            world_x = origin.position.x + cos_yaw * local_x - sin_yaw * local_y
+            world_y = origin.position.y + sin_yaw * local_x + cos_yaw * local_y
+            distance = ((world_x - robot.x) ** 2 + (world_y - robot.y) ** 2) ** 0.5
+            if distance <= 1.5:
+                cells.append({
+                    "x": round(world_x, 4), "y": round(world_y, 4),
+                    "cost": int(cost), "robot_distance": round(distance, 4),
+                })
+        cells.sort(key=lambda value: value["robot_distance"])
+        arc = self.latest_collision_arc
+        return {
+            "available": True,
+            "frame_id": grid.header.frame_id,
+            "resolution": float(info.resolution),
+            "width": int(info.width), "height": int(info.height),
+            "cost_counts": counts,
+            "high_cost_cells_within_1_5m": cells[:512],
+            "high_cost_cells_truncated": len(cells) > 512,
+            "robot_pose": {
+                "x": float(robot.x), "y": float(robot.y),
+                "yaw": _yaw(odometry.pose.pose.orientation),
+            },
+            "collision_arc": ([{
+                "x": float(pose.pose.position.x), "y": float(pose.pose.position.y),
+                "yaw": _yaw(pose.pose.orientation),
+            } for pose in arc.poses] if arc else []),
+        }
 
 
 def execution_state_name(value: int) -> str:
@@ -230,7 +324,7 @@ def execute_mission(
             if node.navigation_ready():
                 break
         else:
-            return _observation(node, "stale_topic", False,
+            return _observation(node, "infrastructure_failure", False,
                                 "stack readiness timeout", 0.0, wall_start, 0)
         sim_start = node.sim_time
         goal = NavigateHybrid.Goal()
@@ -282,27 +376,39 @@ def _observation(node, status, completed, message, simulated, wall_start, attemp
     if completed and not safe_completion:
         status, completed = "unsafe_topology", False
     return MissionObservation(
-        status, completed, message, simulated, time.monotonic() - wall_start,
-        attempts, node.work_proxy_j, node.covariance_trace,
-        node.topology_history, node.execution_history, final_state,
-        final_state != "READY", int(state.topology_revision) if state else 0,
-        node.sensing_revision,
-        float(navigation_result.planning_latency) if navigation_result else 0.0,
-        int(navigation_result.expanded_states) if navigation_result else 0,
-        int(navigation_result.map_revision) if navigation_result else 0,
-        navigation_result.planned_route_signature if navigation_result else "",
-        ([{"transition_id": transition_id,
+        terminal_status=status, completed=completed, message=message,
+        simulated_duration_s=simulated,
+        wall_duration_s=time.monotonic() - wall_start,
+        reconfiguration_attempts=attempts,
+        reconfiguration_failures=(
+            1 if final_state == "RECOVERY_REQUIRED" and attempts else 0),
+        mechanical_work_j=node.work_proxy_j,
+        covariance_trace=node.covariance_trace,
+        topology_history=node.topology_history,
+        execution_state_history=node.execution_history,
+        final_execution_state=final_state,
+        unrecovered_fault=final_state != "READY",
+        topology_revision=int(state.topology_revision) if state else 0,
+        sensing_revision=node.sensing_revision,
+        planning_latency_s=(
+            float(navigation_result.planning_latency) if navigation_result else 0.0),
+        expanded_states=(int(navigation_result.expanded_states) if navigation_result else 0),
+        map_revision=(int(navigation_result.map_revision) if navigation_result else 0),
+        planned_route_signature=(
+            navigation_result.planned_route_signature if navigation_result else ""),
+        planned_transition_sites=([{"transition_id": transition_id,
            "x": pose.pose.position.x, "y": pose.pose.position.y}
           for transition_id, pose in zip(
               navigation_result.planned_transition_ids,
               navigation_result.planned_transition_poses)]
          if navigation_result else []),
-        node.odometry_history,
-        node.command_history,
-        ([{"x": pose.pose.position.x, "y": pose.pose.position.y,
+        odometry_history=node.odometry_history,
+        command_history=node.command_history,
+        planned_route=([{"x": pose.pose.position.x, "y": pose.pose.position.y,
            "orientation_z": pose.pose.orientation.z,
            "orientation_w": pose.pose.orientation.w}
           for pose in navigation_result.planned_route_poses]
          if navigation_result else []),
-        node.localization_history,
+        localization_history=node.localization_history,
+        controller_diagnostics=node.controller_diagnostic(),
     )
