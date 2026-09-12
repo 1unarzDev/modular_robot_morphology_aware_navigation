@@ -298,3 +298,22 @@ All artifacts in this section are engineering-only debug evidence.
   order, leaving the assembly motionless. The prototype and bridge/config flags
   were removed. A valid ownership transfer requires replacing or explicitly
   disabling the per-model controller systems, not competing writes.
+
+## Single wheel-controller and Bullet experiments
+
+- Replaced the six model DiffDrive plugins experimentally with one world system
+  that subscribed to all pod commands, wrote twelve wheel-joint velocities, and
+  published integrated wheel odometry. With DART, scoped joint lookup and even
+  pre-weld cached entity IDs still behaved as if only the final pod pair survived
+  the weld; yaw commands translated at the final pod's speed.
+- A world-level writer competing with model controllers was also ineffective:
+  the model systems overwrote its commands. XML declaration order did not change
+  that ownership.
+- Bullet Featherstone was selected through the Physics system for one engineering
+  run. The first detached pod could not converge to its relocation waypoint under
+  the existing controller/tuning, so it did not provide assembled-motion evidence.
+- These controller and engine prototypes were removed. The retained DART stack
+  remains fail-closed at post-transition qualification. A future plant revision
+  should avoid welding separately controlled Gazebo models, for example by using
+  a single articulated robot model with explicit docking constraints and stable
+  joint ownership.
