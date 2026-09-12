@@ -45,6 +45,8 @@ class TrialRecord:
     recovery_actions: int = 0
     localization_error_m: list[float] = field(default_factory=list)
     covariance_trace: list[float] = field(default_factory=list)
+    odometry_history: list[dict[str, float]] = field(default_factory=list)
+    command_history: list[dict[str, float]] = field(default_factory=list)
     predicted_transition_probabilities: list[float] = field(default_factory=list)
     observed_transition_outcomes: list[int] = field(default_factory=list)
     planned_route_signature: str = ""

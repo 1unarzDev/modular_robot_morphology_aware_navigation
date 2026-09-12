@@ -31,6 +31,13 @@
   reported no progress after repeated collision-monitor approach limiting.
   A subsequent fixed-route replan failure previously obscured that controller
   failure; terminal classification now retains the initiating execution fault.
+- Added 0.5 s odometry and per-pod command histories to terminal records. A
+  repeat debug run confirmed 83/123 samples had nonzero pod commands and the
+  chassis moved 1.739 m, but it drifted from approximately `(0.65, 1.85)` to
+  `(1.98, 2.97)` instead of reaching the planned `(2.05, 1.85)` transition
+  site. The controller then stopped near the upper wall. This rejects command
+  starvation as the main explanation and makes assembled path tracking the
+  next diagnosis target.
 
 ## Scope
 

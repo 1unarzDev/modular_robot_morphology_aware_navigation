@@ -167,6 +167,8 @@ def run_batch(
             mechanical_work_j=observation.mechanical_work_j,
             reconfiguration_attempts=observation.reconfiguration_attempts,
             covariance_trace=observation.covariance_trace,
+            odometry_history=observation.odometry_history,
+            command_history=observation.command_history,
             topology_history=observation.topology_history,
             execution_state_history=observation.execution_state_history,
             final_execution_state=observation.final_execution_state,

@@ -56,6 +56,13 @@ This is the current end-to-end blocker. It is debug evidence only; instrumented
 pose/clearance traces are needed to determine whether the robot, its attached
 pods, or doorway geometry triggers the monitor.
 
+The first motion-instrumented repeat recorded 123 half-second samples. Pod
+commands were nonzero in 83 samples and odometry displacement was 1.739 m, but
+the chassis ended near `(1.98, 2.97)` rather than the intended transition at
+`(2.05, 1.85)`. Command delivery is working; assembled trajectory tracking or
+frame/kinematic consistency is not yet adequate. Resolve this before platform
+qualification or pilot collection.
+
 ## Phase 1 — platform qualification
 
 Continue repeated runs after the first revised round trip passed in 70.118 s

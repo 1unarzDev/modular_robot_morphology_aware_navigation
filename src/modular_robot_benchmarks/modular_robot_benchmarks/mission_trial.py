@@ -8,6 +8,7 @@ from geometry_msgs.msg import PoseStamped, Twist
 from modular_robot_msgs.action import NavigateHybrid
 from modular_robot_msgs.msg import MorphologyState, RelativePoseEstimate
 from nav_msgs.msg import OccupancyGrid
+from nav_msgs.msg import Odometry
 from rclpy.action import ActionClient
 from rclpy.duration import Duration
 from rclpy.executors import SingleThreadedExecutor
@@ -42,6 +43,8 @@ class MissionObservation:
     map_revision: int = 0
     planned_route_signature: str = ""
     planned_transition_sites: list[dict] = field(default_factory=list)
+    odometry_history: list[dict[str, float]] = field(default_factory=list)
+    command_history: list[dict[str, float]] = field(default_factory=list)
 
 
 class MissionObserver(Node):
@@ -55,6 +58,10 @@ class MissionObserver(Node):
         self.covariance_trace: list[float] = []
         self.latest_covariance: dict[str, float] = {}
         self._last_covariance_sample: float | None = None
+        self._last_motion_sample: float | None = None
+        self.latest_odometry: Odometry | None = None
+        self.odometry_history: list[dict[str, float]] = []
+        self.command_history: list[dict[str, float]] = []
         self.sensing_revision = 0
         self.map_received = False
         self.topology_history: list[dict] = []
@@ -68,6 +75,7 @@ class MissionObserver(Node):
             Clock, "/clock", self._on_clock, qos_profile_sensor_data)
         self.create_subscription(MorphologyState, "morphology_state", self._on_state, qos)
         self.create_subscription(OccupancyGrid, "/map", self._on_map, qos)
+        self.create_subscription(Odometry, "/odom", self._on_odometry, qos_profile_sensor_data)
         self.create_subscription(
             RelativePoseEstimate, "relative_pose_estimate", self._on_pose, 50)
         for pod in self.pod_commands:
@@ -90,9 +98,27 @@ class MissionObserver(Node):
             self.covariance_trace.append(
                 sum(self.latest_covariance.values()) / len(self.latest_covariance))
             self._last_covariance_sample = current
+        if (self.latest_odometry is not None and
+                (self._last_motion_sample is None
+                 or current - self._last_motion_sample >= 0.5)):
+            pose = self.latest_odometry.pose.pose
+            twist = self.latest_odometry.twist.twist
+            self.odometry_history.append({
+                "time_s": current, "x": float(pose.position.x),
+                "y": float(pose.position.y), "linear_x": float(twist.linear.x),
+                "angular_z": float(twist.angular.z),
+            })
+            self.command_history.append({
+                "time_s": current,
+                **{pod: float(value) for pod, value in self.pod_commands.items()},
+            })
+            self._last_motion_sample = current
 
     def _on_map(self, _message: OccupancyGrid) -> None:
         self.map_received = True
+
+    def _on_odometry(self, message: Odometry) -> None:
+        self.latest_odometry = message
 
     def _on_state(self, message: MorphologyState) -> None:
         previous_topology = self.morphology.topology_revision if self.morphology else None
@@ -227,4 +253,6 @@ def _observation(node, status, completed, message, simulated, wall_start, attemp
               navigation_result.planned_transition_ids,
               navigation_result.planned_transition_poses)]
          if navigation_result else []),
+        node.odometry_history,
+        node.command_history,
     )
