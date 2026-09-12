@@ -69,6 +69,23 @@ def test_trial_store_is_append_only_and_resumable(tmp_path):
                                      final_execution_state="RECOVERY_REQUIRED", unrecovered_fault=True))
 
 
+def test_trial_store_round_trips_sensor_derived_pod_alignment(tmp_path):
+    design = generate_design(layouts_per_family=1, replicates=1)
+    alignment = [{
+        "time_s": 4.0, "topology_revision": 13,
+        "morphology": "narrow_tandem", "execution_state": "READY",
+        "pods": {"pod_0": {"x": 0.71, "y": 0.10, "yaw": 0.01,
+                              "connector_visible": True}},
+    }]
+    record = replace(
+        _records(design)[0], pod_alignment_history=alignment,
+        motion_qualifications=[{"passed": True, "stages": {}}])
+    store = TrialStore(tmp_path / "raw")
+    store.write_terminal(record)
+    assert store.load_all()[0].pod_alignment_history == alignment
+    assert store.load_all()[0].motion_qualifications[0]["passed"]
+
+
 def test_validation_rejects_incomplete_and_manifest_mismatched_trials():
     design = generate_design(layouts_per_family=1, replicates=1)
     records = _records(design)

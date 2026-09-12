@@ -14,6 +14,7 @@ string planned_route_signature
 string[] planned_transition_ids
 geometry_msgs/PoseStamped[] planned_transition_poses
 geometry_msgs/PoseStamped[] planned_route_poses
+string[] motion_qualification_json
 ---
 string stage
 uint32 segment_index

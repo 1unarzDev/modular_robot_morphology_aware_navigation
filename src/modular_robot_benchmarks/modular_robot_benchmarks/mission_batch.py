@@ -24,6 +24,8 @@ def classify_terminal(success: bool, message: str, timed_out: bool) -> str:
     if timed_out:
         return "timeout"
     lowered = message.lower()
+    if "motion qualification failed" in lowered:
+        return "motion_qualification_failure"
     if "costmap" in lowered and "acknowledge" in lowered:
         return "infrastructure_failure"
     if ("recovery required" in lowered or "requires recovery" in lowered
@@ -64,7 +66,9 @@ def _git_revision(root: Path, allow_dirty: bool) -> str:
 
 
 def _stop_process(process: subprocess.Popen) -> None:
+    descendants = _descendant_pids(process.pid)
     if process.poll() is not None:
+        _terminate_pids(descendants)
         return
     os.killpg(process.pid, signal.SIGINT)
     try:
@@ -76,6 +80,51 @@ def _stop_process(process: subprocess.Popen) -> None:
         except subprocess.TimeoutExpired:
             os.killpg(process.pid, signal.SIGKILL)
             process.wait(timeout=5)
+    # gz_sim.launch starts a Ruby wrapper whose gz child can leave the launch
+    # process group and be reparented to PID 1. Retain the pre-shutdown
+    # descendant set so that this trial cannot contaminate the next one.
+    _terminate_pids(descendants)
+
+
+def _descendant_pids(root_pid: int) -> set[int]:
+    parents: dict[int, list[int]] = {}
+    for path in Path("/proc").glob("[0-9]*/stat"):
+        try:
+            value = path.read_text(encoding="utf-8")
+            closing = value.rfind(")")
+            pid = int(value[:value.find(" ")])
+            parent = int(value[closing + 2:].split()[1])
+        except (OSError, ValueError, IndexError):
+            continue
+        parents.setdefault(parent, []).append(pid)
+    descendants, frontier = set(), [root_pid]
+    while frontier:
+        parent = frontier.pop()
+        for child in parents.get(parent, []):
+            if child not in descendants:
+                descendants.add(child)
+                frontier.append(child)
+    return descendants
+
+
+def _terminate_pids(pids: set[int]) -> None:
+    alive = set(pids)
+    for requested_signal, timeout in (
+            (signal.SIGTERM, 3.0), (signal.SIGKILL, 1.0)):
+        for pid in tuple(alive):
+            try:
+                os.kill(pid, requested_signal)
+            except ProcessLookupError:
+                alive.discard(pid)
+            except PermissionError:
+                pass
+        deadline = time.monotonic() + timeout
+        while alive and time.monotonic() < deadline:
+            alive = {pid for pid in alive if Path(f"/proc/{pid}").exists()}
+            if alive:
+                time.sleep(0.05)
+        if not alive:
+            return
 
 
 def run_batch(
@@ -177,6 +226,8 @@ def run_batch(
             command_history=observation.command_history,
             planned_route=observation.planned_route,
             localization_history=observation.localization_history,
+            pod_alignment_history=observation.pod_alignment_history,
+            motion_qualifications=observation.motion_qualifications,
             controller_diagnostics=observation.controller_diagnostics,
             topology_history=observation.topology_history,
             execution_state_history=observation.execution_state_history,

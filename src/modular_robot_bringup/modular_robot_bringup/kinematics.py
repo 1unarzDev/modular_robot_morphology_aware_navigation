@@ -16,14 +16,15 @@ class PodCommand:
 
 
 def distribute_twist(
-    twist: BodyTwist, pod_poses: dict[str, list[float]], max_speed: float
+    twist: BodyTwist, pod_poses: dict[str, list[float]], max_speed: float,
+    yaw_effort_scale: float = 1.0,
 ) -> dict[str, PodCommand]:
     """Project a body twist onto each docked pod's rolling direction."""
     output: dict[str, PodCommand] = {}
     for pod, pose in pod_poses.items():
         x, y, yaw = (float(value) for value in pose)
-        point_vx = twist.x - twist.yaw * y
-        point_vy = twist.y + twist.yaw * x
+        point_vx = twist.x - yaw_effort_scale * twist.yaw * y
+        point_vy = twist.y + yaw_effort_scale * twist.yaw * x
         speed = cos(yaw) * point_vx + sin(yaw) * point_vy
         output[pod] = PodCommand(max(-max_speed, min(max_speed, speed)))
     return output

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import json
 from math import atan2, cos, sin
 import time
 
@@ -51,6 +52,8 @@ class MissionObservation:
     command_history: list[dict[str, float]] = field(default_factory=list)
     planned_route: list[dict[str, float]] = field(default_factory=list)
     localization_history: list[dict[str, float]] = field(default_factory=list)
+    pod_alignment_history: list[dict] = field(default_factory=list)
+    motion_qualifications: list[dict] = field(default_factory=list)
     controller_diagnostics: dict = field(default_factory=dict)
 
 
@@ -64,6 +67,7 @@ class MissionObserver(Node):
         self.morphology: MorphologyState | None = None
         self.covariance_trace: list[float] = []
         self.latest_covariance: dict[str, float] = {}
+        self.latest_relative_poses: dict[str, dict] = {}
         self._last_covariance_sample: float | None = None
         self._last_motion_sample: float | None = None
         self.latest_odometry: Odometry | None = None
@@ -72,6 +76,7 @@ class MissionObserver(Node):
         self.odometry_history: list[dict[str, float]] = []
         self.command_history: list[dict[str, float]] = []
         self.localization_history: list[dict[str, float]] = []
+        self.pod_alignment_history: list[dict] = []
         self.sensing_revision = 0
         self.map_received = False
         self.controller_active = False
@@ -204,6 +209,21 @@ class MissionObserver(Node):
                 "morphology": message.morphology_id,
                 "graph_hash": message.topology.graph_hash,
             })
+        if (previous_topology != message.topology_revision
+                or previous_execution != message.execution_state):
+            # Snapshot the autonomy-side fused estimates at every observed
+            # topology or execution-state change. Commit can change
+            # TRANSITIONING to READY without another topology revision.
+            self.pod_alignment_history.append({
+                "time_s": stamp,
+                "topology_revision": int(message.topology_revision),
+                "morphology": message.morphology_id,
+                "execution_state": execution_state_name(message.execution_state),
+                "pods": {
+                    pod: dict(value)
+                    for pod, value in sorted(self.latest_relative_poses.items())
+                },
+            })
         if previous_execution != message.execution_state:
             self.execution_history.append({
                 "time_s": stamp, "state": execution_state_name(message.execution_state),
@@ -214,6 +234,17 @@ class MissionObserver(Node):
         self.latest_covariance[message.pod_id] = float(
             covariance[0] + covariance[7] + covariance[35])
         self.sensing_revision = max(self.sensing_revision, int(message.sensing_revision))
+        self.latest_relative_poses[message.pod_id] = {
+            "x": float(message.pose.pose.position.x),
+            "y": float(message.pose.pose.position.y),
+            "yaw": _yaw(message.pose.pose.orientation),
+            "variance_x": float(covariance[0]),
+            "variance_y": float(covariance[7]),
+            "variance_yaw": float(covariance[35]),
+            "connector_visible": bool(message.connector_visible),
+            "sources": list(message.sources),
+            "sensing_revision": int(message.sensing_revision),
+        }
 
     def _on_command(self, pod: str, message: Twist) -> None:
         self.pod_commands[pod] = abs(message.linear.x)
@@ -415,5 +446,9 @@ def _observation(node, status, completed, message, simulated, wall_start, attemp
           for pose in navigation_result.planned_route_poses]
          if navigation_result else []),
         localization_history=node.localization_history,
+        pod_alignment_history=node.pod_alignment_history,
+        motion_qualifications=(
+            [json.loads(value) for value in navigation_result.motion_qualification_json]
+            if navigation_result else []),
         controller_diagnostics=node.controller_diagnostic(),
     )

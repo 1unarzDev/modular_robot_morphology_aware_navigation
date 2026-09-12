@@ -28,3 +28,7 @@ def test_reconfiguration_failure_and_unsafe_topology_have_distinct_labels():
     assert classify_terminal(
         False, "reconfiguration committed; costmaps did not acknowledge footprint", False
     ) == "infrastructure_failure"
+    assert classify_terminal(
+        False, "reconfiguration committed; post-transition assembled motion "
+        "qualification failed; drive inhibited", False
+    ) == "motion_qualification_failure"

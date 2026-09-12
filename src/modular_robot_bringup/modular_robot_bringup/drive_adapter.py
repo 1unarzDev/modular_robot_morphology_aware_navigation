@@ -102,7 +102,9 @@ class AssemblyDriveAdapter(Node):
             self.catalog["inventory"]["pod_0"].get("max_drive_speed", 1.2)
         )
         body_twist = BodyTwist(command.linear.x, command.linear.y, command.angular.z)
-        commands = distribute_twist(body_twist, morphology["pods"], max_speed)
+        commands = distribute_twist(
+            body_twist, morphology["pods"], max_speed,
+            float(morphology.get("yaw_effort_scale", 1.0)))
         for pod, value in commands.items():
             output = Twist()
             output.linear.x = value.linear

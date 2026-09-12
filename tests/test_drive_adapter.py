@@ -32,3 +32,13 @@ def test_orthogonal_pods_generate_lateral_motion_and_clip():
     )
     assert commands["north"].linear == 0.8
     assert commands["south"].linear == -0.8
+
+
+def test_yaw_effort_scale_increases_tangent_speed_for_narrow_track():
+    commands = distribute_twist(
+        BodyTwist(yaw=0.25),
+        {"left": [0.0, 0.10, 0.0], "right": [0.0, -0.10, 0.0]},
+        1.0, yaw_effort_scale=3.0,
+    )
+    assert abs(commands["left"].linear + 0.075) < 1e-12
+    assert abs(commands["right"].linear - 0.075) < 1e-12

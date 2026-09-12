@@ -101,6 +101,10 @@ morphologies:
     height: 0.30
     center_of_mass: [0.0, 0.0, 0.13]
     limits: {linear: 0.65, angular: 0.75, acceleration: 0.55}
+    # The 0.20 m track requires higher opposing wheel speed to overcome the
+    # DART contact/stiction threshold. Calibrated by the post-transition motion
+    # qualification; this affects actuator allocation, not planner geometry.
+    yaw_effort_scale: 3.0
     controller_id: FollowPathNarrow
     pods:
       pod_0: [0.71, 0.10, 0.0]

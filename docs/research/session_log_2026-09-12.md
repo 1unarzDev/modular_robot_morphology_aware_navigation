@@ -235,3 +235,38 @@ are recorded and explained.
   straight/positive-yaw/negative-yaw motion after reconfiguration.
 - Confirmatory randomization output now includes exact assignment counts,
   attainable exact p-value resolution, and Monte Carlo p-value standard error.
+
+## Post-transition qualification and narrow yaw experiments
+
+- Added an automatic post-transition motion gate before Nav2 can resume. It
+  commands positive/negative yaw and forward/reverse motion, evaluates odometry
+  in the starting body frame, serializes every stage into the navigation result,
+  and inhibits assembled drive on failure.
+- Added sensor-derived pod alignment snapshots on topology or execution-state
+  changes. Final `READY` snapshots now retain all pod poses, yaw, covariance,
+  visibility, sources, and sensing revision in immutable trial records.
+- Tightened pre-latch convergence to 0.008 m and 0.025 rad; post-latch acceptance
+  uses 0.012 m and the catalog connector limit of 0.05236 rad.
+- Added a distinct `motion_qualification_failure` outcome and method-level
+  qualification counts to analysis.
+- Fixed batch cleanup to retain launch descendants and terminate reparented
+  Gazebo processes. The prior orphan reproduced and was removed; subsequent
+  runs left no `gz sim` process.
+- `tight_docking_gate_raw` proved the gate detects the original failure and
+  inhibits drive. `prelatch_alignment_raw` showed final yaw errors near 0.023 rad
+  but almost no yaw authority at +/-0.025 m/s tangent speed.
+- A cataloged narrow yaw-effort scale of 3.0 raised tangent speeds to +/-0.075
+  m/s. `yaw_effort_scale_raw` produced correct +0.405/-0.429 rad yaw and clean
+  straight/reverse motion, but a repeat with a different final pod-5 yaw sign
+  failed. This establishes sensitivity to residual latch geometry.
+- Rejected two approaches after live tests: sending pod-local angular velocity
+  canceled or biased array yaw; an observed-geometry wrench allocator strongly
+  coupled straight/reverse motion into yaw. Both were removed.
+- Making staggered center pods passive immobilized the fixed-joint assembly
+  because zero-commanded simulated pod wheels do not free-roll. That experiment
+  was also removed.
+
+Current mechanical blocker: make connector seating repeatable or develop a
+plant-identified allocation robust to the actual fixed-joint/contact dynamics.
+The automatic gate prevents these states from entering autonomous traversal.
+All artifacts in this section are engineering-only debug evidence.

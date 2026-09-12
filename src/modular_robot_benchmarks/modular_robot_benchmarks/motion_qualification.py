@@ -2,16 +2,19 @@ from __future__ import annotations
 
 import argparse
 import json
-from math import atan2, cos, sin
+from math import atan2
 from pathlib import Path
 import time
 
 import rclpy
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
+from modular_robot_msgs.msg import MorphologyState
 from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
 from rosgraph_msgs.msg import Clock
+
+from .motion_metrics import summarize
 
 
 class MotionQualifier(Node):
@@ -20,11 +23,14 @@ class MotionQualifier(Node):
         self.publisher = self.create_publisher(Twist, "/cmd_vel", 10)
         self.sim_time: float | None = None
         self.odometry: Odometry | None = None
+        self.morphology: MorphologyState | None = None
         self.samples: list[dict] = []
         self.last_sample_time: float | None = None
         self.pod_commands = {f"pod_{index}": 0.0 for index in range(6)}
         self.create_subscription(Clock, "/clock", self._on_clock, qos_profile_sensor_data)
         self.create_subscription(Odometry, "/odom", self._on_odometry, qos_profile_sensor_data)
+        self.create_subscription(
+            MorphologyState, "morphology_state", self._on_morphology, 10)
         for pod in self.pod_commands:
             self.create_subscription(
                 Twist, f"/model/{pod}/cmd_vel",
@@ -35,6 +41,9 @@ class MotionQualifier(Node):
 
     def _on_odometry(self, message: Odometry) -> None:
         self.odometry = message
+
+    def _on_morphology(self, message: MorphologyState) -> None:
+        self.morphology = message
 
     def _pod(self, pod: str, message: Twist) -> None:
         self.pod_commands[pod] = float(message.linear.x)
@@ -64,15 +73,25 @@ def yaw(quaternion) -> float:
     )
 
 
-def run(output: Path, watchdog_s: float = 90.0) -> dict:
+def run(output: Path, watchdog_s: float = 90.0,
+        expected_morphology: str | None = None) -> dict:
     rclpy.init()
     node = MotionQualifier()
     started = time.monotonic()
     try:
-        while (node.sim_time is None or node.odometry is None) and time.monotonic() - started < watchdog_s:
+        while (node.sim_time is None or node.odometry is None
+               or node.morphology is None
+               or (expected_morphology is not None
+                   and node.morphology.morphology_id != expected_morphology)) \
+                and time.monotonic() - started < watchdog_s:
             rclpy.spin_once(node, timeout_sec=0.1)
-        if node.sim_time is None or node.odometry is None:
-            raise RuntimeError("clock/odometry readiness timeout")
+        if node.sim_time is None or node.odometry is None or node.morphology is None:
+            raise RuntimeError("clock/odometry/morphology readiness timeout")
+        if (expected_morphology is not None
+                and node.morphology.morphology_id != expected_morphology):
+            raise RuntimeError(
+                f"expected morphology {expected_morphology}, observed "
+                f"{node.morphology.morphology_id}")
         stages = (
             ("settle", 0.0, 0.0, 2.0),
             ("positive_yaw", 0.0, 0.35, 4.0),
@@ -90,6 +109,7 @@ def run(output: Path, watchdog_s: float = 90.0) -> dict:
                 if time.monotonic() - started >= watchdog_s:
                     raise RuntimeError("motion qualification watchdog exceeded")
         result = summarize(node.samples)
+        result["morphology"] = node.morphology.morphology_id
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
         return result
@@ -100,43 +120,16 @@ def run(output: Path, watchdog_s: float = 90.0) -> dict:
             rclpy.shutdown()
 
 
-def summarize(samples: list[dict]) -> dict:
-    summaries = {}
-    for stage in ("positive_yaw", "negative_yaw", "straight"):
-        values = [value for value in samples if value["stage"] == stage]
-        if not values:
-            raise RuntimeError(f"no samples for {stage}")
-        summaries[stage] = {
-            "duration_s": values[-1]["time_s"] - values[0]["time_s"],
-            "delta_x": values[-1]["x"] - values[0]["x"],
-            "delta_y": values[-1]["y"] - values[0]["y"],
-            "delta_yaw": _angle_difference(values[-1]["yaw"], values[0]["yaw"]),
-            "peak_absolute_pod_commands": {
-                pod: max(abs(value["pod_commands"][pod]) for value in values)
-                for pod in values[0]["pod_commands"]
-            },
-        }
-    positive_ok = summaries["positive_yaw"]["delta_yaw"] > 0.1
-    negative_ok = summaries["negative_yaw"]["delta_yaw"] < -0.1
-    straight_ok = summaries["straight"]["delta_x"] > 0.1
-    return {
-        "schema_version": 1, "purpose": "engineering_qualification",
-        "rep_103_signs_pass": positive_ok and negative_ok,
-        "straight_motion_pass": straight_ok,
-        "stages": summaries, "sample_count": len(samples), "samples": samples,
-    }
-
-
-def _angle_difference(target: float, source: float) -> float:
-    return atan2(sin(target - source), cos(target - source))
-
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Qualify assembled motion sign conventions")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--watchdog", type=float, default=90.0)
+    parser.add_argument("--expected-morphology")
     args = parser.parse_args()
-    print(json.dumps(run(args.output, args.watchdog), indent=2, sort_keys=True))
+    print(json.dumps(run(
+        args.output, args.watchdog, args.expected_morphology),
+        indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":

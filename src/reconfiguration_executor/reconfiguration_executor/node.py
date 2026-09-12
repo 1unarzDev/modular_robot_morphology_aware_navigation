@@ -36,8 +36,12 @@ class ReconfigurationExecutor(Node):
         self.declare_parameter("state_timeout", 3.0)
         self.declare_parameter("relocation_timeout", 45.0)
         self.declare_parameter("control_rate", 30.0)
-        self.declare_parameter("position_tolerance", 0.025)
-        self.declare_parameter("yaw_tolerance", 0.08)
+        self.declare_parameter("position_tolerance", 0.012)
+        # Match the declared connector capture envelope (3 degrees). The
+        # previous 0.08 rad gate admitted visibly misaligned rigid arrays.
+        self.declare_parameter("yaw_tolerance", 0.05236)
+        self.declare_parameter("relocation_position_tolerance", 0.008)
+        self.declare_parameter("relocation_yaw_tolerance", 0.025)
         self.declare_parameter("max_pod_linear", 0.22)
         self.declare_parameter("max_pod_angular", 0.9)
         self.declare_parameter("post_latch_settle_timeout", 1.5)
@@ -298,8 +302,10 @@ class ReconfigurationExecutor(Node):
             return False
         deadline = time.monotonic() + float(self.get_parameter("relocation_timeout").value)
         period = 1.0 / float(self.get_parameter("control_rate").value)
-        position_tolerance = float(self.get_parameter("position_tolerance").value)
-        yaw_tolerance = float(self.get_parameter("yaw_tolerance").value)
+        position_tolerance = float(
+            self.get_parameter("relocation_position_tolerance").value)
+        yaw_tolerance = float(
+            self.get_parameter("relocation_yaw_tolerance").value)
         final_alignment = False
         while time.monotonic() < deadline:
             if goal_handle.is_cancel_requested:
@@ -368,7 +374,11 @@ class ReconfigurationExecutor(Node):
         return docking_acceptance(DockingEvidence(
             estimate, Pose2(*(float(value) for value in relative_target)),
             linear, angular, 1.0, latch_confirmed,
-        ))
+        ),
+            translation_tolerance=float(
+                self.get_parameter("position_tolerance").value),
+            yaw_tolerance=float(self.get_parameter("yaw_tolerance").value),
+        )
 
     async def _wait_for_docking_ready(
         self, pod: str, relative_target: list[float], latch_confirmed: bool,

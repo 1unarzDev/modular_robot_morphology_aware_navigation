@@ -13,6 +13,7 @@ FAILURE_REASONS = frozenset({
     "completed", "planning_failure", "process_crash", "stale_topic",
     "localization_lost", "collision", "unsafe_topology", "docking_failure",
     "controller_failure", "timeout", "cancelled", "infrastructure_failure",
+    "motion_qualification_failure",
 })
 
 
@@ -49,6 +50,8 @@ class TrialRecord:
     command_history: list[dict[str, float]] = field(default_factory=list)
     planned_route: list[dict[str, float]] = field(default_factory=list)
     localization_history: list[dict[str, float]] = field(default_factory=list)
+    pod_alignment_history: list[dict[str, Any]] = field(default_factory=list)
+    motion_qualifications: list[dict[str, Any]] = field(default_factory=list)
     controller_diagnostics: dict[str, Any] = field(default_factory=dict)
     predicted_transition_probabilities: list[float] = field(default_factory=list)
     observed_transition_outcomes: list[int] = field(default_factory=list)
@@ -90,6 +93,10 @@ class TrialRecord:
                 raise ValueError("transition edge feasibility must be boolean")
             if not isinstance(decision["reasons"], list):
                 raise ValueError("transition edge reasons must be a list")
+        for qualification in self.motion_qualifications:
+            if "passed" not in qualification or not isinstance(
+                    qualification["passed"], bool):
+                raise ValueError("motion qualification requires a boolean passed field")
 
     @property
     def deadline_penalized_time_s(self) -> float:

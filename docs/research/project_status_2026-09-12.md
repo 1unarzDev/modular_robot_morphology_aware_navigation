@@ -188,3 +188,25 @@ p-value resolution, plus Monte Carlo standard error for simulated randomization
 p values. The confirmatory design hash remains
 `e9115d543af0969db7825398f7e2691361bdb536530d93e49db4528f21c51cf5` and the
 confirmatory evidence count remains **0/432**.
+
+## Current implementation gate: post-transition plant qualification
+
+The navigator now performs a measured assembled-motion check after every
+successful reconfiguration and before any new path is followed. Positive and
+negative yaw must have the correct sign, forward and reverse must have the
+correct body-frame displacement, and cross-coupled translation/yaw must remain
+bounded. Failure stops `/cmd_vel`, disables the assembly drive adapter, returns
+`motion_qualification_failure`, and preserves structured stage metrics.
+
+Mission records now include autonomy-side pod alignment snapshots at topology
+and execution-state transitions, including the final `READY` state. This exposed
+run-to-run yaw sensitivity despite sub-three-degree latch acceptance. A
+threefold narrow yaw-effort scale can overcome DART stiction in some assemblies,
+but is not yet reliable across residual latch geometries. Pod-local yaw,
+observed-wrench allocation, and passive center-pod experiments were tested and
+removed after they worsened coupling or immobilized the plant.
+
+The immediate research implementation task is therefore connector seating or a
+plant-identified robust allocation. Pilot collection remains prohibited. Batch
+cleanup now explicitly terminates reparented Gazebo descendants, closing the
+observed simulator-contamination path for the exercised runs.

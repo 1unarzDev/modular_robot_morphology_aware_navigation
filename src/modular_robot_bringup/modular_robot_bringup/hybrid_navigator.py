@@ -1,21 +1,26 @@
 from __future__ import annotations
 
 import hashlib
-from math import hypot
+import json
+from math import atan2, hypot
 import time
 
 import rclpy
-from geometry_msgs.msg import PolygonStamped, PoseStamped
+from geometry_msgs.msg import PolygonStamped, PoseStamped, Twist
 from modular_robot_msgs.action import ComputeHybridPlan, ExecuteReconfiguration, NavigateHybrid
 from modular_robot_msgs.msg import HybridSegment, MorphologyState, RelativePoseEstimate
 from nav2_msgs.action import FollowPath
+from nav_msgs.msg import Odometry
 from rclpy.action import ActionClient, ActionServer
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
 from rclpy.task import Future
+from std_srvs.srv import SetBool
 from tf2_ros import Buffer, TransformException, TransformListener
+
+from .qualification import PlanarPose, motion_delta, qualification_pass
 
 
 class HybridNavigator(Node):
@@ -27,15 +32,22 @@ class HybridNavigator(Node):
         self.declare_parameter("max_replans", 3)
         self.declare_parameter("costmap_footprint_timeout", 3.0)
         self.declare_parameter("costmap_footprint_padding", 0.01)
+        self.declare_parameter("qualify_after_reconfiguration", True)
         qos = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL,
                          reliability=ReliabilityPolicy.RELIABLE)
         self.morphology: MorphologyState | None = None
         self.sensing_revision = 0
         self.sensing_signatures = {}
         self.costmap_footprints: dict[str, tuple[float, ...]] = {}
+        self.latest_odometry: Odometry | None = None
         self.create_subscription(MorphologyState, "morphology_state", self._on_morphology, qos)
         self.create_subscription(
             RelativePoseEstimate, "relative_pose_estimate", self._on_sensing, 20)
+        self.create_subscription(
+            Odometry, "/odom", lambda message: setattr(self, "latest_odometry", message), 20)
+        self.command_publisher = self.create_publisher(Twist, "/cmd_vel", 10)
+        self.drive_enable = self.create_client(
+            SetBool, "set_assembly_drive_enabled", callback_group=self.group)
         self.create_subscription(
             PolygonStamped, "/local_costmap/published_footprint",
             lambda message: self._on_costmap_footprint("local", message), 10)
@@ -139,6 +151,26 @@ class HybridNavigator(Node):
                 if segment.kind == HybridSegment.RECONFIGURE:
                     success = await self._execute_transition(segment)
                     reconfigurations += 1
+                    qualification_passed = True
+                    if (success and bool(self.get_parameter(
+                            "qualify_after_reconfiguration").value)):
+                        qualification_passed, qualification = (
+                            await self._qualify_assembled_motion())
+                        result.motion_qualification_json = [
+                            *result.motion_qualification_json,
+                            json.dumps(qualification, sort_keys=True),
+                        ]
+                    if success and not qualification_passed:
+                        await self._inhibit_assembly_drive()
+                        result.message = (
+                            "reconfiguration committed; post-transition assembled "
+                            "motion qualification failed; drive inhibited")
+                        result.observed_time = time.monotonic() - started
+                        result.reconfiguration_count = reconfigurations
+                        self._set_plan_metrics(
+                            result, selected_plans, planning_latency, expanded_states)
+                        goal_handle.abort()
+                        return result
                     if success and not await self._wait_for_costmap_footprints():
                         result.message = (
                             "reconfiguration committed; costmaps did not acknowledge "
@@ -348,6 +380,56 @@ class HybridNavigator(Node):
         if not handle.accepted:
             return False
         return bool((await handle.get_result_async()).result.success)
+
+    @staticmethod
+    def _pose_from_odometry(message: Odometry) -> PlanarPose:
+        pose = message.pose.pose
+        quaternion = pose.orientation
+        yaw = 2.0 * atan2(quaternion.z, quaternion.w)
+        return PlanarPose(float(pose.position.x), float(pose.position.y), yaw)
+
+    async def _command_for(self, linear: float, angular: float,
+                           duration: float) -> tuple[PlanarPose, PlanarPose] | None:
+        if self.latest_odometry is None:
+            return None
+        start = self._pose_from_odometry(self.latest_odometry)
+        command = Twist()
+        command.linear.x, command.angular.z = linear, angular
+        deadline = time.monotonic() + duration
+        while time.monotonic() < deadline:
+            self.command_publisher.publish(command)
+            await self._sleep(0.05)
+        self.command_publisher.publish(Twist())
+        await self._sleep(0.25)
+        if self.latest_odometry is None:
+            return None
+        return start, self._pose_from_odometry(self.latest_odometry)
+
+    async def _qualify_assembled_motion(self) -> tuple[bool, dict]:
+        sequence = (
+            ("positive_yaw", 0.0, 0.25, 1.5),
+            ("negative_yaw", 0.0, -0.25, 1.5),
+            ("forward", 0.12, 0.0, 1.0),
+            ("reverse", -0.12, 0.0, 1.0),
+        )
+        stages = {}
+        for name, linear, angular, duration in sequence:
+            endpoints = await self._command_for(linear, angular, duration)
+            if endpoints is None:
+                return False, {"passed": False, "reason": "odometry_unavailable"}
+            stages[name] = motion_delta(*endpoints)
+        passed = qualification_pass(stages)
+        log = self.get_logger().info if passed else self.get_logger().error
+        log(f"post-transition motion qualification passed={passed}; stages={stages}")
+        return passed, {"passed": passed, "stages": stages}
+
+    async def _inhibit_assembly_drive(self) -> None:
+        self.command_publisher.publish(Twist())
+        if not self.drive_enable.wait_for_service(timeout_sec=1.0):
+            return
+        request = SetBool.Request()
+        request.data = False
+        await self.drive_enable.call_async(request)
 
 
 def main(args=None):

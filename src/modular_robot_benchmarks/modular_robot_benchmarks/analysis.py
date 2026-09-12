@@ -229,6 +229,9 @@ def analyze(records: list[TrialRecord], design: StudyDesign,
             "docking_attempts": sum(r.reconfiguration_attempts for r in values),
             "reconfiguration_failures": sum(r.reconfiguration_failures for r in values),
             "recovery_actions": sum(r.recovery_actions for r in values),
+            "motion_qualifications": sum(len(r.motion_qualifications) for r in values),
+            "motion_qualification_failures": sum(
+                not q["passed"] for r in values for q in r.motion_qualifications),
             "minimum_clearance_median_m": median(clearances) if clearances else None,
             "localization_rmse_m": sqrt(fmean(error * error for error in errors)) if errors else None,
         })
