@@ -31,6 +31,7 @@ workshop talks are discovery leads rather than completed publications.
 | Plan consistency | Plans carry method, map, topology, and meaningful sensing-signature revisions; navigator replans after a transition or revision change | Host/ROS build verification; live race/fault checks pending |
 | Nav2 footprint interface | Installed Jazzy graph uses `Polygon` input and `PolygonStamped` output | Live graph check |
 | Confirmatory statistics | Frozen-design model, immutable records, cluster bootstrap, paired randomization, Holm correction, failure taxonomy, calibration, power simulation, tables, and SVG figures | Tested analysis infrastructure |
+| Held-out worlds and runner | Parameterized SDF worlds/manifests and a resumable full-stack runner; latest smoke reaches readiness but online SLAM has not observed the distant doorway | Debug engineering only |
 | Main scientific claim | No balanced mission experiment completed | No result yet |
 
 Logical cameras are idealized onboard observations. They support an uncertainty
@@ -72,6 +73,9 @@ separation, and removing one constraint changes only its planned ablation.
 - Replace every autonomy dependency on ground-truth module and robot pose with
   SLAM, odometry, IMU, lidar/RGB-D, and connector observations. Retain ground
   truth only in the evaluator.
+- Localize from sensors against a generated prior occupancy map for the fixed-goal
+  confirmatory task. Keep map truth common to all methods and disclose it as a
+  prior. Treat online exploration as a separate experiment if pursued.
 - Execute doorway, poor-observability docking, insufficient-workspace, combined,
   and neutral missions with collisions, topology, covariance, work, and timing
   recorded from the simulator.

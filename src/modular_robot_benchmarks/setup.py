@@ -21,6 +21,7 @@ setup(
             "generate_benchmark_sdf = modular_robot_benchmarks.sdf_export:main",
             "train_cost_model = modular_robot_benchmarks.train_cost_model:main",
             "morphology_study = modular_robot_benchmarks.study:main",
+            "run_morphology_missions = modular_robot_benchmarks.mission_batch:main",
         ]
     },
     test_suite="unittest.TestSuite",

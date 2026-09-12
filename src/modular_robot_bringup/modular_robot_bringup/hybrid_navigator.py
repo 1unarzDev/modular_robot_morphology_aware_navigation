@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import time
 
 import rclpy
@@ -54,6 +55,9 @@ class HybridNavigator(Node):
         result = NavigateHybrid.Result()
         started = time.monotonic()
         reconfigurations = 0
+        planning_latency = 0.0
+        expanded_states = 0
+        selected_plans = []
         for attempt in range(int(self.get_parameter("max_replans").value) + 1):
             if self.morphology is None:
                 result.message = "no morphology state received"
@@ -64,16 +68,22 @@ class HybridNavigator(Node):
                 result.message = "map-to-base transform unavailable"
                 goal_handle.abort()
                 return result
+            planning_started = time.monotonic()
             plan_result = await self._plan(
                 start, goal_handle.request.goal, goal_handle.request.planner_method)
+            planning_latency += time.monotonic() - planning_started
             if (plan_result is not None and not plan_result.success
                     and "revision changed" in plan_result.message):
                 continue
             if plan_result is None or not plan_result.success:
                 result.message = plan_result.message if plan_result else "planner unavailable"
+                self._set_plan_metrics(
+                    result, selected_plans, planning_latency, expanded_states)
                 goal_handle.abort()
                 return result
             plan = plan_result.plan
+            expanded_states += int(plan.expanded_states)
+            selected_plans.append(plan)
             execution_failed = False
             replan_requested = False
             for index, segment in enumerate(plan.segments):
@@ -111,14 +121,43 @@ class HybridNavigator(Node):
                 result.message = "hybrid navigation completed"
                 result.observed_time = time.monotonic() - started
                 result.reconfiguration_count = reconfigurations
+                self._set_plan_metrics(
+                    result, selected_plans, planning_latency, expanded_states)
                 goal_handle.succeed()
                 return result
             self.get_logger().warning(f"execution failed; replanning attempt {attempt + 1}")
         result.message = "execution failed after replanning limit"
         result.observed_time = time.monotonic() - started
         result.reconfiguration_count = reconfigurations
+        self._set_plan_metrics(result, selected_plans, planning_latency, expanded_states)
         goal_handle.abort()
         return result
+
+    @staticmethod
+    def _set_plan_metrics(result, plans, planning_latency, expanded_states):
+        result.planning_latency = planning_latency
+        result.expanded_states = expanded_states
+        if not plans:
+            return
+        final = plans[-1]
+        result.map_revision = final.map_revision
+        result.topology_revision = final.topology_revision
+        result.sensing_revision = final.sensing_revision
+        transitions = []
+        signature_parts = []
+        for plan in plans:
+            for segment in plan.segments:
+                poses = segment.path.poses if segment.kind == HybridSegment.TRAVERSE else [segment.execution_pose]
+                signature_parts.extend(
+                    f"{segment.kind}:{segment.morphology_id}:{pose.pose.position.x:.3f}:"
+                    f"{pose.pose.position.y:.3f}:{segment.transition_id}"
+                    for pose in poses)
+                if segment.kind == HybridSegment.RECONFIGURE:
+                    transitions.append(segment)
+        result.planned_route_signature = hashlib.sha256(
+            "|".join(signature_parts).encode()).hexdigest()
+        result.planned_transition_ids = [segment.transition_id for segment in transitions]
+        result.planned_transition_poses = [segment.execution_pose for segment in transitions]
 
     def _current_pose(self):
         try:

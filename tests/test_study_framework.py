@@ -90,6 +90,7 @@ def test_analysis_retains_failures_and_computes_paired_contrasts():
     assert len(result["primary_contrasts"]) == 2
     assert len(result["secondary_contrasts"]) == 2
     assert result["primary_contrasts"][0]["layout_count"] == 6
+    assert result["primary_contrasts"][0]["permutation_method"] == "exact_sign_flip"
     assert result["transition_brier_score"] is not None
     assert result["transition_rejection_reasons_by_method"]["geometry_coupled"][
         "connector_not_visible"] > 0

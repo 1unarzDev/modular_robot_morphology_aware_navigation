@@ -1,11 +1,15 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 from xml.etree.ElementTree import Element, ElementTree, SubElement
 
 from morphology_planner.grid import OCCUPIED
+from morphology_planner import load_catalog
 
+from .confirmatory_scenarios import make_confirmatory_scenario
+from .design import CONFIRMATORY_FAMILIES
 from .scenarios import FAMILIES, make_scenario
 
 
@@ -37,15 +41,112 @@ def export_sdf(family: str, seed: int, output: Path) -> None:
     ElementTree(sdf).write(output, encoding="unicode", xml_declaration=True)
 
 
+def export_confirmatory_sdf(
+    family: str, layout_index: int, world_seed: int,
+    output: Path, catalog_path: Path,
+) -> tuple[Path, Path]:
+    """Write a complete Gazebo world plus its immutable scenario manifest."""
+    scenario = make_confirmatory_scenario(family, layout_index, world_seed)
+    catalog = load_catalog(catalog_path).supported_experiment_subset()
+    sdf = Element("sdf", version="1.10")
+    world = SubElement(sdf, "world", name=scenario.layout_id.replace("-", "_"))
+    physics = SubElement(world, "physics", name="physics", type="ignored")
+    SubElement(physics, "max_step_size").text = "0.002"
+    SubElement(physics, "real_time_factor").text = "1"
+    for filename, name in (
+        ("gz-sim-physics-system", "gz::sim::systems::Physics"),
+        ("gz-sim-user-commands-system", "gz::sim::systems::UserCommands"),
+        ("gz-sim-scene-broadcaster-system", "gz::sim::systems::SceneBroadcaster"),
+        ("gz-sim-sensors-system", "gz::sim::systems::Sensors"),
+        ("gz-sim-logical-camera-system", "gz::sim::systems::LogicalCamera"),
+    ):
+        plugin = SubElement(world, "plugin", filename=filename, name=name)
+        if filename == "gz-sim-sensors-system":
+            SubElement(plugin, "render_engine").text = "ogre2"
+    topology = SubElement(
+        world, "plugin", filename="libtopology_joint_system.so",
+        name="modular_robot_gz_plugins::TopologyJointSystem")
+    SubElement(topology, "parent_link").text = "core::base_link"
+    SubElement(topology, "command_topic").text = "/topology_joint/command"
+    for pod in sorted(catalog.morphologies["compact_diff"].pod_poses):
+        SubElement(topology, "initial_child").text = f"{pod}::{pod}_base_link"
+
+    light = SubElement(world, "light", name="sun", type="directional")
+    SubElement(light, "pose").text = "0 0 10 0 0 0"
+    SubElement(light, "diffuse").text = "0.8 0.8 0.8 1"
+    SubElement(light, "direction").text = "-0.5 0.2 -1"
+    ground = SubElement(world, "model", name="ground")
+    SubElement(ground, "static").text = "true"
+    ground_link = SubElement(ground, "link", name="link")
+    ground_collision = SubElement(ground_link, "collision", name="collision")
+    ground_geometry = SubElement(ground_collision, "geometry")
+    plane = SubElement(ground_geometry, "plane")
+    SubElement(plane, "normal").text = "0 0 1"
+    SubElement(plane, "size").text = "20 12"
+
+    for y in range(scenario.grid.height):
+        for x in range(scenario.grid.width):
+            if scenario.grid.value(x, y) == OCCUPIED:
+                wx, wy = scenario.grid.cell_center(x, y)
+                _box_model(
+                    world, f"wall_{x}_{y}", (wx, wy, 0.5),
+                    (scenario.grid.resolution, scenario.grid.resolution, 1.0))
+    for box in scenario.transition_obstacles:
+        _box_model(world, box.name, box.center, box.size)
+
+    start_x, start_y = scenario.grid.cell_center(*scenario.start)
+    _include(world, "model://sensor_core", "core", (start_x, start_y, 0.18, 0.0))
+    for pod, (x, y, yaw) in catalog.morphologies["compact_diff"].pod_poses.items():
+        _include(world, f"model://drive_{pod}", pod,
+                 (start_x + x, start_y + y, 0.0, yaw))
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    ElementTree(sdf).write(output, encoding="unicode", xml_declaration=True)
+    manifest_path = output.with_suffix(".manifest.json")
+    manifest_path.write_text(
+        json.dumps(scenario.manifest(), indent=2, sort_keys=True) + "\n",
+        encoding="utf-8")
+    return output, manifest_path
+
+
+def _box_model(world, name, center, size) -> None:
+    model = SubElement(world, "model", name=name)
+    SubElement(model, "static").text = "true"
+    SubElement(model, "pose").text = " ".join(str(value) for value in (*center, 0, 0, 0))
+    link = SubElement(model, "link", name="link")
+    for tag in ("collision", "visual"):
+        item = SubElement(link, tag, name=tag)
+        geometry = SubElement(item, "geometry")
+        box = SubElement(geometry, "box")
+        SubElement(box, "size").text = " ".join(str(value) for value in size)
+
+
+def _include(world, uri: str, name: str, pose) -> None:
+    include = SubElement(world, "include")
+    SubElement(include, "uri").text = uri
+    SubElement(include, "name").text = name
+    x, y, z, yaw = pose
+    SubElement(include, "pose").text = f"{x} {y} {z} 0 0 {yaw}"
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("family", choices=FAMILIES)
+    parser.add_argument("family", choices=(*FAMILIES, *CONFIRMATORY_FAMILIES))
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--layout-index", type=int)
+    parser.add_argument(
+        "--catalog", type=Path,
+        default=Path("src/modular_robot_description/config/morphologies.yaml"))
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
-    export_sdf(args.family, args.seed, args.output)
+    if args.family in CONFIRMATORY_FAMILIES:
+        if args.layout_index is None:
+            parser.error("--layout-index is required for a confirmatory family")
+        export_confirmatory_sdf(
+            args.family, args.layout_index, args.seed, args.output, args.catalog)
+    else:
+        export_sdf(args.family, args.seed, args.output)
 
 
 if __name__ == "__main__":
     main()
-

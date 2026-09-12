@@ -1,5 +1,24 @@
 # Development session log — 2026-09-12
 
+## Mission-runner and inference continuation
+
+- Exported complete confirmatory SDF worlds and manifests and added launch-time
+  world selection.
+- Added a resumable full-stack mission runner with readiness gates, immutable
+  records, simulated deadlines, wall watchdogs, and rolling-work proxy labeling.
+- Diagnosed four preserved debug smoke trials: clock QoS, premature goal send,
+  goal outside the initial SLAM grid, and finally an unobserved distant doorway.
+  None is pilot or confirmatory evidence.
+- Added navigation-result telemetry for cumulative planning latency, expanded
+  states, map/topology/sensing revisions, a deterministic route signature, and
+  planned transition sites.
+- Changed pilot-scale paired randomization inference to exact sign-flip
+  enumeration at up to 20 layouts; larger frozen contrasts remain reproducible
+  seeded Monte Carlo tests and report the inference mode.
+- Next experimental fix: provide generated prior occupancy maps while retaining
+  sensor-based localization, then add evaluator-only truth metrics and a
+  sensor-derived location-dependent 3D/observability context.
+
 ## Scope
 
 Continued the self-mobile compact/narrow study toward the bounded contribution:

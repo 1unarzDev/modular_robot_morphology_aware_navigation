@@ -46,7 +46,10 @@ Report absolute paired completion-rate differences with 95% confidence
 intervals. Bootstrap whole layouts within each family, retaining every method
 and replicate in a sampled cluster. Repeatedly sampled layouts retain their
 multiplicity. Obtain two-sided paired randomization p
-values by sign-flipping layout-level mean differences. Apply Holm correction to
+values by sign-flipping layout-level mean differences. Enumerate every sign
+assignment when a contrast has at most 20 layouts (including small pilots);
+otherwise use the predeclared seeded Monte Carlo draw count and report that
+count with the result. Apply Holm correction to
 the two p values. Report effect sizes and intervals regardless of significance.
 
 For the secondary outcome, report treatment-minus-control differences in

@@ -5,6 +5,14 @@ bool success
 string message
 float64 observed_time
 uint32 reconfiguration_count
+float64 planning_latency
+uint32 expanded_states
+uint64 map_revision
+uint64 topology_revision
+uint64 sensing_revision
+string planned_route_signature
+string[] planned_transition_ids
+geometry_msgs/PoseStamped[] planned_transition_poses
 ---
 string stage
 uint32 segment_index

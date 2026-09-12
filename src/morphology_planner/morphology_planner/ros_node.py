@@ -121,19 +121,27 @@ class PlannerServer(Node):
             goal_handle.abort()
             return result
         try:
+            start_world = (
+                request.start.pose.position.x, request.start.pose.position.y)
+            goal_world = (
+                request.goal.pose.position.x, request.goal.pose.position.y)
+            planning_grid = self._grid.padded_to_include(
+                (start_world, goal_world),
+                margin=max(value.radius for value in self._catalog.morphologies.values()),
+            )
             method = str(request.planner_method or self.get_parameter("planner_method").value)
             planner = make_method_planner(
-                method, self._catalog, self._grid,
+                method, self._catalog, planning_grid,
                 heading_bins=self.get_parameter("heading_bins").value,
                 sensing=self._sensing,
                 cost_model=self._cost_model(),
                 topology_revision=self._topology_revision,
                 sensing_revision=self._sensing_revision,
             )
-            sx, sy = self._grid.world_to_cell(
+            sx, sy = planning_grid.world_to_cell(
                 request.start.pose.position.x, request.start.pose.position.y
             )
-            gx, gy = self._grid.world_to_cell(
+            gx, gy = planning_grid.world_to_cell(
                 request.goal.pose.position.x, request.goal.pose.position.y
             )
             heading = _heading_bin(request.start, planner.planner.heading_bins
@@ -150,7 +158,7 @@ class PlannerServer(Node):
             return result
 
         result.plan = _to_message(
-            plan, self._grid, self._catalog,
+            plan, planning_grid, self._catalog,
             request.start.header.frame_id or "map",
             planner.planner.heading_bins if hasattr(planner.planner, "heading_bins")
             else planner.planner.hybrid.heading_bins,

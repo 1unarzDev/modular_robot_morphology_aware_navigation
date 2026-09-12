@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections import Counter, defaultdict
 import csv
+from itertools import product
 import json
 from math import sqrt
 from pathlib import Path
@@ -107,7 +108,20 @@ def _layout_permutation_p(records: list[TrialRecord], treatment: str, control: s
                           draws: int, seed: int) -> float:
     effects = [value for values in _paired_layout_effects(
         records, treatment, control, families, metric).values() for value in values]
-    observed, rng, exceed = abs(fmean(effects)), Random(seed), 0
+    observed = abs(fmean(effects))
+    # The frozen contrasts contain 36 and 24 independent layouts. Enumerate
+    # small pilots exactly; use a reproducible Monte Carlo test otherwise.
+    if len(effects) <= 20:
+        statistics = (
+            abs(fmean(effect * sign for effect, sign in zip(effects, signs)))
+            for signs in product((-1, 1), repeat=len(effects))
+        )
+        exceed = total = 0
+        for statistic in statistics:
+            total += 1
+            exceed += statistic >= observed - 1e-12
+        return exceed / total
+    rng, exceed = Random(seed), 0
     for _ in range(draws):
         statistic = abs(fmean(effect * (-1 if rng.getrandbits(1) else 1) for effect in effects))
         exceed += statistic >= observed - 1e-12
@@ -168,6 +182,9 @@ def _contrast(records: list[TrialRecord], treatment: str, control: str,
     if permutation_draws is not None:
         row["permutation_p"] = _layout_permutation_p(
             records, treatment, control, families, metric, permutation_draws, seed + 1000)
+        row["permutation_method"] = (
+            "exact_sign_flip" if row["layout_count"] <= 20
+            else f"monte_carlo_sign_flip_{permutation_draws}_draws")
     return row
 
 

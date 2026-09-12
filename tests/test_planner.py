@@ -73,6 +73,16 @@ def test_grid_coarsening_preserves_obstacles_and_unknown_regions():
     assert coarse.revision == 7
 
 
+def test_grid_padding_preserves_map_and_marks_unmapped_goal_unknown():
+    grid = OccupancyGrid(4, 3, 0.1, origin_x=1.0, origin_y=2.0,
+                         data=list(range(12)), revision=9)
+    padded = grid.padded_to_include(((0.8, 2.1), (1.7, 2.1)), margin=0.1)
+    assert padded.revision == 9
+    assert padded.value(*padded.world_to_cell(1.05, 2.05)) == 0
+    assert padded.value(*padded.world_to_cell(0.8, 2.1)) == UNKNOWN
+    assert padded.value(*padded.world_to_cell(1.7, 2.1)) == UNKNOWN
+
+
 def test_motion_primitive_checks_swept_footprint_between_endpoints():
     catalog = load_catalog(CATALOG).supported_experiment_subset()
     grid = OccupancyGrid(50, 50, 0.05)

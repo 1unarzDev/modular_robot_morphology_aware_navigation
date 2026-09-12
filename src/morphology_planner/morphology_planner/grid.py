@@ -80,6 +80,41 @@ class OccupancyGrid:
                 output.data[output.index(ox, oy)] = value
         return output
 
+    def padded_to_include(
+        self,
+        points: Iterable[tuple[float, float]],
+        margin: float = 0.0,
+    ) -> "OccupancyGrid":
+        """Extend map bounds with UNKNOWN cells to contain world-frame points."""
+        points = tuple(points)
+        if not points:
+            return self
+        margin_cells = ceil(max(0.0, margin) / self.resolution)
+        cells = [self.world_to_cell(x, y) for x, y in points]
+        min_x = min(x for x, _ in cells) - margin_cells
+        max_x = max(x for x, _ in cells) + margin_cells
+        min_y = min(y for _, y in cells) - margin_cells
+        max_y = max(y for _, y in cells) + margin_cells
+        left, bottom = max(0, -min_x), max(0, -min_y)
+        right = max(0, max_x - self.width + 1)
+        top = max(0, max_y - self.height + 1)
+        if not any((left, right, bottom, top)):
+            return self
+        output = OccupancyGrid(
+            self.width + left + right,
+            self.height + bottom + top,
+            self.resolution,
+            self.origin_x - left * self.resolution,
+            self.origin_y - bottom * self.resolution,
+            [UNKNOWN] * ((self.width + left + right) * (self.height + bottom + top)),
+            self.revision,
+        )
+        for y in range(self.height):
+            destination = output.index(left, y + bottom)
+            source = self.index(0, y)
+            output.data[destination:destination + self.width] = self.data[source:source + self.width]
+        return output
+
     def disk_is_free(
         self, wx: float, wy: float, radius: float, unknown_is_occupied: bool = False
     ) -> bool:
