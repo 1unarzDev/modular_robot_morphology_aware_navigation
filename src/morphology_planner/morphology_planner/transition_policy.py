@@ -73,6 +73,17 @@ def _world_pose(relative: tuple[float, float, float], base: Pose3,
     )
 
 
+def _core_box(catalog: Catalog, base: Pose3) -> Box3:
+    """Return the stationary core collision envelope in the world frame."""
+    size = catalog.module_sizes["core"]
+    extent_x = abs(cos(base.yaw)) * size[0] + abs(sin(base.yaw)) * size[1]
+    extent_y = abs(sin(base.yaw)) * size[0] + abs(cos(base.yaw)) * size[1]
+    return Box3(
+        "core", (base.x, base.y, base.z + size[2] / 2.0),
+        (extent_x, extent_y, size[2]),
+    )
+
+
 def build_transition_trajectories(
     catalog: Catalog,
     transition: Transition,
@@ -209,11 +220,14 @@ class CoupledTransitionPolicy:
                     if self.sensing_provider else self.sensing
                 )
             if self.static_modules:
+                base_pose = Pose3(wx, wy, 0.0, yaw)
                 trajectories = build_transition_trajectories(
-                    self.catalog, transition, Pose3(wx, wy, 0.0, yaw), sensing)
-                targets = self._target_poses(transition, Pose3(wx, wy, 0.0, yaw))
+                    self.catalog, transition, base_pose, sensing)
+                targets = self._target_poses(transition, base_pose)
                 validation = self.validator.validate(
-                    trajectories, self.static_modules, self.environment, targets,
+                    trajectories, (*self.static_modules,
+                                   _core_box(self.catalog, base_pose)),
+                    self.environment, targets,
                     check_sensing=False,
                 )
                 reasons.extend(validation.reasons)
@@ -225,7 +239,9 @@ class CoupledTransitionPolicy:
                         self.catalog, transition, Pose3(0.0, 0.0, 0.0, 0.0))
                     targets = self._target_poses(transition, Pose3(0.0, 0.0, 0.0, 0.0))
                     intrinsic = self.validator.validate(
-                        trajectories, (), (), targets, check_sensing=False)
+                        trajectories,
+                        (_core_box(self.catalog, Pose3(0.0, 0.0, 0.0, 0.0)),),
+                        (), targets, check_sensing=False)
                     self._intrinsic_cache[transition.id] = intrinsic
                 reasons.extend(intrinsic.reasons)
                 checked = intrinsic.checked_samples

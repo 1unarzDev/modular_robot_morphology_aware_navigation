@@ -17,6 +17,8 @@
 #include <gz/sim/System.hh>
 #include <gz/sim/Util.hh>
 #include <gz/sim/components/Joint.hh>
+#include <gz/sim/components/JointForceCmd.hh>
+#include <gz/sim/components/JointVelocity.hh>
 #include <gz/sim/components/JointVelocityCmd.hh>
 #include <gz/sim/components/JointPosition.hh>
 #include <gz/sim/components/Model.hh>
@@ -43,6 +45,10 @@ struct PodDrive
   double previousRight{0.0};
   double commandedLeft{0.0};
   double commandedRight{0.0};
+  double measuredLeft{0.0};
+  double measuredRight{0.0};
+  double appliedLeftEffort{0.0};
+  double appliedRightEffort{0.0};
   std::chrono::steady_clock::duration previousSampleTime{0};
   bool encoderInitialized{false};
   std::chrono::steady_clock::duration lastOdomPublish{0};
@@ -64,6 +70,9 @@ public:
     this->wheelSeparation = _sdf->Get<double>("wheel_separation", 0.14).first;
     this->wheelRadius = _sdf->Get<double>("wheel_radius", 0.055).first;
     this->maxWheelSpeed = _sdf->Get<double>("max_wheel_speed", 24.0).first;
+    this->actuationMode = _sdf->Get<std::string>("actuation_mode", "velocity").first;
+    this->maxWheelEffort = _sdf->Get<double>("max_wheel_effort", 2.0).first;
+    this->velocityGain = _sdf->Get<double>("velocity_gain", 0.05).first;
     this->commandTimeout = std::chrono::duration<double>(
       _sdf->Get<double>("command_timeout", 0.3).first);
     this->diagnosticsPublisher = this->node.Advertise<gz::msgs::StringMsg>(
@@ -126,14 +135,37 @@ public:
         -this->maxWheelSpeed, this->maxWheelSpeed);
       pod.commandedLeft = left;
       pod.commandedRight = right;
-      this->SetVelocity(pod.leftEntity, left, _ecm);
-      this->SetVelocity(pod.rightEntity, right, _ecm);
+      if (this->actuationMode == "effort")
+      {
+        pod.appliedLeftEffort = std::clamp(
+          this->velocityGain * (left - pod.measuredLeft),
+          -this->maxWheelEffort, this->maxWheelEffort);
+        pod.appliedRightEffort = std::clamp(
+          this->velocityGain * (right - pod.measuredRight),
+          -this->maxWheelEffort, this->maxWheelEffort);
+        this->SetEffort(pod.leftEntity, pod.appliedLeftEffort, _ecm);
+        this->SetEffort(pod.rightEntity, pod.appliedRightEffort, _ecm);
+      }
+      else
+      {
+        pod.appliedLeftEffort = 0.0;
+        pod.appliedRightEffort = 0.0;
+        this->SetVelocity(pod.leftEntity, left, _ecm);
+        this->SetVelocity(pod.rightEntity, right, _ecm);
+      }
       if (!_ecm.Component<gz::sim::components::JointPosition>(pod.leftEntity))
         _ecm.CreateComponent(
           pod.leftEntity, gz::sim::components::JointPosition());
       if (!_ecm.Component<gz::sim::components::JointPosition>(pod.rightEntity))
         _ecm.CreateComponent(
           pod.rightEntity, gz::sim::components::JointPosition());
+      if (this->actuationMode == "effort")
+      {
+        if (!_ecm.Component<gz::sim::components::JointVelocity>(pod.leftEntity))
+          _ecm.CreateComponent(pod.leftEntity, gz::sim::components::JointVelocity());
+        if (!_ecm.Component<gz::sim::components::JointVelocity>(pod.rightEntity))
+          _ecm.CreateComponent(pod.rightEntity, gz::sim::components::JointVelocity());
+      }
     }
   }
 
@@ -166,10 +198,18 @@ public:
       const auto rightDistance = (rightAngle - pod.previousRight) * this->wheelRadius;
       const auto elapsed = std::chrono::duration<double>(
         _info.simTime - pod.previousSampleTime).count();
-      const auto measuredLeft = elapsed > 0.0 ?
-        (leftAngle - pod.previousLeft) / elapsed : 0.0;
-      const auto measuredRight = elapsed > 0.0 ?
-        (rightAngle - pod.previousRight) / elapsed : 0.0;
+      const auto leftVelocity = _ecm.Component<gz::sim::components::JointVelocity>(
+        pod.leftEntity);
+      const auto rightVelocity = _ecm.Component<gz::sim::components::JointVelocity>(
+        pod.rightEntity);
+      const auto measuredLeft = leftVelocity && !leftVelocity->Data().empty() ?
+        leftVelocity->Data()[0] : (elapsed > 0.0 ?
+          (leftAngle - pod.previousLeft) / elapsed : 0.0);
+      const auto measuredRight = rightVelocity && !rightVelocity->Data().empty() ?
+        rightVelocity->Data()[0] : (elapsed > 0.0 ?
+          (rightAngle - pod.previousRight) / elapsed : 0.0);
+      pod.measuredLeft = measuredLeft;
+      pod.measuredRight = measuredRight;
       pod.previousLeft = leftAngle;
       pod.previousRight = rightAngle;
       pod.previousSampleTime = _info.simTime;
@@ -214,6 +254,17 @@ private:
         _joint, gz::sim::components::JointVelocityCmd({_velocity}));
   }
 
+  static void SetEffort(gz::sim::Entity _joint, double _effort,
+                        gz::sim::EntityComponentManager &_ecm)
+  {
+    auto command = _ecm.Component<gz::sim::components::JointForceCmd>(_joint);
+    if (command)
+      command->SetData({_effort}, [](const auto &, const auto &) {return false;});
+    else
+      _ecm.CreateComponent(
+        _joint, gz::sim::components::JointForceCmd({_effort}));
+  }
+
   void PublishDiagnostics(
       PodDrive &_pod, double _measuredLeft, double _measuredRight,
       const std::chrono::steady_clock::duration &_simTime,
@@ -242,6 +293,9 @@ private:
          << ",\"right_command_radps\":" << _pod.commandedRight
          << ",\"left_measured_radps\":" << _measuredLeft
          << ",\"right_measured_radps\":" << _measuredRight
+         << ",\"actuation_mode\":\"" << this->actuationMode << "\""
+         << ",\"left_effort_nm\":" << _pod.appliedLeftEffort
+         << ",\"right_effort_nm\":" << _pod.appliedRightEffort
          << ",\"left_angle_rad\":" << _pod.previousLeft
          << ",\"right_angle_rad\":" << _pod.previousRight
          << ",\"world_x\":" << pose.Pos().X()
@@ -264,6 +318,9 @@ private:
   double wheelSeparation{0.14};
   double wheelRadius{0.055};
   double maxWheelSpeed{24.0};
+  double maxWheelEffort{2.0};
+  double velocityGain{0.05};
+  std::string actuationMode{"velocity"};
   std::chrono::duration<double> commandTimeout{0.3};
 };
 }

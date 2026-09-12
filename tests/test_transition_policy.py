@@ -40,7 +40,7 @@ def test_world_trajectory_rotates_catalog_path_with_robot_heading():
     trajectories = build_transition_trajectories(
         catalog, transition, Pose3(2.0, 3.0, 0.0, 1.5707963267948966))
     final = trajectories[0].points[-1].pose
-    assert abs(final.x - 1.90) < 1e-9
+    assert abs(final.x - 1.80) < 1e-9
     assert abs(final.y - 3.71) < 1e-9
 
 
@@ -49,7 +49,7 @@ def test_feasibility_policy_rejects_3d_overhang_that_geometry_policy_ignores():
     grid = OccupancyGrid(50, 50, 0.1, origin_x=-2.5, origin_y=-2.5)
     state = HybridState(25, 25, 0, "compact_diff")
     # It intersects pod_0's relocation path but has no ground-plane occupancy.
-    overhang = Box3("overhang", (0.50, 0.18, 0.13), (0.18, 0.25, 0.08))
+    overhang = Box3("overhang", (0.50, 0.20, 0.13), (0.18, 0.25, 0.08))
     geometry = CoupledTransitionPolicy("geometry_coupled", catalog, grid, 4,
                                        environment=(overhang,))
     feasibility = CoupledTransitionPolicy("feasibility_coupled", catalog, grid, 4,

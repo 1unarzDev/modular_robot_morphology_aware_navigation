@@ -3,14 +3,14 @@
   <model name="modular_robot">
     <self_collide>true</self_collide>
     <include merge="true"><uri>model://sensor_core</uri></include>
-    <include><uri>model://articulated_pod_0</uri><name>pod_0</name><pose>0.23 0.18 -0.18 0 0 0</pose></include>
-    <include><uri>model://articulated_pod_1</uri><name>pod_1</name><pose>0.23 -0.18 -0.18 0 0 0</pose></include>
-    <include><uri>model://articulated_pod_2</uri><name>pod_2</name><pose>-0.23 0.18 -0.18 0 0 0</pose></include>
-    <include><uri>model://articulated_pod_3</uri><name>pod_3</name><pose>-0.23 -0.18 -0.18 0 0 0</pose></include>
-    <include><uri>model://articulated_pod_4</uri><name>pod_4</name><pose>0 0.18 -0.18 0 0 0</pose></include>
-    <include><uri>model://articulated_pod_5</uri><name>pod_5</name><pose>0 -0.18 -0.18 0 0 0</pose></include>
+    <include><uri>model://articulated_pod_0</uri><name>pod_0</name><pose>0.23 0.20 -0.18 0 0 0</pose></include>
+    <include><uri>model://articulated_pod_1</uri><name>pod_1</name><pose>0.23 -0.20 -0.18 0 0 0</pose></include>
+    <include><uri>model://articulated_pod_2</uri><name>pod_2</name><pose>-0.23 0.20 -0.18 0 0 0</pose></include>
+    <include><uri>model://articulated_pod_3</uri><name>pod_3</name><pose>-0.23 -0.20 -0.18 0 0 0</pose></include>
+    <include><uri>model://articulated_pod_4</uri><name>pod_4</name><pose>0 0.20 -0.18 0 0 0</pose></include>
+    <include><uri>model://articulated_pod_5</uri><name>pod_5</name><pose>0 -0.20 -0.18 0 0 0</pose></include>
     <plugin filename="libmulti_pod_drive_system.so" name="modular_robot_gz_plugins::MultiPodDriveSystem">
-      <wheel_separation>0.14</wheel_separation><wheel_radius>0.055</wheel_radius><max_wheel_speed>24</max_wheel_speed><command_timeout>0.3</command_timeout>
+      <wheel_separation>0.14</wheel_separation><wheel_radius>0.055</wheel_radius><max_wheel_speed>24</max_wheel_speed><actuation_mode>effort</actuation_mode><max_wheel_effort>4.0</max_wheel_effort><velocity_gain>1.0</velocity_gain><command_timeout>0.3</command_timeout>
       <pod>pod_0</pod><pod>pod_1</pod><pod>pod_2</pod><pod>pod_3</pod><pod>pod_4</pod><pod>pod_5</pod>
     </plugin>
   </model>

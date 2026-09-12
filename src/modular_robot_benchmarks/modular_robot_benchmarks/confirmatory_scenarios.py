@@ -122,9 +122,11 @@ def make_confirmatory_scenario(
         else:
             obstacles = (obstacle,)
             regions = (ObservabilityRegion(
-                # Preserve an upper, sensor-visible staging lane wide enough
-                # for the declared 1.0 m transition sweep.
-                band_x0, band_x1, 0.0, center_y - 0.25,
+                # Occlude the lower direct staging lane while preserving a
+                # distinct feasible site above it.  Keeping this shadow local
+                # is necessary because the executable differential-pod path
+                # also detours around the raised shelf.
+                band_x0, band_x1, center_y - 0.85, center_y - 0.45,
                 False, 0.04,
             ),)
 

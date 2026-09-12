@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-from math import atan2, cos, hypot, sin
+from math import atan2, hypot, pi
 import time
 
 import rclpy
@@ -46,6 +46,9 @@ class ReconfigurationExecutor(Node):
         self.declare_parameter("relocation_yaw_tolerance", 0.012)
         self.declare_parameter("max_pod_linear", 0.22)
         self.declare_parameter("max_pod_angular", 0.9)
+        # The bounded effort actuator must exceed wheel/ground static friction.
+        # Lower nonzero yaw commands can leave both wheels stalled indefinitely.
+        self.declare_parameter("min_pod_angular", 0.60)
         self.declare_parameter("post_latch_settle_timeout", 1.5)
         self.declare_parameter("docking_stable_samples", 3)
         self.declare_parameter("failure_injection", "")
@@ -176,7 +179,9 @@ class ReconfigurationExecutor(Node):
                 if not waypoints or waypoints[-1] != target:
                     waypoints.append(target)
                 for waypoint_index, waypoint in enumerate(waypoints):
-                    if not await self._move_pod(pod, waypoint, goal_handle):
+                    is_final_target = waypoint_index == len(waypoints) - 1
+                    if not await self._move_pod(
+                            pod, waypoint, goal_handle, precise=is_final_target):
                         raise RuntimeError(
                             f"{pod} did not reach relocation waypoint {waypoint_index + 1}/{len(waypoints)}"
                         )
@@ -312,15 +317,20 @@ class ReconfigurationExecutor(Node):
             await self._sleep(0.02)
         return False
 
-    async def _move_pod(self, pod: str, relative_target: list[float], goal_handle) -> bool:
+    async def _move_pod(
+        self, pod: str, relative_target: list[float], goal_handle,
+        precise: bool = True,
+    ) -> bool:
         if not await self._wait_for_pose(pod):
             return False
         deadline = time.monotonic() + float(self.get_parameter("relocation_timeout").value)
         period = 1.0 / float(self.get_parameter("control_rate").value)
-        position_tolerance = float(
-            self.get_parameter("relocation_position_tolerance").value)
-        yaw_tolerance = float(
-            self.get_parameter("relocation_yaw_tolerance").value)
+        position_tolerance = (
+            float(self.get_parameter("relocation_position_tolerance").value)
+            if precise else 0.03)
+        yaw_tolerance = (
+            float(self.get_parameter("relocation_yaw_tolerance").value)
+            if precise else 0.20)
         final_alignment = False
         while time.monotonic() < deadline:
             if goal_handle.is_cancel_requested:
@@ -331,36 +341,51 @@ class ReconfigurationExecutor(Node):
                 continue
             target = Pose2(*(float(value) for value in relative_target))
             distance = hypot(target.x - current.x, target.y - current.y)
-            if distance <= 1.5 * position_tolerance:
+            if distance <= max(0.05, 3.0 * position_tolerance):
                 final_alignment = True
-            if final_alignment and distance <= 1.5 * position_tolerance:
-                yaw_error = wrap_angle(target.yaw - current.yaw)
-                if abs(yaw_error) > yaw_tolerance:
-                    maximum = min(
-                        0.4, float(self.get_parameter("max_pod_angular").value))
-                    command = VelocityCommand(
-                        0.0, max(-maximum, min(maximum, 1.5 * yaw_error)))
-                    arrived = False
-                elif distance <= position_tolerance:
-                    command, arrived = VelocityCommand(), True
-                else:
-                    dx, dy = target.x - current.x, target.y - current.y
-                    forward_error = cos(current.yaw) * dx + sin(current.yaw) * dy
-                    bearing_error = wrap_angle(atan2(dy, dx) - current.yaw)
-                    maximum_linear = min(
-                        0.08, float(self.get_parameter("max_pod_linear").value))
-                    command = VelocityCommand(
-                        max(-maximum_linear, min(maximum_linear, 1.25 * forward_error)),
-                        max(-0.2, min(0.2, bearing_error)),
-                    )
-                    arrived = False
-            else:
+            elif final_alignment and distance > 0.08:
                 final_alignment = False
+            if final_alignment:
+                yaw_error = wrap_angle(target.yaw - current.yaw)
+                if distance > position_tolerance:
+                    # A differential pod cannot remove lateral error while it
+                    # holds the terminal connector yaw.  Close position with
+                    # the normal forward/reverse docking law first, then align
+                    # the connector once inside the translation tolerance.
+                    command, arrived = docking_command(
+                        current, target, position_tolerance, pi,
+                        min(0.08, float(
+                            self.get_parameter("max_pod_linear").value)),
+                        float(self.get_parameter("max_pod_angular").value),
+                    )
+                elif abs(yaw_error) > yaw_tolerance:
+                    minimum = float(
+                        self.get_parameter("min_pod_angular").value)
+                    maximum = float(
+                        self.get_parameter("max_pod_angular").value)
+                    magnitude = min(maximum, max(minimum, 1.5 * abs(yaw_error)))
+                    command = VelocityCommand(
+                        0.0, magnitude if yaw_error > 0.0 else -magnitude)
+                    arrived = False
+                else:
+                    command, arrived = VelocityCommand(), True
+            else:
                 command, arrived = docking_command(
                     current, target, position_tolerance, yaw_tolerance,
                     float(self.get_parameter("max_pod_linear").value),
                     float(self.get_parameter("max_pod_angular").value),
                 )
+            minimum_angular = float(
+                self.get_parameter("min_pod_angular").value)
+            # Apply breakaway only for an in-place turn.  During the final
+            # translational correction both wheels already receive drive
+            # effort, and forcing this angular floor causes limit cycling at
+            # millimetre-scale latch tolerances.
+            if (abs(command.linear) < 1e-6
+                    and 0.0 < abs(command.angular) < minimum_angular):
+                command = VelocityCommand(
+                    command.linear,
+                    minimum_angular if command.angular > 0.0 else -minimum_angular)
             output = Twist()
             output.linear.x = command.linear
             output.angular.z = command.angular

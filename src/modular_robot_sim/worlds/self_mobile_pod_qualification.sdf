@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<sdf version="1.10">
+  <world name="self_mobile_pod_qualification">
+    <physics name="physics" type="ignored"><max_step_size>0.002</max_step_size><real_time_factor>1</real_time_factor></physics>
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+    <model name="ground"><static>true</static><link name="link"><collision name="collision"><geometry><plane><normal>0 0 1</normal><size>20 20</size></plane></geometry></collision></link></model>
+    <include><uri>model://self_mobile_pod</uri><pose>0 0 0.18 0 0 0</pose></include>
+  </world>
+</sdf>

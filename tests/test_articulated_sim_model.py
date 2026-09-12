@@ -22,6 +22,7 @@ def test_articulated_model_has_one_drive_owner_and_six_nested_pods():
     ]
     configured = {item.text for item in plugins[0].findall("pod")}
     assert configured == pod_names
+    assert plugins[0].findtext("actuation_mode") == "effort"
 
 
 def test_articulated_pod_keeps_physical_wheels_without_competing_controller():
