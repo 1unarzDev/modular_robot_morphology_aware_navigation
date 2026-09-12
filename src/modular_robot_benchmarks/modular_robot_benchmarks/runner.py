@@ -13,6 +13,7 @@ from .scenarios import FAMILIES, make_scenario
 
 
 def run(catalog_path: Path, layouts: int, output: Path) -> None:
+    """Run a planner diagnostic; these rows are never mission trial records."""
     catalog = load_catalog(catalog_path)
     rows = []
     for family in FAMILIES:
@@ -33,7 +34,7 @@ def run(catalog_path: Path, layouts: int, output: Path) -> None:
                     success, cost, expanded, transitions = False, float("nan"), 0, 0
                 rows.append({
                     "family": family, "layout_seed": seed, "method": method,
-                    "success": int(success), "objective_cost": cost,
+                    "plan_found": int(success), "objective_cost": cost,
                     "planning_seconds": time.perf_counter() - started,
                     "expanded_states": expanded, "reconfigurations": transitions,
                 })
@@ -48,11 +49,10 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--catalog", type=Path, default=Path("src/modular_robot_description/config/morphologies.yaml"))
     parser.add_argument("--layouts", type=int, default=3)
-    parser.add_argument("--output", type=Path, default=Path("results/planner_benchmark.csv"))
+    parser.add_argument("--output", type=Path, default=Path("results/diagnostics/planner_benchmark.csv"))
     args = parser.parse_args()
     run(args.catalog, args.layouts, args.output)
 
 
 if __name__ == "__main__":
     main()
-
