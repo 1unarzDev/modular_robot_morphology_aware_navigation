@@ -15,11 +15,18 @@ def test_pose_composition_respects_core_heading():
     assert abs(result.yaw) < 1e-9
 
 
-def test_docking_rotates_before_driving_when_target_is_behind():
+def test_docking_uses_reverse_for_target_behind():
     command, arrived = docking_command(Pose2(0, 0, 0), Pose2(-1, 0, 0), 0.02, 0.05, 0.2, 1.0)
     assert not arrived
+    assert command.linear == -0.2
+    assert abs(command.angular) < 1e-9
+
+
+def test_side_target_rotates_without_forward_reverse_chatter():
+    command, arrived = docking_command(Pose2(0, 0, 0), Pose2(0, -1, 0), 0.02, 0.05, 0.2, 1.0)
+    assert not arrived
     assert command.linear == 0.0
-    assert abs(command.angular) == 1.0
+    assert command.angular == -1.0
 
 
 def test_docking_has_final_yaw_phase_and_terminal_state():

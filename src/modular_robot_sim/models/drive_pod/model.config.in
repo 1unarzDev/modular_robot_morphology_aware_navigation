@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<model><name>Self-mobile @POD_ID@</name><version>0.1.0</version>
+<sdf version="1.10">model.sdf</sdf><author><name>Morphology Navigation Team</name></author>
+<description>Uniquely named two-wheel module for stable DART skeleton attachment.</description></model>

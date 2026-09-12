@@ -28,5 +28,6 @@ def generate_launch_description():
              arguments=["--x", "0", "--y", "0", "--z", "0.12", "--frame-id", "core/base_link", "--child-frame-id", "core/lidar_link/lidar"]),
         Node(package="morphology_planner", executable="planner_server", output="screen", parameters=[{"use_sim_time": True}]),
         Node(package="reconfiguration_executor", executable="reconfiguration_executor", output="screen", parameters=[{"use_sim_time": True}]),
+        Node(package="reconfiguration_executor", executable="pod_relative_pose_estimator", output="screen", parameters=[{"use_sim_time": True}]),
         Node(package="modular_robot_bringup", executable="hybrid_navigator", output="screen", parameters=[{"use_sim_time": True}]),
     ])

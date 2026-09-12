@@ -57,9 +57,16 @@ def docking_command(
     distance = hypot(dx, dy)
     if distance > position_tolerance:
         bearing_error = wrap_angle(atan2(dy, dx) - current.yaw)
+        direction = 1.0
+        # Keep side-on targets in the forward branch. Switching direction at
+        # exactly +/-90 degrees makes sensor noise alternate the command between
+        # forward and reverse, preventing lateral relocation convergence.
+        if abs(bearing_error) > 2.2:
+            bearing_error = wrap_angle(bearing_error - (pi if bearing_error > 0 else -pi))
+            direction = -1.0
         linear = 0.0
         if abs(bearing_error) < 0.9:
-            linear = min(max_linear, 1.25 * distance) * max(0.15, cos(bearing_error))
+            linear = direction * min(max_linear, 1.25 * distance) * max(0.15, cos(bearing_error))
         angular = max(-max_angular, min(max_angular, 2.8 * bearing_error))
         return VelocityCommand(linear, angular), False
     yaw_error = wrap_angle(target.yaw - current.yaw)

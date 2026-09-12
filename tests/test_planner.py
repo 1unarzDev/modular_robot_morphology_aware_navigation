@@ -20,11 +20,12 @@ def doorway_grid():
 
 
 def test_hybrid_plan_reconfigures_for_narrow_doorway():
-    planner = MorphologyAStar(load_catalog(CATALOG), doorway_grid(), heading_bins=4)
+    planner = MorphologyAStar(
+        load_catalog(CATALOG).supported_experiment_subset(), doorway_grid(), heading_bins=4)
     plan = planner.plan(HybridState(7, 13, 0, "compact_diff"), (32, 13), epsilon=2.5)
     transitions = [s.transition_id for s in plan.segments if s.kind == "reconfigure"]
     assert "compact_to_narrow" in transitions
-    assert plan.states[-1].morphology == "narrow_tandem"
+    assert any(state.x == 20 and state.morphology == "narrow_tandem" for state in plan.states)
 
 
 def test_fixed_compact_robot_cannot_cross_narrow_doorway():

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+from math import atan2, hypot
 import time
 
 import rclpy
@@ -8,7 +9,7 @@ import yaml
 from ament_index_python.packages import get_package_share_directory
 from geometry_msgs.msg import Twist
 from modular_robot_msgs.action import ExecuteReconfiguration
-from modular_robot_msgs.msg import ConnectorCommand, ConnectorState
+from modular_robot_msgs.msg import ConnectorCommand, ConnectorState, RelativePoseEstimate as RelativePoseEstimateMsg
 from modular_robot_msgs.srv import BeginTransition, FailTransition, ObserveConnector, SetLocomotionMode
 from rclpy.action import ActionServer
 from rclpy.callback_groups import ReentrantCallbackGroup
@@ -18,7 +19,8 @@ from rclpy.task import Future
 from std_msgs.msg import String
 from std_srvs.srv import SetBool
 
-from .control import Pose2, compose_pose, docking_command, injected_failure
+from .control import Pose2, VelocityCommand, docking_command, injected_failure, wrap_angle
+from .sensing import DockingEvidence, RelativePoseEstimate, UncertaintyClass, docking_acceptance
 
 
 class ReconfigurationExecutor(Node):
@@ -32,19 +34,24 @@ class ReconfigurationExecutor(Node):
         )
         self.declare_parameter("catalog", default_catalog)
         self.declare_parameter("state_timeout", 3.0)
-        self.declare_parameter("relocation_timeout", 20.0)
+        self.declare_parameter("relocation_timeout", 30.0)
         self.declare_parameter("control_rate", 30.0)
         self.declare_parameter("position_tolerance", 0.025)
         self.declare_parameter("yaw_tolerance", 0.08)
         self.declare_parameter("max_pod_linear", 0.22)
-        self.declare_parameter("max_pod_angular", 1.0)
+        self.declare_parameter("max_pod_angular", 0.65)
+        self.declare_parameter("post_latch_settle_timeout", 1.5)
+        self.declare_parameter("docking_stable_samples", 3)
         self.declare_parameter("failure_injection", "")
+        self.declare_parameter("require_connector_visibility", True)
         with open(self.get_parameter("catalog").value, encoding="utf-8") as stream:
             self.catalog = yaml.safe_load(stream)
 
         self.group = ReentrantCallbackGroup()
         self.poses: dict[str, Pose2] = {}
         self.pose_times: dict[str, float] = {}
+        self.estimates: dict[str, RelativePoseEstimate] = {}
+        self.relative_speeds: dict[str, tuple[float, float]] = {}
         self.joint_events: dict[str, tuple[str, int]] = {}
         self.event_counter = 0
         self.command_pub = self.create_publisher(ConnectorCommand, "connector_command", 10)
@@ -55,7 +62,7 @@ class ReconfigurationExecutor(Node):
             callback_group=self.group,
         )
         self.create_subscription(
-            String, "module_pose", self._on_module_pose, 50,
+            RelativePoseEstimateMsg, "relative_pose_estimate", self._on_relative_pose, 50,
             callback_group=self.group,
         )
         self.pod_publishers = {
@@ -91,15 +98,25 @@ class ReconfigurationExecutor(Node):
         self.event_counter += 1
         self.joint_events[pod] = (parts[0], self.event_counter)
 
-    def _on_module_pose(self, message: String) -> None:
-        parts = message.data.split("|")
-        if len(parts) != 5 or parts[0] != "pose":
-            return
-        try:
-            self.poses[parts[1]] = Pose2(float(parts[2]), float(parts[3]), float(parts[4]))
-            self.pose_times[parts[1]] = time.monotonic()
-        except ValueError:
-            self.get_logger().warning(f"invalid module pose: {message.data}")
+    def _on_relative_pose(self, message: RelativePoseEstimateMsg) -> None:
+        quaternion = message.pose.pose.orientation
+        yaw = 2.0 * atan2(quaternion.z, quaternion.w)
+        pose = Pose2(message.pose.pose.position.x, message.pose.pose.position.y, yaw)
+        received = time.monotonic()
+        previous, previous_time = self.poses.get(message.pod_id), self.pose_times.get(message.pod_id)
+        if previous is not None and previous_time is not None and received > previous_time:
+            dt = received - previous_time
+            linear = ((pose.x - previous.x) ** 2 + (pose.y - previous.y) ** 2) ** 0.5 / dt
+            angular = abs(pose.yaw - previous.yaw) / dt
+            self.relative_speeds[message.pod_id] = (linear, angular)
+        self.poses[message.pod_id] = pose
+        self.pose_times[message.pod_id] = received
+        self.estimates[message.pod_id] = RelativePoseEstimate(
+            message.pod_id, received, pose, message.pose.covariance[0],
+            message.pose.covariance[7], message.pose.covariance[35],
+            UncertaintyClass(message.uncertainty_class), message.connector_visible,
+            tuple(message.sources), message.sensing_revision,
+        )
 
     async def _execute(self, goal_handle):
         transition = next(
@@ -124,8 +141,6 @@ class ReconfigurationExecutor(Node):
 
         started = time.monotonic()
         try:
-            if not await self._wait_for_pose("core"):
-                raise RuntimeError("no core pose feedback")
             pods = transition.get("moved_pods", [])
             for index, pod in enumerate(pods):
                 if goal_handle.is_cancel_requested or self._inject("cancellation", pod):
@@ -146,8 +161,18 @@ class ReconfigurationExecutor(Node):
                 if self._inject("relocation", pod):
                     raise RuntimeError(f"injected relocation failure for {pod}")
                 target = self.catalog["morphologies"][transition["to"]]["pods"][pod]
-                if not await self._move_pod(pod, target, goal_handle):
-                    raise RuntimeError(f"{pod} did not reach its docking pose")
+                waypoints = [*transition.get("pod_waypoints", {}).get(pod, []), target]
+                for waypoint_index, waypoint in enumerate(waypoints):
+                    if not await self._move_pod(pod, waypoint, goal_handle):
+                        raise RuntimeError(
+                            f"{pod} did not reach relocation waypoint {waypoint_index + 1}/{len(waypoints)}"
+                        )
+                accepted, reasons = self._docking_ready(pod, target, latch_confirmed=False)
+                # Latch confirmation occurs after the command, so exclude only
+                # that one expected pre-latch rejection.
+                pre_latch_reasons = tuple(reason for reason in reasons if reason != "latch_unconfirmed")
+                if pre_latch_reasons:
+                    raise RuntimeError(f"{pod} docking evidence rejected: {','.join(pre_latch_reasons)}")
 
                 self._feedback(goal_handle, "latch", pod, index, len(pods))
                 if self._inject("latch", pod):
@@ -156,6 +181,12 @@ class ReconfigurationExecutor(Node):
                 await self._command_joint(pod, ConnectorCommand.ATTACH, transition["to"])
                 if not await self._wait_for_joint(pod, "attached", since):
                     raise RuntimeError(f"{pod} attach was not confirmed")
+                accepted, reasons = await self._wait_for_docking_ready(
+                    pod, target, latch_confirmed=True,
+                    timeout=float(self.get_parameter("post_latch_settle_timeout").value),
+                )
+                if not accepted:
+                    raise RuntimeError(f"{pod} post-latch evidence rejected: {','.join(reasons)}")
                 if not await self._record_connector(pod, transition["to"], True, "latch confirmed"):
                     raise RuntimeError(f"manager rejected {pod} latch observation")
 
@@ -242,32 +273,92 @@ class ReconfigurationExecutor(Node):
             return False
         deadline = time.monotonic() + float(self.get_parameter("relocation_timeout").value)
         period = 1.0 / float(self.get_parameter("control_rate").value)
+        position_tolerance = float(self.get_parameter("position_tolerance").value)
+        yaw_tolerance = float(self.get_parameter("yaw_tolerance").value)
+        final_alignment = False
         while time.monotonic() < deadline:
             if goal_handle.is_cancel_requested:
                 raise asyncio.CancelledError
-            core = self.poses.get("core")
             current = self.poses.get(pod)
-            if core is None or current is None:
+            if current is None:
                 await self._sleep(period)
                 continue
-            target = compose_pose(core, relative_target)
-            command, arrived = docking_command(
-                current, target,
-                float(self.get_parameter("position_tolerance").value),
-                float(self.get_parameter("yaw_tolerance").value),
-                float(self.get_parameter("max_pod_linear").value),
-                float(self.get_parameter("max_pod_angular").value),
-            )
+            target = Pose2(*(float(value) for value in relative_target))
+            distance = hypot(target.x - current.x, target.y - current.y)
+            if distance <= position_tolerance:
+                final_alignment = True
+            if final_alignment and distance <= 1.5 * position_tolerance:
+                yaw_error = wrap_angle(target.yaw - current.yaw)
+                if abs(yaw_error) > yaw_tolerance:
+                    maximum = float(self.get_parameter("max_pod_angular").value)
+                    command = VelocityCommand(0.0, max(-maximum, min(maximum, 2.5 * yaw_error)))
+                    arrived = False
+                elif distance <= position_tolerance:
+                    command, arrived = VelocityCommand(), True
+                else:
+                    final_alignment = False
+                    command, arrived = docking_command(
+                        current, target, position_tolerance, yaw_tolerance,
+                        float(self.get_parameter("max_pod_linear").value),
+                        float(self.get_parameter("max_pod_angular").value),
+                    )
+            else:
+                final_alignment = False
+                command, arrived = docking_command(
+                    current, target, position_tolerance, yaw_tolerance,
+                    float(self.get_parameter("max_pod_linear").value),
+                    float(self.get_parameter("max_pod_angular").value),
+                )
             output = Twist()
             output.linear.x = command.linear
             output.angular.z = command.angular
             self.pod_publishers[pod].publish(output)
             if arrived:
                 self._stop(pod)
-                return True
+                linear, angular = self.relative_speeds.get(pod, (float("inf"), float("inf")))
+                if linear <= 0.02 and angular <= 0.08:
+                    return True
             await self._sleep(period)
         self._stop(pod)
         return False
+
+    def _docking_ready(
+        self, pod: str, relative_target: list[float], latch_confirmed: bool
+    ) -> tuple[bool, tuple[str, ...]]:
+        estimate = self.estimates[pod]
+        if not bool(self.get_parameter("require_connector_visibility").value):
+            estimate = RelativePoseEstimate(
+                estimate.pod_id, estimate.timestamp, estimate.pose,
+                estimate.variance_x, estimate.variance_y, estimate.variance_yaw,
+                estimate.uncertainty_class, True, estimate.sources,
+                estimate.sensing_revision,
+            )
+        linear, angular = self.relative_speeds.get(pod, (float("inf"), float("inf")))
+        return docking_acceptance(DockingEvidence(
+            estimate, Pose2(*(float(value) for value in relative_target)),
+            linear, angular, 1.0, latch_confirmed,
+        ))
+
+    async def _wait_for_docking_ready(
+        self, pod: str, relative_target: list[float], latch_confirmed: bool,
+        timeout: float,
+    ) -> tuple[bool, tuple[str, ...]]:
+        """Require consecutive accepted estimates after a physical transient."""
+        deadline = time.monotonic() + timeout
+        required = max(1, int(self.get_parameter("docking_stable_samples").value))
+        stable = 0
+        reasons: tuple[str, ...] = ("missing_observation",)
+        previous_revision = -1
+        while time.monotonic() < deadline:
+            estimate = self.estimates.get(pod)
+            if estimate is not None and estimate.sensing_revision != previous_revision:
+                previous_revision = estimate.sensing_revision
+                accepted, reasons = self._docking_ready(pod, relative_target, latch_confirmed)
+                stable = stable + 1 if accepted else 0
+                if stable >= required:
+                    return True, ()
+            await self._sleep(1.0 / float(self.get_parameter("control_rate").value))
+        return False, reasons
 
     async def _begin(self, transition, goal):
         if not self.begin_client.wait_for_service(timeout_sec=2.0):

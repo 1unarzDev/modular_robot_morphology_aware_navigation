@@ -40,7 +40,9 @@ public:
       {
         const auto childName = child->Get<std::string>();
         this->pending.emplace_back("attach", childName);
-        this->trackedLinks.push_back({childName.substr(0, childName.find("::")), childName});
+        const auto modelName = childName.substr(0, childName.find("::"));
+        this->trackedLinks.push_back({modelName, childName});
+        this->childLinks.emplace(modelName, childName);
         child = child->GetNextElement("initial_child");
       }
     }
@@ -97,7 +99,10 @@ private:
     if (operation != "attach" && operation != "detach")
       return;
     std::lock_guard<std::mutex> guard(this->mutex);
-    this->pending.emplace_back(operation, pod + "::base_link");
+    const auto child = this->childLinks.find(pod);
+    if (child == this->childLinks.end())
+      return;
+    this->pending.emplace_back(operation, child->second);
   }
 
   static gz::sim::Entity LinkByScopedName(
@@ -160,6 +165,7 @@ private:
   std::mutex mutex;
   std::vector<std::pair<std::string, std::string>> pending;
   std::unordered_map<std::string, gz::sim::Entity> joints;
+  std::unordered_map<std::string, std::string> childLinks;
   std::vector<std::pair<std::string, std::string>> trackedLinks;
 };
 }

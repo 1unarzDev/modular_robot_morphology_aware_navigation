@@ -12,6 +12,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/ConnectorCommand.msg"
   "msg/ConnectorState.msg"
   "msg/MorphologyState.msg"
+  "msg/RelativePoseEstimate.msg"
   "msg/HybridSegment.msg"
   "msg/HybridPlan.msg"
   "action/ComputeHybridPlan.action"

@@ -15,6 +15,10 @@ setup(
     maintainer_email="maintainer@example.com",
     description="Reconfiguration executor",
     license="Apache-2.0",
-    entry_points={"console_scripts": ["reconfiguration_executor = reconfiguration_executor.node:main"]},
+    entry_points={"console_scripts": [
+        "reconfiguration_executor = reconfiguration_executor.node:main",
+        "pod_relative_pose_estimator = reconfiguration_executor.sensing_node:main",
+        "execute_transition = reconfiguration_executor.client:main",
+    ]},
     test_suite="unittest.TestSuite",
 )

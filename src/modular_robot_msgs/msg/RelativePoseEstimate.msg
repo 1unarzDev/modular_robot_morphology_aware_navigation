@@ -1,0 +1,11 @@
+uint8 LOW=0
+uint8 MEDIUM=1
+uint8 HIGH=2
+uint8 UNOBSERVED=3
+std_msgs/Header header
+string pod_id
+geometry_msgs/PoseWithCovariance pose
+uint8 uncertainty_class
+bool connector_visible
+string[] sources
+uint64 sensing_revision

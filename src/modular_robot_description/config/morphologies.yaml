@@ -15,9 +15,10 @@ inventory:
     mass: 1.2
   pod_0: &drive_pod
     type: steer_drive_pod
-    size: [0.18, 0.14, 0.10]
+    # Includes the wheel collision envelopes (centers +/-0.07 m, 0.035 m wide).
+    size: [0.18, 0.175, 0.12]
     mass: 2.1
-    wheel_radius: 0.06
+    wheel_radius: 0.055
     max_drive_speed: 1.2
     max_steer_rate: 2.4
     connector_tolerance: {translation: 0.008, yaw: 0.05236}
@@ -36,7 +37,7 @@ morphologies:
   compact_diff:
     experiment_support: simulated
     locomotion_mode: differential
-    footprint: [[-0.33, -0.25], [0.33, -0.25], [0.33, 0.25], [-0.33, 0.25]]
+    footprint: [[-0.33, -0.28], [0.33, -0.28], [0.33, 0.28], [-0.33, 0.28]]
     height: 0.30
     center_of_mass: [0.0, 0.0, 0.13]
     limits: {linear: 0.9, angular: 1.6, acceleration: 1.2}
@@ -84,18 +85,20 @@ morphologies:
   narrow_tandem:
     experiment_support: simulated
     locomotion_mode: differential
-    footprint: [[-0.49, -0.17], [0.49, -0.17], [0.49, 0.17], [-0.49, 0.17]]
-    height: 0.42
-    center_of_mass: [0.0, 0.0, 0.18]
+    # A long, staggered two-track arrangement. Pods remain on the ground and
+    # clear the 0.20 m-wide core; the footprint includes their wheel envelopes.
+    footprint: [[-0.81, -0.18], [0.81, -0.18], [0.81, 0.18], [-0.81, 0.18]]
+    height: 0.30
+    center_of_mass: [0.0, 0.0, 0.13]
     limits: {linear: 0.65, angular: 0.75, acceleration: 0.55}
     controller_id: FollowPathNarrow
     pods:
-      pod_0: [0.38, 0.12, 0.0]
-      pod_1: [0.38, -0.12, 0.0]
-      pod_2: [-0.38, 0.12, 0.0]
-      pod_3: [-0.38, -0.12, 0.0]
-      pod_4: [0.0, 0.12, 0.0]
-      pod_5: [0.0, -0.12, 0.0]
+      pod_0: [0.71, 0.08, 0.0]
+      pod_1: [0.71, -0.08, 0.0]
+      pod_2: [-0.71, 0.08, 0.0]
+      pod_3: [-0.71, -0.08, 0.0]
+      pod_4: [0.35, 0.08, 0.0]
+      pod_5: [-0.35, -0.08, 0.0]
 
   long_crawler:
     experiment_support: future_concept
@@ -134,8 +137,36 @@ transitions:
   - {id: ackermann_to_compact, from: ackermann, to: compact_diff, time: 18.0, energy: 105.0, failure_probability: 0.035, swept_radius: 0.54, moved_pods: [pod_0, pod_1, pod_2, pod_3]}
   - {id: compact_to_wide, from: compact_diff, to: wide_swerve, time: 28.0, energy: 155.0, failure_probability: 0.05, swept_radius: 0.63, moved_pods: [pod_0, pod_1, pod_2, pod_3, pod_4, pod_5]}
   - {id: wide_to_compact, from: wide_swerve, to: compact_diff, time: 28.0, energy: 155.0, failure_probability: 0.05, swept_radius: 0.63, moved_pods: [pod_5, pod_4, pod_3, pod_2, pod_1, pod_0]}
-  - {id: compact_to_narrow, from: compact_diff, to: narrow_tandem, time: 24.0, energy: 140.0, failure_probability: 0.045, swept_radius: 0.58, moved_pods: [pod_4, pod_5, pod_0, pod_1, pod_2, pod_3]}
-  - {id: narrow_to_compact, from: narrow_tandem, to: compact_diff, time: 24.0, energy: 140.0, failure_probability: 0.045, swept_radius: 0.58, moved_pods: [pod_3, pod_2, pod_1, pod_0, pod_5, pod_4]}
+  - id: compact_to_narrow
+    from: compact_diff
+    to: narrow_tandem
+    time: 45.0
+    energy: 220.0
+    failure_probability: 0.045
+    swept_radius: 0.86
+    moved_pods: [pod_0, pod_2, pod_1, pod_3, pod_4, pod_5]
+    pod_waypoints:
+      pod_0: [[0.71, 0.18, 0.0], [0.71, 0.08, -1.5708]]
+      pod_2: [[-0.71, 0.18, 0.0], [-0.71, 0.08, -1.5708]]
+      pod_1: [[0.71, -0.18, 0.0], [0.71, -0.08, 1.5708]]
+      pod_3: [[-0.71, -0.18, 0.0], [-0.71, -0.08, 1.5708]]
+      pod_4: [[0.35, 0.18, 0.0], [0.35, 0.08, -1.5708]]
+      pod_5: [[-0.35, -0.18, 0.0], [-0.35, -0.08, 1.5708]]
+  - id: narrow_to_compact
+    from: narrow_tandem
+    to: compact_diff
+    time: 45.0
+    energy: 220.0
+    failure_probability: 0.045
+    swept_radius: 0.86
+    moved_pods: [pod_4, pod_5, pod_0, pod_2, pod_1, pod_3]
+    pod_waypoints:
+      pod_4: [[0.35, 0.18, 1.5708], [0.35, 0.18, 0.0]]
+      pod_5: [[-0.35, -0.18, -1.5708], [-0.35, -0.18, 0.0]]
+      pod_0: [[0.71, 0.18, 1.5708], [0.71, 0.18, 0.0]]
+      pod_2: [[-0.71, 0.18, 1.5708], [-0.71, 0.18, 0.0]]
+      pod_1: [[0.71, -0.18, -1.5708], [0.71, -0.18, 0.0]]
+      pod_3: [[-0.71, -0.18, -1.5708], [-0.71, -0.18, 0.0]]
   - {id: compact_to_long, from: compact_diff, to: long_crawler, time: 31.0, energy: 175.0, failure_probability: 0.06, swept_radius: 0.76, moved_pods: [pod_0, pod_1, pod_2, pod_3, pod_4, pod_5]}
   - {id: long_to_compact, from: long_crawler, to: compact_diff, time: 31.0, energy: 175.0, failure_probability: 0.06, swept_radius: 0.76, moved_pods: [pod_5, pod_4, pod_3, pod_2, pod_1, pod_0]}
   - {id: compact_to_articulated, from: compact_diff, to: articulated, time: 20.0, energy: 118.0, failure_probability: 0.04, swept_radius: 0.56, moved_pods: [pod_0, pod_1, pod_2, pod_3, pod_4, pod_5]}

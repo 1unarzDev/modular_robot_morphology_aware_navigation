@@ -17,7 +17,10 @@ def generate_launch_description():
         SetEnvironmentVariable("GZ_SIM_SYSTEM_PLUGIN_PATH", os.path.join(plugin_prefix, "lib")),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(os.path.join(gz_share, "launch", "gz_sim.launch.py")),
-            launch_arguments={"gz_args": f"-r -s --physics-engine gz-physics-bullet-featherstone-plugin {share}/worlds/indoor_doorway.sdf"}.items(),
+            # DART supports detachable fixed joints and differential pod yaw.
+            # Pod internals have unique names because DART merges redocked
+            # children into the core skeleton.
+            launch_arguments={"gz_args": f"-r -s {share}/worlds/indoor_doorway.sdf"}.items(),
         ),
         Node(package="ros_gz_bridge", executable="parameter_bridge", name="gz_bridge",
              parameters=[{"config_file": os.path.join(share, "config", "bridge.yaml")}], output="screen"),

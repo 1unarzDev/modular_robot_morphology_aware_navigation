@@ -20,6 +20,29 @@
       </sensor>
     </link>
     <joint name="camera_joint" type="fixed"><parent>base_link</parent><child>camera_link</child></joint>
+    <link name="connector_sensor_link">
+      <pose relative_to="base_link">0 0 -0.08 0 0 0</pose>
+      <sensor name="connector_front" type="logical_camera">
+        <topic>/connector_sensor/front</topic><update_rate>20</update_rate><always_on>true</always_on>
+        <logical_camera><near>0.05</near><far>1.2</far><horizontal_fov>1.8</horizontal_fov><aspect_ratio>1.0</aspect_ratio></logical_camera>
+      </sensor>
+      <sensor name="connector_left" type="logical_camera">
+        <pose>0 0 0 0 0 1.5707963</pose><topic>/connector_sensor/left</topic>
+        <update_rate>20</update_rate><always_on>true</always_on>
+        <logical_camera><near>0.05</near><far>1.2</far><horizontal_fov>1.8</horizontal_fov><aspect_ratio>1.0</aspect_ratio></logical_camera>
+      </sensor>
+      <sensor name="connector_rear" type="logical_camera">
+        <pose>0 0 0 0 0 3.1415927</pose><topic>/connector_sensor/rear</topic>
+        <update_rate>20</update_rate><always_on>true</always_on>
+        <logical_camera><near>0.05</near><far>1.2</far><horizontal_fov>1.8</horizontal_fov><aspect_ratio>1.0</aspect_ratio></logical_camera>
+      </sensor>
+      <sensor name="connector_right" type="logical_camera">
+        <pose>0 0 0 0 0 -1.5707963</pose><topic>/connector_sensor/right</topic>
+        <update_rate>20</update_rate><always_on>true</always_on>
+        <logical_camera><near>0.05</near><far>1.2</far><horizontal_fov>1.8</horizontal_fov><aspect_ratio>1.0</aspect_ratio></logical_camera>
+      </sensor>
+    </link>
+    <joint name="connector_sensor_joint" type="fixed"><parent>base_link</parent><child>connector_sensor_link</child></joint>
     <plugin filename="gz-sim-odometry-publisher-system" name="gz::sim::systems::OdometryPublisher">
       <odom_frame>odom</odom_frame><robot_base_frame>core/base_link</robot_base_frame>
       <odom_topic>/odom</odom_topic><tf_topic>/tf</tf_topic><odom_publish_frequency>50</odom_publish_frequency><dimensions>2</dimensions>
