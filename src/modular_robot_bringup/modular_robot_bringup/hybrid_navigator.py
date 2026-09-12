@@ -5,7 +5,7 @@ import time
 import rclpy
 from geometry_msgs.msg import PoseStamped
 from modular_robot_msgs.action import ComputeHybridPlan, ExecuteReconfiguration, NavigateHybrid
-from modular_robot_msgs.msg import HybridSegment, MorphologyState
+from modular_robot_msgs.msg import HybridSegment, MorphologyState, RelativePoseEstimate
 from nav2_msgs.action import FollowPath
 from rclpy.action import ActionClient, ActionServer
 from rclpy.callback_groups import ReentrantCallbackGroup
@@ -25,7 +25,11 @@ class HybridNavigator(Node):
         qos = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL,
                          reliability=ReliabilityPolicy.RELIABLE)
         self.morphology: MorphologyState | None = None
+        self.sensing_revision = 0
+        self.sensing_signatures = {}
         self.create_subscription(MorphologyState, "morphology_state", self._on_morphology, qos)
+        self.create_subscription(
+            RelativePoseEstimate, "relative_pose_estimate", self._on_sensing, 20)
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
         self.planner = ActionClient(self, ComputeHybridPlan, "compute_hybrid_plan", callback_group=self.group)
@@ -36,6 +40,15 @@ class HybridNavigator(Node):
 
     def _on_morphology(self, message):
         self.morphology = message
+
+    def _on_sensing(self, message):
+        signature = (
+            int(message.uncertainty_class), bool(message.connector_visible),
+            tuple(sorted(message.sources)),
+        )
+        if self.sensing_signatures.get(message.pod_id) != signature:
+            self.sensing_signatures[message.pod_id] = signature
+            self.sensing_revision += 1
 
     async def _execute(self, goal_handle):
         result = NavigateHybrid.Result()
@@ -51,14 +64,25 @@ class HybridNavigator(Node):
                 result.message = "map-to-base transform unavailable"
                 goal_handle.abort()
                 return result
-            plan_result = await self._plan(start, goal_handle.request.goal)
+            plan_result = await self._plan(
+                start, goal_handle.request.goal, goal_handle.request.planner_method)
+            if (plan_result is not None and not plan_result.success
+                    and "revision changed" in plan_result.message):
+                continue
             if plan_result is None or not plan_result.success:
                 result.message = plan_result.message if plan_result else "planner unavailable"
                 goal_handle.abort()
                 return result
             plan = plan_result.plan
             execution_failed = False
+            replan_requested = False
             for index, segment in enumerate(plan.segments):
+                if self.morphology.topology_revision != plan.topology_revision:
+                    replan_requested = True
+                    break
+                if self.sensing_revision != plan.sensing_revision:
+                    replan_requested = True
+                    break
                 feedback = NavigateHybrid.Feedback()
                 feedback.stage = "reconfigure" if segment.kind == HybridSegment.RECONFIGURE else "traverse"
                 feedback.segment_index = index
@@ -72,12 +96,17 @@ class HybridNavigator(Node):
                 if segment.kind == HybridSegment.RECONFIGURE:
                     success = await self._execute_transition(segment)
                     reconfigurations += 1
+                    replan_requested = bool(success)
                 else:
                     success = await self._follow(segment)
                 if not success:
                     execution_failed = True
                     break
+                if replan_requested:
+                    break
             if not execution_failed:
+                if replan_requested:
+                    continue
                 result.success = True
                 result.message = "hybrid navigation completed"
                 result.observed_time = time.monotonic() - started
@@ -109,7 +138,7 @@ class HybridNavigator(Node):
         pose.pose.orientation = transform.transform.rotation
         return pose
 
-    async def _plan(self, start, goal):
+    async def _plan(self, start, goal, planner_method):
         if not self.planner.wait_for_server(timeout_sec=3.0):
             return None
         request = ComputeHybridPlan.Goal()
@@ -117,6 +146,9 @@ class HybridNavigator(Node):
         request.goal = goal
         request.start_morphology = self.morphology.morphology_id
         request.initial_epsilon = 2.5
+        request.planner_method = planner_method
+        request.expected_topology_revision = self.morphology.topology_revision
+        request.expected_sensing_revision = self.sensing_revision
         handle = await self.planner.send_goal_async(request)
         if not handle.accepted:
             return None

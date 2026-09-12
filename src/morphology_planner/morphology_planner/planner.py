@@ -36,6 +36,9 @@ class HybridPlan:
     expanded: int
     epsilon: float
     map_revision: int
+    method_id: str = ""
+    topology_revision: int = 0
+    sensing_revision: int = 0
 
 
 class NoPathError(RuntimeError):
@@ -70,6 +73,8 @@ class MorphologyAStar:
         self.heading_bins = heading_bins
         self.transition_validator = transition_validator or self._validate_transition
         self.cost_model = cost_model or AnalyticCostModel()
+        self._state_collision_cache: dict[HybridState, bool] = {}
+        self._traversal_collision_cache: dict[tuple[HybridState, HybridState], bool] = {}
 
     def plan_anytime(
         self,
@@ -183,14 +188,24 @@ class MorphologyAStar:
             yield target, HybridSegment("traverse", state, target, cost)
 
     def _state_is_free(self, state: HybridState) -> bool:
+        cached = self._state_collision_cache.get(state)
+        if cached is not None:
+            return cached
         if not self.grid.in_bounds(state.x, state.y):
             return False
         wx, wy = self.grid.cell_center(state.x, state.y)
         morphology = self.catalog.morphologies[state.morphology]
-        return self.grid.footprint_is_free(wx, wy, self._yaw(state.heading), morphology.footprint)
+        result = self.grid.footprint_is_free(
+            wx, wy, self._yaw(state.heading), morphology.footprint)
+        self._state_collision_cache[state] = result
+        return result
 
     def _traversal_is_free(self, source: HybridState, target: HybridState) -> bool:
         """Conservatively sample the swept footprint for one lattice primitive."""
+        cache_key = (source, target)
+        cached = self._traversal_collision_cache.get(cache_key)
+        if cached is not None:
+            return cached
         if source.morphology != target.morphology:
             return False
         source_x, source_y = self.grid.cell_center(source.x, source.y)
@@ -212,7 +227,9 @@ class MorphologyAStar:
             wy = source_y + fraction * (target_y - source_y)
             yaw = source_yaw + fraction * delta_yaw
             if not self.grid.footprint_is_free(wx, wy, yaw, morphology.footprint):
+                self._traversal_collision_cache[cache_key] = False
                 return False
+        self._traversal_collision_cache[cache_key] = True
         return True
 
     def _validate_transition(self, transition: Transition, state: HybridState) -> bool:

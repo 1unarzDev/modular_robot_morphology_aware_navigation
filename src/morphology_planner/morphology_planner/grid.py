@@ -112,7 +112,7 @@ class OccupancyGrid:
                 value = self.value(gx, gy)
                 if value >= OCCUPIED or (unknown_is_occupied and value == UNKNOWN):
                     px, py = self.cell_center(gx, gy)
-                    if _point_in_polygon(px, py, polygon):
+                    if _polygon_intersects_cell(polygon, px, py, self.resolution):
                         return False
         return True
 
@@ -151,3 +151,41 @@ def _point_in_polygon(x: float, y: float, polygon: tuple[tuple[float, float], ..
             inside = not inside
         previous = current
     return inside
+
+
+def _polygon_intersects_cell(
+    polygon: tuple[tuple[float, float], ...],
+    center_x: float,
+    center_y: float,
+    resolution: float,
+) -> bool:
+    half = resolution / 2.0
+    left, right = center_x - half, center_x + half
+    bottom, top = center_y - half, center_y + half
+    corners = ((left, bottom), (right, bottom), (right, top), (left, top))
+    if any(_point_in_polygon(x, y, polygon) for x, y in corners):
+        return True
+    if any(left <= x <= right and bottom <= y <= top for x, y in polygon):
+        return True
+    cell_edges = tuple(zip(corners, corners[1:] + corners[:1]))
+    polygon_edges = tuple(zip(polygon, polygon[1:] + polygon[:1]))
+    return any(_segments_intersect(*first, *second)
+               for first in polygon_edges for second in cell_edges)
+
+
+def _segments_intersect(a, b, c, d) -> bool:
+    def orientation(p, q, r):
+        return (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0])
+
+    def on_segment(p, q, r):
+        return (min(p[0], r[0]) - 1e-12 <= q[0] <= max(p[0], r[0]) + 1e-12
+                and min(p[1], r[1]) - 1e-12 <= q[1] <= max(p[1], r[1]) + 1e-12)
+
+    o1, o2 = orientation(a, b, c), orientation(a, b, d)
+    o3, o4 = orientation(c, d, a), orientation(c, d, b)
+    if ((o1 > 0) != (o2 > 0)) and ((o3 > 0) != (o4 > 0)):
+        return True
+    return ((abs(o1) <= 1e-12 and on_segment(a, c, b))
+            or (abs(o2) <= 1e-12 and on_segment(a, d, b))
+            or (abs(o3) <= 1e-12 and on_segment(c, a, d))
+            or (abs(o4) <= 1e-12 and on_segment(c, b, d)))

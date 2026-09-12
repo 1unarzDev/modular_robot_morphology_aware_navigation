@@ -2,7 +2,10 @@ from pathlib import Path
 
 import pytest
 
-from morphology_planner import HybridState, MorphologyAStar, OccupancyGrid, load_catalog
+from morphology_planner import (
+    HybridState, MorphologyAStar, OccupancyGrid, RouteFirstAdaptationPlanner,
+    load_catalog,
+)
 from morphology_planner.grid import OCCUPIED
 from morphology_planner.grid import UNKNOWN
 from morphology_planner.planner import NoPathError
@@ -14,7 +17,7 @@ CATALOG = Path(__file__).parents[1] / "src/modular_robot_description/config/morp
 def doorway_grid():
     grid = OccupancyGrid(40, 25, 0.1)
     for y in range(grid.height):
-        if not 11 <= y <= 14:
+        if not 11 <= y <= 15:
             grid.set_value(20, y, OCCUPIED)
     return grid
 
@@ -74,10 +77,34 @@ def test_motion_primitive_checks_swept_footprint_between_endpoints():
     catalog = load_catalog(CATALOG).supported_experiment_subset()
     grid = OccupancyGrid(50, 50, 0.05)
     # Both endpoint headings fit; the intermediate rotation clips this cell.
-    grid.set_value(27, 21, OCCUPIED)
+    grid.set_value(18, 11, OCCUPIED)
     planner = MorphologyAStar(catalog, grid, heading_bins=4)
     source = HybridState(20, 20, 0, "compact_diff")
     target = HybridState(20, 20, 1, "compact_diff")
     assert planner._state_is_free(source)
     assert planner._state_is_free(target)
     assert not planner._traversal_is_free(source, target)
+
+
+def test_footprint_rejects_occupied_cell_corner_overlap():
+    grid = OccupancyGrid(10, 10, 0.1)
+    grid.set_value(5, 5, OCCUPIED)
+    # The polygon clips the cell's lower-left corner without containing its center.
+    footprint = ((-0.04, -0.04), (0.04, -0.04), (0.04, 0.04), (-0.04, 0.04))
+    assert not grid.footprint_is_free(0.49, 0.49, 0.0, footprint)
+
+
+def test_route_first_baseline_does_not_revise_route_for_transition_feasibility():
+    catalog = load_catalog(CATALOG).supported_experiment_subset()
+    grid = doorway_grid()
+    start = HybridState(7, 13, 0, "compact_diff")
+    # The transition is feasible only after an in-place staging rotation. Joint
+    # search can add it, while the frozen route contains only heading-zero poses.
+    validator = lambda transition, state: state.heading == 1
+    joint = MorphologyAStar(catalog, grid, heading_bins=4,
+                            transition_validator=validator)
+    assert joint.plan(start, (32, 13)).segments
+    sequential = RouteFirstAdaptationPlanner(
+        catalog, grid, heading_bins=4, transition_validator=validator)
+    with pytest.raises(NoPathError, match="fixed spatial route"):
+        sequential.plan(start, (32, 13))

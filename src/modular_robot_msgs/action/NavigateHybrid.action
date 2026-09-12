@@ -1,4 +1,5 @@
 geometry_msgs/PoseStamped goal
+string planner_method
 ---
 bool success
 string message
@@ -9,4 +10,3 @@ string stage
 uint32 segment_index
 uint32 segment_count
 string morphology_id
-

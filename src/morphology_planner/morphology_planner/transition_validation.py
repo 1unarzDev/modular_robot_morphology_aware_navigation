@@ -30,10 +30,18 @@ class TrajectoryPoint:
 
 
 @dataclass(frozen=True)
+class CollisionPart:
+    name: str
+    center: tuple[float, float, float]
+    size: tuple[float, float, float]
+
+
+@dataclass(frozen=True)
 class ModuleTrajectory:
     module_id: str
     size: tuple[float, float, float]
     points: tuple[TrajectoryPoint, ...]
+    collision_parts: tuple[CollisionPart, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -62,6 +70,7 @@ class TransitionTrajectoryValidator:
         target_poses: Mapping[str, Pose3],
         max_relative_speed: float = 0.25,
         max_covariance_trace: float = 0.015,
+        check_sensing: bool = True,
     ) -> TransitionValidationResult:
         reasons: set[str] = set()
         checked = 0
@@ -77,17 +86,20 @@ class TransitionTrajectoryValidator:
             sampled = _sample(trajectory, self.temporal_resolution_s)
             checked += len(sampled)
             for point in sampled:
-                moving = _pose_box(trajectory.module_id, point.pose, trajectory.size)
-                if point.pose.z - trajectory.size[2] / 2 > self.ground_z + self.support_tolerance_m:
+                moving_parts = _trajectory_boxes(trajectory, point.pose)
+                lowest = min(box.center[2] - box.size[2] / 2 for box in moving_parts)
+                if lowest > self.ground_z + self.support_tolerance_m:
                     reasons.add(f"{trajectory.module_id}:unsupported")
-                if any(_overlap(moving, obstacle) for obstacle in environment):
+                if any(_overlap(moving, obstacle) for moving in moving_parts
+                       for obstacle in environment):
                     reasons.add(f"{trajectory.module_id}:environment_collision")
-                if any(_overlap(moving, module) for module in static_modules
+                if any(_overlap(moving, module) for moving in moving_parts
+                       for module in static_modules
                        if module.name != trajectory.module_id):
                     reasons.add(f"{trajectory.module_id}:self_collision")
-                if not point.connector_visible:
+                if check_sensing and not point.connector_visible:
                     reasons.add(f"{trajectory.module_id}:connector_not_visible")
-                if point.covariance_trace > max_covariance_trace:
+                if check_sensing and point.covariance_trace > max_covariance_trace:
                     reasons.add(f"{trajectory.module_id}:covariance_too_large")
             for first, second in zip(sampled, sampled[1:]):
                 dt = second.time_s - first.time_s
@@ -105,11 +117,74 @@ class TransitionTrajectoryValidator:
             step_count = int(duration / self.temporal_resolution_s) + 1
             for index in range(step_count + 1):
                 timestamp = min(duration, index * self.temporal_resolution_s)
-                boxes = [_pose_box(t.module_id, _at(t, timestamp).pose, t.size) for t in trajectories]
-                if any(_overlap(a, b) for i, a in enumerate(boxes) for b in boxes[i + 1:]):
+                boxes = [_trajectory_boxes(t, _at(t, timestamp).pose) for t in trajectories]
+                if any(
+                    _overlap(a, b)
+                    for first_index, first in enumerate(boxes)
+                    for second in boxes[first_index + 1:]
+                    for a in first for b in second
+                ):
                     reasons.add("moving_module_self_collision")
                     break
         return TransitionValidationResult(not reasons, tuple(sorted(reasons)), checked)
+
+    def validate_environment(
+        self,
+        trajectories: tuple[ModuleTrajectory, ...],
+        environment: tuple[Box3, ...],
+    ) -> TransitionValidationResult:
+        """Check only pose-dependent environment collisions for a cached edge."""
+        reasons: set[str] = set()
+        checked = 0
+        for trajectory in trajectories:
+            sampled = _sample(trajectory, self.temporal_resolution_s)
+            checked += len(sampled)
+            if any(
+                _overlap(moving, obstacle)
+                for point in sampled
+                for moving in _trajectory_boxes(trajectory, point.pose)
+                for obstacle in environment
+            ):
+                reasons.add(f"{trajectory.module_id}:environment_collision")
+        return TransitionValidationResult(not reasons, tuple(sorted(reasons)), checked)
+
+    def swept_boxes(
+        self, trajectories: tuple[ModuleTrajectory, ...]
+    ) -> tuple[Box3, ...]:
+        """Return a deduplicated conservative swept-box representation."""
+        output: list[Box3] = []
+        seen: set[tuple] = set()
+        for trajectory in trajectories:
+            for point in _sample(trajectory, self.temporal_resolution_s):
+                for box in _trajectory_boxes(trajectory, point.pose):
+                    key = (
+                        box.name,
+                        *(round(value, 4) for value in box.center),
+                        *(round(value, 4) for value in box.size),
+                    )
+                    if key not in seen:
+                        seen.add(key)
+                        output.append(box)
+        return tuple(output)
+
+    @staticmethod
+    def validate_swept_environment(
+        swept_boxes: tuple[Box3, ...],
+        environment: tuple[Box3, ...],
+        offset_x: float,
+        offset_y: float,
+    ) -> TransitionValidationResult:
+        reasons: set[str] = set()
+        for box in swept_boxes:
+            translated = Box3(
+                box.name,
+                (box.center[0] + offset_x, box.center[1] + offset_y, box.center[2]),
+                box.size,
+            )
+            if any(_overlap(translated, obstacle) for obstacle in environment):
+                reasons.add(f"{box.name.split('/', 1)[0]}:environment_collision")
+        return TransitionValidationResult(
+            not reasons, tuple(sorted(reasons)), len(swept_boxes))
 
 
 def _sample(trajectory: ModuleTrajectory, resolution: float) -> tuple[TrajectoryPoint, ...]:
@@ -145,6 +220,22 @@ def _pose_box(name: str, pose: Pose3, size: tuple[float, float, float]) -> Box3:
     extent_x = abs(cos(pose.yaw)) * size[0] + abs(sin(pose.yaw)) * size[1]
     extent_y = abs(sin(pose.yaw)) * size[0] + abs(cos(pose.yaw)) * size[1]
     return Box3(name, (pose.x, pose.y, pose.z), (extent_x, extent_y, size[2]))
+
+
+def _trajectory_boxes(trajectory: ModuleTrajectory, pose: Pose3) -> tuple[Box3, ...]:
+    if not trajectory.collision_parts:
+        return (_pose_box(trajectory.module_id, pose, trajectory.size),)
+    output = []
+    for part in trajectory.collision_parts:
+        x, y, z = part.center
+        center = Pose3(
+            pose.x + cos(pose.yaw) * x - sin(pose.yaw) * y,
+            pose.y + sin(pose.yaw) * x + cos(pose.yaw) * y,
+            pose.z + z,
+            pose.yaw,
+        )
+        output.append(_pose_box(f"{trajectory.module_id}/{part.name}", center, part.size))
+    return tuple(output)
 
 
 def _overlap(first: Box3, second: Box3) -> bool:

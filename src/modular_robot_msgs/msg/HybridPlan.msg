@@ -5,4 +5,6 @@ float64 total_cost
 uint32 expanded_states
 float32 epsilon
 uint64 map_revision
-
+string method_id
+uint64 topology_revision
+uint64 sensing_revision

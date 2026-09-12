@@ -29,3 +29,14 @@ def test_confirmatory_subset_contains_only_physically_supported_modes():
     assert {transition.id for transition in subset.transitions} == {
         "compact_to_narrow", "narrow_to_compact",
     }
+    assert subset.module_sizes["pod_0"] == (0.18, 0.175, 0.12)
+
+
+def test_confirmatory_transitions_have_plannable_pod_geometry():
+    catalog = load_catalog(CATALOG).supported_experiment_subset()
+    assert all(len(pose) == 3 for morphology in catalog.morphologies.values()
+               for pose in morphology.pod_poses.values())
+    for transition in catalog.transitions:
+        assert set(transition.moved_pods) <= set(catalog.morphologies[transition.source].pod_poses)
+        assert set(transition.moved_pods) <= set(catalog.morphologies[transition.target].pod_poses)
+        assert set(transition.pod_waypoints) <= set(transition.moved_pods)

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 from math import atan2, cos, sin
 
 import rclpy
@@ -8,14 +9,18 @@ from geometry_msgs.msg import PoseStamped
 from modular_robot_msgs.action import ComputeHybridPlan
 from modular_robot_msgs.msg import HybridPlan as HybridPlanMsg
 from modular_robot_msgs.msg import HybridSegment as HybridSegmentMsg
+from modular_robot_msgs.msg import MorphologyState, RelativePoseEstimate
 from nav_msgs.msg import OccupancyGrid as OccupancyGridMsg
 from rclpy.action import ActionServer
 from rclpy.node import Node
+from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
 
 from .catalog import load_catalog
 from .cost_model import LinearCalibratedCostModel, OnnxCostModel
 from .grid import OccupancyGrid
-from .planner import HybridState, MorphologyAStar, NoPathError
+from .methods import make_method_planner
+from .planner import HybridState, NoPathError
+from .transition_policy import PodSensingState
 
 
 class PlannerServer(Node):
@@ -30,20 +35,42 @@ class PlannerServer(Node):
         self.declare_parameter("planning_resolution", 0.1)
         self.declare_parameter("cost_model", "")
         self.declare_parameter("experiment_supported_only", True)
+        self.declare_parameter("planner_method", "sensing_feasibility_coupled")
         catalog = load_catalog(self.get_parameter("catalog").value)
         self._catalog = (
             catalog.supported_experiment_subset()
             if self.get_parameter("experiment_supported_only").value else catalog
         )
         self._grid: OccupancyGrid | None = None
+        self._map_signature = ""
+        self._map_revision = 0
+        self._topology_revision = 0
+        self._sensing_revision = 0
+        self._sensing_signatures: dict[str, tuple] = {}
+        self._sensing: dict[str, PodSensingState] = {}
         self._map_sub = self.create_subscription(
             OccupancyGridMsg, "/map", self._on_map, 1
         )
+        qos = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL,
+                         reliability=ReliabilityPolicy.RELIABLE)
+        self.create_subscription(
+            MorphologyState, "morphology_state", self._on_morphology, qos)
+        self.create_subscription(
+            RelativePoseEstimate, "relative_pose_estimate", self._on_sensing, 20)
         self._server = ActionServer(
             self, ComputeHybridPlan, "compute_hybrid_plan", self._execute
         )
 
     def _on_map(self, message: OccupancyGridMsg) -> None:
+        digest = hashlib.sha256()
+        digest.update(
+            f"{message.info.width}|{message.info.height}|{message.info.resolution}|"
+            f"{message.info.origin.position.x}|{message.info.origin.position.y}|".encode())
+        digest.update(bytes((value + 1) & 0xff for value in message.data))
+        signature = digest.hexdigest()
+        if signature != self._map_signature:
+            self._map_signature = signature
+            self._map_revision += 1
         native = OccupancyGrid(
             width=message.info.width,
             height=message.info.height,
@@ -51,9 +78,26 @@ class PlannerServer(Node):
             origin_x=message.info.origin.position.x,
             origin_y=message.info.origin.position.y,
             data=list(message.data),
-            revision=(self._grid.revision + 1) if self._grid else 1,
+            revision=self._map_revision,
         )
         self._grid = native.coarsen(float(self.get_parameter("planning_resolution").value))
+
+    def _on_morphology(self, message: MorphologyState) -> None:
+        self._topology_revision = int(message.topology_revision)
+
+    def _on_sensing(self, message: RelativePoseEstimate) -> None:
+        signature = (
+            int(message.uncertainty_class), bool(message.connector_visible),
+            tuple(sorted(message.sources)),
+        )
+        if self._sensing_signatures.get(message.pod_id) != signature:
+            self._sensing_signatures[message.pod_id] = signature
+            self._sensing_revision += 1
+        covariance = message.pose.covariance
+        self._sensing[message.pod_id] = PodSensingState(
+            bool(message.connector_visible),
+            float(covariance[0] + covariance[7] + covariance[35]),
+        )
 
     async def _execute(self, goal_handle):
         result = ComputeHybridPlan.Result()
@@ -64,35 +108,52 @@ class PlannerServer(Node):
             return result
 
         request = goal_handle.request
-        planner = MorphologyAStar(
-            self._catalog, self._grid,
-            heading_bins=self.get_parameter("heading_bins").value,
-            cost_model=self._cost_model(),
-        )
-        sx, sy = self._grid.world_to_cell(
-            request.start.pose.position.x, request.start.pose.position.y
-        )
-        gx, gy = self._grid.world_to_cell(
-            request.goal.pose.position.x, request.goal.pose.position.y
-        )
-        heading = _heading_bin(request.start, planner.heading_bins)
+        if (request.expected_topology_revision and
+                request.expected_topology_revision != self._topology_revision):
+            result.success = False
+            result.message = "topology revision changed before planning"
+            goal_handle.abort()
+            return result
+        if (request.expected_sensing_revision and
+                request.expected_sensing_revision != self._sensing_revision):
+            result.success = False
+            result.message = "sensing signature changed before planning"
+            goal_handle.abort()
+            return result
         try:
-            epsilon = max(1.0, float(request.initial_epsilon or 2.5))
-            plans = planner.plan_anytime(
-                HybridState(sx, sy, heading, request.start_morphology),
-                (gx, gy),
-                (epsilon,),
+            method = str(request.planner_method or self.get_parameter("planner_method").value)
+            planner = make_method_planner(
+                method, self._catalog, self._grid,
+                heading_bins=self.get_parameter("heading_bins").value,
+                sensing=self._sensing,
+                cost_model=self._cost_model(),
+                topology_revision=self._topology_revision,
+                sensing_revision=self._sensing_revision,
             )
+            sx, sy = self._grid.world_to_cell(
+                request.start.pose.position.x, request.start.pose.position.y
+            )
+            gx, gy = self._grid.world_to_cell(
+                request.goal.pose.position.x, request.goal.pose.position.y
+            )
+            heading = _heading_bin(request.start, planner.planner.heading_bins
+                                   if hasattr(planner.planner, "heading_bins")
+                                   else planner.planner.hybrid.heading_bins)
+            epsilon = max(1.0, float(request.initial_epsilon or 2.5))
+            plan = planner.plan(
+                HybridState(sx, sy, heading, request.start_morphology),
+                (gx, gy), epsilon)
         except (NoPathError, ValueError) as exc:
             result.success = False
             result.message = str(exc)
             goal_handle.abort()
             return result
 
-        plan = plans[-1]
         result.plan = _to_message(
             plan, self._grid, self._catalog,
-            request.start.header.frame_id or "map", planner.heading_bins,
+            request.start.header.frame_id or "map",
+            planner.planner.heading_bins if hasattr(planner.planner, "heading_bins")
+            else planner.planner.hybrid.heading_bins,
         )
         result.success = True
         result.message = "hybrid plan found"
@@ -130,6 +191,9 @@ def _to_message(plan, grid: OccupancyGrid, catalog, frame_id: str, heading_bins:
     message.expanded_states = plan.expanded
     message.epsilon = plan.epsilon
     message.map_revision = plan.map_revision
+    message.method_id = plan.method_id
+    message.topology_revision = plan.topology_revision
+    message.sensing_revision = plan.sensing_revision
     for segment in plan.segments:
         if (segment.kind == "traverse" and message.segments
                 and message.segments[-1].kind == HybridSegmentMsg.TRAVERSE

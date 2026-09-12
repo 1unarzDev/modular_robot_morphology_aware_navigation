@@ -2,6 +2,9 @@ geometry_msgs/PoseStamped start
 geometry_msgs/PoseStamped goal
 string start_morphology
 float32 initial_epsilon
+string planner_method
+uint64 expected_topology_revision
+uint64 expected_sensing_revision
 ---
 bool success
 string message
@@ -10,4 +13,3 @@ modular_robot_msgs/HybridPlan plan
 uint32 expanded_states
 float64 incumbent_cost
 float32 epsilon
-

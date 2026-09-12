@@ -17,6 +17,12 @@ inventory:
     type: steer_drive_pod
     # Includes the wheel collision envelopes (centers +/-0.07 m, 0.035 m wide).
     size: [0.18, 0.175, 0.12]
+    # Compound boxes match the body and conservative wheel-cylinder bounds.
+    # Centers are relative to the 0.12 m envelope center used by planning.
+    collision_boxes:
+      - {name: body, center: [0.0, 0.0, 0.01], size: [0.18, 0.10, 0.10]}
+      - {name: left_wheel, center: [0.0, 0.07, -0.005], size: [0.11, 0.035, 0.11]}
+      - {name: right_wheel, center: [0.0, -0.07, -0.005], size: [0.11, 0.035, 0.11]}
     mass: 2.1
     wheel_radius: 0.055
     max_drive_speed: 1.2
@@ -87,18 +93,18 @@ morphologies:
     locomotion_mode: differential
     # A long, staggered two-track arrangement. Pods remain on the ground and
     # clear the 0.20 m-wide core; the footprint includes their wheel envelopes.
-    footprint: [[-0.81, -0.18], [0.81, -0.18], [0.81, 0.18], [-0.81, 0.18]]
+    footprint: [[-0.81, -0.19], [0.81, -0.19], [0.81, 0.19], [-0.81, 0.19]]
     height: 0.30
     center_of_mass: [0.0, 0.0, 0.13]
     limits: {linear: 0.65, angular: 0.75, acceleration: 0.55}
     controller_id: FollowPathNarrow
     pods:
-      pod_0: [0.71, 0.08, 0.0]
-      pod_1: [0.71, -0.08, 0.0]
-      pod_2: [-0.71, 0.08, 0.0]
-      pod_3: [-0.71, -0.08, 0.0]
-      pod_4: [0.35, 0.08, 0.0]
-      pod_5: [-0.35, -0.08, 0.0]
+      pod_0: [0.71, 0.10, 0.0]
+      pod_1: [0.71, -0.10, 0.0]
+      pod_2: [-0.71, 0.10, 0.0]
+      pod_3: [-0.71, -0.10, 0.0]
+      pod_4: [0.35, 0.10, 0.0]
+      pod_5: [-0.35, -0.10, 0.0]
 
   long_crawler:
     experiment_support: future_concept
@@ -146,12 +152,12 @@ transitions:
     swept_radius: 0.86
     moved_pods: [pod_0, pod_2, pod_1, pod_3, pod_4, pod_5]
     pod_waypoints:
-      pod_0: [[0.71, 0.18, 0.0], [0.71, 0.08, -1.5708]]
-      pod_2: [[-0.71, 0.18, 0.0], [-0.71, 0.08, -1.5708]]
-      pod_1: [[0.71, -0.18, 0.0], [0.71, -0.08, 1.5708]]
-      pod_3: [[-0.71, -0.18, 0.0], [-0.71, -0.08, 1.5708]]
-      pod_4: [[0.35, 0.18, 0.0], [0.35, 0.08, -1.5708]]
-      pod_5: [[-0.35, -0.18, 0.0], [-0.35, -0.08, 1.5708]]
+      pod_0: [[0.71, 0.18, 0.0], [0.71, 0.10, -1.5708]]
+      pod_2: [[-0.71, 0.18, 0.0], [-0.71, 0.10, -1.5708]]
+      pod_1: [[0.71, -0.18, 0.0], [0.71, -0.10, 1.5708]]
+      pod_3: [[-0.71, -0.18, 0.0], [-0.71, -0.10, 1.5708]]
+      pod_4: [[0.35, 0.18, 0.0], [0.35, 0.10, -1.5708]]
+      pod_5: [[-0.35, -0.18, 0.0], [-0.35, -0.10, 1.5708]]
   - id: narrow_to_compact
     from: narrow_tandem
     to: compact_diff

@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from math import isfinite
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Mapping, Sequence
 
 import yaml
 
@@ -26,6 +26,7 @@ class Morphology:
     limits: Limits
     controller_id: str
     experiment_supported: bool = False
+    pod_poses: Mapping[str, tuple[float, float, float]] = field(default_factory=dict)
 
     @property
     def radius(self) -> float:
@@ -42,6 +43,7 @@ class Transition:
     failure_probability: float
     swept_radius: float
     moved_pods: tuple[str, ...]
+    pod_waypoints: Mapping[str, tuple[tuple[float, float, float], ...]] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -56,6 +58,10 @@ class Catalog:
     morphologies: Mapping[str, Morphology]
     transitions: tuple[Transition, ...]
     objective: Objective
+    module_sizes: Mapping[str, tuple[float, float, float]] = field(default_factory=dict)
+    module_collision_boxes: Mapping[
+        str, tuple[tuple[str, tuple[float, float, float], tuple[float, float, float]], ...]
+    ] = field(default_factory=dict)
 
     def outgoing(self, morphology_id: str) -> tuple[Transition, ...]:
         return tuple(t for t in self.transitions if t.source == morphology_id)
@@ -72,7 +78,10 @@ class Catalog:
         )
         if not morphologies:
             raise ValueError("catalog has no experiment-supported morphologies")
-        return Catalog(morphologies, transitions, self.objective)
+        return Catalog(
+            morphologies, transitions, self.objective, self.module_sizes,
+            self.module_collision_boxes,
+        )
 
 
 def _positive(value: Any, field: str) -> float:
@@ -80,6 +89,15 @@ def _positive(value: Any, field: str) -> float:
     if not isfinite(number) or number <= 0:
         raise ValueError(f"{field} must be finite and positive")
     return number
+
+
+def _finite_tuple(value: Any, length: int, field: str) -> tuple[float, ...]:
+    if not isinstance(value, Sequence) or isinstance(value, (str, bytes)) or len(value) != length:
+        raise ValueError(f"{field} must contain exactly {length} values")
+    result = tuple(float(item) for item in value)
+    if not all(isfinite(item) for item in result):
+        raise ValueError(f"{field} must contain only finite values")
+    return result
 
 
 def load_catalog(path: str | Path) -> Catalog:
@@ -108,6 +126,10 @@ def load_catalog(path: str | Path) -> Catalog:
             ),
             controller_id=str(value["controller_id"]),
             experiment_supported=value.get("experiment_support") == "simulated",
+            pod_poses={
+                pod: _finite_tuple(pose, 3, f"{morphology_id}.pods.{pod}")
+                for pod, pose in value.get("pods", {}).items()
+            },
         )
 
     transitions = []
@@ -120,6 +142,16 @@ def load_catalog(path: str | Path) -> Catalog:
         source, target = str(value["from"]), str(value["to"])
         if source not in morphologies or target not in morphologies:
             raise ValueError(f"{transition_id}: unknown endpoint")
+        moved_pods = tuple(value.get("moved_pods", []))
+        unknown_pods = set(moved_pods) - set(morphologies[source].pod_poses)
+        if unknown_pods:
+            raise ValueError(f"{transition_id}: unknown moved pods: {sorted(unknown_pods)}")
+        waypoint_values = value.get("pod_waypoints", {})
+        if set(waypoint_values) - set(moved_pods):
+            raise ValueError(f"{transition_id}: waypoints supplied for an unmoved pod")
+        missing_target_poses = set(moved_pods) - set(morphologies[target].pod_poses)
+        if missing_target_poses:
+            raise ValueError(f"{transition_id}: target poses missing for {sorted(missing_target_poses)}")
         probability = float(value["failure_probability"])
         if not 0.0 <= probability < 1.0:
             raise ValueError(f"{transition_id}: invalid failure probability")
@@ -131,7 +163,14 @@ def load_catalog(path: str | Path) -> Catalog:
             energy=_positive(value["energy"], f"{transition_id}.energy"),
             failure_probability=probability,
             swept_radius=_positive(value["swept_radius"], f"{transition_id}.swept_radius"),
-            moved_pods=tuple(value.get("moved_pods", [])),
+            moved_pods=moved_pods,
+            pod_waypoints={
+                pod: tuple(
+                    _finite_tuple(pose, 3, f"{transition_id}.pod_waypoints.{pod}")
+                    for pose in poses
+                )
+                for pod, poses in waypoint_values.items()
+            },
         ))
 
     objective = raw["objective"]
@@ -143,4 +182,26 @@ def load_catalog(path: str | Path) -> Catalog:
             lambda_risk=float(objective["lambda_risk_seconds"]),
             unknown_space_risk=float(objective["unknown_space_risk"]),
         ),
+        module_sizes={
+            module: tuple(
+                _positive(item, f"inventory.{module}.size") for item in
+                _finite_tuple(value["size"], 3, f"inventory.{module}.size")
+            )
+            for module, value in raw["inventory"].items()
+        },
+        module_collision_boxes={
+            module: tuple(
+                (
+                    str(box.get("name", f"part_{index}")),
+                    _finite_tuple(box.get("center", (0.0, 0.0, 0.0)), 3,
+                                  f"inventory.{module}.collision_boxes.{index}.center"),
+                    tuple(_positive(item, f"inventory.{module}.collision_boxes.{index}.size")
+                          for item in _finite_tuple(
+                              box["size"], 3,
+                              f"inventory.{module}.collision_boxes.{index}.size")),
+                )
+                for index, box in enumerate(value.get("collision_boxes", ()))
+            )
+            for module, value in raw["inventory"].items()
+        },
     )
