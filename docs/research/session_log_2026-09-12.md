@@ -327,3 +327,9 @@ All artifacts in this section are engineering-only debug evidence.
   estimate, Monte Carlo standard error, and assumptions.
 - Output identifies the worst-case cell and gives an all-cells target-power
   decision, preventing selection of one favorable pilot nuisance estimate.
+- Strengthened the decision after review: every cell now carries a 95% Wilson
+  interval for simulated power, and the design passes only if every lower bound
+  reaches the target. This prevents Monte Carlo noise around 0.80 from deciding
+  the retained sample size.
+- Updated the project status and critical path after the controller-ownership
+  diagnosis. Confirmatory collection remains blocked at 0/432.

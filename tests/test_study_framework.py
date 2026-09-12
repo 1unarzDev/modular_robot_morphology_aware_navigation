@@ -147,6 +147,8 @@ def test_prospective_power_simulation_is_deterministic_and_labeled():
     assert first == second
     assert first["purpose"] == "prospective_design_only"
     assert 0 <= first["estimated_power"] <= 1
+    assert first["monte_carlo_power_ci95"][0] <= first["estimated_power"]
+    assert first["estimated_power"] <= first["monte_carlo_power_ci95"][1]
 
 
 def test_prospective_power_grid_reports_worst_case_and_all_cell_decision():
@@ -155,8 +157,10 @@ def test_prospective_power_grid_reports_worst_case_and_all_cell_decision():
         simulations=100, randomization_draws=199, seed=7)
     assert result["purpose"] == "prospective_nuisance_grid"
     assert result["cell_count"] == 8
-    assert result["minimum_estimated_power"] == min(
-        cell["estimated_power"] for cell in result["cells"])
+    worst = min(result["cells"], key=lambda cell: cell["monte_carlo_power_ci95"][0])
+    assert result["minimum_estimated_power"] == worst["estimated_power"]
+    assert result["minimum_power_ci95_lower_bound"] == worst["monte_carlo_power_ci95"][0]
+    assert "Wilson lower bound" in result["decision_rule"]
     assert isinstance(result["design_meets_target_in_every_cell"], bool)
 
 

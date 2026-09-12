@@ -166,7 +166,10 @@ interest, run `morphology_study power-grid` separately for the 36-layout
 all-family scope and 24-layout sensing-family scope. Supply at least two control
 rates, two layout logit standard deviations, and two paired-noise fractions,
 including the declared adverse value of each. The command archives every cell,
-its independently seeded Monte Carlo estimate and standard error, the worst-case
-assumptions, and whether every cell meets target power. If either scope fails the
-all-cell decision, increase independent layouts and rerun the same frozen grid;
-do not change the effect threshold.
+its independently seeded Monte Carlo estimate, standard error, and 95% Wilson
+interval, the worst-case assumptions, and whether every cell meets target power.
+The pass decision uses every cell's lower interval endpoint, so Monte Carlo
+error cannot promote a point estimate just above the target. If either scope
+fails, first increase power simulations until Monte Carlo precision is adequate;
+if the lower bound still fails, increase independent layouts and rerun the same
+frozen grid. Do not change the effect threshold.

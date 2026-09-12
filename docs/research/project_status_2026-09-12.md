@@ -2,12 +2,14 @@
 
 ## Submission-level assessment
 
-The project has a defensible research question, a working ROS/Gazebo platform
-slice, four executable planning methods, generated held-out worlds, a resumable
-mission runner, and a reproducible confirmatory analysis pipeline. It does not
-yet have conference evidence because the platform has only one successful
-round-trip qualification, the evaluator and perceived 3D context are incomplete,
-and the frozen study contains zero terminal records.
+The project has a defensible research question, a substantial ROS/Gazebo
+platform slice, four executable planning methods, generated held-out worlds, a
+resumable mission runner, and a reproducible confirmatory analysis pipeline. It
+does not yet have conference evidence. Physical detach, connector seating, and
+redocking work in engineering runs, but the docked assembly cannot yet pass the
+motion gate reliably because DART merges separately controlled pod models into
+one skeleton. The evaluator and perceived 3D context are incomplete, and the
+frozen study contains zero terminal records.
 
 The strongest paper contribution is the planner's decision boundary: it jointly
 selects route and morphology while admitting a reconfiguration edge only when
@@ -19,16 +21,16 @@ Cheng, and Tu prevent broader first-system claims.
 
 | Workstream | Current state | Evidence |
 |---|---|---|
-| Self-mobile platform | Six differential-drive pods, physical DART detach/yaw/redock, compact and narrow assembled drive | One revised round trip passed; 20-run gate remains open |
+| Self-mobile platform | Six differential-drive pods; physical detach, connector seating, and redocking | Detached motion works; docked controller ownership blocks repeatable yaw and the 20-run gate |
 | Topology safety | Observed topology revisions and `RECOVERY_REQUIRED`; drive inhibited after partial failure | Unit tests and live injected failure |
 | Sensing | Wheel odometry plus idealized connector cameras; covariance, visibility, source and staleness gates | Unit tests and live topics; no physical perception claim |
 | Hybrid planning | Weighted A* on `(x,y,heading,morphology)` plus explicit route-first baseline | Host golden tests |
 | Transition feasibility | Sequential world-frame trajectories with compound pod body/wheel collision bounds and structured rejection reasons | Host tests distinguish planar, 3D, and sensing cases |
 | Plan validity | Method/map/topology/sensing revisions; replan after reconfiguration or meaningful revision change | Host tests and nine-package ROS build |
-| Statistics | Frozen paired design, immutable records, layout bootstrap, sign-flip tests, Holm adjustment, calibration, power simulation, deterministic artifacts | Host tests; 0/432 confirmatory records |
+| Statistics | Frozen paired design, immutable records, layout bootstrap, sign-flip tests, Holm adjustment, calibration, nuisance-grid power simulation with Monte Carlo uncertainty, deterministic artifacts | Host tests; 0/432 confirmatory records |
 | Mission automation | Generated SDF/manifest per trial, isolated full-stack process, readiness gates including fresh lidar and odometry, simulated/wall deadlines, immutable resumable records | Debug engineering runs only; no valid pilot records |
 
-Current automated verification: 73 host tests pass; all nine ROS packages build
+Current automated verification: 83 host tests pass; all nine ROS packages build
 and package smoke tests pass. The confirmatory design hash remains
 `e9115d543af0969db7825398f7e2691361bdb536530d93e49db4528f21c51cf5`.
 
@@ -188,6 +190,71 @@ p-value resolution, plus Monte Carlo standard error for simulated randomization
 p values. The confirmatory design hash remains
 `e9115d543af0969db7825398f7e2691361bdb536530d93e49db4528f21c51cf5` and the
 confirmatory evidence count remains **0/432**.
+
+## Revised implementation sequence after controller-ownership diagnosis
+
+### M0 — replace assembled wheel ownership
+
+Model each confirmatory morphology as one articulated assembly with one
+controller owning every wheel joint. Preserve the six self-mobile pod models
+while detached and transfer state through explicit dock/undock interfaces. A
+transition succeeds only after connector seating, observed topology agreement,
+and the existing post-transition motion qualification. Compare at least two
+physics-compatible implementations in engineering runs and retain the rejected
+alternative and reason.
+
+Exit gate: 20 consecutive randomized compact-to-narrow-to-compact round trips,
+each passing forward, reverse, and both-yaw qualification, followed by the full
+partial-transition failure matrix with zero unsafe drive re-enables.
+
+### M1 — complete measured outcome sources
+
+Add evaluator-only synchronized full-geometry collision and clearance, autonomy
+versus truth localization error, per-transition predicted probability and
+terminal outcome, recovery counts, and process-health provenance. Validate
+timestamp coverage and denominators with intentionally successful, collision,
+localization-loss, docking-failure, and timeout records.
+
+Exit gate: every field named in the statistical plan is populated from a
+documented source and one automated audit rejects missing or temporally
+misaligned telemetry.
+
+### M2 — demonstrate the planner mechanism
+
+Bind sensor-derived, location-dependent 3D obstacles and connector
+observability to candidate transition sites. Freeze golden cases for the three
+constraint families plus neutral controls. Generate a decision-separation
+report showing route/transition signatures and structured rejection reasons for
+all four methods.
+
+Exit gate: each ablation changes decisions in its intended stress cases and the
+methods agree in neutral controls, without using evaluator truth.
+
+### M3 — unattended pilot and prospective design decision
+
+Run a disjoint pilot only after M0--M2 pass. Freeze the operational smallest
+effect of interest independently of observed method differences, then freeze a
+nuisance grid. Evaluate the 36-layout and 24-layout contrast scopes. A scope
+passes only when every cell's 95% Wilson lower bound for simulated power reaches
+the target. Increase simulations for Monte Carlo precision, then independent
+layouts if the conservative lower bound remains inadequate.
+
+Exit gate: immutable pilot records, a signed decision record, two archived
+power-grid JSON files, and a re-frozen confirmatory design if 432 trials are
+insufficient.
+
+### M4 — confirmatory evidence and robustness
+
+Collect complete randomized blocks without inspecting method outcomes. Run the
+predeclared layout-balanced contrasts, Holm-adjusted sign-flip tests, and
+cluster intervals once all integrity checks pass. Implement and freeze the
+paired hierarchical logistic sensitivity analysis before unblinding. Report a
+transparent null result if intervals exclude or fail to establish the smallest
+useful effect.
+
+Exit gate: complete immutable records, hierarchical sensitivity output,
+deterministic tables and figures, calibration and failure analyses, videos with
+sensor/topology overlays, and one-command artifact reproduction.
 
 ## Current implementation gate: post-transition plant qualification
 

@@ -6,7 +6,7 @@ import json
 from math import exp, log, sqrt
 from pathlib import Path
 from random import Random
-from statistics import fmean
+from statistics import fmean, NormalDist
 
 
 @dataclass(frozen=True)
@@ -47,6 +47,20 @@ def _sign_flip_p(effects: list[float], draws: int, rng: Random) -> float:
     return (exceed + 1) / (draws + 1)
 
 
+def _wilson_interval(successes: int, trials: int,
+                     confidence: float = 0.95) -> tuple[float, float]:
+    """Wilson interval for the Monte Carlo rejection probability."""
+    if not 0 <= successes <= trials or trials <= 0 or not 0 < confidence < 1:
+        raise ValueError("invalid binomial interval inputs")
+    probability = successes / trials
+    z = NormalDist().inv_cdf(0.5 + confidence / 2)
+    denominator = 1 + z * z / trials
+    center = (probability + z * z / (2 * trials)) / denominator
+    radius = z / denominator * sqrt(
+        probability * (1 - probability) / trials + z * z / (4 * trials * trials))
+    return max(0.0, center - radius), min(1.0, center + radius)
+
+
 def estimate_power(assumptions: PowerAssumptions, simulations: int = 2000,
                    randomization_draws: int = 1999, seed: int = 20260911) -> dict:
     """Simulation-based prospective power for the planned layout sign-flip test.
@@ -83,6 +97,7 @@ def estimate_power(assumptions: PowerAssumptions, simulations: int = 2000,
         observed_effects.append(fmean(effects))
         rejected += _sign_flip_p(effects, randomization_draws, rng) <= assumptions.alpha
     probability = rejected / simulations
+    power_interval = _wilson_interval(rejected, simulations)
     result = {
         "schema_version": 1,
         "purpose": "prospective_design_only",
@@ -92,6 +107,7 @@ def estimate_power(assumptions: PowerAssumptions, simulations: int = 2000,
         "seed": seed,
         "estimated_power": probability,
         "monte_carlo_se": sqrt(probability * (1 - probability) / simulations),
+        "monte_carlo_power_ci95": list(power_interval),
         "simulated_marginal_control_rate": fmean(observed_control),
         "simulated_marginal_treatment_rate": fmean(observed_treatment),
         "simulated_mean_rate_difference": fmean(observed_effects),
@@ -121,7 +137,7 @@ def estimate_power_grid(
             layout_count, replicates, control, treatment, layout_sd, pairing,
             alpha), simulations, randomization_draws, seed + index * 100003)
         cells.append(result)
-    worst = min(cells, key=lambda value: value["estimated_power"])
+    worst = min(cells, key=lambda value: value["monte_carlo_power_ci95"][0])
     return {
         "schema_version": 1,
         "purpose": "prospective_nuisance_grid",
@@ -131,9 +147,11 @@ def estimate_power_grid(
         "cell_count": len(cells),
         "cells": cells,
         "minimum_estimated_power": worst["estimated_power"],
+        "minimum_power_ci95_lower_bound": worst["monte_carlo_power_ci95"][0],
         "worst_case_assumptions": worst["assumptions"],
+        "decision_rule": "every cell's 95% Wilson lower bound meets target power",
         "design_meets_target_in_every_cell": all(
-            cell["estimated_power"] >= target_power for cell in cells),
+            cell["monte_carlo_power_ci95"][0] >= target_power for cell in cells),
     }
 
 
