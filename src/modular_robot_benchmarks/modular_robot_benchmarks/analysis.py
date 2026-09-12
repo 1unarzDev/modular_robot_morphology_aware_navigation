@@ -221,6 +221,36 @@ def analyze(records: list[TrialRecord], design: StudyDesign,
         predictions_by_method[record.spec.method].extend(zip(
             record.predicted_transition_probabilities, record.observed_transition_outcomes))
     predictions = [value for values in predictions_by_method.values() for value in values]
+    rejection_by_method: dict[str, Counter] = defaultdict(Counter)
+    edge_counts_by_method: dict[str, Counter] = defaultdict(Counter)
+    for record in records:
+        for decision in record.transition_edge_decisions:
+            edge_counts_by_method[record.spec.method][
+                "accepted" if decision["feasible"] else "rejected"
+            ] += 1
+            if not decision["feasible"]:
+                for reason in decision["reasons"] or ["unspecified"]:
+                    rejection_by_method[record.spec.method][reason] += 1
+
+    route_disagreement = {}
+    full_method = "sensing_feasibility_coupled"
+    blocks: dict[tuple[str, str, int], dict[str, TrialRecord]] = defaultdict(dict)
+    for record in records:
+        blocks[(record.spec.family, record.spec.layout_id, record.spec.replicate)][record.spec.method] = record
+    for method in METHODS:
+        if method == full_method:
+            continue
+        comparable = [values for values in blocks.values()
+                      if values[method].planned_route_signature
+                      and values[full_method].planned_route_signature]
+        route_disagreement[method] = {
+            "paired_blocks_with_signatures": len(comparable),
+            "different_route_or_transition_fraction": (
+                fmean(values[method].planned_route_signature !=
+                      values[full_method].planned_route_signature
+                      for values in comparable) if comparable else None
+            ),
+        }
     brier_by_method = {
         method: fmean((p - y) ** 2 for p, y in values)
         for method, values in sorted(predictions_by_method.items()) if values
@@ -238,6 +268,15 @@ def analyze(records: list[TrialRecord], design: StudyDesign,
         "transition_calibration_by_method": {
             method: _calibration(values) for method, values in sorted(predictions_by_method.items()) if values
         },
+        "transition_edge_counts_by_method": {
+            method: dict(sorted(counts.items()))
+            for method, counts in sorted(edge_counts_by_method.items())
+        },
+        "transition_rejection_reasons_by_method": {
+            method: dict(sorted(counts.items()))
+            for method, counts in sorted(rejection_by_method.items())
+        },
+        "route_decision_disagreement_vs_full": route_disagreement,
     }
 
 
@@ -289,6 +328,16 @@ def write_artifacts(result: dict, output: str | Path) -> None:
     for row in result["secondary_contrasts"]:
         low, high = row["ci95_layout_bootstrap"]
         lines.append(f"| {row['treatment']} − {row['control']} | {row['estimate_treatment_minus_control']:.2f} [{low:.2f}, {high:.2f}] |")
+    lines.extend(["", "## Planner manipulation checks", "",
+                  "These are descriptive checks of the planned ablations.", "",
+                  "| Baseline compared with full method | Paired blocks | Different decision fraction |",
+                  "|---|---:|---:|"])
+    for method, value in result["route_decision_disagreement_vs_full"].items():
+        fraction = value["different_route_or_transition_fraction"]
+        rendered = "NA" if fraction is None else f"{fraction:.3f}"
+        lines.append(
+            f"| {method} | {value['paired_blocks_with_signatures']} | {rendered} |")
+    lines.extend(["", "Structured transition rejection counts are retained in `analysis.json`."])
     (output / "results.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     from .plots import write_svg_figures

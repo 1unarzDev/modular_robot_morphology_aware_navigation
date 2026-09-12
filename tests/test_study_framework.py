@@ -21,6 +21,13 @@ def _records(design, configuration_hash="frozen"):
             final_execution_state="READY" if completed else "RECOVERY_REQUIRED",
             unrecovered_fault=not completed, predicted_transition_probabilities=[0.8],
             observed_transition_outcomes=[int(completed)],
+            planned_route_signature=f"route-{spec.method}",
+            transition_edge_decisions=[{
+                "transition_id": "compact_to_narrow",
+                "feasible": spec.method == "sensing_feasibility_coupled",
+                "reasons": [] if spec.method == "sensing_feasibility_coupled"
+                else ["connector_not_visible"],
+            }],
         ))
     return records
 
@@ -84,6 +91,10 @@ def test_analysis_retains_failures_and_computes_paired_contrasts():
     assert len(result["secondary_contrasts"]) == 2
     assert result["primary_contrasts"][0]["layout_count"] == 6
     assert result["transition_brier_score"] is not None
+    assert result["transition_rejection_reasons_by_method"]["geometry_coupled"][
+        "connector_not_visible"] > 0
+    assert result["route_decision_disagreement_vs_full"]["geometry_coupled"][
+        "different_route_or_transition_fraction"] == 1.0
 
 
 def test_analysis_writes_reviewable_tables_and_dependency_free_figures(tmp_path):
@@ -110,3 +121,10 @@ def test_success_requires_safe_terminal_topology():
     record = _records(design)[0]
     with pytest.raises(ValueError, match="completion requires"):
         replace(record, final_execution_state="RECOVERY_REQUIRED").validate()
+
+
+def test_transition_decision_records_require_auditable_fields():
+    design = generate_design(layouts_per_family=1, replicates=1)
+    record = _records(design)[0]
+    with pytest.raises(ValueError, match="audit fields"):
+        replace(record, transition_edge_decisions=[{"feasible": False}]).validate()

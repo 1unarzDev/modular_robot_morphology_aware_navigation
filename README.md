@@ -73,13 +73,16 @@ inhibited until the observed topology is reconciled.
 The hybrid planner searches `(x, y, heading, morphology)` and accounts for
 traversal time, energy, failure probability, unknown-space exposure, oriented
 footprint collision, locomotion constraints, and reconfiguration swept-space
-clearance. The ROS adapter conservatively downsamples the SLAM map to 0.1 m for
+clearance. Four explicit study methods separate route-first adaptation,
+geometry-only coupling, full transition feasibility, and sensing-aware
+feasibility. Plans carry map, topology, and sensing-signature revisions. The ROS
+adapter conservatively downsamples the SLAM map to 0.1 m for
 responsive global search while Nav2 retains its 0.05 m execution costmaps.
 
 ## Verified behavior
 
 - Host planner, safety, sensing, validation, and study tests:
-  `python3 -m pytest -q` (51 passing on 2026-09-11).
+  `python3 -m pytest -q` (67 passing in 70.00 s on 2026-09-12).
 - Container build: all nine ROS packages build with `colcon build`.
 - Container package smoke tests: all nine packages pass `colcon test`.
 - Gazebo exposes lidar, RGB-D, IMU, odometry, TF, six pod command topics, joint

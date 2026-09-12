@@ -84,6 +84,24 @@ clearance metrics, docking attempts and recovery, localization RMSE, failure
 taxonomy, transition Brier score, and reliability bins. Use pilot variance to
 plot prospective precision or power; do not report retrospective observed power.
 
+Treat planner-decision diagnostics as manipulation checks rather than outcomes.
+For every expanded transition edge, retain the method, transition, planning
+state, accepted/rejected flag, checked trajectory samples, and structured
+rejection reasons. Retain a deterministic signature of the selected route and
+transition sites. Report rejection-reason counts by method and the fraction of
+paired blocks in which each baseline selects a different route or transition
+site from `sensing_feasibility_coupled`. These checks establish that the
+ablations changed the intended decision mechanism; they do not replace the
+mission-completion estimand and receive no significance tests.
+
+The smallest effect of interest is intentionally not filled in before the
+disjoint pilot. The pilot decision record must set it from operational value
+(for example, the minimum absolute completion gain that justifies added
+planning and reconfiguration complexity), record the rationale, and then run
+power across a conservative range of nuisance assumptions. It must not define
+the threshold by rounding or otherwise adapting to the observed treatment
+effect.
+
 Raw terminal records are append-only JSON. Generated CSV, Markdown, and figures
 live in a separate derived directory. The synthetic `edge_observations.csv` is
 excluded from this pipeline.

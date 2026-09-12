@@ -122,33 +122,18 @@ success-only costs cannot by themselves support a mission-level superiority
 claim when failure rates differ. Synthetic `edge_observations.csv` values are
 scaffolding, not experimental evidence.
 
-## Research question and hypotheses
+## Current research question and frozen methods
 
-**Question:** Does coupled pose–morphology planning improve completion and
-time–energy–risk cost over fixed and sequential planning in partially mapped
-indoor environments whose regions favor different footprints and kinematics?
+**Question:** Does joint route and morphology selection conditioned on 3D
+transition feasibility and sensing uncertainty improve completion under a 300 s
+deadline relative to route-first, geometry-only, and feasibility-only planning?
 
-- H1: coupled planning increases mission completion on tasks requiring at least
-  one morphology change.
-- H2: among successful runs, coupled planning reduces the preregistered
-  time–energy–risk objective.
-- H3: learned traversal and docking models reduce predicted-versus-observed cost
-  error and unnecessary reconfiguration relative to analytic models.
-- H4: lazy transition validation reduces planning latency without changing the
-  feasible solution set.
-
-## Experimental protocol
-
-Use paired trials on identical layouts and physics seeds across five scenario
-families: wide-versus-narrow route choice, open–narrow–open, tight compound
-turns, long corridor followed by maneuvering space, and an initially occluded
-shortcut or blockage. Evaluate at least 30 independent layouts per family and
-five physics/noise seeds per layout.
-
-Compare best fixed morphology with hindsight, preselected fixed morphology,
-route-first local adaptation, one complete route per morphology, coupled search
-with analytic costs, and coupled search with learned costs. Report completion,
-the preregistered objective, time, energy, planning latency, clearance,
-collisions, docking attempts, transition duration, path regret, localization
-error, and model calibration. Analyze paired effects with layout as a random
-effect, publish confidence intervals, and retain failed trials.
+The confirmatory methods are `route_first_adaptation`, `geometry_coupled`,
+`feasibility_coupled`, and `sensing_feasibility_coupled`. The target design uses
+held-out reconfiguration-workspace, docking-observability, and combined
+constraint families, includes neutral layouts, and treats layout as the
+independent unit. Only the physically scoped `compact_diff` and
+`narrow_tandem` morphologies enter this study. The frozen 432-trial schedule is
+a resource target whose layout count remains subject to the disjoint pilot and
+prospective power gate. The complete estimands and integrity rules live in
+`statistical_analysis_plan.md`.

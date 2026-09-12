@@ -1,6 +1,6 @@
 # Conference evidence roadmap
 
-Updated 2026-09-11. This document separates implemented engineering from
+Updated 2026-09-12. This document separates implemented engineering from
 experimental evidence and defines the gates for a defensible submission.
 
 ## Paper claim
@@ -26,7 +26,9 @@ workshop talks are discovery leads rather than completed publications.
 | Confirmatory mechanics | Restricted to self-mobile differential pods in `compact_diff` and `narrow_tandem` | Scope decision |
 | Observed topology and transition safety | Partial failures enter `RECOVERY_REQUIRED`; drive stays inhibited until reconciliation | Unit and one live failure check |
 | Sensor-derived relative pod pose | Wheel odometry plus visibility-limited logical cameras; executor no longer consumes module ground truth | Unit and live topic check |
-| 3D transition validation | Collision, support, visibility, covariance, approach, velocity, reach, and latch checks | Core unit tests; planner wiring pending |
+| 3D transition validation | Catalog paths expand into sequential world-frame compound body/wheel trajectories; collision, support, visibility, covariance, velocity, reach, and latch checks feed planner edges | Planner-wired host tests; live requalification pending |
+| Planner ablations | Route-first sequential adaptation and three coupled methods have explicit shared-stack implementations and structured transition decisions | Golden host tests; scenario and ROS mission validation pending |
+| Plan consistency | Plans carry method, map, topology, and meaningful sensing-signature revisions; navigator replans after a transition or revision change | Host/ROS build verification; live race/fault checks pending |
 | Nav2 footprint interface | Installed Jazzy graph uses `Polygon` input and `PolygonStamped` output | Live graph check |
 | Confirmatory statistics | Frozen-design model, immutable records, cluster bootstrap, paired randomization, Holm correction, failure taxonomy, calibration, power simulation, tables, and SVG figures | Tested analysis infrastructure |
 | Main scientific claim | No balanced mission experiment completed | No result yet |
@@ -53,10 +55,10 @@ matrix. This is a platform qualification run, excluded from confirmatory data.
 
 ### Gate 2 — planner variants share one execution stack
 
-- Wire the 3D validator into transition edges and bind plans to map, topology,
-  and sensing revisions.
-- Implement all four named methods as explicit policies over the same graph,
-  controller, estimator, retry budget, and map inputs.
+- Exercise the planner-wired 3D validator in ROS missions and bind perceived
+  overhead geometry to its environment boxes.
+- Verify all four implemented methods over the same graph, controller,
+  estimator, retry budget, and map inputs.
 - Log why every transition edge is accepted or rejected, including 3D collision,
   support, visibility, covariance, connector reach, and latch feasibility.
 - Add neutral layouts where feasibility and sensing terms should make no

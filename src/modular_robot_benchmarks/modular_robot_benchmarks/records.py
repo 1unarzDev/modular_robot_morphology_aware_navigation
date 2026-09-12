@@ -47,6 +47,9 @@ class TrialRecord:
     covariance_trace: list[float] = field(default_factory=list)
     predicted_transition_probabilities: list[float] = field(default_factory=list)
     observed_transition_outcomes: list[int] = field(default_factory=list)
+    planned_route_signature: str = ""
+    planned_transition_sites: list[dict[str, Any]] = field(default_factory=list)
+    transition_edge_decisions: list[dict[str, Any]] = field(default_factory=list)
     topology_history: list[dict[str, Any]] = field(default_factory=list)
     execution_state_history: list[dict[str, Any]] = field(default_factory=list)
     final_execution_state: str = "STOPPED"
@@ -74,6 +77,14 @@ class TrialRecord:
             raise ValueError("transition probabilities must be in [0, 1]")
         if any(value not in (0, 1) for value in self.observed_transition_outcomes):
             raise ValueError("transition outcomes must be binary")
+        for decision in self.transition_edge_decisions:
+            required = {"transition_id", "feasible", "reasons"}
+            if not required <= set(decision):
+                raise ValueError("transition edge decision is missing audit fields")
+            if not isinstance(decision["feasible"], bool):
+                raise ValueError("transition edge feasibility must be boolean")
+            if not isinstance(decision["reasons"], list):
+                raise ValueError("transition edge reasons must be a list")
 
     @property
     def deadline_penalized_time_s(self) -> float:
