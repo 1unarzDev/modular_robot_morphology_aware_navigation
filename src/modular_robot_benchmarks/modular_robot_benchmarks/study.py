@@ -7,7 +7,9 @@ from pathlib import Path
 
 from .analysis import run_analysis, validate_records
 from .design import CONFIRMATORY_FAMILIES, StudyDesign, generate_design
-from .power import PowerAssumptions, estimate_power, write_power
+from .power import (
+    PowerAssumptions, estimate_power, estimate_power_grid, write_power,
+)
 from .records import TrialStore
 
 
@@ -75,6 +77,21 @@ def _parser() -> argparse.ArgumentParser:
     power.add_argument("--randomization-draws", type=int, default=1999)
     power.add_argument("--seed", type=int, default=20260911)
     power.add_argument("--output", type=Path, required=True)
+
+    grid = commands.add_parser(
+        "power-grid", help="run a conservative prospective nuisance grid")
+    grid.add_argument("--layouts", type=int, required=True)
+    grid.add_argument("--replicates", type=int, default=3)
+    grid.add_argument("--control-rates", type=float, nargs="+", required=True)
+    grid.add_argument("--absolute-effect", type=float, required=True)
+    grid.add_argument("--layout-logit-sds", type=float, nargs="+", required=True)
+    grid.add_argument("--paired-noise-fractions", type=float, nargs="+", required=True)
+    grid.add_argument("--alpha", type=float, default=0.025)
+    grid.add_argument("--target-power", type=float, default=0.8)
+    grid.add_argument("--simulations", type=int, default=2000)
+    grid.add_argument("--randomization-draws", type=int, default=1999)
+    grid.add_argument("--seed", type=int, default=20260911)
+    grid.add_argument("--output", type=Path, required=True)
     return parser
 
 
@@ -91,11 +108,18 @@ def main() -> None:
     elif args.command == "analyze":
         result = run_analysis(args.raw, StudyDesign.read_frozen(args.design), args.output,
                               args.bootstrap_draws, args.permutation_draws)
-    else:
+    elif args.command == "power":
         assumptions = PowerAssumptions(
             args.layouts, args.replicates, args.control_rate, args.treatment_rate,
             args.layout_logit_sd, args.paired_noise_fraction, args.alpha)
         result = estimate_power(assumptions, args.simulations, args.randomization_draws, args.seed)
+        write_power(result, args.output)
+    else:
+        result = estimate_power_grid(
+            args.layouts, args.replicates, args.control_rates,
+            args.absolute_effect, args.layout_logit_sds,
+            args.paired_noise_fractions, args.alpha, args.target_power,
+            args.simulations, args.randomization_draws, args.seed)
         write_power(result, args.output)
     print(json.dumps(result, indent=2, sort_keys=True))
 

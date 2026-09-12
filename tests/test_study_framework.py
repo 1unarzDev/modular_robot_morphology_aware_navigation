@@ -4,7 +4,9 @@ import pytest
 
 from modular_robot_benchmarks.analysis import analyze, validate_records, write_artifacts
 from modular_robot_benchmarks.design import METHODS, StudyDesign, generate_design
-from modular_robot_benchmarks.power import PowerAssumptions, estimate_power
+from modular_robot_benchmarks.power import (
+    PowerAssumptions, estimate_power, estimate_power_grid,
+)
 from modular_robot_benchmarks.records import TrialManifest, TrialRecord, TrialStore
 
 
@@ -145,6 +147,17 @@ def test_prospective_power_simulation_is_deterministic_and_labeled():
     assert first == second
     assert first["purpose"] == "prospective_design_only"
     assert 0 <= first["estimated_power"] <= 1
+
+
+def test_prospective_power_grid_reports_worst_case_and_all_cell_decision():
+    result = estimate_power_grid(
+        8, 2, [0.4, 0.5], 0.2, [0.3, 0.8], [0.4, 0.8],
+        simulations=100, randomization_draws=199, seed=7)
+    assert result["purpose"] == "prospective_nuisance_grid"
+    assert result["cell_count"] == 8
+    assert result["minimum_estimated_power"] == min(
+        cell["estimated_power"] for cell in result["cells"])
+    assert isinstance(result["design_meets_target_in_every_cell"], bool)
 
 
 def test_success_requires_safe_terminal_topology():

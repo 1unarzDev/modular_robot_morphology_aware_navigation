@@ -317,3 +317,13 @@ All artifacts in this section are engineering-only debug evidence.
   should avoid welding separately controlled Gazebo models, for example by using
   a single articulated robot model with explicit docking constraints and stable
   joint ownership.
+
+## Prospective nuisance-grid implementation
+
+- Added `morphology_study power-grid` to evaluate one predeclared absolute
+  smallest effect over Cartesian combinations of control completion rate,
+  layout-logit variance, and paired-noise fraction.
+- Each grid cell uses a deterministic independent seed and retains its power
+  estimate, Monte Carlo standard error, and assumptions.
+- Output identifies the worst-case cell and gives an all-cells target-power
+  decision, preventing selection of one favorable pilot nuisance estimate.

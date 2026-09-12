@@ -158,3 +158,15 @@ specifications, mixed commit/configuration/design hashes, and unpaired
 disturbance seeds. Figures and tables are deterministic derivatives of accepted
 terminal records. Any rerun for a declared infrastructure failure receives a
 new audit entry; the original terminal record remains immutable.
+
+## Frozen pilot power-grid procedure
+
+After the pilot decision record fixes the operational smallest effect of
+interest, run `morphology_study power-grid` separately for the 36-layout
+all-family scope and 24-layout sensing-family scope. Supply at least two control
+rates, two layout logit standard deviations, and two paired-noise fractions,
+including the declared adverse value of each. The command archives every cell,
+its independently seeded Monte Carlo estimate and standard error, the worst-case
+assumptions, and whether every cell meets target power. If either scope fails the
+all-cell decision, increase independent layouts and rerun the same frozen grid;
+do not change the effect threshold.

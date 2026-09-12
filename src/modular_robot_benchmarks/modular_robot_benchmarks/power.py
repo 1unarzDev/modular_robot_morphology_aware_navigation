@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+from itertools import product
 import json
 from math import exp, log, sqrt
 from pathlib import Path
@@ -96,6 +97,44 @@ def estimate_power(assumptions: PowerAssumptions, simulations: int = 2000,
         "simulated_mean_rate_difference": fmean(observed_effects),
     }
     return result
+
+
+def estimate_power_grid(
+    layout_count: int, replicates: int, control_probabilities: list[float],
+    absolute_effect: float, layout_logit_sds: list[float],
+    paired_noise_fractions: list[float], alpha: float = 0.025,
+    target_power: float = 0.8, simulations: int = 2000,
+    randomization_draws: int = 1999, seed: int = 20260911,
+) -> dict:
+    """Evaluate a frozen smallest effect over a conservative nuisance grid."""
+    if not 0 < absolute_effect < 1 or not 0 < target_power < 1:
+        raise ValueError("effect and target power must be in (0, 1)")
+    if not control_probabilities or not layout_logit_sds or not paired_noise_fractions:
+        raise ValueError("power grid dimensions must be nonempty")
+    cells = []
+    for index, (control, layout_sd, pairing) in enumerate(product(
+            control_probabilities, layout_logit_sds, paired_noise_fractions)):
+        treatment = control + absolute_effect
+        if treatment >= 1:
+            raise ValueError("control probability plus effect must be below one")
+        result = estimate_power(PowerAssumptions(
+            layout_count, replicates, control, treatment, layout_sd, pairing,
+            alpha), simulations, randomization_draws, seed + index * 100003)
+        cells.append(result)
+    worst = min(cells, key=lambda value: value["estimated_power"])
+    return {
+        "schema_version": 1,
+        "purpose": "prospective_nuisance_grid",
+        "smallest_effect_of_interest_absolute": absolute_effect,
+        "target_power": target_power,
+        "base_seed": seed,
+        "cell_count": len(cells),
+        "cells": cells,
+        "minimum_estimated_power": worst["estimated_power"],
+        "worst_case_assumptions": worst["assumptions"],
+        "design_meets_target_in_every_cell": all(
+            cell["estimated_power"] >= target_power for cell in cells),
+    }
 
 
 def write_power(result: dict, path: str | Path) -> Path:
