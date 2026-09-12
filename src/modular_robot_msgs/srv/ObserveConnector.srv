@@ -1,0 +1,8 @@
+string pod_id
+string parent_port
+bool latched
+string detail
+---
+bool success
+string message
+uint64 topology_revision

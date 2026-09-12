@@ -140,6 +140,8 @@ class HybridNavigator(Node):
         request = ExecuteReconfiguration.Goal()
         request.transition_id = segment.transition_id
         request.execution_pose = segment.execution_pose
+        request.expected_source_morphology = self.morphology.morphology_id
+        request.expected_topology_revision = self.morphology.topology_revision
         handle = await self.reconfigure.send_goal_async(request)
         if not handle.accepted:
             return False

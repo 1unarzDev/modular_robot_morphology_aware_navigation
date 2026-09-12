@@ -1,4 +1,8 @@
 std_msgs/Header header
+uint8 READY=0
+uint8 TRANSITIONING=1
+uint8 RECOVERY_REQUIRED=2
+uint8 STOPPED=3
 string morphology_id
 string locomotion_mode
 string controller_id
@@ -6,4 +10,6 @@ geometry_msgs/Polygon footprint
 float32 height
 modular_robot_msgs/ModuleGraph topology
 bool transition_active
-
+uint8 execution_state
+uint64 topology_revision
+uint64 sensing_revision

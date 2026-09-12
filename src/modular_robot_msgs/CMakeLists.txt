@@ -18,6 +18,10 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "action/ExecuteReconfiguration.action"
   "action/NavigateHybrid.action"
   "srv/SetLocomotionMode.srv"
+  "srv/BeginTransition.srv"
+  "srv/FailTransition.srv"
+  "srv/ReconcileTopology.srv"
+  "srv/ObserveConnector.srv"
   DEPENDENCIES builtin_interfaces geometry_msgs nav_msgs std_msgs
 )
 ament_export_dependencies(rosidl_default_runtime)

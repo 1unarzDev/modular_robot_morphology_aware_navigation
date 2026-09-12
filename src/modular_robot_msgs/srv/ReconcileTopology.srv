@@ -1,0 +1,4 @@
+---
+bool success
+string message
+modular_robot_msgs/MorphologyState state

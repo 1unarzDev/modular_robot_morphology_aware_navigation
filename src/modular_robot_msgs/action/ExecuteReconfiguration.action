@@ -1,5 +1,7 @@
 string transition_id
 geometry_msgs/PoseStamped execution_pose
+string expected_source_morphology
+uint64 expected_topology_revision
 ---
 bool success
 string message
@@ -10,4 +12,3 @@ float64 observed_energy
 string stage
 string active_pod
 float32 progress
-

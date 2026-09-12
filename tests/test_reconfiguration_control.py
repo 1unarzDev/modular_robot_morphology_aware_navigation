@@ -1,6 +1,11 @@
 from math import pi
 
-from reconfiguration_executor.control import Pose2, compose_pose, docking_command, wrap_angle
+import pytest
+
+from reconfiguration_executor.control import (
+    INJECTABLE_FAILURE_STAGES, Pose2, compose_pose, docking_command,
+    injected_failure, wrap_angle,
+)
 
 
 def test_pose_composition_respects_core_heading():
@@ -26,3 +31,15 @@ def test_docking_has_final_yaw_phase_and_terminal_state():
 
 def test_angle_wrap_is_symmetric_at_pi():
     assert abs(wrap_angle(3 * pi) + pi) < 1e-9
+
+
+@pytest.mark.parametrize("stage", sorted(INJECTABLE_FAILURE_STAGES))
+def test_failure_injection_is_deterministic_for_every_stage(stage):
+    assert injected_failure(stage, stage)
+    assert injected_failure(f"{stage}:pod_2", stage, "pod_2")
+    assert not injected_failure(f"{stage}:pod_2", stage, "pod_1")
+
+
+def test_unknown_failure_injection_is_rejected():
+    with pytest.raises(ValueError, match="unknown failure"):
+        injected_failure("typo", "detach")

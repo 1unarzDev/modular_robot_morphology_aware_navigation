@@ -2,6 +2,22 @@ from dataclasses import dataclass
 from math import atan2, cos, hypot, pi, sin
 
 
+INJECTABLE_FAILURE_STAGES = frozenset({
+    "detach", "relocation", "latch", "manager_commit", "stale_feedback", "cancellation",
+})
+
+
+def injected_failure(configured: str, stage: str, pod: str = "") -> bool:
+    """Match a deterministic fault stage, optionally scoped as ``stage:pod``."""
+    configured = configured.strip()
+    if not configured:
+        return False
+    name, separator, selected_pod = configured.partition(":")
+    if name not in INJECTABLE_FAILURE_STAGES:
+        raise ValueError(f"unknown failure injection stage: {name}")
+    return name == stage and (not separator or selected_pod == pod)
+
+
 @dataclass(frozen=True)
 class Pose2:
     x: float

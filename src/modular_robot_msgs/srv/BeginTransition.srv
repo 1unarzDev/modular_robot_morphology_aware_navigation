@@ -1,6 +1,5 @@
-string expected_source_morphology
-string target_morphology
 string transition_id
+string expected_source_morphology
 uint64 expected_topology_revision
 ---
 bool success
