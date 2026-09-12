@@ -291,3 +291,10 @@ All artifacts in this section are engineering-only debug evidence.
   were removed. The next plant fix is one assembly-level wheel-joint controller
   that writes all twelve uniquely named wheel joints coherently after docking,
   while detached pods retain their individual self-mobile controllers.
+
+- A prototype world-level controller attempted to write all twelve wheel-joint
+  velocity components coherently while the model DiffDrive systems were idle.
+  The model systems overwrote those components regardless of SDF declaration
+  order, leaving the assembly motionless. The prototype and bridge/config flags
+  were removed. A valid ownership transfer requires replacing or explicitly
+  disabling the per-model controller systems, not competing writes.
