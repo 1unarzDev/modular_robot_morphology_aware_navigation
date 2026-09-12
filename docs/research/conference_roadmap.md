@@ -23,7 +23,7 @@ workshop talks are discovery leads rather than completed publications.
 | Area | Status | Evidence level |
 |---|---|---|
 | Hybrid state search and morphology footprints | Implemented and host-tested | Engineering |
-| Confirmatory mechanics | Restricted to self-mobile differential pods in `compact_diff` and `narrow_tandem` | Scope decision |
+| Confirmatory mechanics | Restricted to self-mobile differential pods in `compact_diff` and `narrow_tandem`; one revised DART round trip passed (70.118 s forward, 84.081 s reverse) | Engineering qualification; 20-run gate open |
 | Observed topology and transition safety | Partial failures enter `RECOVERY_REQUIRED`; drive stays inhibited until reconciliation | Unit and one live failure check |
 | Sensor-derived relative pod pose | Wheel odometry plus visibility-limited logical cameras; executor no longer consumes module ground truth | Unit and live topic check |
 | 3D transition validation | Catalog paths expand into sequential world-frame compound body/wheel trajectories; collision, support, visibility, covariance, velocity, reach, and latch checks feed planner edges | Planner-wired host tests; live requalification pending |

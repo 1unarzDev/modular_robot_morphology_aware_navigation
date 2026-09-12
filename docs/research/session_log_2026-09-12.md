@@ -54,6 +54,11 @@ sensing uncertainty, and time/energy/failure-risk cost.
   - combined: feasibility chose `(20,11)`; sensing-aware chose `(20,24)`.
 - These runs do not count as pilot or confirmatory missions.
 - Complete host suite: 67 passed in 70.00 s.
+- Fresh DART engineering run on the revised narrow geometry:
+  `compact_to_narrow` passed in 70.118 s and `narrow_to_compact` passed in
+  84.081 s. Both clients reported observed latch topology verified. The stack
+  was stopped after the round trip. This is qualification evidence, not pilot
+  or confirmatory data.
 
 ## Commands
 
@@ -67,8 +72,8 @@ docker exec morphology_navigation_dev bash -lc \
 
 ## Outstanding limitations
 
-- The changed narrow geometry and paths require new DART round-trip
-  qualification; earlier live runs do not validate this revision.
+- The changed narrow geometry has one successful DART round trip; 19 further
+  consecutive successes are required by the qualification gate.
 - ROS currently applies the latest pod sensing signature to future candidate
   sites. The scenario framework supplies location-dependent predictions, but a
   perceived online observability field is still required.

@@ -18,7 +18,7 @@ Cheng, and Tu prevent broader first-system claims.
 
 | Workstream | Current state | Evidence |
 |---|---|---|
-| Self-mobile platform | Six differential-drive pods, physical DART detach/yaw/redock, compact and narrow assembled drive | Forward transition live; reverse remains intermittent |
+| Self-mobile platform | Six differential-drive pods, physical DART detach/yaw/redock, compact and narrow assembled drive | One revised round trip passed; 20-run gate remains open |
 | Topology safety | Observed topology revisions and `RECOVERY_REQUIRED`; drive inhibited after partial failure | Unit tests and live injected failure |
 | Sensing | Wheel odometry plus idealized connector cameras; covariance, visibility, source and staleness gates | Unit tests and live topics; no physical perception claim |
 | Hybrid planning | Weighted A* on `(x,y,heading,morphology)` plus explicit route-first baseline | Host golden tests |
@@ -38,8 +38,8 @@ robot's current location.
 
 ## Phase 1 — platform qualification
 
-Re-run both transition directions after the narrow-track geometry and waypoint
-changes. Add action feedback and pod-specific estimate/odometry/command/truth
+Continue repeated runs after the first revised round trip passed in 70.118 s
+forward and 84.081 s reverse. Add action feedback and pod-specific estimate/odometry/command/truth
 traces for failures. Test straight, reverse, yaw, and lateral staging maneuvers
 under randomized friction and initial-pose perturbations. Complete the declared
 failure-injection matrix and verify every partial topology keeps assembled drive
