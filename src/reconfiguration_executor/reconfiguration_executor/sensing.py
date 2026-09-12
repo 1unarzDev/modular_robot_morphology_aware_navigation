@@ -78,6 +78,15 @@ class RelativePoseEstimator:
         self.sensing_revision += 1
         return self.sensing_revision
 
+    def reset_pod(self, pod_id: str) -> int:
+        """Discard observations invalidated by a discrete latch transform."""
+        self._observations = {
+            key: value for key, value in self._observations.items()
+            if key[0] != pod_id
+        }
+        self.sensing_revision += 1
+        return self.sensing_revision
+
     def estimate(self, pod_id: str, now: float) -> RelativePoseEstimate:
         observations = [
             value for (pod, _), value in self._observations.items()

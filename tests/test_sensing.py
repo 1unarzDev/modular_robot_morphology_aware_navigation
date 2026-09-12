@@ -33,6 +33,17 @@ def test_stale_and_missing_observations_are_explicit():
         estimator.update(observation("imu", 0.9))
 
 
+def test_latch_reset_discards_pre_seating_observations():
+    estimator = RelativePoseEstimator()
+    estimator.update(observation("wheel_odometry", 1.0, x=0.08))
+    estimator.update(observation("fiducial", 1.0, x=0.12))
+    assert estimator.reset_pod("pod_0") == 3
+    assert estimator.estimate(
+        "pod_0", 1.1).uncertainty_class == UncertaintyClass.UNOBSERVED
+    estimator.update(observation("wheel_odometry", 1.2, x=0.10))
+    assert estimator.estimate("pod_0", 1.2).pose.x == 0.10
+
+
 def test_docking_gate_requires_sensing_motion_approach_and_latch():
     estimator = RelativePoseEstimator()
     estimator.update(observation("fiducial", 1.0, x=0.1, variance=0.0001))

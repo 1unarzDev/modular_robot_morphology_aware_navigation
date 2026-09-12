@@ -210,3 +210,18 @@ The immediate research implementation task is therefore connector seating or a
 plant-identified robust allocation. Pilot collection remains prohibited. Batch
 cleanup now explicitly terminates reparented Gazebo descendants, closing the
 observed simulator-contamination path for the exercised runs.
+
+## Updated mechanical root cause: merged controller ownership
+
+Connector seating and estimator reanchoring now produce a repeatable catalog
+pose after latch. This removed residual pose error as the primary explanation.
+The remaining yaw failure follows controller ownership: DART merges fixed-joint
+children into one skeleton while six stock Gazebo DiffDrive systems continue to
+write commands independently. During opposing-side yaw tests, the resulting
+core translation matches the final pod command rather than the net array wrench.
+
+The next implementation must transfer wheel-joint ownership at topology commit:
+detached pods use their individual differential controllers; the assembled body
+uses one controller over all twelve uniquely named wheel joints. The existing
+post-transition qualification remains the admission gate and will verify that
+this controller provides signed yaw and uncoupled straight motion before Nav2.

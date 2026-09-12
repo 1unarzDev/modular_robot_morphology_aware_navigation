@@ -6,7 +6,7 @@ import rclpy
 import yaml
 from ament_index_python.packages import get_package_share_directory
 from geometry_msgs.msg import PoseWithCovarianceStamped
-from modular_robot_msgs.msg import MorphologyState, RelativePoseEstimate
+from modular_robot_msgs.msg import ConnectorState, MorphologyState, RelativePoseEstimate
 from nav_msgs.msg import Odometry
 from rclpy.node import Node
 from ros_gz_interfaces.msg import LogicalCameraImage
@@ -42,6 +42,8 @@ class SensorRelativePoseNode(Node):
         self.anchors: dict[str, Pose2] = {}
         self.publisher = self.create_publisher(RelativePoseEstimate, "relative_pose_estimate", 20)
         self.create_subscription(MorphologyState, "morphology_state", self._on_morphology, 20)
+        self.create_subscription(
+            ConnectorState, "connector_state", self._on_connector_state, 20)
         for pod_id in [f"pod_{index}" for index in range(6)]:
             self.create_subscription(
                 Odometry, f"/pods/{pod_id}/odometry",
@@ -94,6 +96,20 @@ class SensorRelativePoseNode(Node):
         )):
             return
         self._publish(pod_id, now)
+
+    def _on_connector_state(self, message: ConnectorState) -> None:
+        if message.state != ConnectorState.LATCHED or "/" not in message.parent_port:
+            return
+        morphology, pod = message.parent_port.split("/", 1)
+        if (pod != message.pod_id or morphology not in self.catalog["morphologies"]
+                or pod not in self.raw_odometry):
+            return
+        self.baselines[pod] = self.raw_odometry[pod]
+        self.anchors[pod] = Pose2(*(
+            float(value)
+            for value in self.catalog["morphologies"][morphology]["pods"][pod]
+        ))
+        self.estimator.reset_pod(pod)
 
     def _on_fiducial(self, pod_id: str, message: PoseWithCovarianceStamped) -> None:
         pose, covariance = message.pose.pose, message.pose.covariance

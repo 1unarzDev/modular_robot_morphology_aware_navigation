@@ -2,6 +2,7 @@
 #include <chrono>
 #include <mutex>
 #include <sstream>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -11,6 +12,7 @@
 #include <gz/plugin/Register.hh>
 #include <gz/sim/EntityComponentManager.hh>
 #include <gz/sim/System.hh>
+#include <gz/sim/Model.hh>
 #include <gz/sim/Util.hh>
 #include <gz/sim/components/DetachableJoint.hh>
 #include <gz/sim/components/Link.hh>
@@ -19,6 +21,13 @@
 
 namespace modular_robot_gz_plugins
 {
+struct PendingCommand
+{
+  std::string operation;
+  std::string childName;
+  std::optional<gz::math::Pose3d> targetRelative;
+};
+
 class TopologyJointSystem final : public gz::sim::System,
                                   public gz::sim::ISystemConfigure,
                                   public gz::sim::ISystemPreUpdate,
@@ -39,7 +48,7 @@ public:
       while (child)
       {
         const auto childName = child->Get<std::string>();
-        this->pending.emplace_back("attach", childName);
+        this->pending.push_back({"attach", childName, std::nullopt});
         const auto modelName = childName.substr(0, childName.find("::"));
         this->trackedLinks.push_back({modelName, childName});
         this->childLinks.emplace(modelName, childName);
@@ -74,35 +83,60 @@ public:
   void PreUpdate(const gz::sim::UpdateInfo &,
                  gz::sim::EntityComponentManager &_ecm) override
   {
-    std::vector<std::pair<std::string, std::string>> commands;
+    std::vector<PendingCommand> commands;
     {
       std::lock_guard<std::mutex> guard(this->mutex);
       commands.swap(this->pending);
     }
-    for (const auto &[operation, childName] : commands)
+    for (const auto &command : commands)
     {
-      if (operation == "detach")
-        this->Detach(childName, _ecm);
-      else if (operation == "attach")
-        this->Attach(childName, _ecm);
+      if (command.operation == "detach")
+        this->Detach(command.childName, _ecm);
+      else if (command.operation == "seat")
+        this->Seat(command.childName, *command.targetRelative, _ecm);
+      else if (command.operation == "attach")
+      {
+        if (command.targetRelative)
+          this->Seat(command.childName, *command.targetRelative, _ecm);
+        else
+          this->Attach(command.childName, _ecm);
+      }
     }
   }
 
 private:
   void OnCommand(const gz::msgs::StringMsg &_message)
   {
-    const auto separator = _message.data().find('|');
-    if (separator == std::string::npos)
+    std::vector<std::string> fields;
+    std::stringstream stream(_message.data());
+    std::string field;
+    while (std::getline(stream, field, '|'))
+      fields.push_back(field);
+    if (fields.size() < 2)
       return;
-    const auto operation = _message.data().substr(0, separator);
-    const auto pod = _message.data().substr(separator + 1);
+    const auto &operation = fields[0];
+    const auto &pod = fields[1];
     if (operation != "attach" && operation != "detach")
       return;
     std::lock_guard<std::mutex> guard(this->mutex);
     const auto child = this->childLinks.find(pod);
     if (child == this->childLinks.end())
       return;
-    this->pending.emplace_back(operation, child->second);
+    std::optional<gz::math::Pose3d> target;
+    if (operation == "attach" && fields.size() == 5)
+    {
+      try
+      {
+        target = gz::math::Pose3d(
+          std::stod(fields[2]), std::stod(fields[3]), 0.0,
+          0.0, 0.0, std::stod(fields[4]));
+      }
+      catch (const std::exception &)
+      {
+        return;
+      }
+    }
+    this->pending.push_back({operation, child->second, target});
   }
 
   static gz::sim::Entity LinkByScopedName(
@@ -124,13 +158,41 @@ private:
     if (parent == gz::sim::kNullEntity || child == gz::sim::kNullEntity)
     {
       std::lock_guard<std::mutex> guard(this->mutex);
-      this->pending.emplace_back("attach", _childName);
+      this->pending.push_back({"attach", _childName, std::nullopt});
       return;
     }
     const auto joint = _ecm.CreateEntity();
     _ecm.CreateComponent(joint, gz::sim::components::DetachableJoint({parent, child, "fixed"}));
     this->joints.emplace(_childName, joint);
     this->PublishState("attached|" + _childName);
+  }
+
+  void Seat(const std::string &_childName,
+            const gz::math::Pose3d &_targetRelative,
+            gz::sim::EntityComponentManager &_ecm)
+  {
+    const auto parent = LinkByScopedName(this->parentLink, _ecm);
+    const auto child = LinkByScopedName(_childName, _ecm);
+    if (parent == gz::sim::kNullEntity || child == gz::sim::kNullEntity)
+    {
+      std::lock_guard<std::mutex> guard(this->mutex);
+      this->pending.push_back({"seat", _childName, _targetRelative});
+      return;
+    }
+    const auto parentPose = gz::sim::worldPose(parent, _ecm);
+    const auto childPose = gz::sim::worldPose(child, _ecm);
+    auto seatedRelative = _targetRelative;
+    // Preserve the mechanically established vertical level; the navigation
+    // catalog specifies planar connector coordinates.
+    seatedRelative.Pos().Z() = (parentPose.Inverse() * childPose).Pos().Z();
+    const auto modelEntity = gz::sim::topLevelModel(child, _ecm);
+    if (modelEntity == gz::sim::kNullEntity)
+      return;
+    gz::sim::Model(modelEntity).SetWorldPoseCmd(_ecm, parentPose * seatedRelative);
+    // Allow the physics system one update to apply the seating pose before the
+    // detachable fixed joint captures the transform.
+    std::lock_guard<std::mutex> guard(this->mutex);
+    this->pending.push_back({"attach", _childName, std::nullopt});
   }
 
   void Detach(const std::string &_childName, gz::sim::EntityComponentManager &_ecm)
@@ -163,7 +225,7 @@ private:
   std::string parentLink;
   std::chrono::steady_clock::duration lastPosePublish{0};
   std::mutex mutex;
-  std::vector<std::pair<std::string, std::string>> pending;
+  std::vector<PendingCommand> pending;
   std::unordered_map<std::string, gz::sim::Entity> joints;
   std::unordered_map<std::string, std::string> childLinks;
   std::vector<std::pair<std::string, std::string>> trackedLinks;

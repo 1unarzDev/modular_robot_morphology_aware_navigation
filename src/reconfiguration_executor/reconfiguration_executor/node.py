@@ -190,9 +190,16 @@ class ReconfigurationExecutor(Node):
                 if self._inject("latch", pod):
                     raise RuntimeError(f"injected latch failure for {pod}")
                 since = self.event_counter
-                await self._command_joint(pod, ConnectorCommand.ATTACH, transition["to"])
+                await self._command_joint(
+                    pod, ConnectorCommand.ATTACH, transition["to"], target)
                 if not await self._wait_for_joint(pod, "attached", since):
                     raise RuntimeError(f"{pod} attach was not confirmed")
+                # Notify the estimator of the discrete connector seating
+                # transform before validating post-latch observations. The
+                # manager topology is committed only after validation below.
+                self._publish_connector_state(
+                    pod, transition["to"], True,
+                    "physical latch confirmed; validation pending")
                 accepted, reasons = await self._wait_for_docking_ready(
                     pod, target, latch_confirmed=True,
                     timeout=float(self.get_parameter("post_latch_settle_timeout").value),
@@ -267,7 +274,10 @@ class ReconfigurationExecutor(Node):
             str(self.get_parameter("failure_injection").value), stage, pod
         )
 
-    async def _command_joint(self, pod: str, operation: int, morphology: str) -> None:
+    async def _command_joint(
+        self, pod: str, operation: int, morphology: str,
+        target: list[float] | None = None,
+    ) -> None:
         command = ConnectorCommand()
         command.header.stamp = self.get_clock().now().to_msg()
         command.operation = operation
@@ -277,6 +287,9 @@ class ReconfigurationExecutor(Node):
         transport = String()
         name = "detach" if operation == ConnectorCommand.DETACH else "attach"
         transport.data = f"{name}|{pod}"
+        if operation == ConnectorCommand.ATTACH and target is not None:
+            transport.data += "|" + "|".join(
+                f"{float(value):.12g}" for value in target)
         self.transport_pub.publish(transport)
         await self._sleep(0.02)
 

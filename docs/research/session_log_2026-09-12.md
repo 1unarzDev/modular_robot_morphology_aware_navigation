@@ -270,3 +270,24 @@ Current mechanical blocker: make connector seating repeatable or develop a
 plant-identified allocation robust to the actual fixed-joint/contact dynamics.
 The automatic gate prevents these states from entering autonomous traversal.
 All artifacts in this section are engineering-only debug evidence.
+
+## Connector seating and merged-skeleton actuator diagnosis
+
+- Extended attach commands with the catalog connector transform. The Gazebo
+  topology plugin now seats the pod model relative to the core, waits one physics
+  update, and then creates the detachable fixed joint.
+- Added latch-triggered estimator reanchoring: pre-seat wheel/fiducial samples are
+  discarded and pod odometry is reanchored at the observed connector target
+  before post-latch validation.
+- `seated_reanchored_raw` reached a final `READY` snapshot with all six fused
+  poses essentially at their catalog coordinates (pod-5 yaw error about 0.002
+  rad), demonstrating repeatable topology representation.
+- Despite exact seating, opposing side commands still translated the assembly.
+  The displacement closely equals the last pod's commanded speed integrated over
+  the stage. This indicates the six stock Gazebo DiffDrive systems conflict after
+  DART merges fixed-joint children into one skeleton; the last command effectively
+  dominates instead of wheel forces combining.
+- Isolated pod-local yaw commands also produced translation rather than yaw and
+  were removed. The next plant fix is one assembly-level wheel-joint controller
+  that writes all twelve uniquely named wheel joints coherently after docking,
+  while detached pods retain their individual self-mobile controllers.
