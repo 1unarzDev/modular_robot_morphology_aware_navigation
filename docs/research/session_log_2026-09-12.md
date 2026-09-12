@@ -161,3 +161,26 @@ Current blocker: synchronize Nav2's post-transition footprint and local costmap
 with the new morphology, clear stale attached-body obstacles if present, and
 prove that the narrow morphology can depart the transition site. Then inject a
 partial transition failure to directly qualify the new unsafe-state gate.
+
+## Costmap footprint synchronization diagnosis
+
+- Added an explicit post-transition barrier in `HybridNavigator`: both local and
+  global costmaps must republish the committed morphology footprint before the
+  next plan executes.
+- The first implementation compared catalog coordinates with world-frame
+  `published_footprint` coordinates and correctly failed closed. The recorded
+  polygons showed that Nav2 had applied its 0.01 m padding and transformed the
+  narrow rectangle: observed dimensions were approximately 1.64 by 0.40 m for
+  the 1.62 by 0.38 m catalog footprint.
+- Replaced the comparison with translation/rotation-invariant padded edge
+  lengths. The next engineering run passed this synchronization barrier, proving
+  that Nav2 consumed the narrow footprint, but RPP still reported an immediate
+  projected collision on departure.
+- A delayed command-line costmap capture produced no sample before shutdown, so
+  it is not evidence. Add costmap diagnostics to the in-process mission observer
+  rather than relying on timing an external subscriber.
+
+Current inference: the post-transition failure is caused by local costmap
+content or discretized projected footprint collision, not a stale compact
+footprint. Preserve collision checking until the lethal cells and projected arc
+are recorded and explained.

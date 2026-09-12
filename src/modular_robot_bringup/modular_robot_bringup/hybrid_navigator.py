@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import hashlib
+from math import hypot
 import time
 
 import rclpy
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PolygonStamped, PoseStamped
 from modular_robot_msgs.action import ComputeHybridPlan, ExecuteReconfiguration, NavigateHybrid
 from modular_robot_msgs.msg import HybridSegment, MorphologyState, RelativePoseEstimate
 from nav2_msgs.action import FollowPath
@@ -13,6 +14,7 @@ from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
+from rclpy.task import Future
 from tf2_ros import Buffer, TransformException, TransformListener
 
 
@@ -23,14 +25,23 @@ class HybridNavigator(Node):
         self.declare_parameter("map_frame", "map")
         self.declare_parameter("base_frame", "core/base_link")
         self.declare_parameter("max_replans", 3)
+        self.declare_parameter("costmap_footprint_timeout", 3.0)
+        self.declare_parameter("costmap_footprint_padding", 0.01)
         qos = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL,
                          reliability=ReliabilityPolicy.RELIABLE)
         self.morphology: MorphologyState | None = None
         self.sensing_revision = 0
         self.sensing_signatures = {}
+        self.costmap_footprints: dict[str, tuple[float, ...]] = {}
         self.create_subscription(MorphologyState, "morphology_state", self._on_morphology, qos)
         self.create_subscription(
             RelativePoseEstimate, "relative_pose_estimate", self._on_sensing, 20)
+        self.create_subscription(
+            PolygonStamped, "/local_costmap/published_footprint",
+            lambda message: self._on_costmap_footprint("local", message), 10)
+        self.create_subscription(
+            PolygonStamped, "/global_costmap/published_footprint",
+            lambda message: self._on_costmap_footprint("global", message), 10)
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
         self.planner = ActionClient(self, ComputeHybridPlan, "compute_hybrid_plan", callback_group=self.group)
@@ -50,6 +61,10 @@ class HybridNavigator(Node):
         if self.sensing_signatures.get(message.pod_id) != signature:
             self.sensing_signatures[message.pod_id] = signature
             self.sensing_revision += 1
+
+    def _on_costmap_footprint(self, name: str, message: PolygonStamped) -> None:
+        self.costmap_footprints[name] = self._footprint_shape_signature(
+            message.polygon.points)
 
     async def _execute(self, goal_handle):
         result = NavigateHybrid.Result()
@@ -122,6 +137,17 @@ class HybridNavigator(Node):
                 if segment.kind == HybridSegment.RECONFIGURE:
                     success = await self._execute_transition(segment)
                     reconfigurations += 1
+                    if success and not await self._wait_for_costmap_footprints():
+                        result.message = (
+                            "reconfiguration committed; costmaps did not acknowledge "
+                            "the new morphology footprint"
+                        )
+                        result.observed_time = time.monotonic() - started
+                        result.reconfiguration_count = reconfigurations
+                        self._set_plan_metrics(
+                            result, selected_plans, planning_latency, expanded_states)
+                        goal_handle.abort()
+                        return result
                     replan_requested = bool(success)
                 else:
                     success = await self._follow(segment)
@@ -170,6 +196,60 @@ class HybridNavigator(Node):
             MorphologyState.STOPPED: "stopped",
         }
         return f"navigation blocked; observed topology state is {names.get(state, state)}"
+
+    @staticmethod
+    def _footprint_shape_signature(points) -> tuple[float, ...]:
+        """Edge lengths identify a rigid polygon independent of costmap frame."""
+        coordinates = [
+            (point.x, point.y) if hasattr(point, "x") else point for point in points
+        ]
+        return tuple(round(hypot(
+            coordinates[(index + 1) % len(coordinates)][0] - point[0],
+            coordinates[(index + 1) % len(coordinates)][1] - point[1],
+        ), 3) for index, point in enumerate(coordinates))
+
+    def _expected_costmap_footprint(self) -> tuple[float, ...]:
+        points = self.morphology.footprint.points
+        padding = float(self.get_parameter("costmap_footprint_padding").value)
+        center_x = sum(point.x for point in points) / len(points)
+        center_y = sum(point.y for point in points) / len(points)
+        padded = []
+        for point in points:
+            # Confirmatory footprints are axis-aligned rectangles. Nav2 expands
+            # each side by footprint_padding before publishing it in a world frame.
+            x = point.x + (padding if point.x > center_x else -padding)
+            y = point.y + (padding if point.y > center_y else -padding)
+            padded.append((x, y))
+        return self._footprint_shape_signature(padded)
+
+    async def _wait_for_costmap_footprints(self) -> bool:
+        expected = self._expected_costmap_footprint()
+        deadline = time.monotonic() + float(
+            self.get_parameter("costmap_footprint_timeout").value)
+        while time.monotonic() < deadline:
+            if all(self.costmap_footprints.get(name) == expected
+                   for name in ("local", "global")):
+                return True
+            await self._sleep(0.05)
+        observed = {name: self.costmap_footprints.get(name)
+                    for name in ("local", "global")}
+        self.get_logger().error(
+            f"costmap footprint acknowledgement timeout; expected={expected}; "
+            f"observed={observed}")
+        return False
+
+    async def _sleep(self, duration: float) -> None:
+        future = Future()
+
+        def wake() -> None:
+            if not future.done():
+                future.set_result(None)
+
+        timer = self.create_timer(duration, wake, callback_group=self.group)
+        try:
+            await future
+        finally:
+            self.destroy_timer(timer)
 
     @staticmethod
     def _set_plan_metrics(result, plans, planning_latency, expanded_states):

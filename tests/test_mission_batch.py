@@ -25,3 +25,6 @@ def test_reconfiguration_failure_and_unsafe_topology_have_distinct_labels():
     assert classify_terminal(
         False, "reconfiguration failed; observed topology requires recovery", False
     ) == "unsafe_topology"
+    assert classify_terminal(
+        False, "reconfiguration committed; costmaps did not acknowledge footprint", False
+    ) == "infrastructure_failure"

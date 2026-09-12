@@ -24,6 +24,8 @@ def classify_terminal(success: bool, message: str, timed_out: bool) -> str:
     if timed_out:
         return "timeout"
     lowered = message.lower()
+    if "costmap" in lowered and "acknowledge" in lowered:
+        return "infrastructure_failure"
     if ("recovery required" in lowered or "requires recovery" in lowered
             or "unsafe topology" in lowered):
         return "unsafe_topology"
