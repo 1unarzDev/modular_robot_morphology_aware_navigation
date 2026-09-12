@@ -1,41 +1,80 @@
 # Modular Robot Morphology-Aware Navigation
 
-Research platform for navigation that plans jointly over robot pose and a finite
-catalog of physically validated modular morphologies. The reference robot uses a
-fixed inventory of six self-mobile steer-drive pods that detach, relocate, and
-redock around an articulated sensor core.
+ROS 2/Gazebo research platform for hybrid navigation over robot pose and
+morphology. Six self-mobile differential-drive pods detach, relocate, and
+redock around a sensor core while a planner jointly chooses traversal routes,
+supported morphologies, and feasible transition sites.
 
-The repository is a ROS 2 Jazzy workspace, but the planner core and its tests can
-also run with ordinary Python 3.
+The research question is whether joint route/morphology/site selection improves
+mission completion when reconfiguration feasibility, sensing uncertainty, and
+time/energy/risk costs matter. It is evaluated against route-first,
+geometry-only, and feasibility-only planning through the same execution stack.
 
-## Packages
+> **Evidence status:** the platform and analysis pipeline are under active
+> qualification. Confirmatory evidence is **0/432**. See
+> [current status](docs/current_status.md) before running experiments or making
+> claims.
 
-- `modular_robot_msgs`: ROS messages, services, and actions for topology and
-  hybrid plans.
-- `morphology_planner`: morphology-augmented lattice planner and ROS action
-  adapter.
-- `morphology_manager`: authoritative topology state and atomic morphology-mode
-  changes.
-- `reconfiguration_executor`: staged undock, relocate, align, latch, and verify
-  executor.
-- `modular_robot_description`: canonical module/morphology/transition catalog and
-  Xacro robot description.
-- `modular_robot_sim`: Gazebo worlds and simulation launch files.
-- `modular_robot_bringup`: integrated SLAM/Nav2 launch and configuration.
-- `modular_robot_benchmarks`: deterministic scenario generation and experiment
-  runner.
+## Architecture
 
-## Quick checks without ROS
-
-```bash
-python3 -m pytest -q
-PYTHONPATH=src/morphology_planner python3 -m morphology_planner.demo
+```mermaid
+flowchart LR
+    M[Map + sensor observations] --> P[Hybrid planner]
+    T[Observed topology] --> P
+    P --> N[Nav2 traversal]
+    P --> R[Reconfiguration executor]
+    R --> T
+    N --> D[Assembled drive adapter]
+    R --> Q[Self-mobile pods]
+    D --> Q
+    Q --> G[Gazebo physics]
+    G --> S[Lidar, odometry, connector sensing]
+    S --> M
+    G -. evaluator only .-> E[Experiment records]
 ```
 
-## ROS 2 development environment
+The planner searches `(x, y, heading, morphology)`. Traversal edges use
+morphology-specific footprints, kinematics, and costs. Reconfiguration edges
+carry sequential 3D pod trajectories and are rejected when collision, support,
+latch, visibility, or uncertainty checks fail. Execution blocks assembled
+motion during a transition and enters `RECOVERY_REQUIRED` whenever observed
+topology becomes partial or inconsistent.
 
-The devcontainer reuses the published `astro_dock` ROS 2 Jazzy images. On this
-host:
+## Repository map
+
+| Path | Responsibility |
+|---|---|
+| `src/morphology_planner` | Pure hybrid search, methods, costs, and transition validation |
+| `src/morphology_manager` | Authoritative observed topology and locomotion mode |
+| `src/reconfiguration_executor` | Detach/relocate/align/latch/recovery state machine |
+| `src/modular_robot_bringup` | Nav2, localization, drive allocation, and integrated navigation |
+| `src/modular_robot_sim` | Gazebo robot models, sensors, worlds, and launch |
+| `src/modular_robot_gz_plugins` | Runtime topology joints and bounded wheel actuation |
+| `src/modular_robot_description` | Canonical morphology and transition catalog |
+| `src/modular_robot_msgs` | ROS actions, messages, and services |
+| `src/modular_robot_benchmarks` | Scenario generation, experiment runner, statistics, and figures |
+| `studies/confirmatory` | Frozen prospective design; no observed outcomes |
+| `tests` | Host-side cross-package behavior and integrity tests |
+| `docs` | Status, domain model, research protocol, prior art, and ADRs |
+
+## Supported research scope
+
+`compact_diff` and `narrow_tandem` are the only confirmatory morphologies. The
+Ackermann, omni, crawler, articulated, and stacking entries are future concepts;
+they have no physical or experimental support claim. Connector cameras,
+magnetic capture, latches, and battery behavior remain idealized simulation
+mechanisms. Simulator truth is isolated to evaluation.
+
+## Prerequisites
+
+- Linux with Docker and the Dev Container CLI
+- Python 3.10+ for host-side planner and study tests
+- The devcontainer supplies ROS 2 Jazzy, Gazebo Harmonic, Nav2, and build tools
+
+The container image defaults to `lunarzdev/astro:core`. Override it with
+`ASTRO_IMAGE` if needed.
+
+## Set up the ROS workspace
 
 ```bash
 .devcontainer/prebuild.sh
@@ -44,77 +83,41 @@ devcontainer exec --workspace-folder . bash -lc \
   'rosdep install --from-paths src --ignore-src -y && colcon build --symlink-install'
 ```
 
-Launch the deterministic demonstration after building:
+For the existing named container:
 
 ```bash
+docker exec morphology_navigation_dev bash -lc \
+  'cd /home/roboboat/morphology_ws && source /opt/ros/jazzy/setup.bash && colcon build --symlink-install'
+```
+
+## Run and verify
+
+Run pure Python checks from the repository root:
+
+```bash
+python3 -m pytest -q
+PYTHONPATH=src/morphology_planner python3 -m morphology_planner.demo
+```
+
+Launch the integrated simulation after building:
+
+```bash
+source /opt/ros/jazzy/setup.bash
 source install/setup.bash
 ros2 launch modular_robot_bringup demo.launch.py
 ```
 
-The scientific scope, prior art, and evaluation protocol are recorded under
-[`docs/research`](docs/research/literature_review.md).
+Engineering qualification entry points installed by
+`modular_robot_benchmarks` include `qualify_detached_pod`,
+`qualify_assembly_motion`, and `run_morphology_missions`. Preserve their output
+under ignored `results/debug/`; these runs are not study evidence.
 
-## Implemented end-to-end path
+## Study workflow
 
-`NavigateHybrid` obtains the current `map -> core/base_link` pose, requests a
-weighted hybrid-A* plan, sends traversal segments to the matching Nav2 MPPI
-controller, and sends topology edges to the reconfiguration action. Nav2's
-collision-checked body twist is projected through the active morphology's pod
-geometry and applied by the six simulated differential-drive pods.
-
-During reconfiguration, assembled motion is inhibited and pods move one at a
-time. The executor waits for Gazebo to confirm detachment, drives the free pod
-from topology-anchored wheel odometry and visibility-limited connector-camera
-estimates, verifies the detachable joint after relatching, and commits the new
-morphology only when observed topology matches the target. A failed or
-cancelled transition enters `RECOVERY_REQUIRED`; assembled drive remains
-inhibited until the observed topology is reconciled.
-
-The hybrid planner searches `(x, y, heading, morphology)` and accounts for
-traversal time, energy, failure probability, unknown-space exposure, oriented
-footprint collision, locomotion constraints, and reconfiguration swept-space
-clearance. Four explicit study methods separate route-first adaptation,
-geometry-only coupling, full transition feasibility, and sensing-aware
-feasibility. Plans carry map, topology, and sensing-signature revisions. The ROS
-adapter conservatively downsamples the SLAM map to 0.1 m for
-responsive global search while Nav2 retains its 0.05 m execution costmaps.
-
-## Verified behavior
-
-- Host planner, safety, sensing, validation, and study tests:
-  `python3 -m pytest -q` (67 passing in 70.00 s on 2026-09-12).
-- Container build: all nine ROS packages build with `colcon build`.
-- Container package smoke tests: all nine packages pass `colcon test`.
-- Gazebo exposes lidar, RGB-D, IMU, odometry, TF, six pod command topics, joint
-  acknowledgements, and module world-pose feedback.
-- A positive Nav2 command moves the complete latched assembly through physical
-  wheel forces from its pods.
-- An earlier `compact_to_ackermann` engineering run physically moved and
-  relatched four pods. This morphology is now excluded from confirmatory study
-  claims because the assembled fixed-angle pod mechanics do not implement true
-  Ackermann steering.
-- A live SLAM-map plan through the 0.42 m doorway contained compact traversal,
-  `compact_to_narrow`, and narrow traversal. It expanded 51,886 hybrid states.
-- A top-level `NavigateHybrid` traversal completed through Nav2 in 41.6 s.
-
-## Research limitations
-
-The detachable joints and pod locomotion use Gazebo physics, but connector
-cameras, magnetic capture, contact-guided final insertion, battery dynamics,
-and spine actuation remain idealized. Ackermann, omni, crawler, articulated,
-and stacking entries are future concepts rather than study conditions. The
-sample cost-observation CSV is synthetic scaffolding and is excluded from the
-confirmatory pipeline. A sensor-driven `compact_to_narrow` transition now
-completes, while the reverse qualification still fails intermittently during a
-pod relocation, so no confirmatory mission results are claimed. Full
-doorway-crossing success under sensor-based localization and
-online SLAM corrections remains an evaluation gate.
-
-## Study commands
-
-The frozen confirmatory schedule contains 432 paired terminal trials. The
-analysis refuses incomplete or mixed-manifest data and writes CSV, Markdown,
-JSON, and dependency-free SVG figures.
+The checked-in prospective design has 36 layouts, three replicates, four paired
+methods, and 432 scheduled trials. The runner retains terminal failures,
+validates manifests and provenance, and supports resumption. Analysis refuses
+incomplete blocks or mixed design/configuration/commit hashes.
 
 ```bash
 morphology_study status \
@@ -127,6 +130,23 @@ morphology_study analyze \
   --output results/confirmatory/derived
 ```
 
-See [`docs/research/conference_roadmap.md`](docs/research/conference_roadmap.md)
-for the evidence gates and [`docs/research/statistical_analysis_plan.md`](docs/research/statistical_analysis_plan.md)
-for the estimands and inference procedure.
+Do not populate `results/confirmatory` until every platform, measurement,
+manipulation, pilot, and prospective-power gate in the
+[conference roadmap](docs/research/conference_roadmap.md) passes.
+
+## Documentation and contribution workflow
+
+- [Documentation index](docs/README.md)
+- [Current implementation and evidence](docs/current_status.md)
+- [Domain model](docs/domain_model.md)
+- [Conference evidence roadmap](docs/research/conference_roadmap.md)
+- [Statistical analysis plan](docs/research/statistical_analysis_plan.md)
+- [Literature and novelty positioning](docs/research/literature_review.md)
+- [Architectural decisions](docs/adr/)
+
+Before committing, run the relevant host tests, build affected ROS packages,
+check `git diff --check`, and verify no Gazebo or ROS processes survived the
+test. Update current status only when evidence changes. Use ADRs for durable
+architecture decisions and git history for chronological debugging notes.
+
+Licensed under Apache-2.0; see [LICENSE](LICENSE).

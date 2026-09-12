@@ -119,8 +119,8 @@ real connector or stacking mechanism.
 The protocol below is the original design seed, not a completed experiment or
 preregistered analysis. Its sample size requires power justification, and
 success-only costs cannot by themselves support a mission-level superiority
-claim when failure rates differ. Synthetic `edge_observations.csv` values are
-scaffolding, not experimental evidence.
+claim when failure rates differ. Synthetic cost-model examples are scaffolding,
+not experimental evidence.
 
 ## Current research question and frozen methods
 

@@ -161,8 +161,8 @@ estimates may inform nuisance parameters; they may not define the treatment
 effect used for power.
 
 Raw terminal records are append-only JSON. Generated CSV, Markdown, and figures
-live in a separate derived directory. The synthetic `edge_observations.csv` is
-excluded from this pipeline.
+live in a separate derived directory. Synthetic cost-model examples are
+excluded from study evidence and must not be tracked beside research records.
 
 The analysis command must reject incomplete designs, changed trial
 specifications, mixed commit/configuration/design hashes, and unpaired
