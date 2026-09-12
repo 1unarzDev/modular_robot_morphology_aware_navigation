@@ -422,3 +422,33 @@ All artifacts in this section are engineering-only debug evidence.
   bootstrap intervals with convergence diagnostics.
 - Kept confirmatory evidence at 0/432 and retained all debug runs as engineering
   evidence only.
+
+## Continuation: pod-drive instrumentation and negative plant experiments
+
+- Added an evaluator-only `/evaluator/pod_drive_diagnostics` stream from the
+  single-owner Gazebo plugin. It records commanded and measured wheel rates and
+  full simulated pod pose at 20 Hz; the mission observer downsamples this to 2 Hz
+  per pod and stores it under `controller_diagnostics`. No autonomy node consumes
+  the topic.
+- Repeated the same seeded transition. `articulated_drive_diag2_raw` passed its
+  motion gate and completed; `articulated_drive_diag3_raw` failed its motion gate.
+  In both, every wheel joint tracked the imposed velocity command. In the failed
+  run, opposite-side pod commands still moved every pod in the same world
+  direction. At latch, pod pitch spanned 0.297 rad and yaw spanned 0.064 rad.
+- Tested passive spherical fore/aft supports. They reduced pitch to numerical
+  zero but yaw still translated about 0.10 m with essentially zero rotation.
+  Removed the supports because they did not repair the assembled actuation model.
+- Corrected logical-camera covariance to reflect its noiseless Gazebo pose. This
+  reduced post-latch yaw spread from 0.044 to 0.022 rad; the plant still failed,
+  proving residual pose alignment was not sufficient to explain the behavior.
+  Confirmatory sensing trials must inject actual observation noise and adjust the
+  reported covariance consistently.
+- Prototyped a bounded proportional torque motor in place of imposed joint
+  velocity. A 14 N m / gain-2 loop oscillated between wheel-speed limits and the
+  detached pod failed its first relocation. Lower-gain follow-ups encountered
+  stack-readiness failures and did not provide usable evidence. Removed the
+  prototype rather than retaining an unqualified controller.
+- Current diagnosis: imposed joint velocities on a fixed, overconstrained
+  multi-wheel DART body allow the contact solver to select which side slips. The
+  next credible implementation needs a stable effort-controlled wheel actuator
+  qualified first on one detached pod, then compact, then narrow assemblies.

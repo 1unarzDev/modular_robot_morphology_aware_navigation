@@ -2,13 +2,16 @@
 #include <chrono>
 #include <cmath>
 #include <functional>
+#include <iomanip>
 #include <mutex>
+#include <sstream>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 #include <gz/msgs/twist.pb.h>
 #include <gz/msgs/odometry.pb.h>
+#include <gz/msgs/stringmsg.pb.h>
 #include <gz/plugin/Register.hh>
 #include <gz/sim/EntityComponentManager.hh>
 #include <gz/sim/System.hh>
@@ -16,6 +19,7 @@
 #include <gz/sim/components/Joint.hh>
 #include <gz/sim/components/JointVelocityCmd.hh>
 #include <gz/sim/components/JointPosition.hh>
+#include <gz/sim/components/Model.hh>
 #include <gz/transport/Node.hh>
 #include <sdf/Element.hh>
 
@@ -28,6 +32,7 @@ struct PodDrive
   std::string rightJoint;
   gz::sim::Entity leftEntity{gz::sim::kNullEntity};
   gz::sim::Entity rightEntity{gz::sim::kNullEntity};
+  gz::sim::Entity modelEntity{gz::sim::kNullEntity};
   gz::transport::Node::Publisher odometryPublisher;
   double linear{0.0};
   double angular{0.0};
@@ -36,6 +41,9 @@ struct PodDrive
   double odomYaw{0.0};
   double previousLeft{0.0};
   double previousRight{0.0};
+  double commandedLeft{0.0};
+  double commandedRight{0.0};
+  std::chrono::steady_clock::duration previousSampleTime{0};
   bool encoderInitialized{false};
   std::chrono::steady_clock::duration lastOdomPublish{0};
   std::chrono::steady_clock::time_point lastCommand{};
@@ -58,6 +66,8 @@ public:
     this->maxWheelSpeed = _sdf->Get<double>("max_wheel_speed", 24.0).first;
     this->commandTimeout = std::chrono::duration<double>(
       _sdf->Get<double>("command_timeout", 0.3).first);
+    this->diagnosticsPublisher = this->node.Advertise<gz::msgs::StringMsg>(
+      "/evaluator/pod_drive_diagnostics");
     if (!_sdf->HasElement("pod"))
       return;
     auto podElement = _sdf->FindElement("pod");
@@ -114,6 +124,8 @@ public:
       const auto right = std::clamp(
         (linearCommand + halfYaw) / this->wheelRadius,
         -this->maxWheelSpeed, this->maxWheelSpeed);
+      pod.commandedLeft = left;
+      pod.commandedRight = right;
       this->SetVelocity(pod.leftEntity, left, _ecm);
       this->SetVelocity(pod.rightEntity, right, _ecm);
       if (!_ecm.Component<gz::sim::components::JointPosition>(pod.leftEntity))
@@ -152,8 +164,15 @@ public:
       }
       const auto leftDistance = (leftAngle - pod.previousLeft) * this->wheelRadius;
       const auto rightDistance = (rightAngle - pod.previousRight) * this->wheelRadius;
+      const auto elapsed = std::chrono::duration<double>(
+        _info.simTime - pod.previousSampleTime).count();
+      const auto measuredLeft = elapsed > 0.0 ?
+        (leftAngle - pod.previousLeft) / elapsed : 0.0;
+      const auto measuredRight = elapsed > 0.0 ?
+        (rightAngle - pod.previousRight) / elapsed : 0.0;
       pod.previousLeft = leftAngle;
       pod.previousRight = rightAngle;
+      pod.previousSampleTime = _info.simTime;
       const auto distance = 0.5 * (leftDistance + rightDistance);
       const auto yawChange = (rightDistance - leftDistance) / this->wheelSeparation;
       pod.odomX += distance * std::cos(pod.odomYaw + 0.5 * yawChange);
@@ -168,6 +187,8 @@ public:
       message.mutable_pose()->mutable_orientation()->set_z(std::sin(pod.odomYaw * 0.5));
       message.mutable_pose()->mutable_orientation()->set_w(std::cos(pod.odomYaw * 0.5));
       pod.odometryPublisher.Publish(message);
+      this->PublishDiagnostics(
+        pod, measuredLeft, measuredRight, _info.simTime, _ecm);
     }
   }
 
@@ -193,7 +214,50 @@ private:
         _joint, gz::sim::components::JointVelocityCmd({_velocity}));
   }
 
+  void PublishDiagnostics(
+      PodDrive &_pod, double _measuredLeft, double _measuredRight,
+      const std::chrono::steady_clock::duration &_simTime,
+      const gz::sim::EntityComponentManager &_ecm)
+  {
+    if (_pod.modelEntity == gz::sim::kNullEntity)
+    {
+      const auto scoped = this->modelScope + "::" + _pod.name;
+      const auto matches = gz::sim::entitiesFromScopedName(scoped, _ecm);
+      const auto found = std::find_if(matches.begin(), matches.end(), [&_ecm](auto entity) {
+        return _ecm.EntityHasComponentType(entity, gz::sim::components::Model::typeId);
+      });
+      if (found != matches.end())
+        _pod.modelEntity = *found;
+    }
+    auto pose = gz::math::Pose3d::Zero;
+    if (_pod.modelEntity != gz::sim::kNullEntity)
+      pose = gz::sim::worldPose(_pod.modelEntity, _ecm);
+    std::ostringstream json;
+    json << std::setprecision(10)
+         << "{\"time_s\":" << std::chrono::duration<double>(_simTime).count()
+         << ",\"pod\":\"" << _pod.name << "\""
+         << ",\"linear_command_mps\":" << _pod.linear
+         << ",\"angular_command_radps\":" << _pod.angular
+         << ",\"left_command_radps\":" << _pod.commandedLeft
+         << ",\"right_command_radps\":" << _pod.commandedRight
+         << ",\"left_measured_radps\":" << _measuredLeft
+         << ",\"right_measured_radps\":" << _measuredRight
+         << ",\"left_angle_rad\":" << _pod.previousLeft
+         << ",\"right_angle_rad\":" << _pod.previousRight
+         << ",\"world_x\":" << pose.Pos().X()
+         << ",\"world_y\":" << pose.Pos().Y()
+         << ",\"world_z\":" << pose.Pos().Z()
+         << ",\"world_roll\":" << pose.Rot().Roll()
+         << ",\"world_pitch\":" << pose.Rot().Pitch()
+         << ",\"world_yaw\":" << pose.Rot().Yaw()
+         << "}";
+    gz::msgs::StringMsg message;
+    message.set_data(json.str());
+    this->diagnosticsPublisher.Publish(message);
+  }
+
   gz::transport::Node node;
+  gz::transport::Node::Publisher diagnosticsPublisher;
   std::mutex mutex;
   std::string modelScope;
   std::unordered_map<std::string, PodDrive> pods;

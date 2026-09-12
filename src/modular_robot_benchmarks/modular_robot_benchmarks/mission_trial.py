@@ -21,6 +21,7 @@ from rclpy.qos import (
     DurabilityPolicy, QoSProfile, ReliabilityPolicy, qos_profile_sensor_data,
 )
 from rosgraph_msgs.msg import Clock
+from std_msgs.msg import String
 from tf2_ros import Buffer, TransformException, TransformListener
 
 from .mission_batch import classify_terminal
@@ -90,6 +91,8 @@ class MissionObserver(Node):
         self.pod_angular_commands = {f"pod_{index}": 0.0 for index in range(6)}
         self.body_command = Twist()
         self.work_proxy_j = 0.0
+        self.pod_drive_diagnostics: list[dict] = []
+        self._pod_drive_diagnostic_time: dict[str, float] = {}
         self._previous_clock: float | None = None
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
@@ -105,6 +108,9 @@ class MissionObserver(Node):
         self.create_subscription(Odometry, "/odom", self._on_odometry, qos_profile_sensor_data)
         self.create_subscription(LaserScan, "/scan", self._on_scan, qos_profile_sensor_data)
         self.create_subscription(Twist, "/cmd_vel", self._on_body_command, 10)
+        self.create_subscription(
+            String, "/evaluator/pod_drive_diagnostics",
+            self._on_pod_drive_diagnostic, qos_profile_sensor_data)
         self.create_subscription(
             RelativePoseEstimate, "relative_pose_estimate", self._on_pose, 50)
         for pod in self.pod_commands:
@@ -197,6 +203,32 @@ class MissionObserver(Node):
 
     def _on_body_command(self, message: Twist) -> None:
         self.body_command = message
+
+    def _on_pod_drive_diagnostic(self, message: String) -> None:
+        """Retain evaluator-only plant evidence; never expose it to autonomy."""
+        try:
+            sample = json.loads(message.data)
+        except (TypeError, ValueError):
+            return
+        required = {
+            "time_s", "pod", "left_command_radps", "right_command_radps",
+            "left_measured_radps", "right_measured_radps", "world_x",
+            "world_y", "world_yaw",
+        }
+        if not required <= sample.keys():
+            return
+        pod, sample_time = str(sample["pod"]), float(sample["time_s"])
+        previous = self._pod_drive_diagnostic_time.get(pod)
+        if previous is not None and sample_time - previous < 0.5:
+            return
+        self._pod_drive_diagnostic_time[pod] = sample_time
+        sample["body_linear_command_mps"] = float(self.body_command.linear.x)
+        sample["body_angular_command_radps"] = float(self.body_command.angular.z)
+        self.pod_drive_diagnostics.append(sample)
+        # At 2 Hz per pod this covers a complete 300 s mission while preventing
+        # terminal records from growing with the simulator's update rate.
+        if len(self.pod_drive_diagnostics) > 3600:
+            del self.pod_drive_diagnostics[:600]
 
     def _on_state(self, message: MorphologyState) -> None:
         previous_topology = self.morphology.topology_revision if self.morphology else None
@@ -321,6 +353,8 @@ class MissionObserver(Node):
                 "x": float(pose.pose.position.x), "y": float(pose.pose.position.y),
                 "yaw": _yaw(pose.pose.orientation),
             } for pose in arc.poses] if arc else []),
+            "pod_drive_diagnostics_source": "evaluator_only_gazebo",
+            "pod_drive_diagnostic_samples": list(self.pod_drive_diagnostics),
         }
 
 

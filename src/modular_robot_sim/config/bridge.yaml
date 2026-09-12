@@ -53,6 +53,11 @@
   ros_type_name: std_msgs/msg/String
   gz_type_name: gz.msgs.StringMsg
   direction: GZ_TO_ROS
+- ros_topic_name: /evaluator/pod_drive_diagnostics
+  gz_topic_name: /evaluator/pod_drive_diagnostics
+  ros_type_name: std_msgs/msg/String
+  gz_type_name: gz.msgs.StringMsg
+  direction: GZ_TO_ROS
 - ros_topic_name: /module_pose
   gz_topic_name: /topology_joint/pose
   ros_type_name: std_msgs/msg/String

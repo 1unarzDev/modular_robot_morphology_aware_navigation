@@ -137,10 +137,14 @@ class SensorRelativePoseNode(Node):
             )
             in_core = compose_pose(mount, [in_sensor.x, in_sensor.y, in_sensor.yaw])
             range_squared = in_sensor.x * in_sensor.x + in_sensor.y * in_sensor.y
-            position_variance = 0.0004 + 0.0025 * range_squared
+            # Gazebo's logical camera reports an exact relative model pose. Use
+            # covariance consistent with that measurement so topology-anchored
+            # wheel odometry cannot bias final latch alignment. Sensing trials
+            # must inject pose noise and change this covariance together.
+            position_variance = 1e-6 + 1e-5 * range_squared
             if not self._update(RelativePoseObservation(
                 pod_id, "fiducial", now, in_core, position_variance,
-                position_variance, 0.0025 + 0.004 * range_squared, True,
+                position_variance, 1e-6 + 2e-5 * range_squared, True,
             )):
                 continue
             self._publish(pod_id, now)

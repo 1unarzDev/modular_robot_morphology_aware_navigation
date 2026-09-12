@@ -205,6 +205,16 @@ evidence that residual narrow-assembly wheel geometry or contact loading remains
 run dependent; it is not a mission outcome and does not justify relaxing the
 safety gate.
 
+Evaluator-only wheel and pod-pose instrumentation now distinguishes actuator
+tracking from body response. Identical-seed repeats showed imposed wheel joint
+velocities tracking exactly in both successful and failed assemblies; in the
+failed case, opposite-side commands moved all pods in one direction. Passive
+supports eliminated pod pitch and more accurate logical-camera weighting halved
+the yaw spread, but neither restored rotation. These negative tests rule out
+wheel command delivery and pitch alone. The remaining platform task is a stable,
+bounded effort actuator validated on a detached pod before assembled use; the
+initial high-gain prototype oscillated and was removed.
+
 ## Revised implementation sequence after controller-ownership diagnosis
 
 ### M0 — qualify replaced assembled wheel ownership (in progress)
