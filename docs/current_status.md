@@ -141,12 +141,34 @@ robot failures, navigation failures, and missions that start executing are never
 retried. Infrastructure-attempt rates will be reported separately from mission
 outcomes.
 
+Fail-closed recovery now has a declared seven-case executor fault matrix
+(`engineering_fault_matrix`). Each case injects one failure into the first
+`compact_to_narrow` transition through the launch `failure_injection` argument.
+After the terminal record is captured, the evaluator commands 0.10 m/s body
+motion for 2 s and then requests topology reconciliation. The debug execution
+`results/debug/gate0_smoke_fault` (design hash
+`f1e172305fe3fb29f98a7fb54468fea16885090093a04111e1aaf0e73cfcf29e`,
+`reconfiguration_workspace-00`, `sensing_feasibility_coupled`, master seed 1)
+passed all seven cases with one launch attempt each:
+
+| Case | Observed topology | Reconciliation |
+|---|---|---|
+| detach, stale observation, cancellation | complete compact | `READY` as `compact_diff` |
+| relocation, latch (`pod_0`) | `pod_0` detached | refused; `RECOVERY_REQUIRED` |
+| partial topology (`pod_1` latch) | `pod_0`/`pod_2` narrow, `pod_1` free | refused; `RECOVERY_REQUIRED` |
+| manager commit | complete narrow | `READY` as `narrow_tandem` |
+
+Every case ended `unsafe_topology` with zero pod commands and zero measured core
+translation or yaw during the drive stimulus. Injected cancellations now abort
+the action goal because no client cancel request exists. This is one layout and
+one seed per case; it is engineering evidence, not reliability evidence.
+
 ## Resume here
 
 Validate bounded retry provenance with a short run, then profile and improve
-quantitative-run throughput. Proceed to representative fail-closed recovery and
-the disjoint pilot without spending more submission time on repeated 20-run
-startup certification.
+quantitative-run throughput. Repeat the fault matrix across layouts before the
+pilot, then proceed to the disjoint pilot without spending more submission time
+on repeated 20-run startup certification.
 
 After mechanics pass, implement location-dependent perceived 3D obstacles and
 observability, complete evaluator outcome/provenance streams, run a disjoint
@@ -155,10 +177,13 @@ only then freeze and execute the confirmatory schedule.
 
 ## Last verified checkpoint
 
-- Platform commit: `0805167` (`Harden controller readiness qualification`).
+- Platform commit: `c41a0db` (`Repair fault-matrix rebase onto retry provenance`).
 - Two independent engineering campaigns retain 37/40 completed missions; all
   three failures occurred before mission execution.
-- `python3 -m pytest -q`: 103 passed in 154.77 s.
+- Fault matrix: 7/7 cases passed in one engineering execution; the refactored
+  generator reproduces its frozen design hash and the records re-summarize as
+  passing.
+- `python3 -m pytest -q`: 109 passed in 218.83 s.
 - `colcon build --symlink-install`: all nine packages passed.
 - `colcon test`: all five packages containing smoke tests passed; the remaining
   four contain no package-level tests.

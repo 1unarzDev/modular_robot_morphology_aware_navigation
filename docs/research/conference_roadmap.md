@@ -22,8 +22,10 @@ claims out of the paper; the literature review defines the prior-art boundary.
 
 Required artifact: machine-readable qualification summary with signed yaw,
 straight/reverse travel, cross-coupling, docking errors, observed topology, and
-failure-matrix results. Current state: **single-seed mechanics and one applied
-disturbance pass; randomized reliability and per-pod rigidity remain open**.
+failure-matrix results. Current state: **all-pod rigidity passes; two 20-run
+round-trip campaigns retain 37/40 completed missions with every failure before
+mission execution; the seven-case fault matrix passes once on one engineering
+layout**.
 
 Detached and compact native-feedback gates pass. Low-friction pod casters and an
 explicit secondary wheel-friction coefficient produce two repeated engineering
@@ -49,14 +51,23 @@ active-controller acknowledgement, and the exact failed seed passes on replay.
 Run a new clean campaign rather than substituting that replay into the failed
 record set.
 
+The declared fault matrix injects detach, stale observation, cancellation,
+relocation, latch, partial-topology, and manager-commit failures into the first
+`compact_to_narrow` transition. One engineering execution passed all seven
+cases: each ended `unsafe_topology`/`RECOVERY_REQUIRED`, a post-terminal body
+velocity stimulus produced zero pod commands and zero core motion, and explicit
+reconciliation returned `READY` only for complete `compact_diff` or
+`narrow_tandem` topologies while refusing every partial topology. This is one
+layout and one seed per case, not reliability evidence.
+
 The next conference-evidence phases are ordered as follows:
 
 1. Run the frozen 20 trials and require the full transition, morphology acknowledgement,
    motion, recovery-state, rigidity, and disturbance-uniqueness contract for
    every run. Archive failures rather than replacing them.
-2. Execute the declared transition fault matrix and demonstrate that actual
-   topology controls recovery and assembled drive remains inhibited until a
-   valid `READY` commit.
+2. Repeat the declared fault matrix across layouts and `fault_seed` realizations,
+   retaining the requirement that actual topology controls recovery and assembled
+   drive remains inhibited until a valid `READY` commit.
 3. Apply `sensing_seed` to sensor noise/dropout/occlusion and `fault_seed` to
    declared executor faults. Add location-dependent perceived 3D transition
    volumes and connector visibility without exposing evaluator truth to autonomy.

@@ -20,7 +20,6 @@ CONFIRMATORY_FAMILIES = (
     "combined_constraints",
 )
 SENSING_FAMILIES = frozenset({"docking_observability", "combined_constraints"})
-ROUNDTRIP_DESIGN_KIND = "engineering_roundtrip"
 FAULT_MATRIX_DESIGN_KIND = "engineering_fault_matrix"
 
 
@@ -162,25 +161,15 @@ def generate_design(
                        METHODS, families, tuple(trials))
 
 
-def generate_engineering_design(
-    design_kind: str,
+def generate_fault_matrix_design(
     family: str,
     layout_index: int,
     method: str,
-    runs: int | None = None,
     master_seed: int = 20260912,
 ) -> StudyDesign:
-    """Single-layout, single-method runs with independent plant seeds per run."""
-    if design_kind == FAULT_MATRIX_DESIGN_KIND:
-        if runs not in (None, len(FAULT_MATRIX)):
-            raise ValueError("fault matrix runs must equal the declared fault count")
-        runs = len(FAULT_MATRIX)
-    elif design_kind != ROUNDTRIP_DESIGN_KIND:
-        raise ValueError(f"unknown engineering design kind: {design_kind}")
-    elif runs is None:
-        runs = 20
-    if runs <= 0:
-        raise ValueError("engineering runs must be positive")
+    """One single-method run per declared fault, with independent plant seeds."""
+    design_kind = FAULT_MATRIX_DESIGN_KIND
+    runs = len(FAULT_MATRIX)
     if family not in CONFIRMATORY_FAMILIES:
         raise ValueError(f"unknown confirmatory family: {family}")
     if method not in METHODS:
