@@ -1,0 +1,261 @@
+{
+  "design": {
+    "design_kind": "engineering_roundtrip_qualification",
+    "families": [
+      "combined_constraints"
+    ],
+    "layouts_per_family": 1,
+    "master_seed": 20260913,
+    "methods": [
+      "route_first_adaptation",
+      "geometry_coupled",
+      "feasibility_coupled",
+      "sensing_feasibility_coupled"
+    ],
+    "replicates": 20,
+    "schema_version": 1,
+    "trials": [
+      {
+        "family": "combined_constraints",
+        "fault_seed": 13501082415686556246,
+        "friction_seed": 4132963444159943154,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 2,
+        "replicate": 0,
+        "sensing_seed": 10390379870367131857,
+        "trial_id": "combined_constraints-00-r0-feasibility_coupled",
+        "world_seed": 8196733574266853195
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 1285654449664269304,
+        "friction_seed": 1081654174055571309,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 0,
+        "replicate": 1,
+        "sensing_seed": 1246762297076114505,
+        "trial_id": "combined_constraints-00-r1-feasibility_coupled",
+        "world_seed": 8196733574266853195
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 11744581277262173593,
+        "friction_seed": 18424019878991379512,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 0,
+        "replicate": 2,
+        "sensing_seed": 13063362921446241048,
+        "trial_id": "combined_constraints-00-r2-feasibility_coupled",
+        "world_seed": 8196733574266853195
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 10090477422955054838,
+        "friction_seed": 8084776797219921931,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 2,
+        "replicate": 3,
+        "sensing_seed": 8672779760900668429,
+        "trial_id": "combined_constraints-00-r3-feasibility_coupled",
+        "world_seed": 8196733574266853195
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 347188694196711702,
+        "friction_seed": 5874803127620738186,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 3,
+        "replicate": 4,
+        "sensing_seed": 7169751187702233208,
+        "trial_id": "combined_constraints-00-r4-feasibility_coupled",
+        "world_seed": 8196733574266853195
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 379677366855622020,
+        "friction_seed": 10408689940009899287,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 0,
+        "replicate": 5,
+        "sensing_seed": 1207181697612810690,
+        "trial_id": "combined_constraints-00-r5-feasibility_coupled",
+        "world_seed": 8196733574266853195
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 13347342610112303967,
+        "friction_seed": 11899582137641175770,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 2,
+        "replicate": 6,
+        "sensing_seed": 208751743058515940,
+        "trial_id": "combined_constraints-00-r6-feasibility_coupled",
+        "world_seed": 8196733574266853195
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 2731092438147859756,
+        "friction_seed": 14785631444200731606,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 0,
+        "replicate": 7,
+        "sensing_seed": 6398287602506803750,
+        "trial_id": "combined_constraints-00-r7-feasibility_coupled",
+        "world_seed": 8196733574266853195
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 16953249714532658436,
+        "friction_seed": 208380857875381145,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 0,
+        "replicate": 8,
+        "sensing_seed": 3252306229463764339,
+        "trial_id": "combined_constraints-00-r8-feasibility_coupled",
+        "world_seed": 8196733574266853195
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 6521136220378041473,
+        "friction_seed": 15768804367486217467,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 3,
+        "replicate": 9,
+        "sensing_seed": 979972797555124143,
+        "trial_id": "combined_constraints-00-r9-feasibility_coupled",
+        "world_seed": 8196733574266853195
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 7355660912039532722,
+        "friction_seed": 367842710009389334,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 3,
+        "replicate": 10,
+        "sensing_seed": 3681769407300859555,
+        "trial_id": "combined_constraints-00-r10-feasibility_coupled",
+        "world_seed": 8196733574266853195
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 7337303580672110389,
+        "friction_seed": 14169083824205813323,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 0,
+        "replicate": 11,
+        "sensing_seed": 14830456091725967080,
+        "trial_id": "combined_constraints-00-r11-feasibility_coupled",
+        "world_seed": 8196733574266853195
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 15324271646425224141,
+        "friction_seed": 625433784403143146,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 1,
+        "replicate": 12,
+        "sensing_seed": 9172830865310330782,
+        "trial_id": "combined_constraints-00-r12-feasibility_coupled",
+        "world_seed": 8196733574266853195
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 3881652788354380425,
+        "friction_seed": 7109876012810448043,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 1,
+        "replicate": 13,
+        "sensing_seed": 7098259187829483270,
+        "trial_id": "combined_constraints-00-r13-feasibility_coupled",
+        "world_seed": 8196733574266853195
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 10500537505384646093,
+        "friction_seed": 5584027761480077229,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 1,
+        "replicate": 14,
+        "sensing_seed": 11145054329761642923,
+        "trial_id": "combined_constraints-00-r14-feasibility_coupled",
+        "world_seed": 8196733574266853195
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 6927990756350744814,
+        "friction_seed": 14807610953436002359,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 0,
+        "replicate": 15,
+        "sensing_seed": 8360442622591021416,
+        "trial_id": "combined_constraints-00-r15-feasibility_coupled",
+        "world_seed": 8196733574266853195
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 12775054682843603502,
+        "friction_seed": 230655667188589907,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 1,
+        "replicate": 16,
+        "sensing_seed": 5347759554850082851,
+        "trial_id": "combined_constraints-00-r16-feasibility_coupled",
+        "world_seed": 8196733574266853195
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 4109220874634178933,
+        "friction_seed": 10052497282302098078,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 0,
+        "replicate": 17,
+        "sensing_seed": 17988108714232945047,
+        "trial_id": "combined_constraints-00-r17-feasibility_coupled",
+        "world_seed": 8196733574266853195
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 16179961338531333601,
+        "friction_seed": 10690171907191786168,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 1,
+        "replicate": 18,
+        "sensing_seed": 487901860536041933,
+        "trial_id": "combined_constraints-00-r18-feasibility_coupled",
+        "world_seed": 8196733574266853195
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 16410601941492400676,
+        "friction_seed": 3994035790841260125,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 2,
+        "replicate": 19,
+        "sensing_seed": 10334165559924050259,
+        "trial_id": "combined_constraints-00-r19-feasibility_coupled",
+        "world_seed": 8196733574266853195
+      }
+    ]
+  },
+  "design_hash": "9c74a26749d466ba382caa6b4d227a033139ef24b8600a3d10ef90608a088b5e"
+}

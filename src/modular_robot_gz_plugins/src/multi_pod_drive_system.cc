@@ -40,6 +40,7 @@ struct PodDrive
   gz::sim::Entity rightSuspensionEntity{gz::sim::kNullEntity};
   gz::sim::Entity modelEntity{gz::sim::kNullEntity};
   gz::transport::Node::Publisher odometryPublisher;
+  gz::transport::Node::Publisher diagnosticsPublisher;
   double linear{0.0};
   double angular{0.0};
   double odomX{0.0};
@@ -56,6 +57,7 @@ struct PodDrive
   std::chrono::steady_clock::duration previousSampleTime{0};
   bool encoderInitialized{false};
   std::chrono::steady_clock::duration lastOdomPublish{0};
+  std::chrono::steady_clock::duration lastDiagnosticPublish{0};
   std::chrono::steady_clock::time_point lastCommand{};
 };
 
@@ -79,8 +81,6 @@ public:
     this->velocityGain = _sdf->Get<double>("velocity_gain", 0.05).first;
     this->commandTimeout = std::chrono::duration<double>(
       _sdf->Get<double>("command_timeout", 0.3).first);
-    this->diagnosticsPublisher = this->node.Advertise<gz::msgs::StringMsg>(
-      "/evaluator/pod_drive_diagnostics");
     if (!_sdf->HasElement("pod"))
       return;
     auto podElement = _sdf->FindElement("pod");
@@ -89,6 +89,8 @@ public:
       const auto podName = podElement->Get<std::string>();
       PodDrive pod;
       pod.name = podName;
+      pod.diagnosticsPublisher = this->node.Advertise<gz::msgs::StringMsg>(
+        "/evaluator/pods/" + podName + "/drive_diagnostics");
       pod.leftJoint = this->modelScope + "::" + podName + "::" +
         podName + "_left_wheel_joint";
       pod.rightJoint = this->modelScope + "::" + podName + "::" +
@@ -251,8 +253,15 @@ public:
       message.mutable_pose()->mutable_orientation()->set_z(std::sin(pod.odomYaw * 0.5));
       message.mutable_pose()->mutable_orientation()->set_w(std::cos(pod.odomYaw * 0.5));
       pod.odometryPublisher.Publish(message);
-      this->PublishDiagnostics(
-        pod, measuredLeft, measuredRight, _info.simTime, _ecm);
+      // Evaluator poses need synchronized coverage, not the 50 Hz wheel-odom
+      // rate. Publishing all six JSON streams at 50 Hz overflowed the ROS
+      // bridge queue and systematically starved one pod on loaded runs.
+      if (_info.simTime - pod.lastDiagnosticPublish >= std::chrono::milliseconds(100))
+      {
+        pod.lastDiagnosticPublish = _info.simTime;
+        this->PublishDiagnostics(
+          pod, measuredLeft, measuredRight, _info.simTime, _ecm);
+      }
     }
   }
 
@@ -354,11 +363,10 @@ private:
          << "}";
     gz::msgs::StringMsg message;
     message.set_data(json.str());
-    this->diagnosticsPublisher.Publish(message);
+    _pod.diagnosticsPublisher.Publish(message);
   }
 
   gz::transport::Node node;
-  gz::transport::Node::Publisher diagnosticsPublisher;
   std::mutex mutex;
   std::string modelScope;
   std::unordered_map<std::string, PodDrive> pods;

@@ -53,8 +53,33 @@
   ros_type_name: std_msgs/msg/String
   gz_type_name: gz.msgs.StringMsg
   direction: GZ_TO_ROS
-- ros_topic_name: /evaluator/pod_drive_diagnostics
-  gz_topic_name: /evaluator/pod_drive_diagnostics
+- ros_topic_name: /evaluator/pods/pod_0/drive_diagnostics
+  gz_topic_name: /evaluator/pods/pod_0/drive_diagnostics
+  ros_type_name: std_msgs/msg/String
+  gz_type_name: gz.msgs.StringMsg
+  direction: GZ_TO_ROS
+- ros_topic_name: /evaluator/pods/pod_1/drive_diagnostics
+  gz_topic_name: /evaluator/pods/pod_1/drive_diagnostics
+  ros_type_name: std_msgs/msg/String
+  gz_type_name: gz.msgs.StringMsg
+  direction: GZ_TO_ROS
+- ros_topic_name: /evaluator/pods/pod_2/drive_diagnostics
+  gz_topic_name: /evaluator/pods/pod_2/drive_diagnostics
+  ros_type_name: std_msgs/msg/String
+  gz_type_name: gz.msgs.StringMsg
+  direction: GZ_TO_ROS
+- ros_topic_name: /evaluator/pods/pod_3/drive_diagnostics
+  gz_topic_name: /evaluator/pods/pod_3/drive_diagnostics
+  ros_type_name: std_msgs/msg/String
+  gz_type_name: gz.msgs.StringMsg
+  direction: GZ_TO_ROS
+- ros_topic_name: /evaluator/pods/pod_4/drive_diagnostics
+  gz_topic_name: /evaluator/pods/pod_4/drive_diagnostics
+  ros_type_name: std_msgs/msg/String
+  gz_type_name: gz.msgs.StringMsg
+  direction: GZ_TO_ROS
+- ros_topic_name: /evaluator/pods/pod_5/drive_diagnostics
+  gz_topic_name: /evaluator/pods/pod_5/drive_diagnostics
   ros_type_name: std_msgs/msg/String
   gz_type_name: gz.msgs.StringMsg
   direction: GZ_TO_ROS

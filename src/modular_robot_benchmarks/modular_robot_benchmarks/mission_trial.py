@@ -8,6 +8,7 @@ import time
 import rclpy
 from geometry_msgs.msg import PoseStamped, Twist
 from lifecycle_msgs.msg import State
+from lifecycle_msgs.msg import TransitionEvent
 from lifecycle_msgs.srv import GetState
 from modular_robot_msgs.action import NavigateHybrid
 from modular_robot_msgs.msg import MorphologyState, RelativePoseEstimate
@@ -25,6 +26,7 @@ from std_msgs.msg import String
 from tf2_ros import Buffer, TransformException, TransformListener
 
 from .mission_batch import classify_terminal
+from .rigidity import POSE_FIELDS, qualify_pod_rigidity
 
 
 @dataclass
@@ -93,6 +95,7 @@ class MissionObserver(Node):
         self.body_command = Twist()
         self.work_proxy_j = 0.0
         self.pod_drive_diagnostics: list[dict] = []
+        self.pod_pose_samples: list[dict] = []
         self._pod_drive_diagnostic_time: dict[str, float] = {}
         self._previous_clock: float | None = None
         self.tf_buffer = Buffer()
@@ -110,17 +113,24 @@ class MissionObserver(Node):
         self.create_subscription(LaserScan, "/scan", self._on_scan, qos_profile_sensor_data)
         self.create_subscription(Twist, "/cmd_vel", self._on_body_command, 10)
         self.create_subscription(
-            String, "/evaluator/pod_drive_diagnostics",
-            self._on_pod_drive_diagnostic, qos_profile_sensor_data)
-        self.create_subscription(
             RelativePoseEstimate, "relative_pose_estimate", self._on_pose, 50)
         for pod in self.pod_commands:
+            self.create_subscription(
+                String, f"/evaluator/pods/{pod}/drive_diagnostics",
+                self._on_pod_drive_diagnostic, qos_profile_sensor_data)
             self.create_subscription(
                 Twist, f"/model/{pod}/cmd_vel",
                 lambda message, pod=pod: self._on_command(pod, message), 10)
         self.controller_state_client = self.create_client(
             GetState, "/controller_server/get_state")
+        self.create_subscription(
+            TransitionEvent, "/controller_server/transition_event",
+            self._on_controller_transition, 10)
         self.create_timer(0.5, self._poll_controller_state)
+
+    def _on_controller_transition(self, message: TransitionEvent) -> None:
+        self.controller_active = (
+            message.goal_state.id == State.PRIMARY_STATE_ACTIVE)
 
     def _poll_controller_state(self) -> None:
         if (self._controller_state_future is not None
@@ -198,6 +208,15 @@ class MissionObserver(Node):
     def _on_odometry(self, message: Odometry) -> None:
         self.latest_odometry = message
         self.latest_odom_wall_time = time.monotonic()
+        # The bridged odometry header uses the same simulation clock. Retain it
+        # as a time-source fallback when high-rate /clock samples are dropped
+        # during process startup; this stream is already consumed by autonomy.
+        if self.sim_time is None:
+            stamp = message.header.stamp
+            value = stamp.sec + stamp.nanosec * 1e-9
+            if value > 0.0:
+                self.sim_time = value
+                self._previous_clock = value
 
     def _on_scan(self, _message: LaserScan) -> None:
         self.latest_scan_wall_time = time.monotonic()
@@ -219,6 +238,13 @@ class MissionObserver(Node):
         if not required <= sample.keys():
             return
         pod, sample_time = str(sample["pod"]), float(sample["time_s"])
+        if all(name in sample for name in POSE_FIELDS):
+            self.pod_pose_samples.append({
+                "time_s": sample_time, "pod": pod,
+                **{name: float(sample[name]) for name in POSE_FIELDS},
+            })
+            if len(self.pod_pose_samples) > 24000:
+                del self.pod_pose_samples[:3000]
         previous = self._pod_drive_diagnostic_time.get(pod)
         if previous is not None and sample_time - previous < 0.5:
             return
@@ -366,6 +392,7 @@ class MissionObserver(Node):
             } for pose in arc.poses] if arc else []),
             "pod_drive_diagnostics_source": "evaluator_only_gazebo",
             "pod_drive_diagnostic_samples": list(self.pod_drive_diagnostics),
+            "pod_pose_samples": list(self.pod_pose_samples),
         }
 
 
@@ -459,6 +486,19 @@ def _observation(node, status, completed, message, simulated, wall_start, attemp
     safe_completion = completed and final_state == "READY"
     if completed and not safe_completion:
         status, completed = "unsafe_topology", False
+    motion_qualifications = (
+        [json.loads(value) for value in navigation_result.motion_qualification_json]
+        if navigation_result else [])
+    for qualification in motion_qualifications:
+        if "start_time_s" in qualification and "end_time_s" in qualification:
+            qualification["pod_rigidity"] = qualify_pod_rigidity(
+                node.pod_pose_samples, qualification["start_time_s"],
+                qualification["end_time_s"])
+            qualification["passed"] = bool(
+                qualification["passed"] and qualification["pod_rigidity"]["passed"])
+    if completed and any(not value["passed"] for value in motion_qualifications):
+        status, completed = "motion_qualification_failure", False
+        message = "post-transition pod rigidity qualification failed"
     return MissionObservation(
         terminal_status=status, completed=completed, message=message,
         simulated_duration_s=simulated,
@@ -496,8 +536,6 @@ def _observation(node, status, completed, message, simulated, wall_start, attemp
          if navigation_result else []),
         localization_history=node.localization_history,
         pod_alignment_history=node.pod_alignment_history,
-        motion_qualifications=(
-            [json.loads(value) for value in navigation_result.motion_qualification_json]
-            if navigation_result else []),
+        motion_qualifications=motion_qualifications,
         controller_diagnostics=node.controller_diagnostic(),
     )

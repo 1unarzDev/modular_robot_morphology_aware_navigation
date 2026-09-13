@@ -38,25 +38,27 @@ One applied-disturbance engineering mission now passes with randomized ground
 friction and x/y/yaw initialization recorded identically in its world manifest,
 trial provenance, Gazebo spawn pose, and AMCL inputs. This closes the single-run
 wiring check. It does not close the reliability gate or establish measurable
-between-seed plant sensitivity.
+between-seed plant sensitivity. A subsequent frozen-harness validation also
+passes all-pod SE(3) rigidity after both transitions, with 61 synchronized pose
+samples per pod in each motion window. The 20-run design is frozen at hash
+`9c74a26749d466ba382caa6b4d227a033139ef24b8600a3d10ef90608a088b5e`;
+the independent campaign remains unexecuted.
 
 The next conference-evidence phases are ordered as follows:
 
-1. Finish Gate 0 with per-pod post-latch relative-pose rigidity metrics and a
-   frozen 20-run randomized round-trip engineering design.
-2. Run the 20 trials and require the full transition, morphology acknowledgement,
+1. Run the frozen 20 trials and require the full transition, morphology acknowledgement,
    motion, recovery-state, rigidity, and disturbance-uniqueness contract for
    every run. Archive failures rather than replacing them.
-3. Execute the declared transition fault matrix and demonstrate that actual
+2. Execute the declared transition fault matrix and demonstrate that actual
    topology controls recovery and assembled drive remains inhibited until a
    valid `READY` commit.
-4. Apply `sensing_seed` to sensor noise/dropout/occlusion and `fault_seed` to
+3. Apply `sensing_seed` to sensor noise/dropout/occlusion and `fault_seed` to
    declared executor faults. Add location-dependent perceived 3D transition
    volumes and connector visibility without exposing evaluator truth to autonomy.
-5. Complete evaluator-only synchronized clearance, collision, localization RMSE,
+4. Complete evaluator-only synchronized clearance, collision, localization RMSE,
    transition prediction/outcome, and energy-proxy streams; then run a disjoint
    pilot to set nuisance ranges and the operational smallest effect of interest.
-6. Freeze the power-grid decision, update the layout count if needed, and run the
+5. Freeze the power-grid decision, update the layout count if needed, and run the
    immutable paired confirmatory design. Only accepted terminal records feed the
    predeclared layout-clustered bootstrap, sign-flip tests, Holm correction, and
    hierarchical logistic sensitivity analysis.

@@ -96,10 +96,29 @@ signed-motion gates. This is one engineering realization and is not reliability,
 pilot, or confirmatory evidence. Readiness timeouts now retain every predicate in
 their terminal message for infrastructure diagnosis.
 
+Gate 0 now has a frozen 20-run engineering round-trip design at
+`config/engineering_roundtrip_design.json` with hash
+`9c74a26749d466ba382caa6b4d227a033139ef24b8600a3d10ef90608a088b5e`.
+The batch auditor requires every immutable terminal record, two successful
+transitions, the compact-narrow-compact commit sequence, final `READY`, both
+signed-motion gates, all-pod rigidity, and 20 unique realized disturbances.
+Per-pod evaluator diagnostics use independent topics and a separate high-rate
+3D pose ledger, preventing one pod from being hidden by shared bridge-queue
+starvation. Rigidity is the maximum change in each pod's SE(3) transform relative
+to pod 0 during each post-transition motion window; the engineering bounds are
+0.015 m and 0.03 rad with at least three synchronized samples per pod.
+
+`results/debug/rigidity_roundtrip_latest43_raw` is the first successful harness
+validation. It completed with two transitions, final `compact_diff`/`READY`, and
+both motion and rigidity gates passing. Every pod had 61 synchronized samples in
+each window. This is 1/20 engineering runs in an isolated debug directory; it is
+not part of the eventual immutable 20-record qualification directory and does
+not establish reliability.
+
 ## Resume here
 
-Add per-pod post-latch rigidity checks and a dedicated 20-run engineering design,
-then run randomized round trips. Each run must contain two successful planned
+Execute the frozen 20-run engineering design in a new immutable raw directory.
+Each run must contain two successful planned
 transitions, commit `narrow_tandem` and return to `compact_diff`, finish `READY`,
 pass both signed-motion gates, retain unique realized disturbances, and show no
 unrecovered fault. Quantify realized plant variation across those runs rather

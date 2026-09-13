@@ -24,6 +24,7 @@ setup(
             "run_morphology_missions = modular_robot_benchmarks.mission_batch:main",
             "qualify_assembly_motion = modular_robot_benchmarks.motion_qualification:main",
             "qualify_detached_pod = modular_robot_benchmarks.detached_pod_qualification:main",
+            "qualify_roundtrip_batch = modular_robot_benchmarks.roundtrip_qualification:main",
         ]
     },
     test_suite="unittest.TestSuite",

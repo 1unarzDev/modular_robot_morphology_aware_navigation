@@ -26,7 +26,8 @@ class DetachedPodQualifier(Node):
         self.latest: dict | None = None
         self.samples: list[dict] = []
         self.create_subscription(Clock, "/clock", self._on_clock, qos_profile_sensor_data)
-        self.create_subscription(String, "/evaluator/pod_drive_diagnostics", self._sample, 50)
+        self.create_subscription(
+            String, "/evaluator/pods/pod_0/drive_diagnostics", self._sample, 50)
 
     def _on_clock(self, message: Clock) -> None:
         self.sim_time = message.clock.sec + message.clock.nanosec * 1e-9

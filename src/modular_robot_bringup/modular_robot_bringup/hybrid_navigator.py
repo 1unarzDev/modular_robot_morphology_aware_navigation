@@ -443,6 +443,7 @@ class HybridNavigator(Node):
             ("reverse", -0.12, 0.0, 1.0),
         )
         stages = {}
+        start_time_s = self._odometry_time_s()
         for name, linear, angular, duration in sequence:
             endpoints = await self._command_for(linear, angular, duration)
             if endpoints is None:
@@ -451,7 +452,13 @@ class HybridNavigator(Node):
         passed = qualification_pass(stages)
         log = self.get_logger().info if passed else self.get_logger().error
         log(f"post-transition motion qualification passed={passed}; stages={stages}")
-        return passed, {"passed": passed, "stages": stages}
+        return passed, {"passed": passed, "stages": stages,
+                        "start_time_s": start_time_s,
+                        "end_time_s": self._odometry_time_s()}
+
+    def _odometry_time_s(self) -> float:
+        stamp = self.latest_odometry.header.stamp
+        return float(stamp.sec) + float(stamp.nanosec) * 1e-9
 
     async def _inhibit_assembly_drive(self) -> None:
         self.command_publisher.publish(Twist())
