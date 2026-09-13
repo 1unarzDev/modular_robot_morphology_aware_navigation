@@ -92,6 +92,7 @@ def _record(design, spec, tmp_path=None, friction=0.8, **changes):
         terminal_status="completed", completed=True, simulated_duration_s=160.0,
         wall_duration_s=320.0, reconfiguration_attempts=2,
         motion_qualifications=[{"passed": True, "stages": STAGES}] * 2,
+        infrastructure_attempts=[{"attempt": 1, "terminal_status": "completed"}],
         controller_diagnostics={"pod_drive_diagnostic_samples": _samples(spec)},
         topology_history=topology, execution_state_history=execution,
         final_execution_state="READY", final_morphology="compact_diff",
@@ -238,6 +239,7 @@ def _fault_record(design, spec, probe):
         terminal_status="unsafe_topology", completed=False,
         simulated_duration_s=40.0, wall_duration_s=80.0,
         final_execution_state="RECOVERY_REQUIRED", unrecovered_fault=True,
+        infrastructure_attempts=[{"attempt": 1, "terminal_status": "unsafe_topology"}],
         recovery_probe=probe, notes=["reconfiguration failed; observed topology requires recovery"])
 
 

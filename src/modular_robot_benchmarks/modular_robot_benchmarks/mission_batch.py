@@ -217,7 +217,6 @@ def run_batch(
             },
             parameters,
         )
-<<<<<<< HEAD
         infrastructure_attempts = []
         attempt_ledger_path = trial_artifacts / "infrastructure_attempts.jsonl"
         for attempt_index in range(max_infrastructure_retries + 1):
