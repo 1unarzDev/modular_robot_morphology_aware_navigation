@@ -32,8 +32,12 @@ struct PodDrive
   std::string name;
   std::string leftJoint;
   std::string rightJoint;
+  std::string leftSuspensionJoint;
+  std::string rightSuspensionJoint;
   gz::sim::Entity leftEntity{gz::sim::kNullEntity};
   gz::sim::Entity rightEntity{gz::sim::kNullEntity};
+  gz::sim::Entity leftSuspensionEntity{gz::sim::kNullEntity};
+  gz::sim::Entity rightSuspensionEntity{gz::sim::kNullEntity};
   gz::sim::Entity modelEntity{gz::sim::kNullEntity};
   gz::transport::Node::Publisher odometryPublisher;
   double linear{0.0};
@@ -89,6 +93,10 @@ public:
         podName + "_left_wheel_joint";
       pod.rightJoint = this->modelScope + "::" + podName + "::" +
         podName + "_right_wheel_joint";
+      pod.leftSuspensionJoint = this->modelScope + "::" + podName + "::" +
+        podName + "_left_suspension";
+      pod.rightSuspensionJoint = this->modelScope + "::" + podName + "::" +
+        podName + "_right_suspension";
       pod.odometryPublisher = this->node.Advertise<gz::msgs::Odometry>(
         "/model/" + podName + "/odometry");
       this->pods.emplace(podName, pod);
@@ -120,6 +128,12 @@ public:
         pod.leftEntity = this->JointByScopedName(pod.leftJoint, _ecm);
       if (pod.rightEntity == gz::sim::kNullEntity)
         pod.rightEntity = this->JointByScopedName(pod.rightJoint, _ecm);
+      if (pod.leftSuspensionEntity == gz::sim::kNullEntity)
+        pod.leftSuspensionEntity = this->JointByScopedName(
+          pod.leftSuspensionJoint, _ecm);
+      if (pod.rightSuspensionEntity == gz::sim::kNullEntity)
+        pod.rightSuspensionEntity = this->JointByScopedName(
+          pod.rightSuspensionJoint, _ecm);
       if (pod.leftEntity == gz::sim::kNullEntity ||
           pod.rightEntity == gz::sim::kNullEntity)
         continue;
@@ -165,6 +179,16 @@ public:
           _ecm.CreateComponent(pod.leftEntity, gz::sim::components::JointVelocity());
         if (!_ecm.Component<gz::sim::components::JointVelocity>(pod.rightEntity))
           _ecm.CreateComponent(pod.rightEntity, gz::sim::components::JointVelocity());
+      }
+      for (const auto suspension : {
+          pod.leftSuspensionEntity, pod.rightSuspensionEntity})
+      {
+        if (suspension == gz::sim::kNullEntity)
+          continue;
+        if (!_ecm.Component<gz::sim::components::JointPosition>(suspension))
+          _ecm.CreateComponent(suspension, gz::sim::components::JointPosition());
+        if (!_ecm.Component<gz::sim::components::JointVelocity>(suspension))
+          _ecm.CreateComponent(suspension, gz::sim::components::JointVelocity());
       }
     }
   }
@@ -283,6 +307,21 @@ private:
     auto pose = gz::math::Pose3d::Zero;
     if (_pod.modelEntity != gz::sim::kNullEntity)
       pose = gz::sim::worldPose(_pod.modelEntity, _ecm);
+    const auto jointValue = [&_ecm](gz::sim::Entity _entity, bool _velocity) {
+      if (_entity == gz::sim::kNullEntity)
+        return 0.0;
+      if (_velocity)
+      {
+        const auto component = _ecm.Component<
+          gz::sim::components::JointVelocity>(_entity);
+        return component && !component->Data().empty() ?
+          component->Data()[0] : 0.0;
+      }
+      const auto component = _ecm.Component<
+        gz::sim::components::JointPosition>(_entity);
+      return component && !component->Data().empty() ?
+        component->Data()[0] : 0.0;
+    };
     std::ostringstream json;
     json << std::setprecision(10)
          << "{\"time_s\":" << std::chrono::duration<double>(_simTime).count()
@@ -298,6 +337,14 @@ private:
          << ",\"right_effort_nm\":" << _pod.appliedRightEffort
          << ",\"left_angle_rad\":" << _pod.previousLeft
          << ",\"right_angle_rad\":" << _pod.previousRight
+         << ",\"left_suspension_m\":"
+         << jointValue(_pod.leftSuspensionEntity, false)
+         << ",\"right_suspension_m\":"
+         << jointValue(_pod.rightSuspensionEntity, false)
+         << ",\"left_suspension_mps\":"
+         << jointValue(_pod.leftSuspensionEntity, true)
+         << ",\"right_suspension_mps\":"
+         << jointValue(_pod.rightSuspensionEntity, true)
          << ",\"world_x\":" << pose.Pos().X()
          << ",\"world_y\":" << pose.Pos().Y()
          << ",\"world_z\":" << pose.Pos().Z()

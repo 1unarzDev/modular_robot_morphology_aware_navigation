@@ -32,3 +32,20 @@ def test_articulated_pod_keeps_physical_wheels_without_competing_controller():
     assert "@POD_ID@_left_wheel_joint" in text
     assert "@POD_ID@_right_wheel_joint" in text
     assert "DiffDrive" not in text
+    assert text.count("<lower>-0.015</lower><upper>0.015</upper>") == 2
+    assert text.count("_caster_collision") == 2
+    assert text.count("<mu>0.01</mu><mu2>0.01</mu2>") == 2
+    assert text.count("<mu>1.2</mu><mu2>0.08</mu2>") == 2
+
+
+def test_drive_diagnostics_measure_both_suspension_carriers():
+    text = (
+        ROOT / "src/modular_robot_gz_plugins/src/multi_pod_drive_system.cc"
+    ).read_text()
+    for field in (
+        "left_suspension_m", "right_suspension_m",
+        "left_suspension_mps", "right_suspension_mps",
+    ):
+        assert field in text
+    assert "_left_suspension" in text
+    assert "_right_suspension" in text

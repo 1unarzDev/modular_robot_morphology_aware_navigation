@@ -61,17 +61,28 @@ Its post-transition gate still failed safely: both yaw stages produced exactly
 zero core yaw, while forward/reverse travel was +0.08926/-0.08926 m.
 Evaluator-only wheel feedback has the correct signs, but pods translate
 independently under yaw allocation while the core remains stationary. The
-remaining blocker is physical fixed-joint attachment ownership after relatching
-the nested suspension model.
+remaining blocker was traced to two-wheel pod pitch and excessive lateral wheel
+scrub. Low-friction fore/aft caster contacts now stabilize each self-mobile pod,
+and the fixed-wheel model declares lower secondary friction (`mu2=0.08`) while
+retaining longitudinal traction. Suspension travel and velocity are now included
+in evaluator-only drive diagnostics.
+
+Two identical-seed engineering missions completed with two transition attempts,
+`READY` execution state, and no recovery fault. Their first post-transition yaw
+gates measured +0.4519/-0.5273 rad and +0.4514/-0.5165 rad; their second gates
+measured +0.2749/-0.2754 rad and +0.2828/-0.2812 rad. Both missions completed in
+159.884 and 162.052 simulated seconds. These are repeat engineering checks, not
+pilot or confirmatory evidence. The planned second transition is
+`narrow_to_compact`, but the observer's final topology history ends at
+`narrow_tandem` revision 25 despite `READY`; reverse-transition qualification
+therefore remains open until final committed morphology is observed explicitly.
 
 ## Resume here
 
-Resolve each dynamically created fixed attachment joint to the articulated
-pod's load-bearing body link after nested suspension construction. Add an
-automated post-latch rigidity assertion keyed by all six pod IDs, then replay
-the same compact-to-narrow seed and require signed core yaw. Only after that
-gate passes should work proceed to `narrow_to_compact`, 20 randomized round
-trips, and the declared fault-injection matrix.
+Make mission completion wait for and verify the committed target morphology
+after every transition. Then qualify `narrow_to_compact` explicitly from a
+narrow initial state, add per-pod post-latch rigidity checks, and run 20
+randomized round trips followed by the declared fault-injection matrix.
 
 After mechanics pass, implement location-dependent perceived 3D obstacles and
 observability, complete evaluator outcome/provenance streams, run a disjoint

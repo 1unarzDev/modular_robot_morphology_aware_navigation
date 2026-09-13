@@ -24,11 +24,13 @@ Required artifact: machine-readable qualification summary with signed yaw,
 straight/reverse travel, cross-coupling, docking errors, observed topology, and
 failure-matrix results. Current state: **blocked at post-transition narrow yaw**.
 
-Detached and compact native-feedback gates now pass. The same-seed transition
-commits all pods and returns to `READY`, but evaluator traces show that relatched
-pods move independently during yaw allocation while core yaw remains zero.
-Resolve and verify the fixed-joint child link for the nested suspension model,
-then require per-pod relative-pose rigidity before `READY` as the next gate.
+Detached and compact native-feedback gates pass. Low-friction pod casters and an
+explicit secondary wheel-friction coefficient produce two repeated engineering
+missions whose compact-to-narrow yaw gates pass and whose planned reverse
+transition gates also pass. The observer does not yet capture a final
+`compact_diff` morphology sample after the reverse transition, so explicit
+target-morphology acknowledgement and per-pod rigidity remain Gate 0 work before
+randomized round trips.
 
 ## Gate 1: complete measured outcomes
 
