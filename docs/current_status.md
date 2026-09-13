@@ -115,6 +115,23 @@ each window. This is 1/20 engineering runs in an isolated debug directory; it is
 not part of the eventual immutable 20-record qualification directory and does
 not establish reliability.
 
+The first independent campaign, `results/qualification/roundtrip_20_raw`, is
+retained as a failed qualification: 19/20 missions completed and replicate 15
+ended in `infrastructure_failure` before navigation. Nav2 had activated and was
+publishing its local costmap, but the observer missed the volatile lifecycle
+event and its lifecycle service query timed out. The other 19 completed runs had
+155.090--158.194 s simulated durations; across 190 pod/window measurements the
+maximum relative-transform drift was 1.81e-6 m and 2.08e-6 rad with 60--61
+synchronized samples. All 20 disturbances were unique, spanning friction
+0.7169--1.0854 and the declared pose ranges. These figures diagnose the failed
+engineering campaign and are not pilot or confirmatory results.
+
+Readiness now also accepts a fresh local-costmap publication as authoritative
+evidence that the controller lifecycle node is active. An exact-seed replay of
+replicate 15 in `results/debug/roundtrip_r15_repro_raw` then completed both
+transitions and passed both motion and rigidity gates. A new independent 20-run
+campaign is still required; the replay does not replace the preserved failure.
+
 ## Resume here
 
 Execute the frozen 20-run engineering design in a new immutable raw directory.

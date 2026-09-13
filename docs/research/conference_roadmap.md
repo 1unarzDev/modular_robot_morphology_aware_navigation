@@ -41,8 +41,13 @@ wiring check. It does not close the reliability gate or establish measurable
 between-seed plant sensitivity. A subsequent frozen-harness validation also
 passes all-pod SE(3) rigidity after both transitions, with 61 synchronized pose
 samples per pod in each motion window. The 20-run design is frozen at hash
-`9c74a26749d466ba382caa6b4d227a033139ef24b8600a3d10ef90608a088b5e`;
-the independent campaign remains unexecuted.
+`9c74a26749d466ba382caa6b4d227a033139ef24b8600a3d10ef90608a088b5e`.
+The first independent campaign produced 19 completed missions and one startup
+infrastructure failure caused by a missed controller lifecycle observation, so
+Gate 0 did not pass. Fresh local-costmap output now supplies an additional
+active-controller acknowledgement, and the exact failed seed passes on replay.
+Run a new clean campaign rather than substituting that replay into the failed
+record set.
 
 The next conference-evidence phases are ordered as follows:
 

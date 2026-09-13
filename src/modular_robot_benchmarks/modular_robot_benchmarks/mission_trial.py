@@ -86,6 +86,7 @@ class MissionObserver(Node):
         self.controller_active = False
         self._controller_state_future = None
         self.latest_local_costmap: OccupancyGrid | None = None
+        self.latest_local_costmap_wall_time: float | None = None
         self.latest_collision_arc: Path | None = None
         self.topology_history: list[dict] = []
         self.execution_history: list[dict] = []
@@ -201,6 +202,7 @@ class MissionObserver(Node):
 
     def _on_local_costmap(self, message: OccupancyGrid) -> None:
         self.latest_local_costmap = message
+        self.latest_local_costmap_wall_time = time.monotonic()
 
     def _on_collision_arc(self, message: Path) -> None:
         self.latest_collision_arc = message
@@ -323,7 +325,10 @@ class MissionObserver(Node):
             "morphology": self.morphology is not None,
             "map": self.map_received,
             "navigate_hybrid_action": self.client.server_is_ready(),
-            "controller_active": self.controller_active,
+            "controller_active": (
+                self.controller_active
+                or (self.latest_local_costmap_wall_time is not None
+                    and now - self.latest_local_costmap_wall_time < 1.0)),
             "recent_odom": (self.latest_odom_wall_time is not None
                             and now - self.latest_odom_wall_time < 1.0),
             "recent_scan": (self.latest_scan_wall_time is not None

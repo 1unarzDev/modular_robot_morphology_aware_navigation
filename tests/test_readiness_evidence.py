@@ -9,6 +9,7 @@ def test_controller_readiness_uses_lifecycle_transition_events_with_poll_fallbac
     assert '"/controller_server/transition_event"' in source
     assert "message.goal_state.id == State.PRIMARY_STATE_ACTIVE" in source
     assert "self._poll_controller_state" in source
+    assert "latest_local_costmap_wall_time" in source
 
 
 def test_readiness_timeout_reports_each_gate():
