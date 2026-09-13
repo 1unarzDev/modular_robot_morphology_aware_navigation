@@ -67,6 +67,8 @@ class TrialRecord:
     # Evaluator stimulus after a failed transition: drive inhibition evidence
     # followed by an explicit topology reconciliation request.
     recovery_probe: dict[str, Any] = field(default_factory=dict)
+    # Wall-clock phase durations for runner throughput diagnosis only.
+    phase_timing: dict[str, Any] = field(default_factory=dict)
     map_revision: int = 0
     topology_revision: int = 0
     sensing_revision: int = 0

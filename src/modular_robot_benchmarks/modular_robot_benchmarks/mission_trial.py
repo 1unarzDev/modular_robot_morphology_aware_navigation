@@ -61,6 +61,7 @@ class MissionObservation:
     motion_qualifications: list[dict] = field(default_factory=list)
     controller_diagnostics: dict = field(default_factory=dict)
     recovery_probe: dict = field(default_factory=dict)
+    phase_timing: dict = field(default_factory=dict)
 
 
 class MissionObserver(Node):
@@ -102,6 +103,7 @@ class MissionObserver(Node):
         self.pod_drive_diagnostics_dropped = 0
         self._pod_drive_diagnostic_time: dict[str, float] = {}
         self.latest_core_pose: dict[str, float] | None = None
+        self.ready_wall_time: float | None = None
         self.probe_active = False
         self.probe_max_pod_command = 0.0
         # Evaluator stimulus used only after a trial's terminal result.
@@ -531,6 +533,7 @@ def execute_mission(
         while time.monotonic() - wall_start < min(60.0, wall_watchdog_s):
             executor.spin_once(timeout_sec=0.1)
             if node.navigation_ready():
+                node.ready_wall_time = time.monotonic()
                 break
         else:
             readiness = node.navigation_readiness()
@@ -604,10 +607,21 @@ def _observation(node, status, completed, message, simulated, wall_start, attemp
     if completed and any(not value["passed"] for value in motion_qualifications):
         status, completed = "motion_qualification_failure", False
         message = "post-transition pod rigidity qualification failed"
+    now = time.monotonic()
+    ready = node.ready_wall_time
+    # Separate stack startup from mission execution so throughput work can
+    # target the dominant phase; real-time factor is simulated / mission wall.
+    phase_timing = {
+        "readiness_wall_s": (ready if ready is not None else now) - wall_start,
+        "mission_wall_s": now - ready if ready is not None else 0.0,
+        "real_time_factor": (simulated / (now - ready)
+                             if ready is not None and now > ready else None),
+    }
     return MissionObservation(
         terminal_status=status, completed=completed, message=message,
         simulated_duration_s=simulated,
-        wall_duration_s=time.monotonic() - wall_start,
+        wall_duration_s=now - wall_start,
+        phase_timing=phase_timing,
         reconfiguration_attempts=attempts,
         reconfiguration_failures=(
             1 if final_state == "RECOVERY_REQUIRED" and attempts else 0),

@@ -165,6 +165,7 @@ def run_batch(
     revision = _git_revision(root, allow_dirty)
     written = []
     for spec in pending:
+        setup_start = time.monotonic()
         layout_index = int(spec.layout_id.rsplit("-", 1)[1])
         scenario = make_confirmatory_scenario(
             spec.family, layout_index, spec.world_seed)
@@ -217,6 +218,7 @@ def run_batch(
             },
             parameters,
         )
+        setup_wall_s = time.monotonic() - setup_start
         infrastructure_attempts = []
         attempt_ledger_path = trial_artifacts / "infrastructure_attempts.jsonl"
         for attempt_index in range(max_infrastructure_retries + 1):
@@ -249,14 +251,18 @@ def run_batch(
                     "infrastructure_failure", False, f"runner exception: {exc}",
                     0.0, 0.0)
             finally:
+                teardown_start = time.monotonic()
                 _stop_process(process)
                 launch_log.close()
+                teardown_wall_s = time.monotonic() - teardown_start
             attempt_record = {
                 "attempt": attempt_index + 1,
                 "terminal_status": observation.terminal_status,
                 "message": observation.message,
                 "simulated_duration_s": observation.simulated_duration_s,
                 "wall_duration_s": observation.wall_duration_s,
+                "phase_timing": {**observation.phase_timing,
+                                 "teardown_wall_s": teardown_wall_s},
                 "launch_log": str(launch_log_path),
             }
             infrastructure_attempts.append(attempt_record)
@@ -295,6 +301,8 @@ def run_batch(
             final_morphology=observation.final_morphology,
             unrecovered_fault=observation.unrecovered_fault,
             recovery_probe=observation.recovery_probe,
+            phase_timing={**observation.phase_timing, "setup_wall_s": setup_wall_s,
+                          "teardown_wall_s": teardown_wall_s},
             topology_revision=observation.topology_revision,
             sensing_revision=observation.sensing_revision,
             map_revision=observation.map_revision,

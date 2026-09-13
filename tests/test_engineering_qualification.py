@@ -1,3 +1,4 @@
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -97,8 +98,12 @@ def test_fault_contract_requires_inhibited_drive_and_topology_matched_reconcilia
     assert evaluate_fault_trial(unsafe_reconcile, case)["failed_checks"] == [
         "reconciliation_matches_observed_topology"]
     store = TrialStore(tmp_path / "raw")
-    store.write_terminal(moved)
-    assert store.load_all()[0].recovery_probe["max_pod_command"] == 0.1
+    timing = {"readiness_wall_s": 12.5, "mission_wall_s": 40.0,
+              "real_time_factor": 1.0, "setup_wall_s": 0.4, "teardown_wall_s": 3.2}
+    store.write_terminal(replace(moved, phase_timing=timing))
+    loaded = store.load_all()[0]
+    assert loaded.recovery_probe["max_pod_command"] == 0.1
+    assert loaded.phase_timing == timing
 
 
 def test_demo_launch_forwards_declared_failure_injection_to_executor():
