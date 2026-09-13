@@ -163,12 +163,33 @@ translation or yaw during the drive stimulus. Injected cancellations now abort
 the action goal because no client cancel request exists. This is one layout and
 one seed per case; it is engineering evidence, not reliability evidence.
 
+Bounded retry provenance is validated: a frozen-design round trip in
+`results/debug/retry_provenance_20260913_220228` completed on its first launch
+with a matching attempt ledger and embedded record provenance. Terminal records
+now carry `phase_timing` (setup, stack readiness, mission wall time and
+real-time factor, teardown). On the 8-core, GPU-less development container a
+round trip spends about 0.02 s in setup, 14--17 s reaching readiness, and under
+1 s in teardown; mission execution dominates. Profiling found
+`hybrid_navigator` and `reconfiguration_executor` each consuming about 87% of a
+core under rclpy's four-thread executor. An isolated benchmark showed that
+executor costs about 3x more CPU per 50 Hz coroutine polling wake than the
+single-threaded executor (43% vs 15% of a core); reusing timers or using two
+threads did not help. Both nodes now use the single-threaded executor already
+used by every other node, and all of their blocking waits are bounded. Neither
+node remains among the top CPU consumers, host load fell from 9--13.5 to 7--9,
+and Gazebo holds about 1.0 real-time factor. Wall-clock variance between
+identical runs remains large (one earlier identical round trip took 254 s), so
+these are engineering throughput measurements, not benchmarks. The RGB-D camera
+still renders in software every trial without a consumer; it is retained for
+planned perceived 3D obstacles.
+
 ## Resume here
 
-Validate bounded retry provenance with a short run, then profile and improve
-quantitative-run throughput. Repeat the fault matrix across layouts before the
-pilot, then proceed to the disjoint pilot without spending more submission time
-on repeated 20-run startup certification.
+Repeat the fault matrix across layouts before the pilot, then proceed to the
+disjoint pilot without spending more submission time on repeated 20-run startup
+certification. If throughput is still limiting, measure trial wall time with
+the RGB-D camera disabled before deciding whether perceived-obstacle work needs
+it at 15 Hz.
 
 After mechanics pass, implement location-dependent perceived 3D obstacles and
 observability, complete evaluator outcome/provenance streams, run a disjoint
@@ -183,7 +204,12 @@ only then freeze and execute the confirmatory schedule.
 - Fault matrix: 7/7 cases passed in one engineering execution; the refactored
   generator reproduces its frozen design hash and the records re-summarize as
   passing.
-- `python3 -m pytest -q`: 109 passed in 218.83 s.
+- Single-threaded executor regression: a frozen-design round trip completed with
+  both motion and rigidity gates passing at mission real-time factor 0.95, and
+  the identical seven-case fault matrix passed again with the same
+  reconciliation outcomes in 405.8 s of summed trial wall time (519.4 s before
+  the change).
+- `python3 -m pytest -q`: 111 passed in 148.61 s.
 - `colcon build --symlink-install`: all nine packages passed.
 - `colcon test`: all five packages containing smoke tests passed; the remaining
   four contain no package-level tests.

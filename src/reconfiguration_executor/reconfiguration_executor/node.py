@@ -13,7 +13,7 @@ from modular_robot_msgs.msg import ConnectorCommand, ConnectorState, RelativePos
 from modular_robot_msgs.srv import BeginTransition, FailTransition, ObserveConnector, SetLocomotionMode
 from rclpy.action import ActionServer
 from rclpy.callback_groups import ReentrantCallbackGroup
-from rclpy.executors import MultiThreadedExecutor
+from rclpy.executors import SingleThreadedExecutor
 from rclpy.node import Node
 from rclpy.task import Future
 from std_msgs.msg import String
@@ -535,7 +535,10 @@ class ReconfigurationExecutor(Node):
 def main(args=None) -> None:
     rclpy.init(args=args)
     node = ReconfigurationExecutor()
-    executor = MultiThreadedExecutor(num_threads=4)
+    # Every long-running callback is a coroutine, so one thread serves the
+    # node. rclpy's multithreaded executor tripled CPU per 50 Hz polling wake,
+    # oversubscribing trial hosts and slowing simulation below real time.
+    executor = SingleThreadedExecutor()
     executor.add_node(node)
     try:
         executor.spin()

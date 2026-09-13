@@ -13,7 +13,7 @@ from nav2_msgs.action import FollowPath
 from nav_msgs.msg import Odometry
 from rclpy.action import ActionClient, ActionServer
 from rclpy.callback_groups import ReentrantCallbackGroup
-from rclpy.executors import MultiThreadedExecutor
+from rclpy.executors import SingleThreadedExecutor
 from rclpy.node import Node
 from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
 from rclpy.task import Future
@@ -472,7 +472,10 @@ class HybridNavigator(Node):
 def main(args=None):
     rclpy.init(args=args)
     node = HybridNavigator()
-    executor = MultiThreadedExecutor(num_threads=4)
+    # Every long-running callback is a coroutine, so one thread serves the
+    # node. rclpy's multithreaded executor tripled CPU per 50 Hz polling wake,
+    # oversubscribing trial hosts and slowing simulation below real time.
+    executor = SingleThreadedExecutor()
     executor.add_node(node)
     try:
         executor.spin()
