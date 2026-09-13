@@ -24,6 +24,12 @@ Required artifact: machine-readable qualification summary with signed yaw,
 straight/reverse travel, cross-coupling, docking errors, observed topology, and
 failure-matrix results. Current state: **blocked at post-transition narrow yaw**.
 
+Detached and compact native-feedback gates now pass. The same-seed transition
+commits all pods and returns to `READY`, but evaluator traces show that relatched
+pods move independently during yaw allocation while core yaw remains zero.
+Resolve and verify the fixed-joint child link for the nested suspension model,
+then require per-pod relative-pose rigidity before `READY` as the next gate.
+
 ## Gate 1: complete measured outcomes
 
 Record and coverage-audit synchronized evaluator-only collision and 3D

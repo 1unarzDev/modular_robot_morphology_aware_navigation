@@ -12,7 +12,10 @@ from rclpy.node import Node
 from ros_gz_interfaces.msg import LogicalCameraImage
 
 from .control import Pose2, compose_pose
-from .sensing import RelativePoseEstimator, RelativePoseObservation, anchored_odometry
+from .sensing import (
+    PlanningSensingRevision, RelativePoseEstimator, RelativePoseObservation,
+    anchored_odometry,
+)
 
 
 def yaw_from_quaternion(quaternion) -> float:
@@ -35,6 +38,7 @@ class SensorRelativePoseNode(Node):
         with open(self.get_parameter("catalog").value, encoding="utf-8") as stream:
             self.catalog = yaml.safe_load(stream)
         self.estimator = RelativePoseEstimator(float(self.get_parameter("stale_after_s").value))
+        self.planning_revision = PlanningSensingRevision()
         self.morphology_id = "compact_diff"
         self.execution_state = MorphologyState.READY
         self.raw_odometry: dict[str, Pose2] = {}
@@ -174,7 +178,7 @@ class SensorRelativePoseNode(Node):
         message.uncertainty_class = int(estimate.uncertainty_class)
         message.connector_visible = estimate.visible
         message.sources = list(estimate.sources)
-        message.sensing_revision = estimate.sensing_revision
+        message.sensing_revision = self.planning_revision.observe(estimate)
         self.publisher.publish(message)
 
 

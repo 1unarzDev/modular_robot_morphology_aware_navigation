@@ -46,33 +46,32 @@ preserving the planned 0.70 m doorway distinction.
 
 ## Active platform blocker
 
-Wheel suspension resolved compact-assembly contact loading: detached signed yaw
-is +1.0595/-1.0590 rad with +0.7089/-0.7090 m forward/reverse travel; compact
-signed yaw is +0.6748/-0.6614 rad with at most 0.0139 m translation and 0.7501 m
-straight travel.
+Wheel suspension resolved compact-assembly contact loading. With native Gazebo
+`JointVelocity` feedback, detached signed yaw is +1.0536/-1.0540 rad with
++0.7054/-0.7050 m forward/reverse travel; compact signed yaw is
++0.6496/-0.6407 rad with at most 0.00274 m translation and 0.7455 m straight
+travel. Both prerequisite runtime gates pass.
 
-`results/debug/suspension_align06_latest15_raw` completed all six relocations,
-committed the transition, and returned to `READY`. Post-transition signed yaw
-was only +0.01284/-0.01319 rad, so the motion gate correctly inhibited assembled
-drive. Diagnostics implicated update-rate position differencing in wheel-speed
-feedback. The Gazebo plugin now reads native `JointVelocity`, falling back to
-finite differences if unavailable. Focused tests and compilation pass; runtime
-qualification remains outstanding.
+The native-feedback replay exposed and repaired callback-order-dependent sensing
+revision ownership and a docking stability check that conflated fresh samples
+with planning-relevant sensing changes. With the pure-turn floor restored to
+0.30 rad/s, `results/debug/native_velocity_transition_latest22_raw` completed
+all six relocations, committed topology revision 13, and returned to `READY`.
+Its post-transition gate still failed safely: both yaw stages produced exactly
+zero core yaw, while forward/reverse travel was +0.08926/-0.08926 m.
+Evaluator-only wheel feedback has the correct signs, but pods translate
+independently under yaw allocation while the core remains stationary. The
+remaining blocker is physical fixed-joint attachment ownership after relatching
+the nested suspension model.
 
 ## Resume here
 
-Run these gates sequentially using native velocity feedback:
-
-1. Detached-pod signed yaw and forward/reverse qualification.
-2. Compact-assembly signed yaw and straight-motion qualification.
-3. Same-seed compact-to-narrow transition followed immediately by the narrow
-   motion gate.
-
-Stop at the first failure and diagnose from evaluator-only telemetry. If the
-third gate fails, add suspension travel and velocity diagnostics to distinguish
-wheel unloading from feedback error. If all three pass, qualify
-`narrow_to_compact`, then run 20 randomized consecutive round trips and the
-declared fault-injection matrix.
+Resolve each dynamically created fixed attachment joint to the articulated
+pod's load-bearing body link after nested suspension construction. Add an
+automated post-latch rigidity assertion keyed by all six pod IDs, then replay
+the same compact-to-narrow seed and require signed core yaw. Only after that
+gate passes should work proceed to `narrow_to_compact`, 20 randomized round
+trips, and the declared fault-injection matrix.
 
 After mechanics pass, implement location-dependent perceived 3D obstacles and
 observability, complete evaluator outcome/provenance streams, run a disjoint
@@ -82,6 +81,7 @@ only then freeze and execute the confirmatory schedule.
 ## Last verified checkpoint
 
 - Platform commit: `d77c2a7` (`Qualify bounded self-mobile pod mechanics`).
+- Native-feedback and sensing-protocol fixes are currently uncommitted.
 - `python3 -m pytest -q`: 90 passed in 161.95 s.
 - `colcon build --symlink-install`: all nine packages passed.
 - `colcon test`: all five packages containing smoke tests passed; the remaining

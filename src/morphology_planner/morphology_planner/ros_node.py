@@ -46,7 +46,6 @@ class PlannerServer(Node):
         self._map_revision = 0
         self._topology_revision = 0
         self._sensing_revision = 0
-        self._sensing_signatures: dict[str, tuple] = {}
         self._sensing: dict[str, PodSensingState] = {}
         qos = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL,
                          reliability=ReliabilityPolicy.RELIABLE)
@@ -86,13 +85,11 @@ class PlannerServer(Node):
         self._topology_revision = int(message.topology_revision)
 
     def _on_sensing(self, message: RelativePoseEstimate) -> None:
-        signature = (
-            int(message.uncertainty_class), bool(message.connector_visible),
-            tuple(sorted(message.sources)),
-        )
-        if self._sensing_signatures.get(message.pod_id) != signature:
-            self._sensing_signatures[message.pod_id] = signature
-            self._sensing_revision += 1
+        # RelativePoseEstimate carries the estimator-owned global revision.
+        # Use it directly so callback interleavings cannot create false stale
+        # plan failures between this server and the navigator.
+        self._sensing_revision = max(
+            self._sensing_revision, int(message.sensing_revision))
         covariance = message.pose.covariance
         self._sensing[message.pod_id] = PodSensingState(
             bool(message.connector_visible),

@@ -48,7 +48,7 @@ class ReconfigurationExecutor(Node):
         self.declare_parameter("max_pod_angular", 0.9)
         # The bounded effort actuator must exceed wheel/ground static friction.
         # Lower nonzero yaw commands can leave both wheels stalled indefinitely.
-        self.declare_parameter("min_pod_angular", 0.60)
+        self.declare_parameter("min_pod_angular", 0.30)
         self.declare_parameter("post_latch_settle_timeout", 1.5)
         self.declare_parameter("docking_stable_samples", 3)
         self.declare_parameter("failure_injection", "")
@@ -429,11 +429,14 @@ class ReconfigurationExecutor(Node):
         required = max(1, int(self.get_parameter("docking_stable_samples").value))
         stable = 0
         reasons: tuple[str, ...] = ("missing_observation",)
-        previous_revision = -1
+        previous_timestamp = float("-inf")
         while time.monotonic() < deadline:
             estimate = self.estimates.get(pod)
-            if estimate is not None and estimate.sensing_revision != previous_revision:
-                previous_revision = estimate.sensing_revision
+            # Planning revisions intentionally remain stable while pose samples
+            # change within the same uncertainty/visibility class. Docking
+            # stability must therefore count fresh measurements by timestamp.
+            if estimate is not None and estimate.timestamp > previous_timestamp:
+                previous_timestamp = estimate.timestamp
                 accepted, reasons = self._docking_ready(pod, relative_target, latch_confirmed)
                 stable = stable + 1 if accepted else 0
                 if stable >= required:

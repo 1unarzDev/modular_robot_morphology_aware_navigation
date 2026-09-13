@@ -114,6 +114,24 @@ class RelativePoseEstimator:
         )
 
 
+class PlanningSensingRevision:
+    """Monotonic revision of sensing state that can change planner decisions."""
+
+    def __init__(self) -> None:
+        self.revision = 0
+        self._signatures: dict[str, tuple[int, bool, tuple[str, ...]]] = {}
+
+    def observe(self, estimate: RelativePoseEstimate) -> int:
+        signature = (
+            int(estimate.uncertainty_class), bool(estimate.visible),
+            tuple(sorted(estimate.sources)),
+        )
+        if self._signatures.get(estimate.pod_id) != signature:
+            self._signatures[estimate.pod_id] = signature
+            self.revision += 1
+        return self.revision
+
+
 def docking_acceptance(
     evidence: DockingEvidence,
     translation_tolerance: float = 0.025,

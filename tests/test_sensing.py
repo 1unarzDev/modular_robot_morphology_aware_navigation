@@ -4,7 +4,8 @@ import pytest
 
 from reconfiguration_executor.control import Pose2
 from reconfiguration_executor.sensing import (
-    DockingEvidence, RelativePoseEstimator, RelativePoseObservation,
+    DockingEvidence, PlanningSensingRevision, RelativePoseEstimate,
+    RelativePoseEstimator, RelativePoseObservation,
     UncertaintyClass, anchored_odometry, docking_acceptance, relative_pose,
 )
 
@@ -23,6 +24,25 @@ def test_sensor_fusion_reduces_covariance_and_increments_revision():
     assert 0.09 < fused.pose.x < 0.11
     assert fused.covariance_trace < first.covariance_trace
     assert fused.visible and fused.sensing_revision == 2
+
+
+def test_planning_revision_ignores_high_rate_pose_updates_until_policy_state_changes():
+    tracker = PlanningSensingRevision()
+    first = RelativePoseEstimate(
+        "pod_0", 1.0, Pose2(0.1, 0.0, 0.0), 0.001, 0.001, 0.001,
+        UncertaintyClass.LOW, True, ("fiducial",), 10,
+    )
+    moved = RelativePoseEstimate(
+        "pod_0", 1.1, Pose2(0.2, 0.0, 0.0), 0.001, 0.001, 0.001,
+        UncertaintyClass.LOW, True, ("fiducial",), 11,
+    )
+    occluded = RelativePoseEstimate(
+        "pod_0", 1.2, Pose2(0.2, 0.0, 0.0), 0.002, 0.002, 0.002,
+        UncertaintyClass.MEDIUM, False, ("wheel_odometry",), 12,
+    )
+    assert tracker.observe(first) == 1
+    assert tracker.observe(moved) == 1
+    assert tracker.observe(occluded) == 2
 
 
 def test_stale_and_missing_observations_are_explicit():

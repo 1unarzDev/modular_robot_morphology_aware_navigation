@@ -40,7 +40,6 @@ class HybridNavigator(Node):
                          reliability=ReliabilityPolicy.RELIABLE)
         self.morphology: MorphologyState | None = None
         self.sensing_revision = 0
-        self.sensing_signatures = {}
         self.costmap_footprints: dict[str, tuple[float, ...]] = {}
         self.latest_odometry: Odometry | None = None
         self.create_subscription(MorphologyState, "morphology_state", self._on_morphology, qos)
@@ -69,13 +68,11 @@ class HybridNavigator(Node):
         self.morphology = message
 
     def _on_sensing(self, message):
-        signature = (
-            int(message.uncertainty_class), bool(message.connector_visible),
-            tuple(sorted(message.sources)),
-        )
-        if self.sensing_signatures.get(message.pod_id) != signature:
-            self.sensing_signatures[message.pod_id] = signature
-            self.sensing_revision += 1
+        # The estimator owns this global revision. Reconstructing it from local
+        # callback order lets the navigator and planner disagree during startup
+        # when their subscriptions receive pod samples in different orders.
+        self.sensing_revision = max(
+            self.sensing_revision, int(message.sensing_revision))
 
     def _on_costmap_footprint(self, name: str, message: PolygonStamped) -> None:
         self.costmap_footprints[name] = self._footprint_shape_signature(
@@ -110,7 +107,7 @@ class HybridNavigator(Node):
                 start, goal_handle.request.goal, goal_handle.request.planner_method)
             planning_latency += time.monotonic() - planning_started
             if (plan_result is not None and not plan_result.success
-                    and "revision changed" in plan_result.message):
+                    and "changed before planning" in plan_result.message):
                 continue
             if plan_result is None or not plan_result.success:
                 planning_message = plan_result.message if plan_result else "planner unavailable"
