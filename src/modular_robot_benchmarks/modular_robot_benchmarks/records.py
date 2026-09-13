@@ -61,6 +61,7 @@ class TrialRecord:
     topology_history: list[dict[str, Any]] = field(default_factory=list)
     execution_state_history: list[dict[str, Any]] = field(default_factory=list)
     final_execution_state: str = "STOPPED"
+    final_morphology: str = ""
     unrecovered_fault: bool = False
     map_revision: int = 0
     topology_revision: int = 0

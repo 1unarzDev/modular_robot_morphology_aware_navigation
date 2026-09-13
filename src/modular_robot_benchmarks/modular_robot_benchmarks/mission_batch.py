@@ -159,16 +159,26 @@ def run_batch(
         trial_artifacts.mkdir(parents=True, exist_ok=True)
         world_path, scenario_manifest = export_confirmatory_sdf(
             spec.family, layout_index, spec.world_seed,
-            trial_artifacts / "world.sdf", catalog_path)
+            trial_artifacts / "world.sdf", catalog_path, spec.friction_seed)
         map_yaml, map_image = export_occupancy_map(
             scenario.grid, trial_artifacts / "map.yaml")
-        start_x, start_y = scenario.grid.cell_center(*scenario.start)
+        disturbance = json.loads(
+            scenario_manifest.read_text(encoding="utf-8"))["physical_disturbance"]
+        nominal_start_x, nominal_start_y = scenario.grid.cell_center(*scenario.start)
+        start_x = nominal_start_x + disturbance["initial_dx_m"]
+        start_y = nominal_start_y + disturbance["initial_dy_m"]
+        start_yaw = disturbance["initial_yaw_rad"]
         parameters = {
             "deadline_s": 300.0,
             "wall_watchdog_s": wall_watchdog_s,
             "method": spec.method,
             "energy_measure": "10_newton_per_pod_absolute_speed_integral_proxy",
             "sequential_execution": True,
+            "world_seed": spec.world_seed,
+            "sensing_seed": spec.sensing_seed,
+            "friction_seed": spec.friction_seed,
+            "fault_seed": spec.fault_seed,
+            "physical_disturbance": disturbance,
         }
         config_paths = [
             catalog_path,
@@ -193,7 +203,8 @@ def run_batch(
         process = subprocess.Popen(
             ["ros2", "launch", "modular_robot_bringup", "demo.launch.py",
              f"world:={world_path.resolve()}", f"map:={map_yaml.resolve()}",
-             f"initial_x:={start_x}", f"initial_y:={start_y}"],
+             f"initial_x:={start_x}", f"initial_y:={start_y}",
+             f"initial_yaw:={start_yaw}"],
             cwd=root, stdout=launch_log, stderr=subprocess.STDOUT,
             text=True, start_new_session=True,
         )
@@ -232,6 +243,7 @@ def run_batch(
             topology_history=observation.topology_history,
             execution_state_history=observation.execution_state_history,
             final_execution_state=observation.final_execution_state,
+            final_morphology=observation.final_morphology,
             unrecovered_fault=observation.unrecovered_fault,
             topology_revision=observation.topology_revision,
             sensing_revision=observation.sensing_revision,

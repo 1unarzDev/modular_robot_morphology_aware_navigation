@@ -73,16 +73,38 @@ gates measured +0.4519/-0.5273 rad and +0.4514/-0.5165 rad; their second gates
 measured +0.2749/-0.2754 rad and +0.2828/-0.2812 rad. Both missions completed in
 159.884 and 162.052 simulated seconds. These are repeat engineering checks, not
 pilot or confirmatory evidence. The planned second transition is
-`narrow_to_compact`, but the observer's final topology history ends at
-`narrow_tandem` revision 25 despite `READY`; reverse-transition qualification
-therefore remains open until final committed morphology is observed explicitly.
+`narrow_to_compact`. The apparent missing final topology event was an evidence
+ledger bug: connector revision does not change at morphology commit. Terminal
+records now contain `final_morphology`, topology history records morphology-only
+commit events, and the navigator waits for target morphology, `READY`, and an
+advanced connector revision before accepting transition success.
+
+`results/debug/ack_roundtrip_latest34_raw` verifies the corrected contract. It
+completed in 161.098 simulated seconds with two successful transitions, final
+`compact_diff`, `READY`, no unrecovered fault, and passing signed-motion gates
+after both transitions. Reverse transition is now qualified for this engineering
+seed; randomized repetition remains open.
+
+Applied plant randomization is now wired through the world manifest, Gazebo SDF,
+and AMCL initialization. `friction_seed` realizes ground friction in [0.70,
+1.10], an x/y spawn offset in +/-0.015 m, and a yaw offset in +/-0.035 rad. The
+paired methods receive the same realization. In
+`results/debug/disturbed_roundtrip_latest36_raw`, ground friction 0.8186 and pose
+offset (-0.00435, +0.00039, +0.02212 rad) produced a completed 161.108 s mission,
+two successful transitions, final `compact_diff`/`READY`, and two passing
+signed-motion gates. This is one engineering realization and is not reliability,
+pilot, or confirmatory evidence. Readiness timeouts now retain every predicate in
+their terminal message for infrastructure diagnosis.
 
 ## Resume here
 
-Make mission completion wait for and verify the committed target morphology
-after every transition. Then qualify `narrow_to_compact` explicitly from a
-narrow initial state, add per-pod post-latch rigidity checks, and run 20
-randomized round trips followed by the declared fault-injection matrix.
+Add per-pod post-latch rigidity checks and a dedicated 20-run engineering design,
+then run randomized round trips. Each run must contain two successful planned
+transitions, commit `narrow_tandem` and return to `compact_diff`, finish `READY`,
+pass both signed-motion gates, retain unique realized disturbances, and show no
+unrecovered fault. Quantify realized plant variation across those runs rather
+than inferring it from seed metadata. After that, execute the declared
+fault-injection matrix.
 
 After mechanics pass, implement location-dependent perceived 3D obstacles and
 observability, complete evaluator outcome/provenance streams, run a disjoint

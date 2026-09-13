@@ -18,6 +18,7 @@ def generate_launch_description():
     map_file = LaunchConfiguration("map")
     initial_x = LaunchConfiguration("initial_x")
     initial_y = LaunchConfiguration("initial_y")
+    initial_yaw = LaunchConfiguration("initial_yaw")
     has_map = PythonExpression(["'", map_file, "' != ''"])
     localization_params = os.path.join(bringup, "config", "localization.yaml")
     return LaunchDescription([
@@ -26,6 +27,7 @@ def generate_launch_description():
         DeclareLaunchArgument("map", default_value=""),
         DeclareLaunchArgument("initial_x", default_value="0.0"),
         DeclareLaunchArgument("initial_y", default_value="0.0"),
+        DeclareLaunchArgument("initial_yaw", default_value="0.0"),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(os.path.join(sim, "launch", "simulation.launch.py")),
             launch_arguments={"world": world}.items()),
@@ -43,7 +45,7 @@ def generate_launch_description():
              parameters=[localization_params, {
                  "use_sim_time": True, "set_initial_pose": True,
                  "initial_pose.x": initial_x, "initial_pose.y": initial_y,
-                 "initial_pose.yaw": 0.0,
+                 "initial_pose.yaw": initial_yaw,
              }]),
         Node(package="nav2_lifecycle_manager", executable="lifecycle_manager",
              name="lifecycle_manager_localization", output="screen",

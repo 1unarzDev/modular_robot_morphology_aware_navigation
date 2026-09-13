@@ -391,10 +391,25 @@ class HybridNavigator(Node):
         request.execution_pose = segment.execution_pose
         request.expected_source_morphology = self.morphology.morphology_id
         request.expected_topology_revision = self.morphology.topology_revision
+        starting_revision = int(self.morphology.topology_revision)
         handle = await self.reconfigure.send_goal_async(request)
         if not handle.accepted:
             return False
-        return bool((await handle.get_result_async()).result.success)
+        result = (await handle.get_result_async()).result
+        if not result.success:
+            return False
+        deadline = time.monotonic() + 3.0
+        while time.monotonic() < deadline:
+            if (self.morphology is not None
+                    and self.morphology.execution_state == MorphologyState.READY
+                    and self.morphology.morphology_id == result.resulting_morphology
+                    and int(self.morphology.topology_revision) > starting_revision):
+                return True
+            await self._sleep(0.05)
+        self.get_logger().error(
+            "transition action succeeded without target morphology acknowledgement")
+        await self._inhibit_assembly_drive()
+        return False
 
     @staticmethod
     def _pose_from_odometry(message: Odometry) -> PlanarPose:

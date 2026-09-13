@@ -29,3 +29,13 @@ def test_docking_stability_counts_fresh_samples_not_planning_revisions() -> None
         "\n    async def ", 1)[0]
     assert "estimate.timestamp > previous_timestamp" in callback
     assert "estimate.sensing_revision !=" not in callback
+
+
+def test_transition_success_waits_for_target_morphology_acknowledgement() -> None:
+    source = ROOT / "src/modular_robot_bringup/modular_robot_bringup/hybrid_navigator.py"
+    text = source.read_text(encoding="utf-8")
+    callback = text.split("async def _execute_transition", 1)[1].split(
+        "\n    @staticmethod", 1)[0]
+    assert "result.resulting_morphology" in callback
+    assert "MorphologyState.READY" in callback
+    assert "topology_revision) > starting_revision" in callback

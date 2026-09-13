@@ -3,7 +3,9 @@ from pathlib import Path
 from xml.etree.ElementTree import parse
 
 from modular_robot_benchmarks.confirmatory_scenarios import make_confirmatory_scenario
-from modular_robot_benchmarks.sdf_export import export_confirmatory_sdf, export_occupancy_map
+from modular_robot_benchmarks.sdf_export import (
+    export_confirmatory_sdf, export_occupancy_map, physical_disturbance,
+)
 
 
 CATALOG = Path(__file__).parents[1] / "src/modular_robot_description/config/morphologies.yaml"
@@ -30,6 +32,24 @@ def test_confirmatory_export_contains_robot_physics_constraints_and_manifest(tmp
     manifest = json.loads(manifest_path.read_text())
     assert manifest["layout_id"] == "combined_constraints-01"
     assert manifest["world_seed"] == 8
+    assert manifest["physical_disturbance"] == physical_disturbance(None)
+
+
+def test_friction_seed_changes_recorded_plant_and_initial_pose(tmp_path):
+    first_world, first_manifest = export_confirmatory_sdf(
+        "combined_constraints", 1, 8, tmp_path / "first.sdf", CATALOG, 10)
+    second_world, second_manifest = export_confirmatory_sdf(
+        "combined_constraints", 1, 8, tmp_path / "second.sdf", CATALOG, 11)
+    first = json.loads(first_manifest.read_text())["physical_disturbance"]
+    second = json.loads(second_manifest.read_text())["physical_disturbance"]
+    assert first == physical_disturbance(10)
+    assert first != second
+    assert 0.70 <= first["ground_friction"] <= 1.10
+    pose = parse(first_world).getroot().find(
+        "world/include[name='core']/pose").text.split()
+    assert float(pose[5]) == first["initial_yaw_rad"]
+    ground = parse(first_world).getroot().find("world/model[@name='ground']")
+    assert float(ground.findtext("link/collision/surface/friction/ode/mu")) == first["ground_friction"]
 
 
 def test_occupancy_map_matches_scenario_grid_and_y_axis(tmp_path):

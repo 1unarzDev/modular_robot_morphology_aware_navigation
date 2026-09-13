@@ -41,6 +41,7 @@ class MissionObservation:
     topology_history: list[dict] = field(default_factory=list)
     execution_state_history: list[dict] = field(default_factory=list)
     final_execution_state: str = "STOPPED"
+    final_morphology: str = ""
     unrecovered_fault: bool = False
     topology_revision: int = 0
     sensing_revision: int = 0
@@ -233,9 +234,11 @@ class MissionObserver(Node):
     def _on_state(self, message: MorphologyState) -> None:
         previous_topology = self.morphology.topology_revision if self.morphology else None
         previous_execution = self.morphology.execution_state if self.morphology else None
+        previous_morphology = self.morphology.morphology_id if self.morphology else None
         self.morphology = message
         stamp = self.sim_time or 0.0
-        if previous_topology != message.topology_revision:
+        if (previous_topology != message.topology_revision
+                or previous_morphology != message.morphology_id):
             self.topology_history.append({
                 "time_s": stamp, "revision": int(message.topology_revision),
                 "morphology": message.morphology_id,
@@ -284,21 +287,29 @@ class MissionObserver(Node):
         self.pod_angular_commands[pod] = message.angular.z
 
     def navigation_ready(self) -> bool:
+        return all(self.navigation_readiness().values())
+
+    def navigation_readiness(self) -> dict[str, bool]:
+        """Report every readiness gate so infrastructure failures are auditable."""
         now = time.monotonic()
-        if not (self.sim_time is not None and self.morphology is not None
-                and self.map_received and self.client.server_is_ready()
-                and self.controller_active
-                and self.latest_odom_wall_time is not None
-                and self.latest_scan_wall_time is not None
-                and now - self.latest_odom_wall_time < 1.0
-                and now - self.latest_scan_wall_time < 1.0):
-            return False
+        status = {
+            "clock": self.sim_time is not None,
+            "morphology": self.morphology is not None,
+            "map": self.map_received,
+            "navigate_hybrid_action": self.client.server_is_ready(),
+            "controller_active": self.controller_active,
+            "recent_odom": (self.latest_odom_wall_time is not None
+                            and now - self.latest_odom_wall_time < 1.0),
+            "recent_scan": (self.latest_scan_wall_time is not None
+                            and now - self.latest_scan_wall_time < 1.0),
+        }
         try:
-            return self.tf_buffer.can_transform(
+            status["map_to_base_transform"] = self.tf_buffer.can_transform(
                 "map", "core/base_link", rclpy.time.Time(),
                 timeout=Duration(seconds=0.05))
         except TransformException:
-            return False
+            status["map_to_base_transform"] = False
+        return status
 
     def controller_diagnostic(self) -> dict:
         """Compact final costmap/arc evidence for controller-failure diagnosis."""
@@ -394,8 +405,11 @@ def execute_mission(
             if node.navigation_ready():
                 break
         else:
+            readiness = node.navigation_readiness()
             return _observation(node, "infrastructure_failure", False,
-                                "stack readiness timeout", 0.0, wall_start, 0)
+                                "stack readiness timeout: "
+                                + json.dumps(readiness, sort_keys=True),
+                                0.0, wall_start, 0)
         sim_start = node.sim_time
         goal = NavigateHybrid.Goal()
         goal.goal = PoseStamped()
@@ -457,6 +471,7 @@ def _observation(node, status, completed, message, simulated, wall_start, attemp
         topology_history=node.topology_history,
         execution_state_history=node.execution_history,
         final_execution_state=final_state,
+        final_morphology=state.morphology_id if state else "",
         unrecovered_fault=final_state != "READY",
         topology_revision=int(state.topology_revision) if state else 0,
         sensing_revision=node.sensing_revision,

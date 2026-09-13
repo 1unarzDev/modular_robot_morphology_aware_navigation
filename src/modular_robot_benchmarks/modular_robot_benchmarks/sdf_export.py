@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+from random import Random
 from xml.etree.ElementTree import Element, ElementTree, SubElement
 
 from morphology_planner.grid import OCCUPIED
@@ -11,6 +12,20 @@ from morphology_planner import load_catalog
 from .confirmatory_scenarios import make_confirmatory_scenario
 from .design import CONFIRMATORY_FAMILIES
 from .scenarios import FAMILIES, make_scenario
+
+
+def physical_disturbance(seed: int | None) -> dict[str, float]:
+    """Realized plant nuisance values shared by every method in a paired block."""
+    if seed is None:
+        return {"ground_friction": 1.0, "initial_dx_m": 0.0,
+                "initial_dy_m": 0.0, "initial_yaw_rad": 0.0}
+    rng = Random(seed)
+    return {
+        "ground_friction": rng.uniform(0.70, 1.10),
+        "initial_dx_m": rng.uniform(-0.015, 0.015),
+        "initial_dy_m": rng.uniform(-0.015, 0.015),
+        "initial_yaw_rad": rng.uniform(-0.035, 0.035),
+    }
 
 
 def export_occupancy_map(grid, output_yaml: Path) -> tuple[Path, Path]:
@@ -64,10 +79,11 @@ def export_sdf(family: str, seed: int, output: Path) -> None:
 
 def export_confirmatory_sdf(
     family: str, layout_index: int, world_seed: int,
-    output: Path, catalog_path: Path,
+    output: Path, catalog_path: Path, friction_seed: int | None = None,
 ) -> tuple[Path, Path]:
     """Write a complete Gazebo world plus its immutable scenario manifest."""
     scenario = make_confirmatory_scenario(family, layout_index, world_seed)
+    disturbance = physical_disturbance(friction_seed)
     catalog = load_catalog(catalog_path).supported_experiment_subset()
     sdf = Element("sdf", version="1.10")
     world = SubElement(sdf, "world", name=scenario.layout_id.replace("-", "_"))
@@ -104,6 +120,11 @@ def export_confirmatory_sdf(
     plane = SubElement(ground_geometry, "plane")
     SubElement(plane, "normal").text = "0 0 1"
     SubElement(plane, "size").text = "20 12"
+    surface = SubElement(ground_collision, "surface")
+    friction = SubElement(surface, "friction")
+    ode = SubElement(friction, "ode")
+    SubElement(ode, "mu").text = str(disturbance["ground_friction"])
+    SubElement(ode, "mu2").text = str(disturbance["ground_friction"])
 
     for y in range(scenario.grid.height):
         for x in range(scenario.grid.width):
@@ -116,13 +137,19 @@ def export_confirmatory_sdf(
         _box_model(world, box.name, box.center, box.size)
 
     start_x, start_y = scenario.grid.cell_center(*scenario.start)
-    _include(world, "model://modular_robot", "core", (start_x, start_y, 0.18, 0.0))
+    _include(world, "model://modular_robot", "core", (
+        start_x + disturbance["initial_dx_m"],
+        start_y + disturbance["initial_dy_m"], 0.18,
+        disturbance["initial_yaw_rad"],
+    ))
 
     output.parent.mkdir(parents=True, exist_ok=True)
     ElementTree(sdf).write(output, encoding="unicode", xml_declaration=True)
     manifest_path = output.with_suffix(".manifest.json")
     manifest_path.write_text(
-        json.dumps(scenario.manifest(), indent=2, sort_keys=True) + "\n",
+        json.dumps({**scenario.manifest(), "friction_seed": friction_seed,
+                    "physical_disturbance": disturbance},
+                   indent=2, sort_keys=True) + "\n",
         encoding="utf-8")
     return output, manifest_path
 
