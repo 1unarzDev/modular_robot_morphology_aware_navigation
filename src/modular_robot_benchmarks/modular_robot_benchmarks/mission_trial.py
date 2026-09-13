@@ -626,9 +626,11 @@ def _observation(node, status, completed, message, simulated, wall_start, attemp
         reconfiguration_failures=(
             1 if final_state == "RECOVERY_REQUIRED" and attempts else 0),
         mechanical_work_j=node.work_proxy_j,
-        covariance_trace=node.covariance_trace,
-        topology_history=node.topology_history,
-        execution_state_history=node.execution_history,
+        # Snapshot every stream: the observer keeps spinning for the recovery
+        # probe, and live lists would absorb post-terminal samples.
+        covariance_trace=list(node.covariance_trace),
+        topology_history=list(node.topology_history),
+        execution_state_history=list(node.execution_history),
         final_execution_state=final_state,
         final_morphology=state.morphology_id if state else "",
         unrecovered_fault=final_state != "READY",
@@ -646,15 +648,15 @@ def _observation(node, status, completed, message, simulated, wall_start, attemp
               navigation_result.planned_transition_ids,
               navigation_result.planned_transition_poses)]
          if navigation_result else []),
-        odometry_history=node.odometry_history,
-        command_history=node.command_history,
+        odometry_history=list(node.odometry_history),
+        command_history=list(node.command_history),
         planned_route=([{"x": pose.pose.position.x, "y": pose.pose.position.y,
            "orientation_z": pose.pose.orientation.z,
            "orientation_w": pose.pose.orientation.w}
           for pose in navigation_result.planned_route_poses]
          if navigation_result else []),
-        localization_history=node.localization_history,
-        pod_alignment_history=node.pod_alignment_history,
+        localization_history=list(node.localization_history),
+        pod_alignment_history=list(node.pod_alignment_history),
         motion_qualifications=motion_qualifications,
         controller_diagnostics=node.controller_diagnostic(),
     )

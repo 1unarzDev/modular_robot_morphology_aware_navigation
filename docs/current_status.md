@@ -183,6 +183,27 @@ these are engineering throughput measurements, not benchmarks. The RGB-D camera
 still renders in software every trial without a consumer; it is retained for
 planned perceived 3D obstacles.
 
+Gate 1 measurement work has started. A survey found that analysis already
+consumes collision, clearance, localization error, transition calibration,
+edge-decision, and recovery-action fields, but the runner left all six at
+their defaults. Terminal records now populate `localization_error_m`: each 2 Hz
+map-frame estimate is compared with the nearest same-tick evaluator core pose
+within 0.25 s (generated worlds, maps, spawn poses, and AMCL initial poses
+share one frame). On the executor-regression round trip every one of 326
+estimates had synchronized truth, with 4.95 cm RMSE and 7.97 cm maximum error.
+`evaluator_metrics.telemetry_audit` rejects dropped diagnostics, missing truth,
+sparse localization, unsynchronized samples, truth that does not span the
+estimate window, and recorded errors that disagree with recomputation. Its
+first use exposed a record-integrity bug: fault-trial records passed live
+observer lists, so localization, odometry, command, topology, and execution
+histories absorbed samples from the post-terminal recovery probe. Terminal
+observations now snapshot every stream. A static test also rejects any
+reference to evaluator topics, `/module_pose` (bridged Gazebo truth without an
+`/evaluator` prefix), or evaluator pose fields in autonomy packages. Collision
+and 3D clearance still have no simulator source, transition predictions and
+outcomes are not yet returned by `NavigateHybrid`, and recovery actions are
+not counted.
+
 ## Resume here
 
 Repeat the fault matrix across layouts before the pilot, then proceed to the

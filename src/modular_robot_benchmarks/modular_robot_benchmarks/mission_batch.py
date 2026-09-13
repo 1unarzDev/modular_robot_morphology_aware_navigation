@@ -14,6 +14,7 @@ import time
 
 from .confirmatory_scenarios import make_confirmatory_scenario
 from .design import FAULT_MATRIX, FAULT_MATRIX_DESIGN_KIND, StudyDesign
+from .evaluator_metrics import localization_errors
 from .records import TrialManifest, TrialRecord, TrialStore
 from .sdf_export import export_confirmatory_sdf, export_occupancy_map
 
@@ -291,6 +292,9 @@ def run_batch(
             command_history=observation.command_history,
             planned_route=observation.planned_route,
             localization_history=observation.localization_history,
+            localization_error_m=localization_errors(
+                observation.localization_history,
+                observation.controller_diagnostics.get("pod_drive_diagnostic_samples", [])),
             pod_alignment_history=observation.pod_alignment_history,
             motion_qualifications=observation.motion_qualifications,
             infrastructure_attempts=infrastructure_attempts,
