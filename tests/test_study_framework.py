@@ -23,6 +23,10 @@ def _records(design, configuration_hash="frozen"):
             final_execution_state="READY" if completed else "RECOVERY_REQUIRED",
             unrecovered_fault=not completed, predicted_transition_probabilities=[0.8],
             observed_transition_outcomes=[int(completed)],
+            infrastructure_attempts=[{
+                "attempt": 1,
+                "terminal_status": "completed" if completed else "docking_failure",
+            }],
             planned_route_signature=f"route-{spec.method}",
             transition_edge_decisions=[{
                 "transition_id": "compact_to_narrow",
@@ -68,7 +72,9 @@ def test_trial_store_is_append_only_and_resumable(tmp_path):
     assert len(store.pending(design.trials)) == design.expected_trials - 1
     with pytest.raises(FileExistsError):
         store.write_terminal(replace(record, terminal_status="timeout", completed=False,
-                                     final_execution_state="RECOVERY_REQUIRED", unrecovered_fault=True))
+                                     final_execution_state="RECOVERY_REQUIRED", unrecovered_fault=True,
+                                     infrastructure_attempts=[{
+                                         "attempt": 1, "terminal_status": "timeout"}]))
 
 
 def test_trial_store_round_trips_sensor_derived_pod_alignment(tmp_path):

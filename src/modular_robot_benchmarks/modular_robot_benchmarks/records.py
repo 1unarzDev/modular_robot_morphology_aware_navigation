@@ -52,6 +52,7 @@ class TrialRecord:
     localization_history: list[dict[str, float]] = field(default_factory=list)
     pod_alignment_history: list[dict[str, Any]] = field(default_factory=list)
     motion_qualifications: list[dict[str, Any]] = field(default_factory=list)
+    infrastructure_attempts: list[dict[str, Any]] = field(default_factory=list)
     controller_diagnostics: dict[str, Any] = field(default_factory=dict)
     predicted_transition_probabilities: list[float] = field(default_factory=list)
     observed_transition_outcomes: list[int] = field(default_factory=list)
@@ -98,6 +99,10 @@ class TrialRecord:
             if "passed" not in qualification or not isinstance(
                     qualification["passed"], bool):
                 raise ValueError("motion qualification requires a boolean passed field")
+        if not self.infrastructure_attempts:
+            raise ValueError("trial record requires infrastructure attempt provenance")
+        if self.infrastructure_attempts[-1].get("terminal_status") != self.terminal_status:
+            raise ValueError("last infrastructure attempt must match terminal status")
 
     @property
     def deadline_penalized_time_s(self) -> float:
@@ -112,6 +117,16 @@ class TrialRecord:
         value = dict(value)
         value["spec"] = TrialSpec(**value["spec"])
         value["manifest"] = TrialManifest(**value["manifest"])
+        # Records written before bounded startup retries remain readable and
+        # explicitly identify their single legacy launch attempt.
+        if "infrastructure_attempts" not in value:
+            value["infrastructure_attempts"] = [{
+                "attempt": 1,
+                "terminal_status": value["terminal_status"],
+                "message": (value.get("notes") or [""])[0],
+                "wall_duration_s": value.get("wall_duration_s", 0.0),
+                "legacy_record": True,
+            }]
         record = cls(**value)
         record.validate()
         return record

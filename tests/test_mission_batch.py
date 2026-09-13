@@ -1,6 +1,8 @@
 from pathlib import Path
 
-from modular_robot_benchmarks.mission_batch import classify_terminal, configuration_hash
+from modular_robot_benchmarks.mission_batch import (
+    classify_terminal, configuration_hash, retryable_infrastructure_failure,
+)
 
 
 def test_configuration_hash_covers_files_and_exact_parameters(tmp_path):
@@ -32,3 +34,10 @@ def test_reconfiguration_failure_and_unsafe_topology_have_distinct_labels():
         False, "reconfiguration committed; post-transition assembled motion "
         "qualification failed; drive inhibited", False
     ) == "motion_qualification_failure"
+
+
+def test_only_live_launch_infrastructure_failures_are_retried():
+    assert retryable_infrastructure_failure("infrastructure_failure", None)
+    assert not retryable_infrastructure_failure("process_crash", 1)
+    assert not retryable_infrastructure_failure("infrastructure_failure", 1)
+    assert not retryable_infrastructure_failure("docking_failure", None)

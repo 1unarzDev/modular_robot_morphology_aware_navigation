@@ -55,6 +55,11 @@ def configuration_hash(paths: list[Path], parameters: dict) -> str:
     return digest.hexdigest()
 
 
+def retryable_infrastructure_failure(status: str, launch_returncode: int | None) -> bool:
+    """Only pre-mission infrastructure failures may receive bounded retries."""
+    return status == "infrastructure_failure" and launch_returncode is None
+
+
 def _git_revision(root: Path, allow_dirty: bool) -> str:
     revision = subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
@@ -136,6 +141,7 @@ def run_batch(
     max_trials: int | None,
     wall_watchdog_s: float,
     allow_dirty: bool,
+    max_infrastructure_retries: int = 2,
 ) -> dict:
     # Import ROS only in an installed/runtime environment; pure design and
     # manifest helpers remain host-testable.
@@ -179,6 +185,7 @@ def run_batch(
             "friction_seed": spec.friction_seed,
             "fault_seed": spec.fault_seed,
             "physical_disturbance": disturbance,
+            "max_infrastructure_retries": max_infrastructure_retries,
         }
         config_paths = [
             catalog_path,
@@ -199,28 +206,56 @@ def run_batch(
             },
             parameters,
         )
-        launch_log = (trial_artifacts / "launch.log").open("w", encoding="utf-8")
-        process = subprocess.Popen(
-            ["ros2", "launch", "modular_robot_bringup", "demo.launch.py",
-             f"world:={world_path.resolve()}", f"map:={map_yaml.resolve()}",
-             f"initial_x:={start_x}", f"initial_y:={start_y}",
-             f"initial_yaw:={start_yaw}"],
-            cwd=root, stdout=launch_log, stderr=subprocess.STDOUT,
-            text=True, start_new_session=True,
-        )
-        try:
-            goal = scenario.grid.cell_center(*scenario.goal)
-            observation = execute_mission(goal, spec.method, 300.0, wall_watchdog_s)
-            if process.poll() is not None and not observation.completed:
-                observation.terminal_status = "process_crash"
-                observation.message += f"; launch exited {process.returncode}"
-        except Exception as exc:
-            observation = MissionObservation(
-                "infrastructure_failure", False, f"runner exception: {exc}",
-                0.0, 0.0)
-        finally:
-            _stop_process(process)
-            launch_log.close()
+        infrastructure_attempts = []
+        attempt_ledger_path = trial_artifacts / "infrastructure_attempts.jsonl"
+        for attempt_index in range(max_infrastructure_retries + 1):
+            prior_attempts = len(list(trial_artifacts.glob("launch*.log")))
+            log_name = ("launch.log" if prior_attempts == 0
+                        else f"launch.retry-{prior_attempts}.log")
+            launch_log_path = trial_artifacts / log_name
+            launch_log = launch_log_path.open("x", encoding="utf-8")
+            process = subprocess.Popen(
+                ["ros2", "launch", "modular_robot_bringup", "demo.launch.py",
+                 f"world:={world_path.resolve()}", f"map:={map_yaml.resolve()}",
+                 f"initial_x:={start_x}", f"initial_y:={start_y}",
+                 f"initial_yaw:={start_yaw}"],
+                cwd=root, stdout=launch_log, stderr=subprocess.STDOUT,
+                text=True, start_new_session=True,
+            )
+            try:
+                goal = scenario.grid.cell_center(*scenario.goal)
+                observation = execute_mission(
+                    goal, spec.method, 300.0, wall_watchdog_s)
+                launch_returncode = process.poll()
+                if launch_returncode is not None and not observation.completed:
+                    observation.terminal_status = "process_crash"
+                    observation.message += f"; launch exited {launch_returncode}"
+            except Exception as exc:
+                launch_returncode = process.poll()
+                observation = MissionObservation(
+                    "infrastructure_failure", False, f"runner exception: {exc}",
+                    0.0, 0.0)
+            finally:
+                _stop_process(process)
+                launch_log.close()
+            attempt_record = {
+                "attempt": attempt_index + 1,
+                "terminal_status": observation.terminal_status,
+                "message": observation.message,
+                "simulated_duration_s": observation.simulated_duration_s,
+                "wall_duration_s": observation.wall_duration_s,
+                "launch_log": str(launch_log_path),
+            }
+            infrastructure_attempts.append(attempt_record)
+            with attempt_ledger_path.open("a", encoding="utf-8") as ledger:
+                ledger.write(json.dumps(attempt_record, sort_keys=True) + "\n")
+                ledger.flush()
+                os.fsync(ledger.fileno())
+            if (attempt_index >= max_infrastructure_retries
+                    or not retryable_infrastructure_failure(
+                        observation.terminal_status, launch_returncode)):
+                break
+            time.sleep(2.0)
         record = TrialRecord(
             schema_version=1, spec=spec, manifest=manifest,
             terminal_status=observation.terminal_status,
@@ -239,6 +274,7 @@ def run_batch(
             localization_history=observation.localization_history,
             pod_alignment_history=observation.pod_alignment_history,
             motion_qualifications=observation.motion_qualifications,
+            infrastructure_attempts=infrastructure_attempts,
             controller_diagnostics=observation.controller_diagnostics,
             topology_history=observation.topology_history,
             execution_state_history=observation.execution_state_history,
@@ -250,7 +286,8 @@ def run_batch(
             map_revision=observation.map_revision,
             planned_route_signature=observation.planned_route_signature,
             planned_transition_sites=observation.planned_transition_sites,
-            notes=[observation.message, f"scenario_manifest={scenario_manifest}"],
+            notes=[observation.message, f"scenario_manifest={scenario_manifest}",
+                   f"infrastructure_attempt_ledger={attempt_ledger_path}"],
         )
         store.write_terminal(record)
         written.append(spec.trial_id)
@@ -273,6 +310,7 @@ def _parser() -> argparse.ArgumentParser:
         default=Path("src/modular_robot_description/config/morphologies.yaml"))
     parser.add_argument("--max-trials", type=int)
     parser.add_argument("--wall-watchdog", type=float, default=600.0)
+    parser.add_argument("--max-infrastructure-retries", type=int, default=2)
     parser.add_argument("--allow-dirty", action="store_true")
     return parser
 
@@ -282,7 +320,7 @@ def main() -> None:
     result = run_batch(
         args.root.resolve(), args.design.resolve(), args.raw.resolve(),
         args.artifacts.resolve(), args.catalog.resolve(), args.max_trials,
-        args.wall_watchdog, args.allow_dirty)
+        args.wall_watchdog, args.allow_dirty, args.max_infrastructure_retries)
     print(json.dumps(result, indent=2, sort_keys=True))
 
 

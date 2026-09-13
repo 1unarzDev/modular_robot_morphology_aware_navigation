@@ -132,15 +132,21 @@ replicate 15 in `results/debug/roundtrip_r15_repro_raw` then completed both
 transitions and passed both motion and rigidity gates. A new independent 20-run
 campaign is still required; the replay does not replace the preserved failure.
 
+The second campaign, `results/qualification/roundtrip_20_retry1_raw`, retained
+18 completed missions and two intermittent pre-mission readiness failures. This
+does not block the study: the runner now permits at most two retries only for a
+live launch that fails before mission execution. Every attempt has a distinct
+log, an fsync'd JSONL ledger, and embedded terminal-record provenance. Crashes,
+robot failures, navigation failures, and missions that start executing are never
+retried. Infrastructure-attempt rates will be reported separately from mission
+outcomes.
+
 ## Resume here
 
-Execute the frozen 20-run engineering design in a new immutable raw directory.
-Each run must contain two successful planned
-transitions, commit `narrow_tandem` and return to `compact_diff`, finish `READY`,
-pass both signed-motion gates, retain unique realized disturbances, and show no
-unrecovered fault. Quantify realized plant variation across those runs rather
-than inferring it from seed metadata. After that, execute the declared
-fault-injection matrix.
+Validate bounded retry provenance with a short run, then profile and improve
+quantitative-run throughput. Proceed to representative fail-closed recovery and
+the disjoint pilot without spending more submission time on repeated 20-run
+startup certification.
 
 After mechanics pass, implement location-dependent perceived 3D obstacles and
 observability, complete evaluator outcome/provenance streams, run a disjoint
@@ -149,9 +155,10 @@ only then freeze and execute the confirmatory schedule.
 
 ## Last verified checkpoint
 
-- Platform commit: `d77c2a7` (`Qualify bounded self-mobile pod mechanics`).
-- Native-feedback and sensing-protocol fixes are currently uncommitted.
-- `python3 -m pytest -q`: 90 passed in 161.95 s.
+- Platform commit: `0805167` (`Harden controller readiness qualification`).
+- Two independent engineering campaigns retain 37/40 completed missions; all
+  three failures occurred before mission execution.
+- `python3 -m pytest -q`: 103 passed in 154.77 s.
 - `colcon build --symlink-install`: all nine packages passed.
 - `colcon test`: all five packages containing smoke tests passed; the remaining
   four contain no package-level tests.

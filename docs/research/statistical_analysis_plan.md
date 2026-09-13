@@ -117,6 +117,14 @@ and one commit/configuration/design hash. Keep every robot failure. Only a
 predeclared infrastructure failure may be rerun, and both the superseded record
 and reason must remain in an audit log.
 
+The unattended runner makes at most two automatic retries only when readiness
+ends in `infrastructure_failure` while the launch process remains alive. It does
+not retry crashes, planner/controller failures, robot failures, timeouts, or any
+mission that began execution. Each launch attempt receives a distinct immutable
+log and an fsync'd JSONL audit entry; the terminal record embeds the complete
+attempt list. Report trial-level outcomes separately from infrastructure-attempt
+counts and rates.
+
 Also report planning latency, expanded states, mechanical work, collision and
 clearance metrics, docking attempts and recovery, localization RMSE, failure
 taxonomy, transition Brier score, and reliability bins. Use pilot variance to
