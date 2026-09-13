@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 import json
-from math import atan2, cos, sin
+from math import atan2, cos, hypot, sin
 import time
 
 import rclpy
@@ -12,6 +12,7 @@ from lifecycle_msgs.msg import TransitionEvent
 from lifecycle_msgs.srv import GetState
 from modular_robot_msgs.action import NavigateHybrid
 from modular_robot_msgs.msg import MorphologyState, RelativePoseEstimate
+from modular_robot_msgs.srv import ReconcileTopology
 from nav_msgs.msg import OccupancyGrid, Odometry, Path
 from sensor_msgs.msg import LaserScan
 from rclpy.action import ActionClient
@@ -59,6 +60,7 @@ class MissionObservation:
     pod_alignment_history: list[dict] = field(default_factory=list)
     motion_qualifications: list[dict] = field(default_factory=list)
     controller_diagnostics: dict = field(default_factory=dict)
+    recovery_probe: dict = field(default_factory=dict)
 
 
 class MissionObserver(Node):
@@ -97,7 +99,14 @@ class MissionObserver(Node):
         self.work_proxy_j = 0.0
         self.pod_drive_diagnostics: list[dict] = []
         self.pod_pose_samples: list[dict] = []
+        self.pod_drive_diagnostics_dropped = 0
         self._pod_drive_diagnostic_time: dict[str, float] = {}
+        self.latest_core_pose: dict[str, float] | None = None
+        self.probe_active = False
+        self.probe_max_pod_command = 0.0
+        # Evaluator stimulus used only after a trial's terminal result.
+        self.probe_command_publisher = self.create_publisher(Twist, "/cmd_vel", 10)
+        self.reconcile_client = self.create_client(ReconcileTopology, "reconcile_topology")
         self._previous_clock: float | None = None
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
@@ -239,6 +248,11 @@ class MissionObserver(Node):
         }
         if not required <= sample.keys():
             return
+        if {"core_world_x", "core_world_y", "core_world_yaw"} <= sample.keys():
+            self.latest_core_pose = {
+                "x": float(sample["core_world_x"]), "y": float(sample["core_world_y"]),
+                "yaw": float(sample["core_world_yaw"]),
+            }
         pod, sample_time = str(sample["pod"]), float(sample["time_s"])
         if all(name in sample for name in POSE_FIELDS):
             self.pod_pose_samples.append({
@@ -258,6 +272,7 @@ class MissionObserver(Node):
         # terminal records from growing with the simulator's update rate.
         if len(self.pod_drive_diagnostics) > 3600:
             del self.pod_drive_diagnostics[:600]
+            self.pod_drive_diagnostics_dropped += 600
 
     def _on_state(self, message: MorphologyState) -> None:
         previous_topology = self.morphology.topology_revision if self.morphology else None
@@ -310,6 +325,9 @@ class MissionObserver(Node):
         }
 
     def _on_command(self, pod: str, message: Twist) -> None:
+        if self.probe_active:
+            self.probe_max_pod_command = max(
+                self.probe_max_pod_command, abs(message.linear.x), abs(message.angular.z))
         self.pod_commands[pod] = abs(message.linear.x)
         self.pod_signed_commands[pod] = message.linear.x
         self.pod_angular_commands[pod] = message.angular.z
@@ -347,7 +365,15 @@ class MissionObserver(Node):
         grid = self.latest_local_costmap
         odometry = self.latest_odometry
         if grid is None or odometry is None:
-            return {"available": False}
+            # Rigidity and realized-plant evaluation must not depend on
+            # whether Nav2 published a costmap before the trial ended.
+            return {
+                "available": False,
+                "pod_drive_diagnostics_source": "evaluator_only_gazebo",
+                "pod_drive_diagnostic_samples": list(self.pod_drive_diagnostics),
+                "pod_pose_samples": list(self.pod_pose_samples),
+                "pod_drive_diagnostic_samples_dropped": self.pod_drive_diagnostics_dropped,
+            }
         info = grid.info
         origin = info.origin
         origin_yaw = _yaw(origin.orientation)
@@ -398,7 +424,76 @@ class MissionObserver(Node):
             "pod_drive_diagnostics_source": "evaluator_only_gazebo",
             "pod_drive_diagnostic_samples": list(self.pod_drive_diagnostics),
             "pod_pose_samples": list(self.pod_pose_samples),
+            "pod_drive_diagnostic_samples_dropped": self.pod_drive_diagnostics_dropped,
         }
+
+
+def _spin_for(executor, duration_s: float) -> None:
+    deadline = time.monotonic() + duration_s
+    while time.monotonic() < deadline:
+        executor.spin_once(timeout_sec=min(0.05, max(0.0, deadline - time.monotonic())))
+
+
+def probe_recovery_inhibition(
+    node: MissionObserver, executor, duration_s: float = 2.0,
+) -> dict:
+    """Command assembled motion after a failed transition, then reconcile.
+
+    The stimulus is an evaluator action taken after the mission result. Drive
+    must stay inhibited; reconciliation must accept only a known morphology.
+    """
+    state = node.morphology
+    probe = {
+        "performed": False,
+        "state_before": execution_state_name(state.execution_state) if state else "STOPPED",
+    }
+    if state is None or state.execution_state != MorphologyState.RECOVERY_REQUIRED:
+        return probe
+    probe["connections_before"] = sorted(
+        f"{connection.parent_port}>{connection.child_module}"
+        for connection in state.topology.connections)
+    _spin_for(executor, 0.5)
+    before = dict(node.latest_core_pose) if node.latest_core_pose else None
+    node.probe_max_pod_command = 0.0
+    node.probe_active = True
+    command = Twist()
+    command.linear.x = 0.10
+    deadline = time.monotonic() + duration_s
+    while time.monotonic() < deadline:
+        node.probe_command_publisher.publish(command)
+        _spin_for(executor, 0.05)
+    node.probe_command_publisher.publish(Twist())
+    _spin_for(executor, 0.5)
+    node.probe_active = False
+    after = dict(node.latest_core_pose) if node.latest_core_pose else None
+    probe.update({
+        "performed": True,
+        "stimulus": {"body_linear_x_mps": 0.10, "duration_s": duration_s},
+        "max_pod_command": node.probe_max_pod_command,
+        "core_pose_before": before,
+        "core_pose_after": after,
+    })
+    if before is not None and after is not None:
+        yaw_change = after["yaw"] - before["yaw"]
+        probe["core_translation_m"] = hypot(after["x"] - before["x"], after["y"] - before["y"])
+        probe["core_yaw_change_rad"] = abs(atan2(sin(yaw_change), cos(yaw_change)))
+    reconcile = {"success": False, "message": "reconcile service unavailable"}
+    if node.reconcile_client.wait_for_service(timeout_sec=2.0):
+        future = node.reconcile_client.call_async(ReconcileTopology.Request())
+        deadline = time.monotonic() + 5.0
+        while not future.done() and time.monotonic() < deadline:
+            executor.spin_once(timeout_sec=0.1)
+        if future.done():
+            response = future.result()
+            reconcile = {
+                "success": bool(response.success), "message": response.message,
+                "execution_state": execution_state_name(response.state.execution_state),
+                "morphology": response.state.morphology_id,
+            }
+        else:
+            reconcile["message"] = "reconcile service timeout"
+    probe["reconcile"] = reconcile
+    return probe
 
 
 def execution_state_name(value: int) -> str:
@@ -420,6 +515,7 @@ def _yaw(quaternion) -> float:
 def execute_mission(
     goal_xy: tuple[float, float], method: str, deadline_s: float,
     wall_watchdog_s: float,
+    recovery_probe: bool = False,
 ) -> MissionObservation:
     rclpy.init()
     node = MissionObserver()
@@ -474,9 +570,13 @@ def execute_mission(
             navigation_result = None
             message = "mission deadline or wall watchdog exceeded"
         simulated = max(0.0, (node.sim_time or sim_start) - sim_start)
-        return _observation(
+        observation = _observation(
             node, classify_terminal(success, message, timed_out), success,
             message, simulated, wall_start, attempts, navigation_result)
+        # Capture the terminal record first: reconciliation changes the state.
+        if recovery_probe and not success:
+            observation.recovery_probe = probe_recovery_inhibition(node, executor)
+        return observation
     finally:
         executor.remove_node(node)
         node.destroy_node()

@@ -64,6 +64,9 @@ class TrialRecord:
     final_execution_state: str = "STOPPED"
     final_morphology: str = ""
     unrecovered_fault: bool = False
+    # Evaluator stimulus after a failed transition: drive inhibition evidence
+    # followed by an explicit topology reconciliation request.
+    recovery_probe: dict[str, Any] = field(default_factory=dict)
     map_revision: int = 0
     topology_revision: int = 0
     sensing_revision: int = 0

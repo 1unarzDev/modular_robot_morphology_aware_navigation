@@ -230,7 +230,12 @@ class ReconfigurationExecutor(Node):
         except asyncio.CancelledError:
             await self._report_failure(transition["id"], "cancelled")
             result.message = "transition cancelled; topology not committed"
-            goal_handle.canceled()
+            # An injected cancellation has no client cancel request, and the
+            # action state machine only permits CANCELED from CANCELING.
+            if goal_handle.is_cancel_requested:
+                goal_handle.canceled()
+            else:
+                goal_handle.abort()
             return result
         except RuntimeError as exc:
             detail = self._failure_detail(active_pod, phase, str(exc))

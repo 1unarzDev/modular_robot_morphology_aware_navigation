@@ -22,6 +22,7 @@
 #include <gz/sim/components/JointVelocityCmd.hh>
 #include <gz/sim/components/JointPosition.hh>
 #include <gz/sim/components/Model.hh>
+#include <gz/sim/Model.hh>
 #include <gz/transport/Node.hh>
 #include <sdf/Element.hh>
 
@@ -73,6 +74,7 @@ public:
                  gz::sim::EventManager &) override
   {
     this->modelScope = gz::sim::scopedName(_entity, _ecm, "::", false);
+    this->coreModel = _entity;
     this->wheelSeparation = _sdf->Get<double>("wheel_separation", 0.14).first;
     this->wheelRadius = _sdf->Get<double>("wheel_radius", 0.055).first;
     this->maxWheelSpeed = _sdf->Get<double>("max_wheel_speed", 24.0).first;
@@ -316,6 +318,13 @@ private:
     auto pose = gz::math::Pose3d::Zero;
     if (_pod.modelEntity != gz::sim::kNullEntity)
       pose = gz::sim::worldPose(_pod.modelEntity, _ecm);
+    // Report the core link pose from the same update so evaluators can measure
+    // pod-to-core rigidity without mixing samples from different ticks.
+    if (this->coreLink == gz::sim::kNullEntity)
+      this->coreLink = gz::sim::Model(this->coreModel).LinkByName(_ecm, "base_link");
+    const auto coreAvailable = this->coreLink != gz::sim::kNullEntity;
+    const auto corePose = coreAvailable ?
+      gz::sim::worldPose(this->coreLink, _ecm) : gz::math::Pose3d::Zero;
     const auto jointValue = [&_ecm](gz::sim::Entity _entity, bool _velocity) {
       if (_entity == gz::sim::kNullEntity)
         return 0.0;
@@ -359,8 +368,17 @@ private:
          << ",\"world_z\":" << pose.Pos().Z()
          << ",\"world_roll\":" << pose.Rot().Roll()
          << ",\"world_pitch\":" << pose.Rot().Pitch()
-         << ",\"world_yaw\":" << pose.Rot().Yaw()
-         << "}";
+         << ",\"world_yaw\":" << pose.Rot().Yaw();
+    if (coreAvailable)
+    {
+      json << ",\"core_world_x\":" << corePose.Pos().X()
+           << ",\"core_world_y\":" << corePose.Pos().Y()
+           << ",\"core_world_z\":" << corePose.Pos().Z()
+           << ",\"core_world_roll\":" << corePose.Rot().Roll()
+           << ",\"core_world_pitch\":" << corePose.Rot().Pitch()
+           << ",\"core_world_yaw\":" << corePose.Rot().Yaw();
+    }
+    json << "}";
     gz::msgs::StringMsg message;
     message.set_data(json.str());
     _pod.diagnosticsPublisher.Publish(message);
@@ -369,6 +387,8 @@ private:
   gz::transport::Node node;
   std::mutex mutex;
   std::string modelScope;
+  gz::sim::Entity coreModel{gz::sim::kNullEntity};
+  gz::sim::Entity coreLink{gz::sim::kNullEntity};
   std::unordered_map<std::string, PodDrive> pods;
   double wheelSeparation{0.14};
   double wheelRadius{0.055};

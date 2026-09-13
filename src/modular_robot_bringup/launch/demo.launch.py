@@ -7,6 +7,7 @@ from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch_ros.actions import Node
+from launch_ros.parameter_descriptions import ParameterValue
 
 
 def generate_launch_description():
@@ -19,6 +20,7 @@ def generate_launch_description():
     initial_x = LaunchConfiguration("initial_x")
     initial_y = LaunchConfiguration("initial_y")
     initial_yaw = LaunchConfiguration("initial_yaw")
+    failure_injection = LaunchConfiguration("failure_injection")
     has_map = PythonExpression(["'", map_file, "' != ''"])
     localization_params = os.path.join(bringup, "config", "localization.yaml")
     return LaunchDescription([
@@ -28,6 +30,9 @@ def generate_launch_description():
         DeclareLaunchArgument("initial_x", default_value="0.0"),
         DeclareLaunchArgument("initial_y", default_value="0.0"),
         DeclareLaunchArgument("initial_yaw", default_value="0.0"),
+        DeclareLaunchArgument(
+            "failure_injection", default_value="",
+            description="Engineering-only executor fault, e.g. latch:pod_1"),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(os.path.join(sim, "launch", "simulation.launch.py")),
             launch_arguments={"world": world}.items()),
@@ -62,7 +67,10 @@ def generate_launch_description():
         Node(package="tf2_ros", executable="static_transform_publisher", name="lidar_static_tf",
              arguments=["--x", "0", "--y", "0", "--z", "0.12", "--frame-id", "core/base_link", "--child-frame-id", "core/lidar_link/lidar"]),
         Node(package="morphology_planner", executable="planner_server", output="screen", parameters=[{"use_sim_time": True}]),
-        Node(package="reconfiguration_executor", executable="reconfiguration_executor", output="screen", parameters=[{"use_sim_time": True}]),
+        Node(package="reconfiguration_executor", executable="reconfiguration_executor", output="screen", parameters=[{
+            "use_sim_time": True,
+            "failure_injection": ParameterValue(failure_injection, value_type=str),
+        }]),
         Node(package="reconfiguration_executor", executable="pod_relative_pose_estimator", output="screen", parameters=[{"use_sim_time": True}]),
         Node(package="modular_robot_bringup", executable="hybrid_navigator", output="screen", parameters=[{"use_sim_time": True}]),
     ])

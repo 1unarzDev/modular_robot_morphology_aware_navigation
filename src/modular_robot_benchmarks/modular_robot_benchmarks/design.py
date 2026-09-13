@@ -20,6 +20,33 @@ CONFIRMATORY_FAMILIES = (
     "combined_constraints",
 )
 SENSING_FAMILIES = frozenset({"docking_observability", "combined_constraints"})
+ROUNDTRIP_DESIGN_KIND = "engineering_roundtrip"
+FAULT_MATRIX_DESIGN_KIND = "engineering_fault_matrix"
+
+
+@dataclass(frozen=True)
+class FaultCase:
+    """One declared executor fault and the topology reconciliation it must yield."""
+
+    name: str
+    injection: str
+    expected_reconciled_morphology: str | None
+
+
+# Faults target the first planned transition, compact_to_narrow, whose pods
+# move in the order pod_0, pod_2, pod_1, pod_3, pod_4, pod_5. Failures before
+# the first physical detach leave a valid compact topology; failures after a
+# detach leave a partial topology that reconciliation must refuse.
+FAULT_MATRIX = (
+    FaultCase("detach", "detach:pod_0", "compact_diff"),
+    FaultCase("stale_observation", "stale_feedback:pod_0", "compact_diff"),
+    FaultCase("cancellation", "cancellation:pod_0", "compact_diff"),
+    FaultCase("relocation", "relocation:pod_0", None),
+    FaultCase("latch", "latch:pod_0", None),
+    # pod_0 and pod_2 are latched at narrow ports when pod_1 fails to latch.
+    FaultCase("partial_topology", "latch:pod_1", None),
+    FaultCase("commit", "manager_commit", "narrow_tandem"),
+)
 
 
 def _seed(master_seed: int, *parts: object) -> int:
@@ -92,7 +119,12 @@ class StudyDesign:
         design = cls(**value)
         if envelope.get("design_hash") != design.design_hash:
             raise ValueError("frozen design hash does not match its contents")
-        if set(design.methods) != set(METHODS):
+        if design.design_kind.startswith("engineering_"):
+            # Engineering qualification exercises one execution path; it is
+            # never a method comparison.
+            if not design.methods or not set(design.methods) <= set(METHODS):
+                raise ValueError("frozen design has an unsupported method set")
+        elif set(design.methods) != set(METHODS):
             raise ValueError("frozen design has an unsupported method set")
         return design
 
@@ -128,3 +160,41 @@ def generate_design(
                     ))
     return StudyDesign(1, design_kind, layouts_per_family, replicates, master_seed,
                        METHODS, families, tuple(trials))
+
+
+def generate_engineering_design(
+    design_kind: str,
+    family: str,
+    layout_index: int,
+    method: str,
+    runs: int | None = None,
+    master_seed: int = 20260912,
+) -> StudyDesign:
+    """Single-layout, single-method runs with independent plant seeds per run."""
+    if design_kind == FAULT_MATRIX_DESIGN_KIND:
+        if runs not in (None, len(FAULT_MATRIX)):
+            raise ValueError("fault matrix runs must equal the declared fault count")
+        runs = len(FAULT_MATRIX)
+    elif design_kind != ROUNDTRIP_DESIGN_KIND:
+        raise ValueError(f"unknown engineering design kind: {design_kind}")
+    elif runs is None:
+        runs = 20
+    if runs <= 0:
+        raise ValueError("engineering runs must be positive")
+    if family not in CONFIRMATORY_FAMILIES:
+        raise ValueError(f"unknown confirmatory family: {family}")
+    if method not in METHODS:
+        raise ValueError(f"unknown method: {method}")
+    if not 0 <= layout_index < 12:
+        raise ValueError("layout index must be in [0, 12)")
+    layout_id = f"{family}-{layout_index:02d}"
+    world_seed = _seed(master_seed, design_kind, family, layout_index, "world")
+    trials = tuple(TrialSpec(
+        trial_id=f"{design_kind}-{layout_id}-r{run:02d}", family=family,
+        layout_id=layout_id, replicate=run, method=method, method_order=0,
+        world_seed=world_seed,
+        sensing_seed=_seed(master_seed, design_kind, family, layout_index, run, "sensing"),
+        friction_seed=_seed(master_seed, design_kind, family, layout_index, run, "friction"),
+        fault_seed=_seed(master_seed, design_kind, family, layout_index, run, "fault"),
+    ) for run in range(runs))
+    return StudyDesign(1, design_kind, 1, runs, master_seed, (method,), (family,), trials)

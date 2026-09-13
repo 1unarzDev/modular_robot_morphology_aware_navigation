@@ -13,7 +13,7 @@ import sys
 import time
 
 from .confirmatory_scenarios import make_confirmatory_scenario
-from .design import StudyDesign
+from .design import FAULT_MATRIX, FAULT_MATRIX_DESIGN_KIND, StudyDesign
 from .records import TrialManifest, TrialRecord, TrialStore
 from .sdf_export import export_confirmatory_sdf, export_occupancy_map
 
@@ -42,6 +42,13 @@ def classify_terminal(success: bool, message: str, timed_out: bool) -> str:
     if "cancel" in lowered:
         return "cancelled"
     return "controller_failure"
+
+
+def failure_injection_for(design: StudyDesign, spec) -> str:
+    """Declared executor fault for a trial; empty outside the fault matrix."""
+    if design.design_kind != FAULT_MATRIX_DESIGN_KIND:
+        return ""
+    return FAULT_MATRIX[spec.replicate].injection
 
 
 def configuration_hash(paths: list[Path], parameters: dict) -> str:
@@ -187,6 +194,10 @@ def run_batch(
             "physical_disturbance": disturbance,
             "max_infrastructure_retries": max_infrastructure_retries,
         }
+        failure_injection = failure_injection_for(design, spec)
+        if failure_injection:
+            parameters["failure_injection"] = failure_injection
+            parameters["recovery_probe"] = True
         config_paths = [
             catalog_path,
             root / "src/modular_robot_bringup/config/nav2.yaml",
@@ -206,6 +217,7 @@ def run_batch(
             },
             parameters,
         )
+<<<<<<< HEAD
         infrastructure_attempts = []
         attempt_ledger_path = trial_artifacts / "infrastructure_attempts.jsonl"
         for attempt_index in range(max_infrastructure_retries + 1):
@@ -218,14 +230,16 @@ def run_batch(
                 ["ros2", "launch", "modular_robot_bringup", "demo.launch.py",
                  f"world:={world_path.resolve()}", f"map:={map_yaml.resolve()}",
                  f"initial_x:={start_x}", f"initial_y:={start_y}",
-                 f"initial_yaw:={start_yaw}"],
+                 f"initial_yaw:={start_yaw}",
+                 *([f"failure_injection:={failure_injection}"] if failure_injection else [])],
                 cwd=root, stdout=launch_log, stderr=subprocess.STDOUT,
                 text=True, start_new_session=True,
             )
             try:
                 goal = scenario.grid.cell_center(*scenario.goal)
                 observation = execute_mission(
-                    goal, spec.method, 300.0, wall_watchdog_s)
+                    goal, spec.method, 300.0, wall_watchdog_s,
+                    recovery_probe=bool(failure_injection))
                 launch_returncode = process.poll()
                 if launch_returncode is not None and not observation.completed:
                     observation.terminal_status = "process_crash"
@@ -281,6 +295,7 @@ def run_batch(
             final_execution_state=observation.final_execution_state,
             final_morphology=observation.final_morphology,
             unrecovered_fault=observation.unrecovered_fault,
+            recovery_probe=observation.recovery_probe,
             topology_revision=observation.topology_revision,
             sensing_revision=observation.sensing_revision,
             map_revision=observation.map_revision,

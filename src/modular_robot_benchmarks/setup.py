@@ -22,6 +22,7 @@ setup(
             "train_cost_model = modular_robot_benchmarks.train_cost_model:main",
             "morphology_study = modular_robot_benchmarks.study:main",
             "run_morphology_missions = modular_robot_benchmarks.mission_batch:main",
+            "morphology_engineering = modular_robot_benchmarks.engineering_qualification:main",
             "qualify_assembly_motion = modular_robot_benchmarks.motion_qualification:main",
             "qualify_detached_pod = modular_robot_benchmarks.detached_pod_qualification:main",
             "qualify_roundtrip_batch = modular_robot_benchmarks.roundtrip_qualification:main",
