@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 from math import atan2, cos, sin
 
 import rclpy
@@ -117,6 +118,7 @@ class PlannerServer(Node):
             result.message = "sensing signature changed before planning"
             goal_handle.abort()
             return result
+        planner = None
         try:
             start_world = (
                 request.start.pose.position.x, request.start.pose.position.y)
@@ -151,6 +153,11 @@ class PlannerServer(Node):
         except (NoPathError, ValueError) as exc:
             result.success = False
             result.message = str(exc)
+            # Rejected edges explain a failed search, so keep them too.
+            if planner is not None:
+                result.transition_decision_json = [
+                    json.dumps(row, sort_keys=True)
+                    for row in planner.aggregated_transition_decisions()]
             goal_handle.abort()
             return result
 
@@ -160,6 +167,9 @@ class PlannerServer(Node):
             planner.planner.heading_bins if hasattr(planner.planner, "heading_bins")
             else planner.planner.hybrid.heading_bins,
         )
+        result.transition_decision_json = [
+            json.dumps(row, sort_keys=True)
+            for row in planner.aggregated_transition_decisions()]
         result.success = True
         result.message = "hybrid plan found"
         goal_handle.succeed()

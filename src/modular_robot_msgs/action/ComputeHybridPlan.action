@@ -9,6 +9,9 @@ uint64 expected_sensing_revision
 bool success
 string message
 modular_robot_msgs/HybridPlan plan
+# Aggregated transition-edge decisions evaluated during search, one JSON object
+# per distinct (method, transition_id, feasible, reasons) with its count.
+string[] transition_decision_json
 ---
 uint32 expanded_states
 float64 incumbent_cost

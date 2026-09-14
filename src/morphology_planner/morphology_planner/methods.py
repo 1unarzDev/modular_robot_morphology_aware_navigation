@@ -42,6 +42,27 @@ class MethodPlanner:
     def transition_decision_records(self) -> list[dict]:
         return [decision.to_record() for decision in self.transition_policy.decisions]
 
+    def aggregated_transition_decisions(self) -> list[dict]:
+        return aggregate_decision_records(self.transition_decision_records())
+
+
+def aggregate_decision_records(records: list[dict]) -> list[dict]:
+    """Collapse per-state edge decisions into counted distinct outcomes.
+
+    Search evaluates the same transition at many states; terminal records keep
+    each distinct method/transition/feasibility/reason combination once.
+    """
+    counts: dict[tuple, int] = {}
+    for record in records:
+        key = (record["method"], record["transition_id"], bool(record["feasible"]),
+               tuple(sorted(record["reasons"])))
+        counts[key] = counts.get(key, 0) + 1
+    return [
+        {"method": method, "transition_id": transition_id, "feasible": feasible,
+         "reasons": list(reasons), "count": count}
+        for (method, transition_id, feasible, reasons), count in sorted(counts.items())
+    ]
+
 
 def plan_signature(plan: HybridPlan) -> str:
     """Stable signature for paired route/transition manipulation checks."""

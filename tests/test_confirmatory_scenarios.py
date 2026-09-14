@@ -43,6 +43,36 @@ def test_family_manipulations_are_isolated_and_sensing_is_location_dependent():
     assert sensing.sensing_for(transition, clear)["pod_0"].connector_visible
 
 
+def test_generated_start_pose_clears_every_transition_obstacle():
+    from itertools import product
+    from math import cos, sin
+
+    from modular_robot_benchmarks.evaluator_metrics import (
+        CORE_COLLISION_BOX, POD_COLLISION_BOXES, _module_boxes, box_clearance,
+    )
+
+    # Compact pod model origins relative to the core, from modular_robot/model.sdf;
+    # the core spawns at z 0.18 with pods 0.18 m below.
+    pods = ((0.23, 0.20), (0.23, -0.20), (-0.23, 0.20), (-0.23, -0.20), (0.0, 0.20), (0.0, -0.20))
+    for family in CONFIRMATORY_FAMILIES:
+        for index in range(12):
+            scenario = make_confirmatory_scenario(family, index, 2000 + index)
+            sx, sy = scenario.grid.cell_center(*scenario.start)
+            # Extremes of the declared spawn disturbance.
+            for dx, dy, yaw in product((-0.015, 0.015), (-0.015, 0.015), (-0.035, 0.035)):
+                x, y = sx + dx, sy + dy
+                modules = [({"x": x, "y": y, "z": 0.18, "yaw": yaw}, (CORE_COLLISION_BOX,))]
+                modules += [({"x": x + cos(yaw) * px - sin(yaw) * py,
+                              "y": y + sin(yaw) * px + cos(yaw) * py,
+                              "z": 0.0, "yaw": yaw}, POD_COLLISION_BOXES) for px, py in pods]
+                for sample, boxes in modules:
+                    for center, size, box_yaw in _module_boxes(sample, boxes):
+                        for obstacle in scenario.transition_obstacles:
+                            assert box_clearance(center, size, box_yaw,
+                                                 obstacle.center, obstacle.size) > 0.05, (
+                                scenario.layout_id, obstacle.name)
+
+
 def test_layout_seeds_change_saved_geometry_parameters():
     first = make_confirmatory_scenario("combined_constraints", 1, 1)
     second = make_confirmatory_scenario("combined_constraints", 1, 2)

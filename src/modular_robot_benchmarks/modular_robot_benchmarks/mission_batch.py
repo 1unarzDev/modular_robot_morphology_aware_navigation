@@ -14,7 +14,9 @@ import time
 
 from .confirmatory_scenarios import make_confirmatory_scenario
 from .design import FAULT_MATRIX, FAULT_MATRIX_DESIGN_KIND, StudyDesign
-from .evaluator_metrics import localization_errors
+from .evaluator_metrics import (
+    clearance_metrics, localization_errors, module_pose_samples, world_obstacle_boxes,
+)
 from .records import TrialManifest, TrialRecord, TrialStore
 from .sdf_export import export_confirmatory_sdf, export_occupancy_map
 
@@ -219,6 +221,7 @@ def run_batch(
             },
             parameters,
         )
+        obstacle_boxes = world_obstacle_boxes(scenario)
         setup_wall_s = time.monotonic() - setup_start
         infrastructure_attempts = []
         attempt_ledger_path = trial_artifacts / "infrastructure_attempts.jsonl"
@@ -256,6 +259,14 @@ def run_batch(
                 _stop_process(process)
                 launch_log.close()
                 teardown_wall_s = time.monotonic() - teardown_start
+            # Evaluator-only contact inference from module poses against the
+            # generated world; a completed mission with contact is a collision.
+            clearance = clearance_metrics(
+                module_pose_samples(observation.controller_diagnostics), obstacle_boxes)
+            observation.controller_diagnostics["evaluator_clearance"] = clearance
+            if clearance["collision_count"] and observation.completed:
+                observation.terminal_status, observation.completed = "collision", False
+                observation.message += "; evaluator detected obstacle contact"
             attempt_record = {
                 "attempt": attempt_index + 1,
                 "terminal_status": observation.terminal_status,
@@ -292,11 +303,17 @@ def run_batch(
             command_history=observation.command_history,
             planned_route=observation.planned_route,
             localization_history=observation.localization_history,
+            minimum_clearance_m=clearance["minimum_clearance_m"],
+            collision_count=clearance["collision_count"],
             localization_error_m=localization_errors(
                 observation.localization_history,
                 observation.controller_diagnostics.get("pod_drive_diagnostic_samples", [])),
             pod_alignment_history=observation.pod_alignment_history,
             motion_qualifications=observation.motion_qualifications,
+            predicted_transition_probabilities=observation.predicted_transition_probabilities,
+            observed_transition_outcomes=observation.observed_transition_outcomes,
+            transition_edge_decisions=observation.transition_edge_decisions,
+            recovery_actions=observation.recovery_actions,
             infrastructure_attempts=infrastructure_attempts,
             controller_diagnostics=observation.controller_diagnostics,
             topology_history=observation.topology_history,

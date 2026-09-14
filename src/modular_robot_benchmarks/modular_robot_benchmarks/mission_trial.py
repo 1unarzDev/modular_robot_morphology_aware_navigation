@@ -26,6 +26,7 @@ from rosgraph_msgs.msg import Clock
 from std_msgs.msg import String
 from tf2_ros import Buffer, TransformException, TransformListener
 
+from .evaluator_metrics import transition_calibration_pairs
 from .mission_batch import classify_terminal
 from .rigidity import POSE_FIELDS, qualify_pod_rigidity
 
@@ -62,6 +63,10 @@ class MissionObservation:
     controller_diagnostics: dict = field(default_factory=dict)
     recovery_probe: dict = field(default_factory=dict)
     phase_timing: dict = field(default_factory=dict)
+    predicted_transition_probabilities: list[float] = field(default_factory=list)
+    observed_transition_outcomes: list[int] = field(default_factory=list)
+    transition_edge_decisions: list[dict] = field(default_factory=list)
+    recovery_actions: int = 0
 
 
 class MissionObserver(Node):
@@ -607,6 +612,11 @@ def _observation(node, status, completed, message, simulated, wall_start, attemp
     if completed and any(not value["passed"] for value in motion_qualifications):
         status, completed = "motion_qualification_failure", False
         message = "post-transition pod rigidity qualification failed"
+    predictions, outcomes = transition_calibration_pairs(
+        [json.loads(value) for value in navigation_result.transition_attempt_json]
+        if navigation_result else [])
+    edge_decisions = ([json.loads(value) for value in navigation_result.transition_decision_json]
+                      if navigation_result else [])
     now = time.monotonic()
     ready = node.ready_wall_time
     # Separate stack startup from mission execution so throughput work can
@@ -623,8 +633,11 @@ def _observation(node, status, completed, message, simulated, wall_start, attemp
         wall_duration_s=now - wall_start,
         phase_timing=phase_timing,
         reconfiguration_attempts=attempts,
+        # Count reported attempt failures; fall back to the terminal-state
+        # heuristic only when the navigation result was lost (timeout).
         reconfiguration_failures=(
-            1 if final_state == "RECOVERY_REQUIRED" and attempts else 0),
+            outcomes.count(0) if navigation_result is not None
+            else (1 if final_state == "RECOVERY_REQUIRED" and attempts else 0)),
         mechanical_work_j=node.work_proxy_j,
         # Snapshot every stream: the observer keeps spinning for the recovery
         # probe, and live lists would absorb post-terminal samples.
@@ -658,5 +671,9 @@ def _observation(node, status, completed, message, simulated, wall_start, attemp
         localization_history=list(node.localization_history),
         pod_alignment_history=list(node.pod_alignment_history),
         motion_qualifications=motion_qualifications,
+        predicted_transition_probabilities=predictions,
+        observed_transition_outcomes=outcomes,
+        transition_edge_decisions=edge_decisions,
+        recovery_actions=(int(navigation_result.recovery_actions) if navigation_result else 0),
         controller_diagnostics=node.controller_diagnostic(),
     )

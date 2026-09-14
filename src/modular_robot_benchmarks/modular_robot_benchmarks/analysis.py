@@ -272,12 +272,14 @@ def analyze(records: list[TrialRecord], design: StudyDesign,
     edge_counts_by_method: dict[str, Counter] = defaultdict(Counter)
     for record in records:
         for decision in record.transition_edge_decisions:
+            # Runner records aggregate identical decisions with a count.
+            count = int(decision.get("count", 1))
             edge_counts_by_method[record.spec.method][
                 "accepted" if decision["feasible"] else "rejected"
-            ] += 1
+            ] += count
             if not decision["feasible"]:
                 for reason in decision["reasons"] or ["unspecified"]:
-                    rejection_by_method[record.spec.method][reason] += 1
+                    rejection_by_method[record.spec.method][reason] += count
 
     route_disagreement = {}
     full_method = "sensing_feasibility_coupled"

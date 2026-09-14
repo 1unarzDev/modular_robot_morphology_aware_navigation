@@ -106,6 +106,9 @@ class HybridNavigator(Node):
             plan_result = await self._plan(
                 start, goal_handle.request.goal, goal_handle.request.planner_method)
             planning_latency += time.monotonic() - planning_started
+            if plan_result is not None:
+                result.transition_decision_json = [
+                    *result.transition_decision_json, *plan_result.transition_decision_json]
             if (plan_result is not None and not plan_result.success
                     and "changed before planning" in plan_result.message):
                 continue
@@ -151,6 +154,17 @@ class HybridNavigator(Node):
                 if segment.kind == HybridSegment.RECONFIGURE:
                     success = await self._execute_transition(segment)
                     reconfigurations += 1
+                    # Pair the planner's pre-action risk with the committed,
+                    # acknowledged outcome so calibration is interpretable.
+                    result.transition_attempt_json = [
+                        *result.transition_attempt_json,
+                        json.dumps({
+                            "transition_id": segment.transition_id,
+                            "predicted_failure_probability": float(
+                                segment.predicted_failure_probability),
+                            "success": bool(success),
+                        }, sort_keys=True),
+                    ]
                     qualification_passed = True
                     if (success and bool(self.get_parameter(
                             "qualify_after_reconfiguration").value)):
@@ -220,6 +234,7 @@ class HybridNavigator(Node):
                     return result
             self.get_logger().warning(f"execution failed; replanning attempt {attempt + 1}")
             execution_failures += 1
+            result.recovery_actions = execution_failures
         result.message = "execution failed after replanning limit"
         result.observed_time = time.monotonic() - started
         result.reconfiguration_count = reconfigurations

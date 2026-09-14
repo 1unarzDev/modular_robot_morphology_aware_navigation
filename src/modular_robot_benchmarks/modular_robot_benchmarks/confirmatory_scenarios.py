@@ -10,6 +10,11 @@ from morphology_planner.transition_validation import Box3
 
 from .design import CONFIRMATORY_FAMILIES
 
+# Compact collision footprint half-length including wheel envelopes (catalog).
+COMPACT_HALF_LENGTH_M = 0.40
+# Covers the declared +/-0.015 m spawn offset and +/-0.035 rad spawn yaw with margin.
+SPAWN_SHELF_CLEARANCE_M = 0.10
+
 
 @dataclass(frozen=True)
 class ObservabilityRegion:
@@ -101,10 +106,15 @@ def make_confirmatory_scenario(
     band_x1 = wall_x * resolution - 0.8 + 0.05 * rng.randrange(3)
     center_y = (door_center + 0.5) * resolution
     band_half_height = 0.45 + 0.05 * rng.randrange(3)
+    # The shelf spans the left pod track (y + 0.20) below pod-body height, so it
+    # must begin beyond the compact robot's spawn footprint; otherwise the left
+    # pods start interpenetrating it and the robot cannot move.
+    start_x_m = (start[0] + 0.5) * resolution
+    shelf_x0 = start_x_m + COMPACT_HALF_LENGTH_M + SPAWN_SHELF_CLEARANCE_M
     obstacle = Box3(
         "raised_transition_shelf",
-        ((band_x0 + band_x1) / 2.0, center_y + 0.20, 0.14),
-        (band_x1 - band_x0, 0.16, 0.08),
+        ((shelf_x0 + band_x1) / 2.0, center_y + 0.20, 0.14),
+        (band_x1 - shelf_x0, 0.16, 0.08),
     )
     poor_region = ObservabilityRegion(
         band_x0, band_x1,

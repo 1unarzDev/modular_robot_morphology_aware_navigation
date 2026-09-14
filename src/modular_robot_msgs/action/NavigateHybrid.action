@@ -15,6 +15,13 @@ string[] planned_transition_ids
 geometry_msgs/PoseStamped[] planned_transition_poses
 geometry_msgs/PoseStamped[] planned_route_poses
 string[] motion_qualification_json
+# One JSON object per executed transition attempt: transition_id,
+# predicted_failure_probability (planner, pre-action), and success.
+string[] transition_attempt_json
+# Aggregated planner edge decisions from every planning request in the mission.
+string[] transition_decision_json
+# Autonomous recoveries: replans triggered by a failed traverse or transition.
+uint32 recovery_actions
 ---
 string stage
 uint32 segment_index
