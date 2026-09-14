@@ -51,10 +51,10 @@ for row, (variant, label) in enumerate(VARIANTS):
             detail = "transformed; post-check contact"
         else:
             detail = cell["terminal_statuses"][0].replace("_", " ")
-        ax.text(2.46, y0 + dy, f"{mlabel}: {detail}", fontsize=5.4, va="center")
+        ax.text(2.3, y0 + dy, f"{mlabel}: {detail}", fontsize=5.4, va="center")
 ax.set_yticks([2, 1, 0]); ax.set_yticklabels([label for _, label in VARIANTS])
-ax.set_ylim(-0.6, 2.6); ax.set_xlim(1.55, 3.45)
-ax.set_xticks([1.7, 1.85, 2.0, 2.15, 2.3])
+ax.set_ylim(-0.6, 2.6); ax.set_xlim(1.65, 3.3)
+ax.set_xticks([1.85, 2.15])
 ax.set_xlabel("planned compact-to-narrow site x [m]", labelpad=1)
 ax.tick_params(length=2, pad=1, labelsize=6)
 ax.spines[["top", "right"]].set_visible(False)

@@ -128,7 +128,7 @@ handles = [
     Rectangle((0, 0), 1, 1, fc=POST, ec="black", hatch="xxxx", lw=0.6, label="post, z 0-0.12 m"),
 ]
 fig.legend(handles=handles, loc="lower center", ncol=3, fontsize=5.5, frameon=False,
-           bbox_to_anchor=(0.52, -0.045), handlelength=1.6, columnspacing=0.8)
+           bbox_to_anchor=(0.52, -0.095), handlelength=1.6, columnspacing=0.8)
 fig.savefig(HERE / "figure_overview.pdf", bbox_inches="tight", pad_inches=0.02)
 fig.savefig(HERE / "figure_overview.png", dpi=240, bbox_inches="tight", pad_inches=0.02)
 print("wrote", HERE / "figure_overview.pdf")
