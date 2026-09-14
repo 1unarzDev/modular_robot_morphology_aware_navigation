@@ -21,6 +21,10 @@ CONFIRMATORY_FAMILIES = (
 )
 SENSING_FAMILIES = frozenset({"docking_observability", "combined_constraints"})
 FAULT_MATRIX_DESIGN_KIND = "engineering_fault_matrix"
+# Workshop diagnostic study: one passage environment in three variants.
+WORKSHOP_DESIGN_KIND = "workshop_diagnostic"
+WORKSHOP_VARIANTS = ("workshop_blocked_a", "workshop_blocked_b", "workshop_neutral")
+WORKSHOP_METHODS = ("route_first_adaptation", "geometry_coupled", "feasibility_coupled")
 
 
 @dataclass(frozen=True)
@@ -118,7 +122,7 @@ class StudyDesign:
         design = cls(**value)
         if envelope.get("design_hash") != design.design_hash:
             raise ValueError("frozen design hash does not match its contents")
-        if design.design_kind.startswith("engineering_"):
+        if design.design_kind.startswith(("engineering_", "workshop_")):
             # Engineering qualification exercises one execution path; it is
             # never a method comparison.
             if not design.methods or not set(design.methods) <= set(METHODS):
@@ -159,6 +163,37 @@ def generate_design(
                     ))
     return StudyDesign(1, design_kind, layouts_per_family, replicates, master_seed,
                        METHODS, families, tuple(trials))
+
+
+def generate_workshop_design(
+    replicates: int = 2,
+    world_seed_key: int = 0,
+    master_seed: int = 20260914,
+) -> StudyDesign:
+    """Variants x methods x paired disturbance seeds on one base environment.
+
+    Every trial shares the world seed; each replicate's plant seeds are shared
+    across variants and methods, so comparisons are paired.
+    """
+    world_seed = _seed(master_seed, WORKSHOP_DESIGN_KIND, world_seed_key, "world")
+    trials = []
+    for replicate in range(replicates):
+        sensing_seed = _seed(master_seed, WORKSHOP_DESIGN_KIND, replicate, "sensing")
+        friction_seed = _seed(master_seed, WORKSHOP_DESIGN_KIND, replicate, "friction")
+        fault_seed = _seed(master_seed, WORKSHOP_DESIGN_KIND, replicate, "fault")
+        for variant in WORKSHOP_VARIANTS:
+            order = list(WORKSHOP_METHODS)
+            Random(_seed(master_seed, variant, replicate, "order")).shuffle(order)
+            for order_index, method in enumerate(order):
+                trials.append(TrialSpec(
+                    trial_id=f"{variant}-00-r{replicate}-{method}", family=variant,
+                    layout_id=f"{variant}-00", replicate=replicate, method=method,
+                    method_order=order_index, world_seed=world_seed,
+                    sensing_seed=sensing_seed, friction_seed=friction_seed,
+                    fault_seed=fault_seed,
+                ))
+    return StudyDesign(1, WORKSHOP_DESIGN_KIND, 1, replicates, master_seed,
+                       WORKSHOP_METHODS, WORKSHOP_VARIANTS, tuple(trials))
 
 
 def generate_fault_matrix_design(

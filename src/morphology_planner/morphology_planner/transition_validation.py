@@ -187,6 +187,24 @@ class TransitionTrajectoryValidator:
             not reasons, tuple(sorted(reasons)), len(swept_boxes))
 
 
+def load_environment_boxes(path: str) -> tuple[Box3, ...]:
+    """Static 3D transition obstacles from a scenario manifest (prior map).
+
+    An empty path means no 3D prior beyond the occupancy map.
+    """
+    if not path:
+        return ()
+    import json
+
+    with open(path, encoding="utf-8") as stream:
+        manifest = json.load(stream)
+    return tuple(
+        Box3(str(box["name"]), tuple(float(v) for v in box["center"]),
+             tuple(float(v) for v in box["size"]))
+        for box in manifest.get("transition_obstacles", ())
+    )
+
+
 def _sample(trajectory: ModuleTrajectory, resolution: float) -> tuple[TrajectoryPoint, ...]:
     end = trajectory.points[-1].time_s
     count = int(end / resolution)

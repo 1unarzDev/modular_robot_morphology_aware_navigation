@@ -21,6 +21,7 @@ def generate_launch_description():
     initial_y = LaunchConfiguration("initial_y")
     initial_yaw = LaunchConfiguration("initial_yaw")
     failure_injection = LaunchConfiguration("failure_injection")
+    transition_environment = LaunchConfiguration("transition_environment")
     has_map = PythonExpression(["'", map_file, "' != ''"])
     localization_params = os.path.join(bringup, "config", "localization.yaml")
     return LaunchDescription([
@@ -33,6 +34,9 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "failure_injection", default_value="",
             description="Engineering-only executor fault, e.g. latch:pod_1"),
+        DeclareLaunchArgument(
+            "transition_environment", default_value="",
+            description="Scenario manifest with static 3D transition obstacles (prior map)"),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(os.path.join(sim, "launch", "simulation.launch.py")),
             launch_arguments={"world": world}.items()),
@@ -66,7 +70,10 @@ def generate_launch_description():
         Node(package="modular_robot_bringup", executable="assembly_drive_adapter", output="screen", parameters=[{"use_sim_time": True}]),
         Node(package="tf2_ros", executable="static_transform_publisher", name="lidar_static_tf",
              arguments=["--x", "0", "--y", "0", "--z", "0.12", "--frame-id", "core/base_link", "--child-frame-id", "core/lidar_link/lidar"]),
-        Node(package="morphology_planner", executable="planner_server", output="screen", parameters=[{"use_sim_time": True}]),
+        Node(package="morphology_planner", executable="planner_server", output="screen", parameters=[{
+            "use_sim_time": True,
+            "transition_environment": ParameterValue(transition_environment, value_type=str),
+        }]),
         Node(package="reconfiguration_executor", executable="reconfiguration_executor", output="screen", parameters=[{
             "use_sim_time": True,
             "failure_injection": ParameterValue(failure_injection, value_type=str),

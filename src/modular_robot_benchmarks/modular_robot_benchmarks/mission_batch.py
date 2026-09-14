@@ -236,6 +236,9 @@ def run_batch(
                  f"world:={world_path.resolve()}", f"map:={map_yaml.resolve()}",
                  f"initial_x:={start_x}", f"initial_y:={start_y}",
                  f"initial_yaw:={start_yaw}",
+                 # Static 3D transition obstacles as a known prior map, like
+                 # the occupancy map; no live simulator state is exposed.
+                 f"transition_environment:={scenario_manifest.resolve()}",
                  *([f"failure_injection:={failure_injection}"] if failure_injection else [])],
                 cwd=root, stdout=launch_log, stderr=subprocess.STDOUT,
                 text=True, start_new_session=True,
