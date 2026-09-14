@@ -19,6 +19,8 @@ if any(r["manifest"]["design_hash"] != design_hash for r in records):
 if len(commits) > 1:
     raise SystemExit(f"records span multiple commits: {commits}")
 
+contact_path = study / "contact_phases.json"
+contact_phases = json.loads(contact_path.read_text()) if contact_path.exists() else {}
 VARIANTS = [("workshop_blocked_a", "Blocked-A"), ("workshop_blocked_b", "Blocked-B"),
             ("workshop_neutral", "Neutral")]
 METHODS = [("route_first_adaptation", "Route-first"), ("geometry_coupled", "Geometry"),
@@ -49,6 +51,11 @@ for variant, vlabel in VARIANTS:
             "mean_completed_time_s": mean(times) if times else None,
             "mean_planning_latency_s": mean(latency) if latency else None,
             "terminal_statuses": statuses,
+            "contact_phases": sorted({p for r in cell for p in contact_phases.get(r["spec"]["trial_id"], [])}),
+            "transformation_contact": any(p.startswith("transformation:")
+                                          for r in cell for p in contact_phases.get(r["spec"]["trial_id"], [])),
+            "post_transition_check_contact": any(p.startswith("post_transition_check:")
+                                                 for r in cell for p in contact_phases.get(r["spec"]["trial_id"], [])),
         }
         site = "/".join(f"{x:.2f}" for x in sites) if sites else "--"
         clear = f"{100 * min(clearances):.1f}" if clearances else "--"
