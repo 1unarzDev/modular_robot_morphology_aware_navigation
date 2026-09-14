@@ -1,0 +1,130 @@
+{
+  "design": {
+    "design_kind": "workshop_diagnostic",
+    "families": [
+      "workshop_blocked_a",
+      "workshop_blocked_b",
+      "workshop_neutral"
+    ],
+    "layouts_per_family": 1,
+    "master_seed": 20260914,
+    "methods": [
+      "route_first_adaptation",
+      "geometry_coupled",
+      "feasibility_coupled"
+    ],
+    "replicates": 1,
+    "schema_version": 1,
+    "trials": [
+      {
+        "family": "workshop_blocked_a",
+        "fault_seed": 5842506840445193205,
+        "friction_seed": 17669712779301502650,
+        "layout_id": "workshop_blocked_a-00",
+        "method": "geometry_coupled",
+        "method_order": 0,
+        "replicate": 0,
+        "sensing_seed": 3206453880042040817,
+        "trial_id": "workshop_blocked_a-00-r0-geometry_coupled",
+        "world_seed": 10198100480197093619
+      },
+      {
+        "family": "workshop_blocked_a",
+        "fault_seed": 5842506840445193205,
+        "friction_seed": 17669712779301502650,
+        "layout_id": "workshop_blocked_a-00",
+        "method": "route_first_adaptation",
+        "method_order": 1,
+        "replicate": 0,
+        "sensing_seed": 3206453880042040817,
+        "trial_id": "workshop_blocked_a-00-r0-route_first_adaptation",
+        "world_seed": 10198100480197093619
+      },
+      {
+        "family": "workshop_blocked_a",
+        "fault_seed": 5842506840445193205,
+        "friction_seed": 17669712779301502650,
+        "layout_id": "workshop_blocked_a-00",
+        "method": "feasibility_coupled",
+        "method_order": 2,
+        "replicate": 0,
+        "sensing_seed": 3206453880042040817,
+        "trial_id": "workshop_blocked_a-00-r0-feasibility_coupled",
+        "world_seed": 10198100480197093619
+      },
+      {
+        "family": "workshop_blocked_b",
+        "fault_seed": 5842506840445193205,
+        "friction_seed": 17669712779301502650,
+        "layout_id": "workshop_blocked_b-00",
+        "method": "feasibility_coupled",
+        "method_order": 0,
+        "replicate": 0,
+        "sensing_seed": 3206453880042040817,
+        "trial_id": "workshop_blocked_b-00-r0-feasibility_coupled",
+        "world_seed": 10198100480197093619
+      },
+      {
+        "family": "workshop_blocked_b",
+        "fault_seed": 5842506840445193205,
+        "friction_seed": 17669712779301502650,
+        "layout_id": "workshop_blocked_b-00",
+        "method": "route_first_adaptation",
+        "method_order": 1,
+        "replicate": 0,
+        "sensing_seed": 3206453880042040817,
+        "trial_id": "workshop_blocked_b-00-r0-route_first_adaptation",
+        "world_seed": 10198100480197093619
+      },
+      {
+        "family": "workshop_blocked_b",
+        "fault_seed": 5842506840445193205,
+        "friction_seed": 17669712779301502650,
+        "layout_id": "workshop_blocked_b-00",
+        "method": "geometry_coupled",
+        "method_order": 2,
+        "replicate": 0,
+        "sensing_seed": 3206453880042040817,
+        "trial_id": "workshop_blocked_b-00-r0-geometry_coupled",
+        "world_seed": 10198100480197093619
+      },
+      {
+        "family": "workshop_neutral",
+        "fault_seed": 5842506840445193205,
+        "friction_seed": 17669712779301502650,
+        "layout_id": "workshop_neutral-00",
+        "method": "geometry_coupled",
+        "method_order": 0,
+        "replicate": 0,
+        "sensing_seed": 3206453880042040817,
+        "trial_id": "workshop_neutral-00-r0-geometry_coupled",
+        "world_seed": 10198100480197093619
+      },
+      {
+        "family": "workshop_neutral",
+        "fault_seed": 5842506840445193205,
+        "friction_seed": 17669712779301502650,
+        "layout_id": "workshop_neutral-00",
+        "method": "feasibility_coupled",
+        "method_order": 1,
+        "replicate": 0,
+        "sensing_seed": 3206453880042040817,
+        "trial_id": "workshop_neutral-00-r0-feasibility_coupled",
+        "world_seed": 10198100480197093619
+      },
+      {
+        "family": "workshop_neutral",
+        "fault_seed": 5842506840445193205,
+        "friction_seed": 17669712779301502650,
+        "layout_id": "workshop_neutral-00",
+        "method": "route_first_adaptation",
+        "method_order": 2,
+        "replicate": 0,
+        "sensing_seed": 3206453880042040817,
+        "trial_id": "workshop_neutral-00-r0-route_first_adaptation",
+        "world_seed": 10198100480197093619
+      }
+    ]
+  },
+  "design_hash": "9c608ab3e9d128af2471452f76bd6e1c24ab863b95b4825f45100217005376c2"
+}

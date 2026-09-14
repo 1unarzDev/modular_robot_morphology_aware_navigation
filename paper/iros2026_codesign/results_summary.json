@@ -1,0 +1,216 @@
+{
+  "design_hash": "9c608ab3e9d128af2471452f76bd6e1c24ab863b95b4825f45100217005376c2",
+  "commits": [
+    "5086ac8e84cbcaebbc2f1d34c3eb8e722e4ae9ee"
+  ],
+  "records": 9,
+  "expected": 9,
+  "cells": {
+    "workshop_blocked_a/route_first_adaptation": {
+      "n": 1,
+      "completed": 0,
+      "transition_successes": 1,
+      "transition_attempts": 1,
+      "environment_rejections": [
+        3
+      ],
+      "c2n_site_x_m": [
+        1.85
+      ],
+      "min_clearance_m": 0.0,
+      "collisions": 1,
+      "mean_completed_time_s": null,
+      "mean_planning_latency_s": 0.7320822320000389,
+      "terminal_statuses": [
+        "motion_qualification_failure"
+      ],
+      "contact_phases": [
+        "post_transition_check:pod_0:post"
+      ],
+      "transformation_contact": false,
+      "post_transition_check_contact": true
+    },
+    "workshop_blocked_a/geometry_coupled": {
+      "n": 1,
+      "completed": 0,
+      "transition_successes": 0,
+      "transition_attempts": 1,
+      "environment_rejections": [
+        0
+      ],
+      "c2n_site_x_m": [
+        2.15
+      ],
+      "min_clearance_m": 0.0,
+      "collisions": 8,
+      "mean_completed_time_s": null,
+      "mean_planning_latency_s": 22.61571502700008,
+      "terminal_statuses": [
+        "unsafe_topology"
+      ],
+      "contact_phases": [
+        "transformation:pod_4:post"
+      ],
+      "transformation_contact": true,
+      "post_transition_check_contact": false
+    },
+    "workshop_blocked_a/feasibility_coupled": {
+      "n": 1,
+      "completed": 0,
+      "transition_successes": 1,
+      "transition_attempts": 1,
+      "environment_rejections": [
+        806
+      ],
+      "c2n_site_x_m": [
+        1.85
+      ],
+      "min_clearance_m": 0.0,
+      "collisions": 1,
+      "mean_completed_time_s": null,
+      "mean_planning_latency_s": 30.387501223000072,
+      "terminal_statuses": [
+        "motion_qualification_failure"
+      ],
+      "contact_phases": [
+        "post_transition_check:pod_0:post"
+      ],
+      "transformation_contact": false,
+      "post_transition_check_contact": true
+    },
+    "workshop_blocked_b/route_first_adaptation": {
+      "n": 1,
+      "completed": 1,
+      "transition_successes": 2,
+      "transition_attempts": 2,
+      "environment_rejections": [
+        6
+      ],
+      "c2n_site_x_m": [
+        1.85
+      ],
+      "min_clearance_m": 0.03111205293026996,
+      "collisions": 0,
+      "mean_completed_time_s": 114.82600000000001,
+      "mean_planning_latency_s": 1.147945678999804,
+      "terminal_statuses": [
+        "completed"
+      ],
+      "contact_phases": [],
+      "transformation_contact": false,
+      "post_transition_check_contact": false
+    },
+    "workshop_blocked_b/geometry_coupled": {
+      "n": 1,
+      "completed": 0,
+      "transition_successes": 0,
+      "transition_attempts": 1,
+      "environment_rejections": [
+        0
+      ],
+      "c2n_site_x_m": [
+        2.15
+      ],
+      "min_clearance_m": 0.0,
+      "collisions": 1,
+      "mean_completed_time_s": null,
+      "mean_planning_latency_s": 22.690600656999777,
+      "terminal_statuses": [
+        "unsafe_topology"
+      ],
+      "contact_phases": [
+        "transformation:pod_5:post"
+      ],
+      "transformation_contact": true,
+      "post_transition_check_contact": false
+    },
+    "workshop_blocked_b/feasibility_coupled": {
+      "n": 1,
+      "completed": 1,
+      "transition_successes": 2,
+      "transition_attempts": 2,
+      "environment_rejections": [
+        2574
+      ],
+      "c2n_site_x_m": [
+        1.85
+      ],
+      "min_clearance_m": 0.046790832708765225,
+      "collisions": 0,
+      "mean_completed_time_s": 163.90800000000002,
+      "mean_planning_latency_s": 52.413062602999844,
+      "terminal_statuses": [
+        "completed"
+      ],
+      "contact_phases": [],
+      "transformation_contact": false,
+      "post_transition_check_contact": false
+    },
+    "workshop_neutral/route_first_adaptation": {
+      "n": 1,
+      "completed": 1,
+      "transition_successes": 2,
+      "transition_attempts": 2,
+      "environment_rejections": [
+        0
+      ],
+      "c2n_site_x_m": [
+        2.15
+      ],
+      "min_clearance_m": 0.03677856482485997,
+      "collisions": 0,
+      "mean_completed_time_s": 114.818,
+      "mean_planning_latency_s": 0.7994031749999522,
+      "terminal_statuses": [
+        "completed"
+      ],
+      "contact_phases": [],
+      "transformation_contact": false,
+      "post_transition_check_contact": false
+    },
+    "workshop_neutral/geometry_coupled": {
+      "n": 1,
+      "completed": 1,
+      "transition_successes": 2,
+      "transition_attempts": 2,
+      "environment_rejections": [
+        0
+      ],
+      "c2n_site_x_m": [
+        2.15
+      ],
+      "min_clearance_m": 0.04063116810906077,
+      "collisions": 0,
+      "mean_completed_time_s": 151.172,
+      "mean_planning_latency_s": 36.83054663799976,
+      "terminal_statuses": [
+        "completed"
+      ],
+      "contact_phases": [],
+      "transformation_contact": false,
+      "post_transition_check_contact": false
+    },
+    "workshop_neutral/feasibility_coupled": {
+      "n": 1,
+      "completed": 1,
+      "transition_successes": 2,
+      "transition_attempts": 2,
+      "environment_rejections": [
+        0
+      ],
+      "c2n_site_x_m": [
+        2.15
+      ],
+      "min_clearance_m": 0.045381657534797525,
+      "collisions": 0,
+      "mean_completed_time_s": 151.936,
+      "mean_planning_latency_s": 37.63048336999964,
+      "terminal_statuses": [
+        "completed"
+      ],
+      "contact_phases": [],
+      "transformation_contact": false,
+      "post_transition_check_contact": false
+    }
+  }
+}

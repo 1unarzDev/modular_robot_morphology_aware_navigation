@@ -1,0 +1,19 @@
+{
+ "workshop_blocked_a-00-r0-feasibility_coupled": [
+  "post_transition_check:pod_0:post"
+ ],
+ "workshop_blocked_a-00-r0-geometry_coupled": [
+  "transformation:pod_4:post"
+ ],
+ "workshop_blocked_a-00-r0-route_first_adaptation": [
+  "post_transition_check:pod_0:post"
+ ],
+ "workshop_blocked_b-00-r0-feasibility_coupled": [],
+ "workshop_blocked_b-00-r0-geometry_coupled": [
+  "transformation:pod_5:post"
+ ],
+ "workshop_blocked_b-00-r0-route_first_adaptation": [],
+ "workshop_neutral-00-r0-feasibility_coupled": [],
+ "workshop_neutral-00-r0-geometry_coupled": [],
+ "workshop_neutral-00-r0-route_first_adaptation": []
+}
