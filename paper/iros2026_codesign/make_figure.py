@@ -20,8 +20,8 @@ METHOD_STYLE = {
     "feasibility_coupled": ("#00798c", "Feasibility-coupled", "o"),
 }
 plt.rcParams.update({"font.size": 7, "font.family": "serif", "axes.linewidth": 0.6})
-fig = plt.figure(figsize=(3.5, 3.55))
-grid = fig.add_gridspec(2, 2, height_ratios=[1.0, 1.25], hspace=0.38, wspace=0.28)
+fig = plt.figure(figsize=(3.5, 2.2))
+grid = fig.add_gridspec(2, 2, height_ratios=[0.42, 1.0], hspace=0.02, wspace=0.08)
 
 
 def morphology_panel(ax, name, title):
@@ -40,7 +40,7 @@ def morphology_panel(ax, name, title):
 ax_a = fig.add_subplot(grid[0, 0])
 morphology_panel(ax_a, "compact_diff", "(a) compact_diff")
 ax_a2 = fig.add_subplot(grid[0, 1])
-morphology_panel(ax_a2, "narrow_tandem", "narrow_tandem")
+morphology_panel(ax_a2, "narrow_tandem", "(a) narrow_tandem")
 
 ax = fig.add_subplot(grid[1, :])
 variant = data["variants"]["workshop_blocked_a"]
@@ -56,10 +56,10 @@ for box in variant["attractive_site_sweep"]:
 for post in variant["posts"]:
     (x, y, _), (w, h, _) = post["center"], post["size"]
     ax.add_patch(Rectangle((x - w / 2, y - h / 2), w, h, fc="#f4a261", ec="black", lw=0.6, zorder=5))
-    ax.annotate("post (z 0-0.12 m)", (x, y + h / 2), xytext=(x + 0.25, y + 0.35), fontsize=6,
-                arrowprops={"arrowstyle": "-", "lw": 0.5})
-ax.plot(*variant["start"], marker="^", color="black", ms=4); ax.text(variant["start"][0], variant["start"][1] - 0.22, "start", ha="center", fontsize=6)
-ax.plot(*variant["goal"], marker="*", color="black", ms=6); ax.text(variant["goal"][0], variant["goal"][1] - 0.22, "goal", ha="center", fontsize=6)
+    ax.annotate("post, z 0-0.12 m", (x + w / 2, y), xytext=(x + 1.0, y + 0.05), fontsize=6,
+                va="center", arrowprops={"arrowstyle": "-", "lw": 0.5})
+ax.plot(*variant["start"], marker="^", color="black", ms=4); ax.text(variant["start"][0], variant["start"][1] + 0.1, "start", ha="center", fontsize=6)
+ax.plot(*variant["goal"], marker="*", color="black", ms=6); ax.text(variant["goal"][0], variant["goal"][1] + 0.1, "goal", ha="center", fontsize=6)
 for method, (color, label, marker) in METHOD_STYLE.items():
     entry = variant["methods"].get(method, {})
     if "path" not in entry:
@@ -70,12 +70,14 @@ for method, (color, label, marker) in METHOD_STYLE.items():
     for x, y, tid, _ in entry["sites"]:
         if tid == "compact_to_narrow":
             ax.plot(x, y + offset, marker=marker, color=color, ms=4.5, mec="black", mew=0.4, zorder=6)
-ax.text(sx, sy - 0.62, "red: pod 4 relocation sweep\nat geometry-preferred site", ha="center", fontsize=5.5, color="#9d0208")
-ax.set_xlim(0, variant["width"] * res); ax.set_ylim(0.2, variant["height"] * res - 0.2)
+ax.text(0.45, 2.47, "red: pod-4 sweep at geometry site (X); gray: other pods",
+        ha="left", va="top", fontsize=5.5, color="#9d0208")
+ax.set_xlim(0.35, 5.45); ax.set_ylim(1.05, 2.55)
 ax.set_aspect("equal"); ax.set_xlabel("x [m]", labelpad=1); ax.set_ylabel("y [m]", labelpad=1)
 ax.tick_params(length=2, pad=1)
-ax.set_title("(b-d) Blocked-A: obstruction, relocation sweep, and selected compact-to-narrow sites", fontsize=6.5, pad=2)
-ax.legend(loc="lower right", fontsize=5.5, frameon=False, handlelength=1.5)
+ax.set_title("(b) Blocked-A: post, relocation sweep, and planned compact-to-narrow sites", fontsize=6.5, pad=2)
+ax.legend(loc="lower center", bbox_to_anchor=(0.6, -0.01), ncol=3, fontsize=5.5,
+          frameon=False, handlelength=1.4, columnspacing=0.9)
 fig.savefig(HERE / "figure_overview.pdf", bbox_inches="tight", pad_inches=0.01)
 fig.savefig(HERE / "figure_overview.png", dpi=220, bbox_inches="tight", pad_inches=0.01)
 print("wrote", HERE / "figure_overview.pdf")
