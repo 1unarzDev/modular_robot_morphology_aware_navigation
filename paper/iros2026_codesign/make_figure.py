@@ -96,10 +96,35 @@ def plan_panel(ax, variant, method, title, feasible):
     ax.set_yticks([1.5, 2.0])
 
 
-fig = plt.figure(figsize=(3.5, 3.0))
-outer = fig.add_gridspec(3, 2, height_ratios=[0.52, 1.0, 1.0], hspace=0.28, wspace=0.05)
+fig = plt.figure(figsize=(3.5, 3.3))
+outer = fig.add_gridspec(3, 2, height_ratios=[0.86, 1.0, 1.0], hspace=0.26, wspace=0.03)
+# Panel (a): Gazebo renders when available (image path, crop box in pixels, title),
+# otherwise the schematic morphologies.
+RENDERS = [
+    (HERE / "renders" / "render_a_left.png", "(a) Gazebo, 36 s: at site"),
+    (HERE / "renders" / "render_a_right.png", "65 s: pod 4 jammed"),
+]
+# Pixel locations in the 1000x520 crops (post and the blocked pod).
+RENDER_ANNOTATIONS = {
+    0: [("post", (468, 70), (640, 40))],
+    1: [("pod 4", (430, 130), (560, 270)), ("post", (470, 70), (640, 40))],
+}
+use_renders = all(path.exists() for path, _ in RENDERS)
 for col, name in enumerate(("compact_diff", "narrow_tandem")):
     ax = fig.add_subplot(outer[0, col])
+    if use_renders:
+        path, title = RENDERS[col]
+        ax.imshow(plt.imread(path))
+        ax.set_xticks([]); ax.set_yticks([])
+        for spine in ax.spines.values():
+            spine.set_linewidth(0.4)
+        ax.set_title(title, fontsize=6.2, pad=1.5, loc="left")
+        for label, point, text_xy in RENDER_ANNOTATIONS[col]:
+            ax.annotate(label, point, xytext=text_xy, fontsize=5.8, fontweight="bold",
+                        color="#9d0208" if label == "pod 4" else "black",
+                        arrowprops={"arrowstyle": "-|>", "lw": 0.6, "color": "black"},
+                        bbox={"boxstyle": "round,pad=0.1", "fc": "white", "ec": "none", "alpha": 0.8})
+        continue
     draw_robot(ax, name, 0.0, 0.0)
     ax.add_patch(Polygon(MORPH[name]["footprint"], closed=True, fill=False, ls=":", lw=0.6, ec="#777777"))
     for pod, (px, py, _) in MORPH[name]["pods"].items():
