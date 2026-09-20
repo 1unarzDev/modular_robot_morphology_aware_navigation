@@ -15,7 +15,8 @@ from typing import Any
 
 from .design import (
     FAULT_MATRIX, FAULT_MATRIX_DESIGN_KIND, FaultCase, StudyDesign,
-    generate_fault_matrix_design,
+    fault_case_for_run,
+    generate_fault_matrix_campaign,
 )
 from .records import TrialRecord, TrialStore
 
@@ -72,17 +73,51 @@ def summarize_fault_matrix(design: StudyDesign, records: list[TrialRecord]) -> d
     expected = {spec.trial_id for spec in design.trials}
     by_id = {record.spec.trial_id: record for record in records}
     cases = []
-    for spec in sorted(design.trials, key=lambda value: value.replicate):
-        case = FAULT_MATRIX[spec.replicate]
+    for spec in sorted(design.trials, key=lambda value: (value.layout_id, value.replicate)):
+        case = fault_case_for_run(spec.replicate)
         record = by_id.get(spec.trial_id)
-        cases.append(evaluate_fault_trial(record, case) if record is not None else {
+        evaluated = evaluate_fault_trial(record, case) if record is not None else {
             "case": case.name, "injection": case.injection, "trial_id": spec.trial_id,
-            "passed": False, "failed_checks": ["pending"]})
+            "passed": False, "failed_checks": ["pending"]}
+        evaluated["layout_id"] = spec.layout_id
+        evaluated["realization"] = spec.replicate // len(FAULT_MATRIX)
+        cases.append(evaluated)
+    layouts = sorted({spec.layout_id for spec in design.trials})
+    by_layout = {
+        layout: {
+            "passed": all(case["passed"] for case in cases
+                          if case["layout_id"] == layout),
+            "cases_passed": sum(1 for case in cases
+                                if case["layout_id"] == layout and case["passed"]),
+            "cases_total": sum(1 for case in cases if case["layout_id"] == layout),
+        }
+        for layout in layouts
+    }
+    # Repeating the matrix is only evidence if each cell is an independent
+    # realization; a duplicated fault seed would re-run one injection.
+    fault_seeds = [spec.fault_seed for spec in design.trials]
+    distinct_fault_seeds = len(set(fault_seeds)) == len(fault_seeds)
+    # Every declared case must appear in every layout, or the matrix was
+    # narrowed rather than repeated.
+    declared = {case.name for case in FAULT_MATRIX}
+    complete_layouts = all(
+        {case["case"] for case in cases if case["layout_id"] == layout} == declared
+        for layout in layouts
+    )
     return {
         "purpose": "engineering_qualification_not_study_evidence",
         "design_hash": design.design_hash,
         "unexpected_records": sorted(set(by_id) - expected),
-        "gate_passed": all(case["passed"] for case in cases),
+        "layouts": layouts,
+        "realizations_per_case": design.replicates // len(FAULT_MATRIX),
+        "by_layout": by_layout,
+        "distinct_fault_seeds": distinct_fault_seeds,
+        "every_case_in_every_layout": complete_layouts,
+        "gate_passed": (
+            all(case["passed"] for case in cases)
+            and distinct_fault_seeds
+            and complete_layouts
+        ),
         "cases": cases,
     }
 
@@ -95,8 +130,13 @@ def _parser() -> argparse.ArgumentParser:
         "freeze-fault-matrix", help=f"write an immutable {FAULT_MATRIX_DESIGN_KIND} design")
     freeze.add_argument("--output", type=Path, required=True)
     freeze.add_argument("--family", required=True)
-    freeze.add_argument("--layout-index", type=int, required=True)
+    freeze.add_argument(
+        "--layout-index", type=int, action="append", required=True,
+        help="repeat to span layouts; Gate 0 requires more than one")
     freeze.add_argument("--method", required=True)
+    freeze.add_argument(
+        "--realizations", type=int, default=1,
+        help="independent fault_seed realizations of every declared case")
     freeze.add_argument("--master-seed", type=int, default=20260912)
     summary = commands.add_parser("fault-matrix", help="summarize fault-matrix records")
     summary.add_argument("--design", type=Path, required=True)
@@ -108,11 +148,13 @@ def _parser() -> argparse.ArgumentParser:
 def main() -> None:
     args = _parser().parse_args()
     if args.command == "freeze-fault-matrix":
-        design = generate_fault_matrix_design(
-            args.family, args.layout_index, args.method, args.master_seed)
+        design = generate_fault_matrix_campaign(
+            args.family, tuple(args.layout_index), args.method,
+            args.realizations, args.master_seed)
         design.write_frozen(args.output)
         result = {"path": str(args.output), "design_hash": design.design_hash,
-                  "expected_trials": design.expected_trials}
+                  "expected_trials": design.expected_trials,
+                  "layouts": sorted({spec.layout_id for spec in design.trials})}
     else:
         design = StudyDesign.read_frozen(args.design)
         summary = summarize_fault_matrix(design, TrialStore(args.raw).load_all())

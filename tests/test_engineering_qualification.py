@@ -4,7 +4,8 @@ from pathlib import Path
 import pytest
 
 from modular_robot_benchmarks.design import (
-    FAULT_MATRIX, FAULT_MATRIX_DESIGN_KIND, StudyDesign, generate_fault_matrix_design,
+    FAULT_MATRIX, FAULT_MATRIX_DESIGN_KIND, StudyDesign, fault_case_for_run,
+    generate_fault_matrix_campaign, generate_fault_matrix_design,
 )
 from modular_robot_benchmarks.engineering_qualification import (
     evaluate_fault_trial, summarize_fault_matrix,
@@ -54,7 +55,7 @@ def test_fault_matrix_declares_every_roadmap_fault_as_a_valid_injection():
 
 
 def _fault_record(design, spec, probe):
-    case = FAULT_MATRIX[spec.replicate]
+    case = fault_case_for_run(spec.replicate)
     return TrialRecord(
         schema_version=1, spec=spec,
         manifest=TrialManifest("abc", "cfg", design.design_hash, {},
@@ -110,3 +111,99 @@ def test_demo_launch_forwards_declared_failure_injection_to_executor():
     launch = (ROOT / "src/modular_robot_bringup/launch/demo.launch.py").read_text()
     assert 'DeclareLaunchArgument(\n            "failure_injection"' in launch
     assert '"failure_injection": ParameterValue(failure_injection, value_type=str)' in launch
+
+
+def test_cross_layout_campaign_preserves_the_single_layout_design_hash():
+    """Generalizing the matrix must not invalidate the matrix that passed.
+
+    `docs/current_status.md` records the passing seven-case execution against
+    a specific design hash; a one-layout, one-realization campaign is that
+    design.
+    """
+    single = generate_fault_matrix_design("reconfiguration_workspace", 0,
+                                          "sensing_feasibility_coupled", 1)
+    campaign = generate_fault_matrix_campaign(
+        "reconfiguration_workspace", (0,), "sensing_feasibility_coupled", 1, 1)
+    assert single == campaign
+    assert single.design_hash == (
+        "f1e172305fe3fb29f98a7fb54468fea16885090093a04111e1aaf0e73cfcf29e")
+
+
+def test_campaign_repeats_every_declared_case_in_every_layout(tmp_path):
+    campaign = generate_fault_matrix_campaign(
+        "reconfiguration_workspace", (0, 3, 7), "sensing_feasibility_coupled",
+        realizations=2)
+    assert campaign.expected_trials == len(FAULT_MATRIX) * 2 * 3
+    assert len({spec.layout_id for spec in campaign.trials}) == 3
+    # One world per layout, but never a repeated fault or plant realization.
+    assert len({spec.world_seed for spec in campaign.trials}) == 3
+    for field in ("fault_seed", "friction_seed", "sensing_seed"):
+        seeds = [getattr(spec, field) for spec in campaign.trials]
+        assert len(set(seeds)) == len(seeds), field
+    assert StudyDesign.read_frozen(
+        campaign.write_frozen(tmp_path / "campaign.json")) == campaign
+    with pytest.raises(ValueError, match="distinct"):
+        generate_fault_matrix_campaign(
+            "reconfiguration_workspace", (0, 0), "sensing_feasibility_coupled")
+    with pytest.raises(ValueError, match="at least one layout"):
+        generate_fault_matrix_campaign(
+            "reconfiguration_workspace", (), "sensing_feasibility_coupled")
+
+
+def _passing_campaign_records(design):
+    records = []
+    for spec in design.trials:
+        expected = fault_case_for_run(spec.replicate).expected_reconciled_morphology
+        records.append(_fault_record(design, spec, {
+            "performed": True, "state_before": "RECOVERY_REQUIRED",
+            "max_pod_command": 0.0, "core_translation_m": 0.0005,
+            "core_yaw_change_rad": 0.001,
+            "reconcile": ({"success": True, "execution_state": "READY",
+                           "morphology": expected} if expected else
+                          {"success": False, "execution_state": "RECOVERY_REQUIRED",
+                           "morphology": "compact_diff"}),
+        }))
+    return records
+
+
+def test_campaign_summary_reports_each_layout_and_refuses_a_narrowed_matrix():
+    design = generate_fault_matrix_campaign(
+        "reconfiguration_workspace", (0, 3), "sensing_feasibility_coupled",
+        realizations=2)
+    summary = summarize_fault_matrix(design, _passing_campaign_records(design))
+    assert summary["gate_passed"]
+    assert summary["layouts"] == ["reconfiguration_workspace-00",
+                                  "reconfiguration_workspace-03"]
+    assert summary["realizations_per_case"] == 2
+    assert summary["distinct_fault_seeds"]
+    assert all(value["passed"] for value in summary["by_layout"].values())
+    assert {case["realization"] for case in summary["cases"]} == {0, 1}
+
+    # One failing layout fails the campaign, and is attributed to that layout.
+    records = _passing_campaign_records(design)
+    broken = next(index for index, spec in enumerate(design.trials)
+                  if spec.layout_id.endswith("-03"))
+    records[broken] = replace(
+        records[broken],
+        recovery_probe={**records[broken].recovery_probe, "max_pod_command": 0.2})
+    failed = summarize_fault_matrix(design, records)
+    assert not failed["gate_passed"]
+    assert failed["by_layout"]["reconfiguration_workspace-00"]["passed"]
+    assert not failed["by_layout"]["reconfiguration_workspace-03"]["passed"]
+
+
+def test_every_campaign_trial_maps_to_its_declared_injection():
+    """Runtime injection must follow the same run->case map as the auditor.
+
+    A multi-realization campaign has run indices past the end of FAULT_MATRIX;
+    indexing it directly would fail at launch, in the container, mid-campaign.
+    """
+    design = generate_fault_matrix_campaign(
+        "reconfiguration_workspace", (0, 3), "sensing_feasibility_coupled",
+        realizations=3)
+    injections = [failure_injection_for(design, spec) for spec in design.trials]
+    assert all(injections)
+    assert set(injections) == {case.injection for case in FAULT_MATRIX}
+    for spec in design.trials:
+        assert (failure_injection_for(design, spec)
+                == fault_case_for_run(spec.replicate).injection)
