@@ -173,6 +173,7 @@ class TransitionTrajectoryValidator:
         environment: tuple[Box3, ...],
         offset_x: float,
         offset_y: float,
+        reason: str = "environment_collision",
     ) -> TransitionValidationResult:
         reasons: set[str] = set()
         for box in swept_boxes:
@@ -182,7 +183,7 @@ class TransitionTrajectoryValidator:
                 box.size,
             )
             if any(_overlap(translated, obstacle) for obstacle in environment):
-                reasons.add(f"{box.name.split('/', 1)[0]}:environment_collision")
+                reasons.add(f"{box.name.split('/', 1)[0]}:{reason}")
         return TransitionValidationResult(
             not reasons, tuple(sorted(reasons)), len(swept_boxes))
 

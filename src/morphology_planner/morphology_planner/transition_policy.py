@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from math import cos, hypot, pi, sin
+from math import ceil, cos, hypot, pi, sin
 from typing import Callable, Literal, Mapping
 
-from .catalog import Catalog, Transition
+from .catalog import Catalog, PostTransitionVerification, Transition
 from .grid import OccupancyGrid
 from .planner import HybridState
 from .transition_validation import (
@@ -155,6 +155,99 @@ def build_transition_trajectories(
     return tuple(trajectories)
 
 
+def _inflate(size: tuple[float, float, float],
+             margin: float) -> tuple[float, float, float]:
+    """Grow a box in the ground plane only; height is physically meaningful."""
+    if margin <= 0.0:
+        return size
+    return (size[0] + 2.0 * margin, size[1] + 2.0 * margin, size[2])
+
+
+def _rigid_world_pose(relative: tuple[float, float, float], base: Pose3,
+                      module_height: float) -> Pose3:
+    """Module pose under a rigid body pose, leaving yaw unwrapped.
+
+    ``_world_pose`` wraps to (-pi, pi]; that discontinuity would corrupt the
+    validator's linear interpolation between adjacent maneuver samples.
+    Collision extents use cos/sin, so an unwrapped yaw is equivalent.
+    """
+    x, y, yaw = relative
+    return Pose3(
+        base.x + cos(base.yaw) * x - sin(base.yaw) * y,
+        base.y + sin(base.yaw) * x + cos(base.yaw) * y,
+        base.z + module_height / 2.0,
+        base.yaw + yaw,
+    )
+
+
+def _integrate_body(base: Pose3, stages: tuple, resolution_s: float
+                    ) -> tuple[tuple[float, Pose3], ...]:
+    """Midpoint-integrate the commanded body twists from the committed pose.
+
+    Yaw is left unwrapped so that downstream linear interpolation between
+    samples never crosses a +/-pi discontinuity.
+    """
+    poses = [(0.0, base)]
+    x, y, yaw, elapsed = base.x, base.y, base.yaw, 0.0
+    for stage in stages:
+        steps = max(1, int(ceil(stage.duration / resolution_s)))
+        step = stage.duration / steps
+        for _ in range(steps):
+            midpoint_yaw = yaw + stage.angular * step / 2.0
+            x += stage.linear * cos(midpoint_yaw) * step
+            y += stage.linear * sin(midpoint_yaw) * step
+            yaw += stage.angular * step
+            elapsed += step
+            poses.append((elapsed, Pose3(x, y, base.z, yaw)))
+    return tuple(poses)
+
+
+def build_verification_trajectories(
+    catalog: Catalog,
+    morphology_id: str,
+    base_pose: Pose3,
+    verification: PostTransitionVerification,
+    resolution_s: float = 0.05,
+) -> tuple[ModuleTrajectory, ...]:
+    """Expand the declared verification maneuver into rigid-body module paths.
+
+    Unlike relocation, the assembly moves as a single rigid body here: the core
+    and every pod of ``morphology_id`` follow the same commanded twist, so only
+    environment collisions are meaningful. Module--module geometry is fixed by
+    the morphology and is already checked when the transition is validated.
+    """
+    if not verification.stages:
+        return ()
+    morphology = catalog.morphologies[morphology_id]
+    body = _integrate_body(base_pose, verification.stages, resolution_s)
+    margin = verification.margin_m
+    members: list[tuple[str, tuple[float, float, float],
+                        tuple[float, float, float], tuple]] = []
+    core_size = catalog.module_sizes.get("core")
+    if core_size is not None:
+        members.append(("core", (0.0, 0.0, 0.0), core_size,
+                        catalog.module_collision_boxes.get("core", ())))
+    for pod, relative in morphology.pod_poses.items():
+        size = catalog.module_sizes.get(pod)
+        if size is None:
+            raise ValueError(f"{morphology_id}: no collision size for {pod}")
+        members.append((pod, relative, size,
+                        catalog.module_collision_boxes.get(pod, ())))
+    trajectories: list[ModuleTrajectory] = []
+    for name, relative, size, parts in members:
+        points = tuple(
+            TrajectoryPoint(time_s, _rigid_world_pose(relative, pose, size[2]))
+            for time_s, pose in body
+        )
+        collision_parts = tuple(
+            CollisionPart(part_name, center, _inflate(part_size, margin))
+            for part_name, center, part_size in parts
+        )
+        trajectories.append(ModuleTrajectory(
+            name, _inflate(size, margin), points, collision_parts))
+    return tuple(trajectories)
+
+
 class CoupledTransitionPolicy:
     """Method-specific transition predicate with structured audit records."""
 
@@ -189,6 +282,8 @@ class CoupledTransitionPolicy:
         self._disk_cache: dict[tuple[int, int, float], bool] = {}
         self._target_cache: dict[tuple[int, int, int, str], bool] = {}
         self._swept_boxes_cache: dict[tuple[str, int], tuple[Box3, ...]] = {}
+        self._verification_cache: dict[
+            tuple[str, int], tuple[tuple[Box3, ...], float]] = {}
 
     def __call__(self, transition: Transition, state: HybridState) -> bool:
         reasons: list[str] = []
@@ -262,6 +357,11 @@ class CoupledTransitionPolicy:
                         swept, nearby, wx, wy)
                     reasons.extend(environment_result.reasons)
                     checked += environment_result.checked_samples
+            if not reasons:
+                verification = self._verification_reasons(
+                    transition, state.heading, wx, wy, yaw)
+                reasons.extend(verification.reasons)
+                checked += verification.checked_samples
             if self.method == "sensing_feasibility_coupled":
                 for pod in transition.moved_pods:
                     evidence = sensing.get(pod, PodSensingState(False, float("inf")))
@@ -274,6 +374,46 @@ class CoupledTransitionPolicy:
         )
         self.decisions.append(decision)
         return decision.feasible
+
+    def _verification_reasons(
+        self, transition: Transition, heading: int,
+        wx: float, wy: float, yaw: float,
+    ) -> TransitionValidationResult:
+        """Reject a site whose declared post-transition maneuver collides.
+
+        The transformation itself is not the only motion performed at a
+        reconfiguration site: the navigator verifies assembled motion in the
+        target morphology there before releasing drive. That maneuver is rigid
+        and heading-dependent only, so its swept volume is cached per
+        (morphology, heading) and translated to each candidate site.
+        """
+        verification = self.catalog.post_transition_verification
+        if not verification.stages:
+            return TransitionValidationResult(True, (), 0)
+        key = (transition.target, heading)
+        cached = self._verification_cache.get(key)
+        if cached is None:
+            trajectories = build_verification_trajectories(
+                self.catalog, transition.target, Pose3(0.0, 0.0, 0.0, yaw),
+                verification, self.validator.temporal_resolution_s)
+            swept = self.validator.swept_boxes(trajectories)
+            reach = max(
+                (max(abs(box.center[0]) + box.size[0] / 2.0,
+                     abs(box.center[1]) + box.size[1] / 2.0) for box in swept),
+                default=0.0,
+            )
+            cached = (swept, reach)
+            self._verification_cache[key] = cached
+        swept, reach = cached
+        nearby = tuple(
+            obstacle for obstacle in self.environment
+            if abs(obstacle.center[0] - wx) <= reach + obstacle.size[0] / 2
+            and abs(obstacle.center[1] - wy) <= reach + obstacle.size[1] / 2
+        )
+        if not nearby:
+            return TransitionValidationResult(True, (), 0)
+        return self.validator.validate_swept_environment(
+            swept, nearby, wx, wy, reason="post_transition_collision")
 
     def _target_poses(self, transition: Transition, base: Pose3) -> dict[str, Pose3]:
         return {
