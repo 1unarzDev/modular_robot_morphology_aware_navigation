@@ -39,6 +39,23 @@ objective:
   lambda_risk_seconds: 20.0
   unknown_space_risk: 0.35
 
+# Assembled motion the navigator commands in the target morphology, at the
+# reconfiguration site, before assembled drive is released. It is a motion
+# performed at the site, so transition feasibility must cover it as well as
+# pod relocation. Stages run sequentially from the pose each transition
+# leaves behind. `modular_robot_bringup.qualification.VERIFICATION_SEQUENCE`
+# executes this declaration; a test binds the two.
+post_transition_verification:
+  # Inflation applied to module collision boxes while sweeping this maneuver.
+  # Execution tolerance (yaw cross-coupling, controller error) is not yet
+  # modeled; 0.0 sweeps exactly the commanded nominal motion.
+  margin_m: 0.0
+  stages:
+    - {name: positive_yaw, linear: 0.0, angular: 0.25, duration: 1.5}
+    - {name: negative_yaw, linear: 0.0, angular: -0.25, duration: 1.5}
+    - {name: forward, linear: 0.12, angular: 0.0, duration: 1.0}
+    - {name: reverse, linear: -0.12, angular: 0.0, duration: 1.0}
+
 morphologies:
   compact_diff:
     experiment_support: simulated
