@@ -1,34 +1,32 @@
 {
   "design_hash": "9c608ab3e9d128af2471452f76bd6e1c24ab863b95b4825f45100217005376c2",
   "commits": [
-    "5086ac8e84cbcaebbc2f1d34c3eb8e722e4ae9ee"
+    "92cae6f46397965851fea63753c9b43426c1e4e9"
   ],
   "records": 9,
   "expected": 9,
   "cells": {
     "workshop_blocked_a/route_first_adaptation": {
       "n": 1,
-      "completed": 0,
-      "transition_successes": 1,
-      "transition_attempts": 1,
+      "completed": 1,
+      "transition_successes": 2,
+      "transition_attempts": 2,
       "environment_rejections": [
-        3
+        6
       ],
       "c2n_site_x_m": [
-        1.85
+        1.55
       ],
-      "min_clearance_m": 0.0,
-      "collisions": 1,
-      "mean_completed_time_s": null,
-      "mean_planning_latency_s": 0.7320822320000389,
+      "min_clearance_m": 0.02891958190564159,
+      "collisions": 0,
+      "mean_completed_time_s": 117.784,
+      "mean_planning_latency_s": 1.2295372110000358,
       "terminal_statuses": [
-        "motion_qualification_failure"
+        "completed"
       ],
-      "contact_phases": [
-        "post_transition_check:pod_0:post"
-      ],
+      "contact_phases": [],
       "transformation_contact": false,
-      "post_transition_check_contact": true
+      "post_transition_check_contact": false
     },
     "workshop_blocked_a/geometry_coupled": {
       "n": 1,
@@ -42,41 +40,39 @@
         2.15
       ],
       "min_clearance_m": 0.0,
-      "collisions": 8,
+      "collisions": 7,
       "mean_completed_time_s": null,
-      "mean_planning_latency_s": 22.61571502700008,
+      "mean_planning_latency_s": 24.356538264,
       "terminal_statuses": [
         "unsafe_topology"
       ],
       "contact_phases": [
-        "transformation:pod_4:post"
+        "transformation:unattributed"
       ],
       "transformation_contact": true,
       "post_transition_check_contact": false
     },
     "workshop_blocked_a/feasibility_coupled": {
       "n": 1,
-      "completed": 0,
-      "transition_successes": 1,
-      "transition_attempts": 1,
+      "completed": 1,
+      "transition_successes": 2,
+      "transition_attempts": 2,
       "environment_rejections": [
-        806
+        1050
       ],
       "c2n_site_x_m": [
-        1.85
+        1.55
       ],
-      "min_clearance_m": 0.0,
-      "collisions": 1,
-      "mean_completed_time_s": null,
-      "mean_planning_latency_s": 30.387501223000072,
+      "min_clearance_m": 0.026254450331890774,
+      "collisions": 0,
+      "mean_completed_time_s": 163.88799999999998,
+      "mean_planning_latency_s": 47.128547153,
       "terminal_statuses": [
-        "motion_qualification_failure"
+        "completed"
       ],
-      "contact_phases": [
-        "post_transition_check:pod_0:post"
-      ],
+      "contact_phases": [],
       "transformation_contact": false,
-      "post_transition_check_contact": true
+      "post_transition_check_contact": false
     },
     "workshop_blocked_b/route_first_adaptation": {
       "n": 1,
@@ -89,10 +85,10 @@
       "c2n_site_x_m": [
         1.85
       ],
-      "min_clearance_m": 0.03111205293026996,
+      "min_clearance_m": 0.02405201853401099,
       "collisions": 0,
-      "mean_completed_time_s": 114.82600000000001,
-      "mean_planning_latency_s": 1.147945678999804,
+      "mean_completed_time_s": 115.728,
+      "mean_planning_latency_s": 1.2053730439999981,
       "terminal_statuses": [
         "completed"
       ],
@@ -114,12 +110,12 @@
       "min_clearance_m": 0.0,
       "collisions": 1,
       "mean_completed_time_s": null,
-      "mean_planning_latency_s": 22.690600656999777,
+      "mean_planning_latency_s": 23.401621436999903,
       "terminal_statuses": [
         "unsafe_topology"
       ],
       "contact_phases": [
-        "transformation:pod_5:post"
+        "transformation:unattributed"
       ],
       "transformation_contact": true,
       "post_transition_check_contact": false
@@ -130,15 +126,15 @@
       "transition_successes": 2,
       "transition_attempts": 2,
       "environment_rejections": [
-        2574
+        2533
       ],
       "c2n_site_x_m": [
         1.85
       ],
-      "min_clearance_m": 0.046790832708765225,
+      "min_clearance_m": 0.037842904990831094,
       "collisions": 0,
-      "mean_completed_time_s": 163.90800000000002,
-      "mean_planning_latency_s": 52.413062602999844,
+      "mean_completed_time_s": 165.29199999999997,
+      "mean_planning_latency_s": 52.56908631099998,
       "terminal_statuses": [
         "completed"
       ],
@@ -157,10 +153,10 @@
       "c2n_site_x_m": [
         2.15
       ],
-      "min_clearance_m": 0.03677856482485997,
+      "min_clearance_m": 0.028218417421634445,
       "collisions": 0,
-      "mean_completed_time_s": 114.818,
-      "mean_planning_latency_s": 0.7994031749999522,
+      "mean_completed_time_s": 114.834,
+      "mean_planning_latency_s": 0.9070361440001307,
       "terminal_statuses": [
         "completed"
       ],
@@ -170,21 +166,21 @@
     },
     "workshop_neutral/geometry_coupled": {
       "n": 1,
-      "completed": 1,
-      "transition_successes": 2,
-      "transition_attempts": 2,
+      "completed": 0,
+      "transition_successes": 1,
+      "transition_attempts": 1,
       "environment_rejections": [
         0
       ],
       "c2n_site_x_m": [
         2.15
       ],
-      "min_clearance_m": 0.04063116810906077,
+      "min_clearance_m": 0.18344427612908082,
       "collisions": 0,
-      "mean_completed_time_s": 151.172,
-      "mean_planning_latency_s": 36.83054663799976,
+      "mean_completed_time_s": null,
+      "mean_planning_latency_s": 24.46612750700001,
       "terminal_statuses": [
-        "completed"
+        "motion_qualification_failure"
       ],
       "contact_phases": [],
       "transformation_contact": false,
@@ -201,10 +197,10 @@
       "c2n_site_x_m": [
         2.15
       ],
-      "min_clearance_m": 0.045381657534797525,
+      "min_clearance_m": 0.025302906065289604,
       "collisions": 0,
-      "mean_completed_time_s": 151.936,
-      "mean_planning_latency_s": 37.63048336999964,
+      "mean_completed_time_s": 153.028,
+      "mean_planning_latency_s": 38.4767616019999,
       "terminal_statuses": [
         "completed"
       ],

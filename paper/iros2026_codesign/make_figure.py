@@ -46,7 +46,7 @@ def overlaps(box, post):
     return abs(bx - px) < (bw + pw) / 2 and abs(by - py) < (bh + ph) / 2
 
 
-def plan_panel(ax, variant, method, title, feasible):
+def plan_panel(ax, variant, method, title, feasible, show_refused=False):
     res = variant["resolution"]
     for x, y in variant["walls"]:
         ax.add_patch(Rectangle((x - res / 2, y - res / 2), res, res, fc="#2b2d42", ec="none", zorder=2))
@@ -69,6 +69,23 @@ def plan_panel(ax, variant, method, title, feasible):
         hit = box["name"].split("/")[0] in colliding_pods
         ax.add_patch(Rectangle((x - w / 2, y - h / 2), w, h, fc="#c1121f" if hit else "#6c757d",
                                ec="none", alpha=0.22 if hit else 0.06, zorder=3))
+    if show_refused and variant.get("relocation_only_verification_sweep"):
+        rx, ry = variant["relocation_only_site"]
+        hits = [b for b in variant["relocation_only_verification_sweep"]
+                if any(overlaps(b, post) for post in posts)]
+        draw_robot(ax, "narrow_tandem", rx, ry, 0.0, dashed=True, alpha=0.35, z=4)
+        for box in hits:
+            (x, y, _), (w, h, _) = box["center"], box["size"]
+            ax.add_patch(Rectangle((x - w / 2, y - h / 2), w, h, fc="#c1121f",
+                                   ec="none", alpha=0.5, zorder=4))
+        refused_pods = {b["name"].split("/")[0] for b in hits}
+        if refused_pods:
+            ax.annotate(
+                f"refused: post-transition yaw at x = {rx:.2f} m",
+                (posts[0]["center"][0] - 0.07, posts[0]["center"][1] - 0.02),
+                xytext=(0.40, 2.31), fontsize=5.2, color="#9d0208", va="center",
+                ha="left", arrowprops={"arrowstyle": "-", "lw": 0.5, "color": "#9d0208"},
+                zorder=9)
     site_x, site_y, _, site_yaw = next(s for s in entry["sites"] if s[2] == "compact_to_narrow")
     draw_robot(ax, "compact_diff", site_x, site_y, site_yaw, alpha=0.95)
     draw_robot(ax, "narrow_tandem", site_x, site_y, site_yaw, dashed=True, z=6)
@@ -134,13 +151,22 @@ for col, name in enumerate(("compact_diff", "narrow_tandem")):
     ax.set_title(("(a) " if col == 0 else "") + name, fontsize=6.8, pad=1.5, family="monospace")
 
 blocked = data["variants"]["workshop_blocked_a"]
+
+
+def site_of(method):
+    return next(s[0] for s in blocked["methods"][method]["sites"]
+                if s[2] == "compact_to_narrow")
+
+
 ax_b = fig.add_subplot(outer[1, :])
 plan_panel(ax_b, blocked, "geometry_coupled",
-           "(b) Blocked-A, geometry-coupled: site x = 2.15 m", feasible=False)
+           f"(b) Blocked-A, geometry-coupled: site x = {site_of('geometry_coupled'):.2f} m",
+           feasible=False)
 ax_b.set_xticklabels([])
 ax_c = fig.add_subplot(outer[2, :])
 plan_panel(ax_c, blocked, "feasibility_coupled",
-           "(c) Blocked-A, feasibility-coupled: site x = 1.85 m", feasible=True)
+           f"(c) Blocked-A, feasibility-coupled: site x = {site_of('feasibility_coupled'):.2f} m",
+           feasible=True, show_refused=True)
 ax_c.set_xlabel("x [m]", labelpad=1)
 for ax in (ax_b, ax_c):
     ax.set_ylabel("y [m]", labelpad=1)
@@ -150,6 +176,7 @@ handles = [
     Rectangle((0, 0), 1, 1, fc="none", ec=CORE, ls=(0, (2, 1)), lw=0.7, label="target narrow pose"),
     Rectangle((0, 0), 1, 1, fc="#c1121f", alpha=0.35, ec="none", label="colliding pod sweep"),
     Rectangle((0, 0), 1, 1, fc="#6c757d", alpha=0.25, ec="none", label="other pod sweeps"),
+    Rectangle((0, 0), 1, 1, fc="#c1121f", alpha=0.5, ec="none", label="refused post-transition sweep"),
     Rectangle((0, 0), 1, 1, fc=POST, ec="black", hatch="xxxx", lw=0.6, label="post, z 0-0.12 m"),
 ]
 fig.legend(handles=handles, loc="lower center", ncol=3, fontsize=5.5, frameon=False,

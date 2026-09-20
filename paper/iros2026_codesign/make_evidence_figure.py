@@ -30,12 +30,12 @@ for row, (variant, label) in enumerate(VARIANTS):
     for method, mlabel, marker, dy in METHODS:
         cell = summary["cells"].get(f"{variant}/{method}")
         if not cell or cell["n"] == 0:
-            ax.text(1.62, y0 + dy, "pending", fontsize=5, va="center")
+            ax.text(1.46, y0 + dy, "pending", fontsize=5, va="center")
             continue
         sites = cell["c2n_site_x_m"]
         if not sites:
-            ax.plot(1.62, y0 + dy, marker=marker, mfc="white", mec="black", ms=5)
-            ax.text(1.67, y0 + dy, "no transition planned", fontsize=5.3, va="center")
+            ax.plot(1.46, y0 + dy, marker=marker, mfc="white", mec="black", ms=5)
+            ax.text(1.50, y0 + dy, "no transition planned", fontsize=5.3, va="center")
             continue
         success = cell["transition_successes"] > 0 and cell["transition_successes"] == cell["transition_attempts"]
         x = sites[0]
@@ -53,8 +53,8 @@ for row, (variant, label) in enumerate(VARIANTS):
             detail = cell["terminal_statuses"][0].replace("_", " ")
         ax.text(2.3, y0 + dy, f"{mlabel}: {detail}", fontsize=5.4, va="center")
 ax.set_yticks([2, 1, 0]); ax.set_yticklabels([label for _, label in VARIANTS])
-ax.set_ylim(-0.6, 2.6); ax.set_xlim(1.65, 3.3)
-ax.set_xticks([1.85, 2.15])
+ax.set_ylim(-0.6, 2.6); ax.set_xlim(1.42, 3.3)
+ax.set_xticks([1.55, 1.85, 2.15])
 ax.set_xlabel("planned compact-to-narrow site x [m]", labelpad=1)
 ax.tick_params(length=2, pad=1, labelsize=6)
 ax.spines[["top", "right"]].set_visible(False)
