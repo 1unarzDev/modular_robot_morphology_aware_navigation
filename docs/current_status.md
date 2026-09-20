@@ -257,10 +257,12 @@ Closing the gap properly would mean checking 3D obstacles on traversal edges,
 which changes what `geometry_coupled` is defined to ignore; that is a study
 design decision and must not be made silently.
 
-Evidence is planner-only and host-tested. Re-running the nine workshop missions
-through Gazebo is required before any end-to-end claim. On the frozen workshop
-scenarios the change moves exactly one decision, and it is the one the
-diagnostic showed to be physically wrong:
+The nine workshop missions have been re-run end to end through Gazebo at
+commit `92cae6f`, against the same frozen design hash
+`9c608ab3e9d128af2471452f76bd6e1c24ab863b95b4825f45100217005376c2` the
+published run used, so the two are directly comparable. All nine records were
+accepted. On the frozen workshop scenarios the planner change moves exactly one
+decision, and it is the one the diagnostic showed to be physically wrong:
 
 | Variant | Method | Site before | Site after |
 |---|---|---|---|
@@ -273,6 +275,44 @@ The Blocked-A rejection at 1.85 m is attributed to `pod_0`, which is the pod
 observed in contact during the failed verification maneuver. Neutral produces
 no rejections, so the added term still creates no artificial difference in the
 unobstructed control.
+
+Execution confirms the prediction. Both Blocked-A missions that previously
+staged at 1.85 m, transformed, and then failed their verification yaw now stage
+at 1.55 m and complete:
+
+| Cell | Published | Re-run |
+|---|---|---|
+| Blocked-A `route_first_adaptation` | 1.85 m, `motion_qualification_failure`, 1 collision | 1.55 m, completed in 118 s, 2.9 cm clearance, 0 collisions |
+| Blocked-A `feasibility_coupled` | 1.85 m, `motion_qualification_failure`, 1 collision | 1.55 m, completed in 164 s, 2.6 cm clearance, 0 collisions |
+| Blocked-A `geometry_coupled` | 2.15 m, `unsafe_topology`, 8 collisions | 2.15 m, `unsafe_topology`, 7 collisions |
+| Blocked-B, all three | unchanged | unchanged |
+
+The geometry-only baseline still fails at 2.15 m in both blocked variants, so
+the ablation contrast survives the change rather than being erased by it.
+
+One cell moved the other way and is not attributable to the planner. Neutral
+`geometry_coupled` completed in the published run and ended
+`motion_qualification_failure` in the re-run, with zero collisions and 18.3 cm
+minimum clearance: it struck nothing. Its reverse stage travelled -0.0788 m
+against the -0.08 m floor, missing by 1.2 mm, and its forward stage reached
+only 0.0813 m where every other mission reached about 0.113 m. Neutral has no
+transition obstacles and `geometry_coupled` never evaluates the verification
+sweep, so its planner decision is provably identical. Three identical-seed
+repeats in `results/debug/neutral_geometry_repro_{1,2,3}_raw` all completed,
+with reverse travel -0.1129, -0.1129, and -0.1129 m. The post-transition motion
+gate is therefore intermittently marginal under identical seeds, roughly one
+failure in four attempts here. That is a platform reliability issue, it is
+independent of method, and it will inflate failure rates in the confirmatory
+study unless the gate margin is diagnosed first.
+
+Mission completion across the nine cells went from 5/9 to 6/9 and evaluator
+collisions from 11 to 8.
+
+Reproducibility gap found while summarizing: `contact_phases.json` is consumed
+by `paper/iros2026_codesign/summarize_results.py` but nothing in the repository
+produces it, and terminal records carry `collision_count` and
+`minimum_clearance_m` without per-contact timestamps. Contact-phase attribution
+therefore cannot currently be regenerated from an accepted record set.
 
 ## Gate 0 fault matrix generalizes across layouts
 
@@ -294,18 +334,18 @@ executed; the matrix still has one passing layout.
 
 ## Resume here
 
-Items 2 and 3 block on a container; nothing on the host can settle them.
+Item 1 is a design decision; items 2 and 3 need container runs.
 
 1. Confirm that `combined_constraints` still manipulates as intended across
    the layouts the frozen design draws. Its golden fixture was re-selected to
    world seed 1 after the post-transition maneuver invalidated seed 8, but the
    family separates on only 4 of 12 sampled seeds; the roadmap Gate 2 entry
    records the sweep. `docking_observability` is unaffected at 12/12.
-2. Re-run the nine workshop missions through Gazebo. The transition model now
-   rejects the Blocked-A site at 1.85 m that previously committed and then
-   failed its verification yaw. Until those missions are re-run, the change has
-   planner-only evidence and the accepted abstract's end-to-end results stand
-   as reviewed.
+2. Diagnose the intermittent post-transition motion gate before pilot
+   collection. One of four identical-seed Neutral `geometry_coupled` attempts
+   failed the reverse-travel floor by 1.2 mm without touching anything. Decide
+   whether the gate threshold, the actuator allocation, or the contact model is
+   responsible, and record the margin from the Gate 0 record set.
 3. Freeze and execute a multi-layout fault-matrix campaign. The generator,
    runtime injection map, and per-layout auditor are ready and host-tested.
 

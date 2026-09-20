@@ -47,7 +47,13 @@ Gate 0 mechanics pass on the engineering layout: round trips complete with
 signed-motion and all-pod rigidity gates, and the seven-case fault matrix
 passes once. Transition feasibility now also sweeps the post-transition
 verification maneuver (ADR 0003), which closed the failure the workshop
-diagnostic exposed.
+diagnostic exposed; the nine workshop missions were re-run end to end and both
+previously failing Blocked-A missions now complete.
+
+The post-transition motion gate is intermittently marginal: one of four
+identical-seed attempts failed the reverse-travel floor by 1.2 mm without
+contact. Diagnose that before pilot collection, because it inflates failure
+rates independently of method.
 
 That change invalidated the `combined_constraints` Gate 2 golden layout, which
 was re-selected to world seed 1 against a recorded seed sweep in the roadmap.
