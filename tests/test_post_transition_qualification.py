@@ -48,3 +48,24 @@ def test_terminal_position_check_rejects_goal_checker_drift():
     goal = PlanarPose(5.05, 1.75, 0.0)
     assert goal_position_reached(PlanarPose(4.95, 1.78, 1.0), goal, 0.15)
     assert not goal_position_reached(PlanarPose(4.87, 1.19, 1.4), goal, 0.15)
+
+
+def test_executed_sequence_matches_the_planned_verification_declaration():
+    """The planner sweeps the catalog declaration; the navigator executes this.
+
+    If the two drift, the planner would accept sites against a maneuver the
+    robot does not actually perform, which is the failure the transition model
+    was extended to cover.
+    """
+    from modular_robot_bringup.qualification import VERIFICATION_SEQUENCE
+    from morphology_planner import load_catalog
+
+    catalog = load_catalog(
+        "src/modular_robot_description/config/morphologies.yaml")
+    declared = tuple(
+        (stage.name, stage.linear, stage.angular, stage.duration)
+        for stage in catalog.post_transition_verification.stages
+    )
+    assert declared == VERIFICATION_SEQUENCE
+    assert set(name for name, *_ in VERIFICATION_SEQUENCE) == {
+        "positive_yaw", "negative_yaw", "forward", "reverse"}

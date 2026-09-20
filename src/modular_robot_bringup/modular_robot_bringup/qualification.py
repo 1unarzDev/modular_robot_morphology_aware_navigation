@@ -2,6 +2,20 @@ from dataclasses import dataclass
 from math import atan2, cos, hypot, sin
 
 
+# Assembled motion commanded at a reconfiguration site once a morphology is
+# committed, as (name, linear_mps, angular_rps, duration_s). This is the
+# executed copy of `post_transition_verification` in the morphology catalog,
+# which the planner sweeps when deciding whether a site can host a
+# transformation. `tests/test_post_transition_qualification.py` binds the two,
+# so a site the planner accepted is a site this maneuver was checked against.
+VERIFICATION_SEQUENCE = (
+    ("positive_yaw", 0.0, 0.25, 1.5),
+    ("negative_yaw", 0.0, -0.25, 1.5),
+    ("forward", 0.12, 0.0, 1.0),
+    ("reverse", -0.12, 0.0, 1.0),
+)
+
+
 @dataclass(frozen=True)
 class PlanarPose:
     x: float
