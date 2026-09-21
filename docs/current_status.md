@@ -1,6 +1,6 @@
 # Current project status
 
-Updated 2026-09-19. This is the authoritative handoff for implementation and
+Updated 2026-09-20. This is the authoritative handoff for implementation and
 evidence state.
 
 ## Research claim
@@ -394,20 +394,25 @@ published Neutral `geometry_coupled` `motion_qualification_failure` should be
 read as an instrumentation artifact, not a platform reliability figure. The
 "roughly one failure in four attempts" reliability estimate is withdrawn.
 
-**The accepted workshop abstract states the withdrawn claim and needs an
-author decision.** `paper/iros2026_codesign/main.tex` has a paragraph titled
-"A platform failure that is not a planner difference" asserting that the gate
-"is intermittently marginal, roughly one failure in four attempts, which is a
-platform reliability limit", and a limitation sentence reading "Execution is
-also not reproducible run to run, as the Neutral failure shows". Both are now
-known to be false: the cause was a wall-clock command window in the evaluation
-harness, it is deterministic in the real-time factor, and it is fixed. The
-corrected reading is that the mission completes and the nine-cell count is 7/9
-rather than 6/9. Do not edit the abstract silently. Whether and how to correct
-it depends on camera-ready status, and the honest options -- restate the
-paragraph as a measurement fault found and fixed, or withdraw the reliability
-claim and keep the cell as recorded -- are both defensible. The re-run records
-themselves are unaffected, since no method contrast depended on that cell.
+**The workshop abstract was accepted stating the withdrawn claim, and the
+author has decided to leave its text unchanged.**
+`paper/iros2026_codesign/main.tex` has a paragraph titled "A platform failure
+that is not a planner difference" asserting that the gate "is intermittently
+marginal, roughly one failure in four attempts, which is a platform reliability
+limit", and a limitation sentence reading "Execution is also not reproducible
+run to run, as the Neutral failure shows". Both are now known to be false: the
+cause was a wall-clock command window in the evaluation harness, it is
+deterministic in the real-time factor, and it is fixed. The corrected reading
+is that the mission completes and the nine-cell count is 7/9 rather than 6/9.
+
+Decision, 2026-09-20: do not edit the abstract. Acceptance was on the submitted
+abstract, and the correction is recorded here rather than in the paper. This
+document, not `main.tex`, is the current statement of what that cell means.
+Anything derived from the abstract later -- a camera-ready PDF, an extended
+version, a talk -- must carry the corrected reading rather than reproduce the
+paragraph above. The re-run records themselves are unaffected, since no method
+contrast depended on that cell, and the figures and results table are unchanged
+by this decision.
 
 Mission completion across the nine cells went from 5/9 to 6/9 and evaluator
 collisions from 11 to 8.
@@ -480,10 +485,12 @@ Re-collection was required on correctness grounds independently of the loss.
 
 Two things must change before the pilot, and the second is a decision:
 
-1. Gate 0 signed-motion evidence is being re-collected post-fix against the
+1. Gate 0 signed-motion evidence has been re-collected post-fix against the
    same frozen design, whose hash
    `9c74a26749d466ba382caa6b4d227a033139ef24b8600a3d10ef90608a088b5e` still
-   reproduces from `config/engineering_roundtrip_design.json`.
+   reproduces from `config/engineering_roundtrip_design.json`. See the section
+   below; the audit summary is committed at
+   `studies/gate0/roundtrip_20_postfix_audit.json`.
 2. Retention needs a mechanism, not a convention. Terminal records run
    3.5--5.8 MB each, so the 432-trial confirmatory set will be roughly 1.9 GB
    and plain git tracking is not viable. Choose between git-lfs, an external
@@ -500,6 +507,56 @@ Two things must change before the pilot, and the second is a decision:
    to be the original. Had this existed, the lost campaigns would at least be
    provably lost rather than merely absent. Commit the audit summary for every
    campaign from here on.
+
+## The 20-run round-trip gate passes
+
+`results/qualification/roundtrip_20_postfix_raw` is the first Gate 0 round-trip
+campaign to pass. All 20 frozen runs produced terminal records, all 20
+completed, and the auditor returned no failures: two transitions each, the
+compact-narrow-compact commit sequence, final `compact_diff`/`READY`, no
+unrecovered fault, both signed-motion gates, all-pod rigidity, and 20 unique
+realized disturbances spanning ground friction 0.718--1.085. Simulated
+durations ran 151.4--153.3 s. It was collected at commit `5713195` against
+design hash `9c74a267...` and its record set has campaign digest
+`009e9efa1dfbed35327d3cc470b5a6e9703492678b4c934516ede7fd92f67886`. The audit
+summary is committed at `studies/gate0/roundtrip_20_postfix_audit.json`; the
+records themselves are not retained in version control, which is the open
+decision above.
+
+This is the machine-readable signed-motion artifact Gate 0 has always owed, and
+the first time the gate's margin has been measurable rather than confounded by
+host load. Over 40 gate measurements:
+
+| Quantity | Bound | Observed | Worst margin |
+|---|---|---|---|
+| reverse travel | <= -0.08 m | -0.11520 .. -0.11069 | **+0.03069** |
+| forward travel | >= 0.08 m | +0.11175 .. +0.11499 | **+0.03175** |
+| forward lateral | <= 0.08 m | -0.00196 .. +0.00084 | +0.07804 |
+| positive yaw | >= 0.10 rad | +0.24213 .. +0.47880 | +0.14213 |
+| forward yaw | <= 0.15 rad | -0.02179 .. +0.00071 | +0.12821 |
+| yaw coupling | <= 0.25 | +0.00309 .. +0.01419 | +0.23581 |
+
+The travel floors are the binding constraints by roughly a factor of two and
+everything else is nowhere near its limit, so an operational threshold should
+be set from them. Set it from the coupling ratio rather than the absolute
+yaw-translation bound, which never binds at the yaw these runs produce.
+
+The campaign also tests load invariance directly rather than by argument,
+because it happened to span real-time factor 0.7784--0.9894. Across that 27.1%
+spread, forward travel varied by 2.9% and reverse by 4.1%, and the correlation
+between real-time factor and travel is negative (-0.16 forward, -0.56 reverse)
+where a wall-clock window would force it near +1. Under the previous window the
+slowest run would have commanded about 0.0878 m of forward travel, a 0.0078 m
+margin rather than 0.0317 m -- four times closer to failing, from mechanics
+that did not change. Only two of the 40 measurements fall below 0.90 real-time
+factor, so this campaign constrains the low-load end weakly; the 0.5377 replay
+recorded above remains the evidence there.
+
+Two limits on what this gate establishes. It is one layout
+(`combined_constraints-00`) under one method, `feasibility_coupled`, so it
+qualifies the platform rather than the study, exactly as the frozen design
+intends. And it does not revive the lost campaigns: it stands on its own and
+is not comparable to figures that cannot be re-audited.
 
 ## Resume here
 
