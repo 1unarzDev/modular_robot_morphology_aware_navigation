@@ -29,6 +29,7 @@ from pathlib import Path
 from morphology_planner import (
     HybridState, load_catalog, make_method_planner, plan_signature,
 )
+from morphology_planner.planner import NoPathError
 
 from .confirmatory_scenarios import make_confirmatory_scenario
 from .design import StudyDesign
@@ -79,7 +80,9 @@ def method_decision(method: str, scenario, catalog, heading_bins: int,
     try:
         plan = planner.plan(
             HybridState(*scenario.start, 0, "compact_diff"), scenario.goal, epsilon)
-    except Exception as error:  # planner raises NoPathError and ValueError
+    except (NoPathError, ValueError) as error:
+        # A layout where a method cannot plan is reported, not silently
+        # counted as separating from the methods that could.
         return {"method": method, "planned": False,
                 "error": f"{type(error).__name__}: {error}"}
     segment = next((value for value in plan.segments
@@ -99,9 +102,9 @@ def method_decision(method: str, scenario, catalog, heading_bins: int,
     }
 
 
-def _contrast_applies(control: str, families: tuple[str, ...] | None,
-                      family: str) -> bool:
-    return families is None or family in families
+def _contrast_applies(scope: tuple[str, ...] | None, family: str) -> bool:
+    """A contrast the plan scopes to certain families applies only there."""
+    return scope is None or family in scope
 
 
 def separation_report(design: StudyDesign, families: tuple[str, ...],
@@ -124,7 +127,7 @@ def separation_report(design: StudyDesign, families: tuple[str, ...],
             }
             separates = {}
             for treatment, control, scoped in DECLARED_CONTRASTS:
-                if not _contrast_applies(control, scoped, family):
+                if not _contrast_applies(scoped, family):
                     continue
                 left, right = decisions[treatment], decisions[control]
                 if not (left["planned"] and right["planned"]):
@@ -143,7 +146,7 @@ def separation_report(design: StudyDesign, families: tuple[str, ...],
     for treatment, control, scoped in DECLARED_CONTRASTS:
         key = f"{treatment}_vs_{control}"
         scope = [entry for entry in layouts
-                 if _contrast_applies(control, scoped, entry["family"])]
+                 if _contrast_applies(scoped, entry["family"])]
         if not scope:
             continue
         per_family: dict[str, dict] = {}
