@@ -43,22 +43,32 @@ before changing the platform or collecting data.
 
 ## Current resumption point
 
-Gate 0 mechanics pass on the engineering layout: round trips complete with
-signed-motion and all-pod rigidity gates, and the seven-case fault matrix
-passes once. Transition feasibility now also sweeps the post-transition
-verification maneuver (ADR 0003), which closed the failure the workshop
-diagnostic exposed; the nine workshop missions were re-run end to end and both
-previously failing Blocked-A missions now complete.
+Gate 0 is not satisfied and its evidence is being re-collected. The records
+behind every previous Gate 0 claim are absent from this machine -- `results/`
+is gitignored and no archive exists -- so the gate's required artifact cannot
+be produced from them. They needed re-collecting regardless, for the reason in
+the next paragraph. Treat the Gate 0 figures in `docs/current_status.md` as
+unverifiable prose until a campaign replaces them.
+
+Transition feasibility now sweeps the post-transition verification maneuver
+(ADR 0003), which closed the failure the workshop diagnostic exposed; the nine
+workshop missions were re-run end to end and both previously failing Blocked-A
+missions now complete.
 
 That intermittent post-transition motion gate was an evaluation-harness fault,
 not mechanics. Commanded maneuver windows were bounded by the wall clock while
 the robot moves in simulated time, so travel scaled with the real-time factor.
 Windows now advance on the simulated clock, and travel is confirmed invariant
-across a 0.54--0.98 real-time-factor span. The gate's true margin is still
-unrecorded: measure it from the Gate 0 record set before pilot collection.
+across a 0.54--0.98 real-time-factor span. Every signed-motion figure recorded
+before that fix scales with whatever host load its run happened to meet, which
+is why the lost campaigns could not have supplied a margin. `morphology
+qualify_roundtrip_batch audit` now reports `motion_margins` and
+`real_time_factors`, so the replacement campaign yields the margin directly.
 
 That change invalidated the `combined_constraints` Gate 2 golden layout, which
 was re-selected to world seed 1 against a recorded seed sweep in the roadmap.
 That family separates on only a third of sampled seeds and needs confirming
 across the frozen design's layouts. See `docs/current_status.md` "Resume here"
-for the three open items.
+for the open items, and its retention section for the storage decision the
+confirmatory set forces: records run 3.5--5.8 MB each, so 432 trials is about
+1.9 GB and plain git tracking is not viable.
