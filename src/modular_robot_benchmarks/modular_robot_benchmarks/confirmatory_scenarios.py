@@ -44,6 +44,10 @@ SHELF_DEPTH_M = 0.10
 # covers the direct site's pod_4 excursion (x +0.15..+0.45 m) and leaves an
 # earlier door-line site whose sweep clears it. PROPOSED, NOT YET ADOPTED.
 SHELF_LENGTH_M = 0.60
+# combined_constraints occlusion around the feasibility-aware site (PROPOSED).
+OCCLUSION_LEAD_M = 0.50
+OCCLUSION_TRAIL_M = 0.10
+OCCLUSION_HALF_HEIGHT_M = 0.25
 
 
 @dataclass(frozen=True)
@@ -164,11 +168,12 @@ def make_confirmatory_scenario(
         else:
             obstacles = (obstacle,)
             regions = (ObservabilityRegion(
-                # Occlude the lower direct staging lane while preserving a
-                # distinct feasible site above it.  Keeping this shadow local
-                # is necessary because the executable differential-pod path
-                # also detours around the raised shelf.
-                band_x0, band_x1, center_y - 0.85, center_y - 0.45,
+                # Occlude the staging lane where the feasibility-aware site
+                # falls once the shelf blocks the direct site: the door-line
+                # stretch just before the shelf. A distinct visible feasible
+                # site must remain, which the manipulation check verifies.
+                shelf_x0 - OCCLUSION_LEAD_M, shelf_x0 + OCCLUSION_TRAIL_M,
+                center_y - OCCLUSION_HALF_HEIGHT_M, center_y + OCCLUSION_HALF_HEIGHT_M,
                 False, 0.04,
             ),)
 
