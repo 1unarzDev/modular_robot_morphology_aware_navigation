@@ -503,13 +503,31 @@ Two things must change before the pilot, and the second is a decision:
 
 ## Resume here
 
-Item 1 is a design decision; items 2 and 3 need container runs.
+Item 1 needs a planner sweep and then possibly a design decision; items 2 and 3
+need container runs.
 
-1. Confirm that `combined_constraints` still manipulates as intended across
-   the layouts the frozen design draws. Its golden fixture was re-selected to
-   world seed 1 after the post-transition maneuver invalidated seed 8, but the
-   family separates on only 4 of 12 sampled seeds; the roadmap Gate 2 entry
-   records the sweep. `docking_observability` is unaffected at 12/12.
+1. Run `check_planner_manipulation` over `studies/confirmatory/design.json` and
+   read whether `combined_constraints` still manipulates across the twelve
+   layouts the frozen design draws. Its golden fixture was re-selected to world
+   seed 1 after the post-transition maneuver invalidated seed 8, but the family
+   separates on only 4 of 12 sampled seeds; the roadmap Gate 2 entry records
+   that sweep. `docking_observability` was unaffected at 12/12.
+
+   The tool plans all four methods on every layout the design draws and counts,
+   per declared contrast, how many layouts decide differently. It defaults to
+   the search parameters `morphology_planner.ros_node` uses for missions. A
+   decision is only owed if the count is low: the second confirmatory contrast
+   (`sensing_feasibility_coupled` minus `feasibility_coupled`) is unidentifiable
+   in any layout where the two methods choose the same site, so a family that
+   rarely separates makes that contrast mostly noise no matter how many trials
+   are run. Options would be to drop the family from the contrast's declared
+   scope, re-draw its layouts, or strengthen the constraint the family encodes
+   -- all of which must be decided and frozen before any outcome data exists.
+
+   Note the check's own limit before reading too much into it: it drives the
+   planner with each scenario's declared location-dependent observability,
+   which is the manipulation the design assumes but not what missions currently
+   supply. Separation there is necessary for the contrast, not sufficient.
 2. Read the post-transition gate margin off the re-collected Gate 0 campaign.
    The measurement machinery is in: `audit_roundtrip_records` now emits
    `motion_margins`, giving each signed-motion quantity's observed range and

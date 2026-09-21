@@ -139,8 +139,19 @@ by the widest margin, so it is not tuned to either. No pilot or confirmatory
 data exists (0/432), so this re-selection cannot be a response to an outcome.
 
 Remaining risk: `combined_constraints` separates on only a third of sampled
-seeds. Confirm the family still manipulates as intended across the layouts the
-frozen design actually draws before relying on it for the sensing contrast.
+seeds. `check_planner_manipulation` measures this directly, planning all four
+methods on every layout a frozen design draws and counting how many decide
+differently under each declared contrast. Run it over
+`studies/confirmatory/design.json` before relying on the family for the sensing
+contrast: the `sensing_feasibility_coupled` minus `feasibility_coupled`
+contrast is unidentifiable in any layout where those two methods choose the
+same site, so a low count makes the contrast noise regardless of trial count.
+
+The check drives the planner with each scenario's declared location-dependent
+observability. Missions do not yet supply that -- the planner node consumes
+live `RelativePoseEstimate` sensing -- so separation in the report is a
+necessary condition for the contrast rather than a sufficient one, and closing
+roadmap Gate 0 item 3 is what would make the two agree.
 
 ## Gate 3: unattended disjoint pilot
 
