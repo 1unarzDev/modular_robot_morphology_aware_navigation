@@ -325,6 +325,7 @@ def run_batch(
             final_morphology=observation.final_morphology,
             unrecovered_fault=observation.unrecovered_fault,
             recovery_probe=observation.recovery_probe,
+            fired_injections=observation.fired_injections,
             phase_timing={**observation.phase_timing, "setup_wall_s": setup_wall_s,
                           "teardown_wall_s": teardown_wall_s},
             topology_revision=observation.topology_revision,

@@ -54,9 +54,13 @@ def test_fault_matrix_declares_every_roadmap_fault_as_a_valid_injection():
         summarize_fault_matrix(roundtrip, [])
 
 
-def _fault_record(design, spec, probe):
+def _fault_record(design, spec, probe, fired=None):
     case = fault_case_for_run(spec.replicate)
+    if fired is None:
+        stage, _, pod = case.injection.partition(":")
+        fired = [{"stage": stage, "pod": pod, "time_s": 39.0}]
     return TrialRecord(
+        fired_injections=fired,
         schema_version=1, spec=spec,
         manifest=TrialManifest("abc", "cfg", design.design_hash, {},
                                {"failure_injection": case.injection}),
@@ -98,12 +102,23 @@ def test_fault_contract_requires_inhibited_drive_and_topology_matched_reconcilia
     assert evaluate_fault_trial(moved, case)["failed_checks"] == ["drive_inhibited"]
     assert evaluate_fault_trial(unsafe_reconcile, case)["failed_checks"] == [
         "reconciliation_matches_observed_topology"]
+    # A declared fault that never fired is not evidence of fault handling,
+    # even when everything downstream looks like a correct fail-closed outcome.
+    unfired = _fault_record(design, partial, records[partial.replicate].recovery_probe,
+                            fired=[])
+    other_pod = _fault_record(design, partial, records[partial.replicate].recovery_probe,
+                              fired=[{"stage": "latch", "pod": "pod_0", "time_s": 1.0}])
+    for record in (unfired, other_pod):
+        evaluated = evaluate_fault_trial(record, case)
+        assert evaluated["failed_checks"] == ["injection_fired"]
+        assert evaluated["exercised"] is False
     store = TrialStore(tmp_path / "raw")
     timing = {"readiness_wall_s": 12.5, "mission_wall_s": 40.0,
               "real_time_factor": 1.0, "setup_wall_s": 0.4, "teardown_wall_s": 3.2}
     store.write_terminal(replace(moved, phase_timing=timing))
     loaded = store.load_all()[0]
     assert loaded.recovery_probe["max_pod_command"] == 0.1
+    assert loaded.fired_injections == moved.fired_injections
     assert loaded.phase_timing == timing
 
 

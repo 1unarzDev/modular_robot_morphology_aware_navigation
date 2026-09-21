@@ -51,8 +51,15 @@ def docking_command(
     yaw_tolerance: float,
     max_linear: float,
     max_angular: float,
+    terminal_gain: float = 1.0,
 ) -> tuple[VelocityCommand, bool]:
-    """Closed-loop unicycle command with a final docking-yaw phase."""
+    """Closed-loop unicycle command with a final docking-yaw phase.
+
+    ``terminal_gain`` couples the target yaw into the approach heading. Near
+    the target it must be zero: with the target almost behind the terminal
+    yaw, ``2.8 * bearing - terminal`` has an equilibrium outside the linear
+    gate, where the pod neither drives nor turns.
+    """
     dx, dy = target.x - current.x, target.y - current.y
     distance = hypot(dx, dy)
     if distance > position_tolerance:
@@ -68,7 +75,7 @@ def docking_command(
         # term, short lateral moves arrive side-on and spend the timeout trying
         # to rotate at the docking point.
         travel_heading = atan2(dy, dx) + (pi if direction < 0 else 0.0)
-        terminal_error = wrap_angle(target.yaw - travel_heading)
+        terminal_error = terminal_gain * wrap_angle(target.yaw - travel_heading)
         linear = 0.0
         if abs(bearing_error) < 0.9:
             linear = direction * min(max_linear, 1.25 * distance) * max(0.15, cos(bearing_error))

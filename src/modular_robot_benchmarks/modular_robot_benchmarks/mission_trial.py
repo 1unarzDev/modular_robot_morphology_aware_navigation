@@ -67,6 +67,7 @@ class MissionObservation:
     observed_transition_outcomes: list[int] = field(default_factory=list)
     transition_edge_decisions: list[dict] = field(default_factory=list)
     recovery_actions: int = 0
+    fired_injections: list[dict] = field(default_factory=list)
 
 
 class MissionObserver(Node):
@@ -143,6 +144,12 @@ class MissionObserver(Node):
         self.create_subscription(
             TransitionEvent, "/controller_server/transition_event",
             self._on_controller_transition, 10)
+        self.fired_injections: list[dict] = []
+        self.create_subscription(
+            String, "fired_failure_injections",
+            lambda message: self.fired_injections.append(json.loads(message.data)),
+            QoSProfile(depth=16, durability=DurabilityPolicy.TRANSIENT_LOCAL,
+                       reliability=ReliabilityPolicy.RELIABLE))
         self.create_timer(0.5, self._poll_controller_state)
 
     def _on_controller_transition(self, message: TransitionEvent) -> None:
@@ -676,4 +683,5 @@ def _observation(node, status, completed, message, simulated, wall_start, attemp
         transition_edge_decisions=edge_decisions,
         recovery_actions=(int(navigation_result.recovery_actions) if navigation_result else 0),
         controller_diagnostics=node.controller_diagnostic(),
+        fired_injections=list(node.fired_injections),
     )

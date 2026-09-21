@@ -504,6 +504,60 @@ evidence to tell these apart after the fact.
 
 This record set is not replaced or re-scored by any later campaign.
 
+### Fixes, and the decisions made before re-execution
+
+Recorded here before any re-execution data exists.
+
+1. **Open design decision: the shelf blocks the route, not only transitions.**
+   The author chose (2026-09-21) to make every method treat a
+   transition-environment box whose underside is below a morphology's height
+   as a driving obstacle, leaving world geometry and transition validation
+   unchanged. It was implemented and **not adopted**: with the shelf as a
+   driving obstacle, `sensing_feasibility_coupled` finds no plan on any
+   sampled non-neutral layout (`reconfiguration_workspace` and
+   `combined_constraints`, layout indices 1, 2, 3, 5, 7 at world seed 8),
+   against a plan on every one without it, and the Gate 2 golden-layout test
+   raises `NoPathError`. The likely reason, not yet verified by locating
+   where search is cut off: the shelf sits on the door-approach line
+   (`center_y + 0.20`, the compact robot's left pod track) and ends about
+   0.8 m before the wall, inside the length the 1.76 m narrow robot needs to
+   line up with the doorway. So the frozen scenario geometry is only solvable
+   because the planner ignores a physical obstacle the robot then hits. The
+   remedy changes either the confirmatory worlds or the driving model and is
+   an author decision; no pilot or confirmatory data exists, so it can still
+   be made without responding to an outcome. Until then non-neutral layouts
+   cannot exercise the fault matrix.
+2. **`pod_4` final alignment.** The final-alignment branch now calls
+   `docking_command` with `terminal_gain=0.0`. With the target yaw coupled in,
+   a pod that stops just past its target (target within about 36 degrees of
+   directly behind the terminal yaw) has an equilibrium at
+   `bearing = terminal / 2.8`, outside the 0.9 rad linear gate: the pod
+   neither drives nor turns. Both failing trials sat at that equilibrium
+   (predicted yaw -2.171 rad, observed -2.173) for the rest of the 45 s budget.
+   The passing round trips left waypoint 4 about 2 cm further in +y, which
+   keeps the equilibrium inside the gate. Debug check (not evidence, records
+   in `results/debug/fm_smoke`): re-running specs `00-r06` and `00-r00` with
+   items 2--4 applied, `pod_4` completed its relocation, the `manager_commit`
+   fault fired at 96.9 s simulated, and both cases pass the audit including
+   `injection_fired`.
+3. **Executor waits advance on the simulated clock.** The relocation, joint,
+   pose, and docking-stability deadlines and the pod-speed estimate used
+   `time.monotonic()`. Layouts 03 and 07 ran at real-time factor 0.49--0.67,
+   so a 45 s relocation budget was about 25 s of simulated time. Wall time is
+   now only a stall backstop at four times the budget.
+4. **Faults must be shown to have fired.** The executor publishes each
+   injection it performs on `fired_failure_injections`; records carry it as
+   `fired_injections`; the auditor's new `injection_fired` check fails any case
+   whose declared fault did not fire, and reports `cases_not_exercised` per
+   layout. Records predating the field fail this check by construction.
+5. **Re-execution uses the same frozen design, after item 1 is decided.**
+   `config/fault_matrix_campaign.json` (hash `de7a6232...`: layouts 00, 03, 07,
+   two realizations, same seeds) will be re-executed unchanged into a new
+   record directory, `results/qualification/fault_matrix_campaign_r2_raw`. No
+   layout, seed, case, or sample-size choice is made after seeing the first
+   execution. Re-executing before item 1 is resolved would reproduce the
+   layout 03/07 failures by construction.
+
 ## The Gate 0 record sets are not retained
 
 Every record set this document cites as Gate 0 evidence is absent from the

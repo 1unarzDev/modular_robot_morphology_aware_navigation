@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 from math import atan2, hypot, pi
 import time
 
@@ -15,12 +16,18 @@ from rclpy.action import ActionServer
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.executors import SingleThreadedExecutor
 from rclpy.node import Node
+from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
 from rclpy.task import Future
 from std_msgs.msg import String
 from std_srvs.srv import SetBool
 
 from .control import Pose2, VelocityCommand, docking_command, injected_failure, wrap_angle
 from .sensing import DockingEvidence, RelativePoseEstimate, UncertaintyClass, docking_acceptance
+
+
+# A wait fails on wall time only once the simulator has run below a quarter of
+# real time for its whole budget, i.e. has effectively stalled.
+STALL_BACKSTOP_FACTOR = 4.0
 
 
 class ReconfigurationExecutor(Node):
@@ -66,6 +73,13 @@ class ReconfigurationExecutor(Node):
         self.command_pub = self.create_publisher(ConnectorCommand, "connector_command", 10)
         self.state_pub = self.create_publisher(ConnectorState, "connector_state", 20)
         self.transport_pub = self.create_publisher(String, "topology_joint_command", 10)
+        # The executor's own report of each declared fault it actually fired,
+        # for the auditor: a declared fault the mission never reaches must not
+        # score as handled. Nothing in the autonomy stack subscribes to it.
+        self.injection_pub = self.create_publisher(
+            String, "fired_failure_injections",
+            QoSProfile(depth=16, durability=DurabilityPolicy.TRANSIENT_LOCAL,
+                       reliability=ReliabilityPolicy.RELIABLE))
         self.create_subscription(
             String, "topology_joint_state", self._on_joint_state, 20,
             callback_group=self.group,
@@ -111,7 +125,8 @@ class ReconfigurationExecutor(Node):
         quaternion = message.pose.pose.orientation
         yaw = 2.0 * atan2(quaternion.z, quaternion.w)
         pose = Pose2(message.pose.pose.position.x, message.pose.pose.position.y, yaw)
-        received = time.monotonic()
+        # Simulated receipt time, so pod speed is per simulated second.
+        received = self._now()
         previous, previous_time = self.poses.get(message.pod_id), self.pose_times.get(message.pod_id)
         if previous is not None and previous_time is not None and received > previous_time:
             dt = received - previous_time
@@ -148,7 +163,7 @@ class ReconfigurationExecutor(Node):
             goal_handle.abort()
             return result
 
-        started = time.monotonic()
+        started = self._now()
         active_pod = ""
         phase = "begin"
         try:
@@ -254,7 +269,7 @@ class ReconfigurationExecutor(Node):
         result.success = True
         result.message = "transition completed with observed latch topology verified"
         result.resulting_morphology = transition["to"]
-        result.observed_time = time.monotonic() - started
+        result.observed_time = self._now() - started
         result.observed_energy = float(transition["energy"])
         goal_handle.succeed()
         return result
@@ -282,9 +297,15 @@ class ReconfigurationExecutor(Node):
         return bool(response.success)
 
     def _inject(self, stage: str, pod: str = "") -> bool:
-        return injected_failure(
+        fired = injected_failure(
             str(self.get_parameter("failure_injection").value), stage, pod
         )
+        if fired:
+            event = String()
+            event.data = json.dumps(
+                {"stage": stage, "pod": pod, "time_s": self._now()}, sort_keys=True)
+            self.injection_pub.publish(event)
+        return fired
 
     async def _command_joint(
         self, pod: str, operation: int, morphology: str,
@@ -306,8 +327,8 @@ class ReconfigurationExecutor(Node):
         await self._sleep(0.02)
 
     async def _wait_for_joint(self, pod: str, expected: str, since: int) -> bool:
-        deadline = time.monotonic() + float(self.get_parameter("state_timeout").value)
-        while time.monotonic() < deadline:
+        deadline = self._deadline(float(self.get_parameter("state_timeout").value))
+        while self._before(deadline):
             state = self.joint_events.get(pod)
             if state and state[0] == expected and state[1] > since:
                 return True
@@ -315,9 +336,9 @@ class ReconfigurationExecutor(Node):
         return False
 
     async def _wait_for_pose(self, module: str) -> bool:
-        deadline = time.monotonic() + float(self.get_parameter("state_timeout").value)
-        while time.monotonic() < deadline:
-            if module in self.poses and time.monotonic() - self.pose_times[module] < 0.5:
+        deadline = self._deadline(float(self.get_parameter("state_timeout").value))
+        while self._before(deadline):
+            if module in self.poses and self._now() - self.pose_times[module] < 0.5:
                 return True
             await self._sleep(0.02)
         return False
@@ -328,7 +349,7 @@ class ReconfigurationExecutor(Node):
     ) -> bool:
         if not await self._wait_for_pose(pod):
             return False
-        deadline = time.monotonic() + float(self.get_parameter("relocation_timeout").value)
+        deadline = self._deadline(float(self.get_parameter("relocation_timeout").value))
         period = 1.0 / float(self.get_parameter("control_rate").value)
         position_tolerance = (
             float(self.get_parameter("relocation_position_tolerance").value)
@@ -337,7 +358,7 @@ class ReconfigurationExecutor(Node):
             float(self.get_parameter("relocation_yaw_tolerance").value)
             if precise else 0.20)
         final_alignment = False
-        while time.monotonic() < deadline:
+        while self._before(deadline):
             if goal_handle.is_cancel_requested:
                 raise asyncio.CancelledError
             current = self.poses.get(pod)
@@ -357,11 +378,15 @@ class ReconfigurationExecutor(Node):
                     # holds the terminal connector yaw.  Close position with
                     # the normal forward/reverse docking law first, then align
                     # the connector once inside the translation tolerance.
+                    # Terminal-yaw coupling is off here: the yaw is aligned
+                    # separately below, and coupling it into a centimetre
+                    # correction can park the pod outside the linear gate.
                     command, arrived = docking_command(
                         current, target, position_tolerance, pi,
                         min(0.08, float(
                             self.get_parameter("max_pod_linear").value)),
                         float(self.get_parameter("max_pod_angular").value),
+                        terminal_gain=0.0,
                     )
                 elif abs(yaw_error) > yaw_tolerance:
                     minimum = float(
@@ -430,12 +455,12 @@ class ReconfigurationExecutor(Node):
         timeout: float,
     ) -> tuple[bool, tuple[str, ...]]:
         """Require consecutive accepted estimates after a physical transient."""
-        deadline = time.monotonic() + timeout
+        deadline = self._deadline(timeout)
         required = max(1, int(self.get_parameter("docking_stable_samples").value))
         stable = 0
         reasons: tuple[str, ...] = ("missing_observation",)
         previous_timestamp = float("-inf")
-        while time.monotonic() < deadline:
+        while self._before(deadline):
             estimate = self.estimates.get(pod)
             # Planning revisions intentionally remain stable while pose samples
             # change within the same uncertainty/visibility class. Docking
@@ -501,6 +526,20 @@ class ReconfigurationExecutor(Node):
         request.transition_id = transition["id"]
         request.expected_topology_revision = expected_topology_revision
         return await self.mode_client.call_async(request)
+
+    def _now(self) -> float:
+        """Node time; simulated under ``use_sim_time`` like ``_sleep``."""
+        return self.get_clock().now().nanoseconds * 1e-9
+
+    def _deadline(self, budget: float) -> tuple[float, float]:
+        # Waits bound robot motion, so they advance on the simulated clock.
+        # Wall time is only a backstop against a stalled simulator; bounding
+        # them by it made relocation budgets shrink with host load.
+        return (self._now() + budget,
+                time.monotonic() + STALL_BACKSTOP_FACTOR * budget)
+
+    def _before(self, deadline: tuple[float, float]) -> bool:
+        return self._now() < deadline[0] and time.monotonic() < deadline[1]
 
     async def _sleep(self, duration: float) -> None:
         future = Future()

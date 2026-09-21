@@ -36,6 +36,33 @@ def test_docking_has_final_yaw_phase_and_terminal_state():
     assert arrived and command.linear == command.angular == 0.0
 
 
+def _final_alignment_converges(start: Pose2, terminal_gain: float, budget_s: float = 45.0):
+    """Integrate a unicycle pod under the executor's final-alignment call."""
+    from math import cos, sin
+    target, pose, dt = Pose2(0.35, 0.20, 0.0), start, 0.05
+    for _ in range(int(budget_s / dt)):
+        command, _ = docking_command(pose, target, 0.006, pi, 0.08, 0.9,
+                                     terminal_gain=terminal_gain)
+        if ((pose.x - target.x) ** 2 + (pose.y - target.y) ** 2) ** 0.5 <= 0.006:
+            return True
+        pose = Pose2(pose.x + command.linear * cos(pose.yaw) * dt,
+                     pose.y + command.linear * sin(pose.yaw) * dt,
+                     wrap_angle(pose.yaw + command.angular * dt))
+    return False
+
+
+# pod_4's recorded poses before and at the stall in fault-matrix trial 00-r06.
+@pytest.mark.parametrize("start", [Pose2(0.3771, 0.2055, -1.77),
+                                   Pose2(0.3705, 0.1977, -2.1767)])
+def test_final_alignment_has_no_stall_just_past_the_target(start):
+    # With the terminal yaw coupled in, a pod that overshot the target parks
+    # outside the linear gate: no drive, and a turn command near zero.
+    command, _ = docking_command(Pose2(0.3705, 0.1977, -2.1767), Pose2(0.35, 0.20, 0.0),
+                                 0.006, pi, 0.08, 0.9)
+    assert command.linear == 0.0 and abs(command.angular) < 0.05
+    assert _final_alignment_converges(start, terminal_gain=0.0)
+
+
 def test_angle_wrap_is_symmetric_at_pi():
     assert abs(wrap_angle(3 * pi) + pi) < 1e-9
 

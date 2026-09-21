@@ -68,6 +68,10 @@ class TrialRecord:
     # Evaluator stimulus after a failed transition: drive inhibition evidence
     # followed by an explicit topology reconciliation request.
     recovery_probe: dict[str, Any] = field(default_factory=dict)
+    # Declared faults the executor reported injecting on
+    # `fired_failure_injections`, as {stage, pod, time_s}.
+    # Empty in records that predate the field, which therefore cannot show it.
+    fired_injections: list[dict[str, Any]] = field(default_factory=list)
     # Wall-clock phase durations for runner throughput diagnosis only.
     phase_timing: dict[str, Any] = field(default_factory=dict)
     map_revision: int = 0

@@ -27,6 +27,13 @@ INHIBITION_MAX_CORE_TRANSLATION_M = 0.01
 INHIBITION_MAX_CORE_YAW_RAD = 0.02
 
 
+def injection_fired(record: TrialRecord, case: FaultCase) -> bool:
+    """Whether the executor reported injecting this case's declared fault."""
+    stage, _, pod = case.injection.partition(":")
+    return any(event.get("stage") == stage and (not pod or event.get("pod") == pod)
+               for event in record.fired_injections)
+
+
 def evaluate_fault_trial(record: TrialRecord, case: FaultCase) -> dict[str, Any]:
     probe = record.recovery_probe
     reconcile = probe.get("reconcile") or {}
@@ -40,6 +47,9 @@ def evaluate_fault_trial(record: TrialRecord, case: FaultCase) -> dict[str, Any]
     checks = {
         "declared_injection": (
             record.manifest.parameters.get("failure_injection") == case.injection),
+        # Declaring a fault is not exercising it: a mission that never reaches
+        # the injection point, or fails earlier on its own, tests nothing.
+        "injection_fired": injection_fired(record, case),
         "fail_closed_terminal": (not record.completed
                                  and record.terminal_status == "unsafe_topology"),
         "recovery_required": (probe.get("state_before") == "RECOVERY_REQUIRED"
@@ -57,6 +67,7 @@ def evaluate_fault_trial(record: TrialRecord, case: FaultCase) -> dict[str, Any]
         "expected_reconciled_morphology": case.expected_reconciled_morphology,
         "trial_id": record.spec.trial_id, "terminal_status": record.terminal_status,
         "message": record.notes[0] if record.notes else "",
+        "exercised": checks["injection_fired"],
         "passed": all(checks.values()), "checks": checks,
         "failed_checks": sorted(name for name, value in checks.items() if not value),
         "recovery_probe": probe,
@@ -90,6 +101,9 @@ def summarize_fault_matrix(design: StudyDesign, records: list[TrialRecord]) -> d
             "cases_passed": sum(1 for case in cases
                                 if case["layout_id"] == layout and case["passed"]),
             "cases_total": sum(1 for case in cases if case["layout_id"] == layout),
+            "cases_not_exercised": sum(
+                1 for case in cases
+                if case["layout_id"] == layout and case.get("exercised") is False),
         }
         for layout in layouts
     }
