@@ -339,26 +339,29 @@ itself ended early under load, and reachable afterwards. Staleness is now
 measured on the node's ROS clock, and an unset command time is explicitly
 stale rather than arithmetically fresh at simulated time zero.
 
-The fix is confirmed at runtime, and the confirming run is stronger evidence
-than a staged one would have been. `results/debug/simclock_neutral_baseline_raw`
-replays the same frozen design and seed at commit `c68281a` on a loaded host and
-realized a 0.5377 mission real-time factor -- far below the 0.94--0.98 of every
-earlier run, and below the factor that broke the published cell. It completed
-with zero collisions and both gates passing, at travel indistinguishable from
-the unloaded norm:
+The fix is confirmed at runtime, and the confirming runs are stronger evidence
+than staged ones would have been. Two replays of the same frozen design and
+seed at commit `c68281a` landed on different host loads without being asked to.
+`results/debug/simclock_neutral_baseline_raw` realized a 0.5377 mission
+real-time factor -- far below the 0.94--0.98 of every earlier run, and below
+the factor that broke the published cell -- and
+`results/debug/simclock_neutral_repeat_raw` realized 0.8806. Both completed with
+zero collisions and both gates passing, at travel indistinguishable from the
+unloaded norm:
 
-| Gate | forward | reverse | positive yaw | negative yaw |
-|---|---|---|---|---|
-| First | +0.11341 m | -0.11622 m | +0.4603 rad | -0.5355 rad |
-| Second | +0.11721 m | -0.11426 m | +0.2553 rad | -0.2594 rad |
-| Unloaded norm | +0.113 m | -0.1129 m | +0.45/+0.25 rad | -0.52/-0.25 rad |
+| Run | RTF | forward (1st/2nd gate) | reverse (1st/2nd gate) |
+|---|---|---|---|
+| `simclock_neutral_baseline` | 0.5377 | +0.11341 / +0.11721 m | -0.11622 / -0.11426 m |
+| `simclock_neutral_repeat` | 0.8806 | +0.11275 / +0.11288 m | -0.11289 / -0.11287 m |
+| Unloaded norm (3 repros) | 0.97--0.98 | about +0.113 m | about -0.1129 m |
 
-Every stage received at least its commanded window (1.008--1.034 s against
-1.00 s, 1.522--1.536 s against 1.50 s); the overshoot is bounded by the 0.05 s
-polling tick. Under the previous wall-clock window the same mission at this
-real-time factor would have commanded about 0.54 s of motion per forward stage
-and travelled roughly 0.061 m, failing the 0.08 m floor outright. The gate no
-longer varies with host load.
+Commanded travel is therefore invariant across a 0.54--0.98 real-time-factor
+span, where before it was proportional to it. Every stage received at least its
+commanded window (1.000--1.034 s against 1.00 s, 1.500--1.536 s against 1.50 s);
+the overshoot is bounded by the 0.05 s polling tick and is largest at the lowest
+real-time factor, as expected. Under the previous wall-clock window the 0.5377
+mission would have commanded about 0.54 s of motion per forward stage and
+travelled roughly 0.061 m, failing the 0.08 m floor outright.
 
 This was a measurement fault that fails healthy robots, so it inflated failure
 rates identically across all four methods. It did not bias the method contrast,
@@ -418,12 +421,12 @@ Item 1 is a design decision; items 2 and 3 need container runs.
    world seed 1 after the post-transition maneuver invalidated seed 8, but the
    family separates on only 4 of 12 sampled seeds; the roadmap Gate 2 entry
    records the sweep. `docking_observability` is unaffected at 12/12.
-2. Re-run the identical-seed Neutral `geometry_coupled` attempt under a loaded
-   host to confirm the simulated-time window holds travel at the 0.113 m norm
-   regardless of real-time factor. The diagnosis and fix are in; only the
-   runtime confirmation is outstanding. Then record the true gate margin from
-   the Gate 0 record set, which is now measurable because it is no longer
-   contaminated by host load.
+2. Record the true post-transition gate margin from the Gate 0 record set. This
+   is now measurable for the first time, because the gate no longer varies with
+   host load. The diagnosis, the fix, and its two-realization runtime
+   confirmation across a 0.54--0.98 real-time-factor span are complete; the
+   margin itself is still unquantified, and the current floors (0.08 m travel,
+   0.10 rad yaw) have never been justified against a clean record set.
 3. Freeze and execute a multi-layout fault-matrix campaign. The generator,
    runtime injection map, and per-layout auditor are ready and host-tested.
 
@@ -439,7 +442,11 @@ only then freeze and execute the confirmatory schedule.
 
 ## Last verified checkpoint
 
-- Platform commit: `c41a0db` (`Repair fault-matrix rebase onto retry provenance`).
+- Platform commit: `945f044` (`Confirm the simulated-time window at a 0.54
+  real-time factor`), on `main` after the workshop branch was merged into it.
+- Commanded maneuver windows advance on the simulated clock. Two replays at
+  0.5377 and 0.8806 real-time factor both completed with zero collisions and
+  both gates passing at the unloaded travel norm.
 - Two independent engineering campaigns retain 37/40 completed missions; all
   three failures occurred before mission execution.
 - Fault matrix: 7/7 cases passed in one engineering execution; the refactored
@@ -450,7 +457,7 @@ only then freeze and execute the confirmatory schedule.
   the identical seven-case fault matrix passed again with the same
   reconciliation outcomes in 405.8 s of summed trial wall time (519.4 s before
   the change).
-- `python3 -m pytest -q`: 111 passed in 148.61 s.
+- `python3 -m pytest -q`: 146 passed in 148.06 s.
 - `colcon build --symlink-install`: all nine packages passed.
 - `colcon test`: all five packages containing smoke tests passed; the remaining
   four contain no package-level tests.
