@@ -451,8 +451,17 @@ fault seeds or a case missing from any layout. Freeze one with:
 python3 -m modular_robot_benchmarks.engineering_qualification freeze-fault-matrix   --output config/fault_matrix_campaign.json --family reconfiguration_workspace   --layout-index 0 --layout-index 3 --layout-index 7   --method sensing_feasibility_coupled --realizations 2
 ```
 
-This is design and audit machinery only. No cross-layout campaign has been
-executed; the matrix still has one passing layout.
+The campaign is now frozen at `config/fault_matrix_campaign.json` with design
+hash `de7a62328ff425bc42097cd8db5bf5ffb509c7695f398828e3c1a72ad9d9d489`: 42
+trials, seven fault cases across layouts `reconfiguration_workspace-00`, `-03`,
+and `-07` at two independent `fault_seed` realizations each, under
+`sensing_feasibility_coupled`. Freezing it is a design decision and is recorded
+here before execution so the layouts and seeds cannot be chosen after seeing
+outcomes.
+
+It has not been executed. The previously reported one-layout pass is
+notes-only, since those records are gone, so this campaign establishes the
+fault matrix from scratch rather than extending an existing result.
 
 ## The Gate 0 record sets are not retained
 
