@@ -22,10 +22,16 @@ claims out of the paper; the literature review defines the prior-art boundary.
 
 Required artifact: machine-readable qualification summary with signed yaw,
 straight/reverse travel, cross-coupling, docking errors, observed topology, and
-failure-matrix results. Current state: **all-pod rigidity passes; two 20-run
-round-trip campaigns retain 37/40 completed missions with every failure before
-mission execution; the seven-case fault matrix passes once on one engineering
-layout**.
+failure-matrix results. Current state: **not satisfied, and being
+re-collected**. The records behind every previous Gate 0 claim are gone --
+`results/` is gitignored and no archive exists -- so the required artifact
+cannot be produced from them and none of their figures can be audited. They
+would have needed re-collection regardless: every signed-motion measurement in
+them was taken through a command window bounded by the wall clock while the
+robot moves in simulated time, so their travel figures scale with host load
+rather than with mechanics. That is fixed, and a clean campaign against the
+same frozen design is the current work. See `docs/current_status.md` for the
+retention finding and the storage decision it forces.
 
 Detached and compact native-feedback gates pass. Low-friction pod casters and an
 explicit secondary wheel-friction coefficient produce two repeated engineering
@@ -47,9 +53,14 @@ samples per pod in each motion window. The 20-run design is frozen at hash
 The first independent campaign produced 19 completed missions and one startup
 infrastructure failure caused by a missed controller lifecycle observation, so
 Gate 0 did not pass. Fresh local-costmap output now supplies an additional
-active-controller acknowledgement, and the exact failed seed passes on replay.
-Run a new clean campaign rather than substituting that replay into the failed
-record set.
+active-controller acknowledgement, and the exact failed seed passed on replay.
+Both that campaign and its retry are described here from notes only; their
+records are not retained and cannot be re-audited. The replacement campaign
+must stand on its own rather than be compared against them.
+
+The audit now reports `motion_margins` and `real_time_factors` beside its
+verdict, so the replacement campaign yields the signed-motion margin Gate 0
+owes and shows the load spread it was measured across.
 
 The declared fault matrix injects detach, stale observation, cancellation,
 relocation, latch, partial-topology, and manager-commit failures into the first
