@@ -375,7 +375,12 @@ unloaded norm:
 | Unloaded norm (3 repros) | 0.97--0.98 | about +0.113 m | about -0.1129 m |
 
 Commanded travel is therefore invariant across a 0.54--0.98 real-time-factor
-span, where before it was proportional to it. Every stage received at least its
+span, where before it was proportional to it. That also closes the diagnosis
+quantitatively. With a 0.113 m travel norm and a 0.08 m floor, the old
+wall-clock window had to breach the floor whenever the stage-local real-time
+factor fell below 0.08/0.113 = 0.708. The failing run's three truncated stages
+came in at 67--72% of norm, straddling that ratio exactly, and its first stage
+-- which ran before the slowdown -- was unaffected. Every stage received at least its
 commanded window (1.000--1.034 s against 1.00 s, 1.500--1.536 s against 1.50 s);
 the overshoot is bounded by the 0.05 s polling tick and is largest at the lowest
 real-time factor, as expected. Under the previous wall-clock window the 0.5377
