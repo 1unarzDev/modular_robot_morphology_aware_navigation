@@ -526,7 +526,11 @@ Recorded here before any re-execution data exists.
    remedy changes either the confirmatory worlds or the driving model and is
    an author decision; no pilot or confirmatory data exists, so it can still
    be made without responding to an outcome. Until then non-neutral layouts
-   cannot exercise the fault matrix.
+   cannot exercise the fault matrix. A remedy is drafted as ADR 0004
+   (`docs/adr/0004-raised-obstacles-constrain-driving.md`, status proposed;
+   code on branch `proposal/adr-0004-driving-obstacles`, not `main`). It makes
+   all 18 shelf layouts solvable and keeps the geometry contrast, but as
+   drafted it loses the `combined_constraints` sensing contrast (0/18).
 2. **`pod_4` final alignment.** The final-alignment branch now calls
    `docking_command` with `terminal_gain=0.0`. With the target yaw coupled in,
    a pod that stops just past its target (target within about 36 degrees of
