@@ -339,12 +339,48 @@ itself ended early under load, and reachable afterwards. Staleness is now
 measured on the node's ROS clock, and an unset command time is explicitly
 stale rather than arithmetically fresh at simulated time zero.
 
+The fix is confirmed at runtime, and the confirming run is stronger evidence
+than a staged one would have been. `results/debug/simclock_neutral_baseline_raw`
+replays the same frozen design and seed at commit `c68281a` on a loaded host and
+realized a 0.5377 mission real-time factor -- far below the 0.94--0.98 of every
+earlier run, and below the factor that broke the published cell. It completed
+with zero collisions and both gates passing, at travel indistinguishable from
+the unloaded norm:
+
+| Gate | forward | reverse | positive yaw | negative yaw |
+|---|---|---|---|---|
+| First | +0.11341 m | -0.11622 m | +0.4603 rad | -0.5355 rad |
+| Second | +0.11721 m | -0.11426 m | +0.2553 rad | -0.2594 rad |
+| Unloaded norm | +0.113 m | -0.1129 m | +0.45/+0.25 rad | -0.52/-0.25 rad |
+
+Every stage received at least its commanded window (1.008--1.034 s against
+1.00 s, 1.522--1.536 s against 1.50 s); the overshoot is bounded by the 0.05 s
+polling tick. Under the previous wall-clock window the same mission at this
+real-time factor would have commanded about 0.54 s of motion per forward stage
+and travelled roughly 0.061 m, failing the 0.08 m floor outright. The gate no
+longer varies with host load.
+
 This was a measurement fault that fails healthy robots, so it inflated failure
 rates identically across all four methods. It did not bias the method contrast,
 but it did cost one of the nine workshop cells. The re-run evidence stands; the
 published Neutral `geometry_coupled` `motion_qualification_failure` should be
 read as an instrumentation artifact, not a platform reliability figure. The
 "roughly one failure in four attempts" reliability estimate is withdrawn.
+
+**The accepted workshop abstract states the withdrawn claim and needs an
+author decision.** `paper/iros2026_codesign/main.tex` has a paragraph titled
+"A platform failure that is not a planner difference" asserting that the gate
+"is intermittently marginal, roughly one failure in four attempts, which is a
+platform reliability limit", and a limitation sentence reading "Execution is
+also not reproducible run to run, as the Neutral failure shows". Both are now
+known to be false: the cause was a wall-clock command window in the evaluation
+harness, it is deterministic in the real-time factor, and it is fixed. The
+corrected reading is that the mission completes and the nine-cell count is 7/9
+rather than 6/9. Do not edit the abstract silently. Whether and how to correct
+it depends on camera-ready status, and the honest options -- restate the
+paragraph as a measurement fault found and fixed, or withdraw the reliability
+claim and keep the cell as recorded -- are both defensible. The re-run records
+themselves are unaffected, since no method contrast depended on that cell.
 
 Mission completion across the nine cells went from 5/9 to 6/9 and evaluator
 collisions from 11 to 8.
