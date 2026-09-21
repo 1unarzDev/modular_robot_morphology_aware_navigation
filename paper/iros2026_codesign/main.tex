@@ -1,0 +1,80 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+\usepackage{cite}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+
+\begin{document}
+
+\title{Task-Time Morphology--Motion Co-Design\\under Reconfiguration Feasibility}
+
+\author{\IEEEauthorblockN{Rishan Checker}
+\IEEEauthorblockA{Independent Researcher\\
+rishanchecker@gmail.com\\
+\vspace{2pt}
+Extended abstract, IROS 2026 Workshop on Learning-based Robot Co-design}}
+
+\maketitle
+
+\begin{abstract}
+Self-reconfigurable robots can change embodiment during a task, which creates a design decision that fixed-morphology robots never face: \emph{where can the robot physically transform?} We formulate task-time co-design over route, morphology sequence, and reconfiguration site, and ask whether modeling the physical feasibility of the transformation itself changes which design is selected. On a simulated six-pod self-mobile robot with two qualified morphologies, we compare route-first adaptation, geometry-coupled search, and feasibility-coupled search in diagnostic environments. In nine end-to-end missions, geometry-coupled search chose sites where both morphologies fit but a relocating pod collided with an obstruction, and both of its transformations there failed safely. Feasibility must cover every motion the site must host, not only the transformation: a site can admit the relocation and still be unable to host the assembled motion that verifies the new morphology there. With that motion included, every transformation at an accepted site executed without contact and its mission completed, and all planners agreed in the unobstructed control. Preliminary as they are, the results indicate that where a robot can physically change embodiment should be part of the co-design decision.
+\end{abstract}
+
+\section{Motivation and Positioning}
+Robot co-design has largely optimized a body \emph{before} deployment, from joint evolution of morphology and control~\cite{sims1994} to grammar-based and learned design search~\cite{zhao2020robogrammar,strgar2024evolution}. Self-reconfigurable modular robots instead choose embodiment \emph{during} a task. Prior work already selects configurations to satisfy task and environment requirements~\cite{jing2016smores,daudelin2018smores}, plans paths across a discrete set of morphologies~\cite{le2018htetro}, and plans module motions or connectivity changes from one configuration to another~\cite{yoshida2002,liu2019smores}. Joint morphology--navigation planning is therefore not our claim. Task-level planners commonly treat a transformation as a switch between two admissible configurations, while reconfiguration planners take the target and its location as given. The coupling between the two---two configurations can each be collision-free at a location while the module motions that connect them are not---falls between these layers.
+
+We study this coupling as \emph{task-time iterative co-design}: embodiment is an optimization variable coupled to how and where the robot moves, over
+\(\text{route} \times \text{morphology} \times \text{reconfiguration site} \times \text{transition feasibility}\).
+Learned morphology search~\cite{zhao2020robogrammar,strgar2024evolution} is complementary: it expands the design space, whereas we ask whether and where an available embodiment change can physically occur within a mission.
+
+\section{Platform and Planners}
+The robot is a sensing core with six independently mobile differential-drive pods in Gazebo/ROS~2 (Fig.~\ref{fig:overview}a). Two morphologies are qualified end to end: \texttt{compact\_diff} and a longer, narrower \texttt{narrow\_tandem} for constrained passages. Reconfiguration is executed, not teleported: pods detach, drive along declared relocation paths, align using connector observations, and latch; execution tracks observed topology and inhibits assembled motion until a valid commit. The planner searches over \((x, y, \theta, m)\). Traversal edges use morphology-specific footprints and costs; transition edges carry a pre-action failure probability.
+
+Three planners share the same mechanics, controllers, map, and disturbance realization:
+\textbf{Route-first} fixes a spatial route and then inserts morphology changes along it.
+\textbf{Geometry-coupled} searches route and morphology jointly, admitting a transition when a planar clearance disk and the target footprint are free.
+\textbf{Feasibility-coupled} additionally samples 3D collision boxes against the environment, stationary core, and support and latch conditions, and rejects the edge with a structured reason. It covers both motions the site must host: every relocating module along its sequential trajectory, and the assembled body through the declared post-transition verification maneuver that the executor performs in the target morphology before releasing drive.
+Thus route-first\,\(\rightarrow\)\,geometry-coupled isolates coupling route and embodiment, and geometry-coupled\,\(\rightarrow\)\,feasibility-coupled isolates physical transition feasibility.
+
+\section{Diagnostic Study}
+One passage environment is generated by shared code in three variants. The doorway admits only \texttt{narrow\_tandem}. \emph{Blocked-A} places a low post beside the attractive staging site so that before/after footprints remain admissible but the outward relocation of one pod intersects it; \emph{Blocked-B} mirrors the post to intercept a different pod; \emph{Neutral} removes it. The post lies below the lidar plane and outside the assembled robot's corridor, so it constrains only the transformation. The recorded edge decisions confirm the intended manipulation (Fig.~\ref{fig:overview}b,c): in both blocked variants geometry-coupled search staged at \(x=2.15\)\,m with no environment rejections, while feasibility-coupled search rejected 1050 (A) and 2533 (B) edge evaluations and staged at \(x=1.55\)\,m and \(x=1.85\)\,m respectively; in Neutral all three planners staged at \(x=2.15\)\,m with no environment rejections. We then ran nine full missions (3 variants \(\times\) 3 planners) under one shared disturbance realization (ground friction and initial pose offset) through the complete Gazebo, Nav2, localization, reconfiguration, and evaluator stack, with immutable per-trial records and provenance. Evaluator-only Gazebo poses supply clearance and contact; no planner or controller consumes them.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figure_overview.pdf}
+\caption{(a) Gazebo renders from a re-run of the geometry-coupled Blocked-A mission (visualization only): the compact robot stops at the chosen site beside the red post, and 29\,s later the front pods have relocated outward while pod~4 is jammed against the post. (b), (c) Blocked-A. Routes and sites are taken from the executed missions' terminal records; scenario geometry and module sweeps are recomputed from the planner catalog, with no simulator ground truth (solid: \texttt{compact\_diff}; dashed: target \texttt{narrow\_tandem}). A low post (orange) lies outside the assembled robot's corridor, so it constrains only what happens at the site. (b) At the site geometry-coupled search prefers, pod~4's outward \texttt{compact\_to\_narrow} relocation sweep (red) intersects the post. (c) Feasibility-coupled search also refuses \(x=1.85\)\,m, where the relocation is clear but the assembled post-transition yaw sweeps pod~0 into the post (red), and stages at \(x=1.55\)\,m instead. Route-first adaptation applies the same checks along its fixed route and chooses the same site.}
+\label{fig:overview}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figure_evidence.pdf}
+\caption{Preliminary end-to-end evidence: one mission per environment and planner (\(n=1\) per marker; not rates). Marker position is the executed \texttt{compact\_to\_narrow} site; fill indicates the executor committed the transformation, \(\times\) that it failed. Hatched band: site intercepted by the post. Text gives mission outcome. Contact is the evaluator-only collision count, attributed to a phase by execution outcome; the Neutral geometry-coupled failure recorded no contact.}
+\label{fig:evidence}
+\end{figure}
+
+\section{Preliminary Results}
+\textbf{The feasibility term changed the design and predicted the physical outcome.} In Blocked-A, geometry-coupled planning staged where both assembled morphologies fit (Fig.~\ref{fig:overview}b) and assigned the transition a 0.955 predicted success. During execution pod~4 struck the post, the transformation did not complete, and the robot entered \texttt{RECOVERY\_REQUIRED} with assembled drive inhibited. Feasibility-coupled planning rejected that edge and transformed 0.6\,m earlier, at \(x=1.55\)\,m; the executor committed \texttt{narrow\_tandem} and the mission completed in 164\,s with 2.6\,cm minimum clearance and no recorded collision. Route-first adaptation, which applies the same checks along its fixed route, chose the same site and completed in 118\,s. Blocked-B repeated the pattern with the other pod: geometry-coupled staging again failed (pod~5, \texttt{RECOVERY\_REQUIRED}), whereas feasibility-coupled planning transformed at \(x=1.85\)\,m and completed in 165\,s with 3.8\,cm clearance; route-first adaptation also completed (116\,s). In Neutral all three planners staged at \(x=2.15\)\,m and logged no environment rejections, so the feasibility term created no artificial difference (Fig.~\ref{fig:evidence}). Across the nine missions, every \texttt{compact\_to\_narrow} transformation at a site the feasibility model accepts executed without a recorded collision, while both geometry-accepted transformations at obstructed sites failed. The added reasoning is not free: the coupled planners took 23--53\,s per mission versus about 1\,s for route-first adaptation, which searches fewer joint states.
+
+\textbf{Why the site moved: the motion after the commit.} An earlier version of the model checked only module relocation. Under it both trajectory-checking planners staged at \(x=1.85\)\,m, where the relocation is clear, and both missions then failed: 0.4\,s into the automatic post-transition motion check, an in-place yaw of the 1.6\,m-long \texttt{narrow\_tandem} body swung pod~0 into the post and the check inhibited drive. Sweeping that declared maneuver as well rejects \(x=1.85\)\,m, attributing the rejection to pod~0, and moves both planners to \(x=1.55\)\,m, where both missions now complete. A reconfiguration site must admit every motion performed there, not only the transformation.
+
+\textbf{A platform failure that is not a planner difference.} In Neutral, the geometry-coupled mission failed its post-transition motion check while recording no collision and 18.3\,cm minimum clearance: its reverse stage travelled 0.0788\,m against a 0.08\,m floor, missing by 1.2\,mm, where the other missions reached about 0.113\,m. Neutral contains no transition obstacle and geometry-coupled never evaluates the feasibility sweep, so its planned site is identical to the other planners'. Three identical-seed repeats of that mission all completed. The gate is intermittently marginal, roughly one failure in four attempts, which is a platform reliability limit rather than a property of any planner, and which any larger study must characterise before comparing methods.
+
+\section{Discussion and Limitations}
+Preliminary evidence suggests that morphology selection and morphology transition cannot always be separated: a site can accommodate both the pre- and post-transition robot and still be unable to host the transformation, so the site and physical executability of embodiment change should be first-class variables in task-time co-design. The same logic extends beyond relocation to every motion performed at the site. These are diagnostic cases, not a statistical comparison: two discrete morphologies, simulation only, targeted environments, one disturbance realization per case, idealized connectors and latches, and static 3D obstacles supplied to the planner as a known prior map. The maneuver sweep is the commanded nominal motion; recorded yaw stages overshoot it by up to 41\%, which the model does not yet bound. Execution is also not reproducible run to run, as the Neutral failure shows. Next steps are uncertain sensing of transition sites, learned transition-outcome models trained from executed transformations, larger morphology spaces, and hardware. Coupling generative morphology proposals with explicit transition feasibility may let robots decide not only \emph{what} to become, but \emph{when and where} they can become it.
+
+\begin{thebibliography}{9}
+\bibitem{sims1994} K. Sims, ``Evolving virtual creatures,'' in \emph{Proc. SIGGRAPH}, 1994, pp. 15--22.
+\bibitem{zhao2020robogrammar} A. Zhao \emph{et al.}, ``RoboGrammar: Graph grammar for terrain-optimized robot design,'' \emph{ACM Trans. Graph.}, vol. 39, no. 6, 2020.
+\bibitem{strgar2024evolution} L. Strgar, D. Matthews, T. Hummer, and S. Kriegman, ``Evolution and learning in differentiable robots,'' in \emph{Proc. RSS}, 2024.
+\bibitem{jing2016smores} G. Jing, T. Tosun, M. Yim, and H. Lipson, ``An end-to-end system for accomplishing tasks with modular robots,'' in \emph{Proc. RSS}, 2016.
+\bibitem{daudelin2018smores} J. Daudelin \emph{et al.}, ``An integrated system for perception-driven autonomy with modular robots,'' \emph{Science Robotics}, vol. 3, no. 23, 2018.
+\bibitem{le2018htetro} A. V. Le \emph{et al.}, ``Modified A-star algorithm for efficient coverage path planning in Tetris inspired self-reconfigurable robot with integrated laser sensor,'' \emph{Sensors}, vol. 18, no. 8, 2018.
+\bibitem{yoshida2002} E. Yoshida \emph{et al.}, ``A self-reconfigurable modular robot: Reconfiguration planning and experiments,'' \emph{Int. J. Robot. Res.}, vol. 21, no. 10--11, 2002.
+\bibitem{liu2019smores} C. Liu, M. Whitzer, and M. Yim, ``A distributed reconfiguration planning algorithm for modular robots,'' \emph{IEEE Robot. Autom. Lett.}, vol. 4, no. 4, 2019.
+\end{thebibliography}
+
+\end{document}

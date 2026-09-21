@@ -22,6 +22,7 @@ from .grid import OccupancyGrid
 from .methods import make_method_planner
 from .planner import HybridState, NoPathError
 from .transition_policy import PodSensingState
+from .transition_validation import load_environment_boxes
 
 
 class PlannerServer(Node):
@@ -37,6 +38,11 @@ class PlannerServer(Node):
         self.declare_parameter("cost_model", "")
         self.declare_parameter("experiment_supported_only", True)
         self.declare_parameter("planner_method", "sensing_feasibility_coupled")
+        # Static 3D obstacles supplied with the map as a known prior; empty
+        # means the occupancy map is the only environment model.
+        self.declare_parameter("transition_environment", "")
+        self._environment = load_environment_boxes(
+            str(self.get_parameter("transition_environment").value))
         catalog = load_catalog(self.get_parameter("catalog").value)
         self._catalog = (
             catalog.supported_experiment_subset()
@@ -132,6 +138,7 @@ class PlannerServer(Node):
             planner = make_method_planner(
                 method, self._catalog, planning_grid,
                 heading_bins=self.get_parameter("heading_bins").value,
+                environment=self._environment,
                 sensing=self._sensing,
                 cost_model=self._cost_model(),
                 topology_revision=self._topology_revision,

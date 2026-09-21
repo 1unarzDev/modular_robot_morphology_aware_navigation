@@ -68,6 +68,9 @@ The next conference-evidence phases are ordered as follows:
 2. Repeat the declared fault matrix across layouts and `fault_seed` realizations,
    retaining the requirement that actual topology controls recovery and assembled
    drive remains inhibited until a valid `READY` commit.
+   `generate_fault_matrix_campaign` and the per-layout auditor now exist and
+   preserve the single-layout design hash that already passed; freezing and
+   executing a multi-layout campaign is the remaining work.
 3. Apply `sensing_seed` to sensor noise/dropout/occlusion and `fault_seed` to
    declared executor faults. Add location-dependent perceived 3D transition
    volumes and connector visibility without exposing evaluator truth to autonomy.
@@ -103,6 +106,30 @@ Required artifact: deterministic report for all four methods showing selected
 route/morphology/site, cost terms, and structured rejection reasons. Each
 ablation must differ only in its declared information and agree in neutral
 controls.
+
+Recorded design decision, 2026-09-19. Sweeping the post-transition
+verification maneuver (ADR 0003) invalidated the `combined_constraints` golden
+layout at world seed 8: under the corrected model `feasibility_coupled` and
+`sensing_feasibility_coupled` both choose (18, 14), because the site
+feasibility now prefers is one where the sensing constraint does not bind.
+
+A sweep of world seeds 1--12 at layout index 1 measured how robust each family
+is to the model change:
+
+| Family | Seeds separating before | After |
+|---|---|---|
+| `docking_observability` | 12/12 | 12/12, identical sites |
+| `combined_constraints` | 8/12 | 4/12 (seeds 1, 3, 9, 11) |
+
+`docking_observability` is unaffected. `combined_constraints` was already the
+fragile family and the added term narrowed it further. The golden fixture moved
+to world seed 1, which separates under both the old and the corrected model and
+by the widest margin, so it is not tuned to either. No pilot or confirmatory
+data exists (0/432), so this re-selection cannot be a response to an outcome.
+
+Remaining risk: `combined_constraints` separates on only a third of sampled
+seeds. Confirm the family still manipulates as intended across the layouts the
+frozen design actually draws before relying on it for the sensing contrast.
 
 ## Gate 3: unattended disjoint pilot
 

@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 from random import Random
-from typing import Iterable
+from typing import Iterable, Sequence
 
 
 METHODS = (
@@ -21,6 +21,10 @@ CONFIRMATORY_FAMILIES = (
 )
 SENSING_FAMILIES = frozenset({"docking_observability", "combined_constraints"})
 FAULT_MATRIX_DESIGN_KIND = "engineering_fault_matrix"
+# Workshop diagnostic study: one passage environment in three variants.
+WORKSHOP_DESIGN_KIND = "workshop_diagnostic"
+WORKSHOP_VARIANTS = ("workshop_blocked_a", "workshop_blocked_b", "workshop_neutral")
+WORKSHOP_METHODS = ("route_first_adaptation", "geometry_coupled", "feasibility_coupled")
 
 
 @dataclass(frozen=True)
@@ -118,7 +122,7 @@ class StudyDesign:
         design = cls(**value)
         if envelope.get("design_hash") != design.design_hash:
             raise ValueError("frozen design hash does not match its contents")
-        if design.design_kind.startswith("engineering_"):
+        if design.design_kind.startswith(("engineering_", "workshop_")):
             # Engineering qualification exercises one execution path; it is
             # never a method comparison.
             if not design.methods or not set(design.methods) <= set(METHODS):
@@ -161,29 +165,101 @@ def generate_design(
                        METHODS, families, tuple(trials))
 
 
+def generate_workshop_design(
+    replicates: int = 2,
+    world_seed_key: int = 0,
+    master_seed: int = 20260914,
+) -> StudyDesign:
+    """Variants x methods x paired disturbance seeds on one base environment.
+
+    Every trial shares the world seed; each replicate's plant seeds are shared
+    across variants and methods, so comparisons are paired.
+    """
+    world_seed = _seed(master_seed, WORKSHOP_DESIGN_KIND, world_seed_key, "world")
+    trials = []
+    for replicate in range(replicates):
+        sensing_seed = _seed(master_seed, WORKSHOP_DESIGN_KIND, replicate, "sensing")
+        friction_seed = _seed(master_seed, WORKSHOP_DESIGN_KIND, replicate, "friction")
+        fault_seed = _seed(master_seed, WORKSHOP_DESIGN_KIND, replicate, "fault")
+        for variant in WORKSHOP_VARIANTS:
+            order = list(WORKSHOP_METHODS)
+            Random(_seed(master_seed, variant, replicate, "order")).shuffle(order)
+            for order_index, method in enumerate(order):
+                trials.append(TrialSpec(
+                    trial_id=f"{variant}-00-r{replicate}-{method}", family=variant,
+                    layout_id=f"{variant}-00", replicate=replicate, method=method,
+                    method_order=order_index, world_seed=world_seed,
+                    sensing_seed=sensing_seed, friction_seed=friction_seed,
+                    fault_seed=fault_seed,
+                ))
+    return StudyDesign(1, WORKSHOP_DESIGN_KIND, 1, replicates, master_seed,
+                       WORKSHOP_METHODS, WORKSHOP_VARIANTS, tuple(trials))
+
+
+def fault_case_for_run(run: int) -> FaultCase:
+    """Map a fault-matrix run index onto its declared case.
+
+    Runs cycle through `FAULT_MATRIX` so that realization ``k`` of case ``c``
+    is run ``k * len(FAULT_MATRIX) + c``. With one realization this is the
+    identity, which keeps single-cell designs unchanged.
+    """
+    return FAULT_MATRIX[run % len(FAULT_MATRIX)]
+
+
+def generate_fault_matrix_campaign(
+    family: str,
+    layout_indices: Sequence[int],
+    method: str,
+    realizations: int = 1,
+    master_seed: int = 20260912,
+) -> StudyDesign:
+    """Repeat the declared fault matrix across layouts and fault realizations.
+
+    Each (layout, realization, case) cell is one single-method run with its own
+    plant and fault seeds. Roadmap Gate 0 step 2 requires the matrix to hold
+    across layouts, not only on the single engineering layout it first passed.
+    """
+    design_kind = FAULT_MATRIX_DESIGN_KIND
+    if family not in CONFIRMATORY_FAMILIES:
+        raise ValueError(f"unknown confirmatory family: {family}")
+    if method not in METHODS:
+        raise ValueError(f"unknown method: {method}")
+    layout_indices = tuple(layout_indices)
+    if not layout_indices:
+        raise ValueError("a fault-matrix campaign needs at least one layout")
+    if len(set(layout_indices)) != len(layout_indices):
+        raise ValueError("layout indices must be distinct")
+    if any(not 0 <= index < 12 for index in layout_indices):
+        raise ValueError("layout index must be in [0, 12)")
+    if realizations < 1:
+        raise ValueError("a fault-matrix campaign needs at least one realization")
+    runs = len(FAULT_MATRIX) * realizations
+    trials: list[TrialSpec] = []
+    for layout_index in layout_indices:
+        layout_id = f"{family}-{layout_index:02d}"
+        world_seed = _seed(master_seed, design_kind, family, layout_index, "world")
+        trials.extend(TrialSpec(
+            trial_id=f"{design_kind}-{layout_id}-r{run:02d}", family=family,
+            layout_id=layout_id, replicate=run, method=method, method_order=0,
+            world_seed=world_seed,
+            sensing_seed=_seed(master_seed, design_kind, family, layout_index, run, "sensing"),
+            friction_seed=_seed(master_seed, design_kind, family, layout_index, run, "friction"),
+            fault_seed=_seed(master_seed, design_kind, family, layout_index, run, "fault"),
+        ) for run in range(runs))
+    return StudyDesign(1, design_kind, len(layout_indices), runs, master_seed,
+                       (method,), (family,), tuple(trials))
+
+
 def generate_fault_matrix_design(
     family: str,
     layout_index: int,
     method: str,
     master_seed: int = 20260912,
 ) -> StudyDesign:
-    """One single-method run per declared fault, with independent plant seeds."""
-    design_kind = FAULT_MATRIX_DESIGN_KIND
-    runs = len(FAULT_MATRIX)
-    if family not in CONFIRMATORY_FAMILIES:
-        raise ValueError(f"unknown confirmatory family: {family}")
-    if method not in METHODS:
-        raise ValueError(f"unknown method: {method}")
-    if not 0 <= layout_index < 12:
-        raise ValueError("layout index must be in [0, 12)")
-    layout_id = f"{family}-{layout_index:02d}"
-    world_seed = _seed(master_seed, design_kind, family, layout_index, "world")
-    trials = tuple(TrialSpec(
-        trial_id=f"{design_kind}-{layout_id}-r{run:02d}", family=family,
-        layout_id=layout_id, replicate=run, method=method, method_order=0,
-        world_seed=world_seed,
-        sensing_seed=_seed(master_seed, design_kind, family, layout_index, run, "sensing"),
-        friction_seed=_seed(master_seed, design_kind, family, layout_index, run, "friction"),
-        fault_seed=_seed(master_seed, design_kind, family, layout_index, run, "fault"),
-    ) for run in range(runs))
-    return StudyDesign(1, design_kind, 1, runs, master_seed, (method,), (family,), trials)
+    """One single-method run per declared fault, with independent plant seeds.
+
+    This is the single-layout, single-realization campaign; its design hash is
+    unchanged by the cross-layout generalization.
+    """
+    return generate_fault_matrix_campaign(
+        family, (layout_index,), method, 1, master_seed)

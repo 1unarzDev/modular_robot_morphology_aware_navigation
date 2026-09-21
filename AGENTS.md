@@ -43,9 +43,20 @@ before changing the platform or collecting data.
 
 ## Current resumption point
 
-The effort actuator and wheel suspension pass detached and compact engineering
-qualification. A compact-to-narrow transition reaches `READY`, but the
-post-transition yaw gate still fails. Native Gazebo `JointVelocity` feedback is
-implemented and compiled but has not been runtime-qualified. Resume with the
-three sequential commands described in `docs/current_status.md`; do not proceed
-to reverse transitions or pilot collection unless all three pass.
+Gate 0 mechanics pass on the engineering layout: round trips complete with
+signed-motion and all-pod rigidity gates, and the seven-case fault matrix
+passes once. Transition feasibility now also sweeps the post-transition
+verification maneuver (ADR 0003), which closed the failure the workshop
+diagnostic exposed; the nine workshop missions were re-run end to end and both
+previously failing Blocked-A missions now complete.
+
+The post-transition motion gate is intermittently marginal: one of four
+identical-seed attempts failed the reverse-travel floor by 1.2 mm without
+contact. Diagnose that before pilot collection, because it inflates failure
+rates independently of method.
+
+That change invalidated the `combined_constraints` Gate 2 golden layout, which
+was re-selected to world seed 1 against a recorded seed sweep in the roadmap.
+That family separates on only a third of sampled seeds and needs confirming
+across the frozen design's layouts. See `docs/current_status.md` "Resume here"
+for the three open items.

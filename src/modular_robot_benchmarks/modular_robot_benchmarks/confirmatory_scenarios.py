@@ -8,7 +8,22 @@ from morphology_planner.catalog import Transition
 from morphology_planner.grid import OCCUPIED, OccupancyGrid
 from morphology_planner.transition_validation import Box3
 
-from .design import CONFIRMATORY_FAMILIES
+from .design import CONFIRMATORY_FAMILIES, WORKSHOP_VARIANTS
+
+# Workshop transition post (staging-site frame, robot facing the door). The
+# compact_to_narrow relocation sweeps pod_4 to |y| <= 0.423 m near x = +0.30 m
+# and pod_5 symmetrically near x = -0.30 m, while the assembled robot never
+# exceeds |y| = 0.2875 m. A post centered at |y| = 0.41 m therefore intersects
+# one pod's relocation path but stays ~6 cm clear of the driving robot. It sits
+# below the lidar plane and is absent from the occupancy map.
+WORKSHOP_POST_SIZE = (0.12, 0.12, 0.12)
+WORKSHOP_POST_OFFSETS = {
+    "workshop_blocked_a": (0.30, 0.41),
+    "workshop_blocked_b": (-0.30, -0.41),
+}
+# Geometry-coupled staging requires the 1.0 m transition clearance disk to
+# clear the wall, so the attractive site is 1.0 m before the wall centerline.
+WORKSHOP_SITE_SETBACK_M = 1.0
 
 # Compact collision footprint half-length including wheel envelopes (catalog).
 COMPACT_HALF_LENGTH_M = 0.40
@@ -80,6 +95,8 @@ def make_confirmatory_scenario(
     world_seed: int,
     resolution: float = 0.1,
 ) -> ConfirmatoryScenario:
+    if family in WORKSHOP_VARIANTS:
+        return make_workshop_scenario(family, world_seed, resolution)
     if family not in CONFIRMATORY_FAMILIES:
         raise ValueError(f"unknown confirmatory family: {family}")
     if not 0 <= layout_index < 12:
@@ -153,6 +170,32 @@ def make_confirmatory_scenario(
     return ConfirmatoryScenario(
         family, layout_index, world_seed, neutral, grid, start, goal,
         obstacles, regions, parameters,
+    )
+
+
+def make_workshop_scenario(
+    variant: str, world_seed: int, resolution: float = 0.1,
+) -> ConfirmatoryScenario:
+    """One passage environment; variants differ only in the transition post."""
+    if variant not in WORKSHOP_VARIANTS:
+        raise ValueError(f"unknown workshop variant: {variant}")
+    # Layout 0 is a neutral control: walls and doorway only.
+    base = make_confirmatory_scenario("reconfiguration_workspace", 0, world_seed, resolution)
+    site_x = (base.parameters["wall_x_cell"] + 0.5) * resolution - WORKSHOP_SITE_SETBACK_M
+    site_y = (base.parameters["door_center_cell"] + 0.5) * resolution
+    obstacles: tuple[Box3, ...] = ()
+    if variant in WORKSHOP_POST_OFFSETS:
+        dx, dy = WORKSHOP_POST_OFFSETS[variant]
+        obstacles = (Box3(
+            "transition_post",
+            (site_x + dx, site_y + dy, WORKSHOP_POST_SIZE[2] / 2.0),
+            WORKSHOP_POST_SIZE,
+        ),)
+    parameters = {**base.parameters, "workshop_variant": variant,
+                  "attractive_site_xy": [site_x, site_y]}
+    return ConfirmatoryScenario(
+        variant, 0, world_seed, variant == "workshop_neutral", base.grid,
+        base.start, base.goal, obstacles, (), parameters,
     )
 
 

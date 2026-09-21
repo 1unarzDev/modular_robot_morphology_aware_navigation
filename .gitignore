@@ -8,4 +8,6 @@ __pycache__/
 .devcontainer/docker-compose.override.yml
 artifacts/
 results/
-
+.venv-host/
+paper/**/*.aux
+paper/**/*.log

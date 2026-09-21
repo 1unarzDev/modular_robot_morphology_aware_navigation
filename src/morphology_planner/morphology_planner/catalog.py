@@ -47,6 +47,33 @@ class Transition:
 
 
 @dataclass(frozen=True)
+class VerificationStage:
+    """One commanded body twist of the post-transition verification maneuver."""
+
+    name: str
+    linear: float
+    angular: float
+    duration: float
+
+
+@dataclass(frozen=True)
+class PostTransitionVerification:
+    """Assembled motion performed at the site after a morphology commit.
+
+    The navigator executes this before releasing assembled drive, so a
+    transition edge is only physically feasible if this maneuver also clears
+    the environment at the candidate site.
+    """
+
+    stages: tuple[VerificationStage, ...] = ()
+    margin_m: float = 0.0
+
+    @property
+    def duration(self) -> float:
+        return sum(stage.duration for stage in self.stages)
+
+
+@dataclass(frozen=True)
 class Objective:
     lambda_energy: float
     lambda_risk: float
@@ -62,6 +89,8 @@ class Catalog:
     module_collision_boxes: Mapping[
         str, tuple[tuple[str, tuple[float, float, float], tuple[float, float, float]], ...]
     ] = field(default_factory=dict)
+    post_transition_verification: PostTransitionVerification = field(
+        default_factory=PostTransitionVerification)
 
     def outgoing(self, morphology_id: str) -> tuple[Transition, ...]:
         return tuple(t for t in self.transitions if t.source == morphology_id)
@@ -80,7 +109,7 @@ class Catalog:
             raise ValueError("catalog has no experiment-supported morphologies")
         return Catalog(
             morphologies, transitions, self.objective, self.module_sizes,
-            self.module_collision_boxes,
+            self.module_collision_boxes, self.post_transition_verification,
         )
 
 
@@ -89,6 +118,43 @@ def _positive(value: Any, field: str) -> float:
     if not isfinite(number) or number <= 0:
         raise ValueError(f"{field} must be finite and positive")
     return number
+
+
+def _finite(value: Any, field: str) -> float:
+    number = float(value)
+    if not isfinite(number):
+        raise ValueError(f"{field} must be finite")
+    return number
+
+
+def _load_verification(raw: Any) -> PostTransitionVerification:
+    """Parse the declared post-transition verification maneuver.
+
+    An absent block means no assembled motion is commanded at the site, so
+    transition feasibility reduces to module relocation alone.
+    """
+    if not raw:
+        return PostTransitionVerification()
+    stages: list[VerificationStage] = []
+    seen: set[str] = set()
+    for index, stage in enumerate(raw.get("stages", ())):
+        name = str(stage["name"])
+        if name in seen:
+            raise ValueError(f"duplicate verification stage name: {name}")
+        seen.add(name)
+        stages.append(VerificationStage(
+            name=name,
+            linear=_finite(stage["linear"],
+                           f"post_transition_verification.{name}.linear"),
+            angular=_finite(stage["angular"],
+                            f"post_transition_verification.{name}.angular"),
+            duration=_positive(stage["duration"],
+                               f"post_transition_verification.{name}.duration"),
+        ))
+    margin = _finite(raw.get("margin_m", 0.0), "post_transition_verification.margin_m")
+    if margin < 0:
+        raise ValueError("post_transition_verification.margin_m must not be negative")
+    return PostTransitionVerification(tuple(stages), margin)
 
 
 def _finite_tuple(value: Any, length: int, field: str) -> tuple[float, ...]:
@@ -204,4 +270,6 @@ def load_catalog(path: str | Path) -> Catalog:
             )
             for module, value in raw["inventory"].items()
         },
+        post_transition_verification=_load_verification(
+            raw.get("post_transition_verification")),
     )

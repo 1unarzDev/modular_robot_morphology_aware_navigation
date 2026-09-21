@@ -13,7 +13,7 @@ import sys
 import time
 
 from .confirmatory_scenarios import make_confirmatory_scenario
-from .design import FAULT_MATRIX, FAULT_MATRIX_DESIGN_KIND, StudyDesign
+from .design import FAULT_MATRIX_DESIGN_KIND, StudyDesign, fault_case_for_run
 from .evaluator_metrics import (
     clearance_metrics, localization_errors, module_pose_samples, world_obstacle_boxes,
 )
@@ -51,7 +51,7 @@ def failure_injection_for(design: StudyDesign, spec) -> str:
     """Declared executor fault for a trial; empty outside the fault matrix."""
     if design.design_kind != FAULT_MATRIX_DESIGN_KIND:
         return ""
-    return FAULT_MATRIX[spec.replicate].injection
+    return fault_case_for_run(spec.replicate).injection
 
 
 def configuration_hash(paths: list[Path], parameters: dict) -> str:
@@ -236,6 +236,9 @@ def run_batch(
                  f"world:={world_path.resolve()}", f"map:={map_yaml.resolve()}",
                  f"initial_x:={start_x}", f"initial_y:={start_y}",
                  f"initial_yaw:={start_yaw}",
+                 # Static 3D transition obstacles as a known prior map, like
+                 # the occupancy map; no live simulator state is exposed.
+                 f"transition_environment:={scenario_manifest.resolve()}",
                  *([f"failure_injection:={failure_injection}"] if failure_injection else [])],
                 cwd=root, stdout=launch_log, stderr=subprocess.STDOUT,
                 text=True, start_new_session=True,

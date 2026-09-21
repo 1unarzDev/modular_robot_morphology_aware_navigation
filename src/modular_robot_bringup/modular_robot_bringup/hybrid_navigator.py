@@ -21,7 +21,8 @@ from std_srvs.srv import SetBool
 from tf2_ros import Buffer, TransformException, TransformListener
 
 from .qualification import (
-    PlanarPose, goal_position_reached, motion_delta, qualification_pass,
+    VERIFICATION_SEQUENCE, PlanarPose, goal_position_reached, motion_delta,
+    qualification_pass,
 )
 
 
@@ -451,12 +452,7 @@ class HybridNavigator(Node):
         return start, self._pose_from_odometry(self.latest_odometry)
 
     async def _qualify_assembled_motion(self) -> tuple[bool, dict]:
-        sequence = (
-            ("positive_yaw", 0.0, 0.25, 1.5),
-            ("negative_yaw", 0.0, -0.25, 1.5),
-            ("forward", 0.12, 0.0, 1.0),
-            ("reverse", -0.12, 0.0, 1.0),
-        )
+        sequence = VERIFICATION_SEQUENCE
         stages = {}
         start_time_s = self._odometry_time_s()
         for name, linear, angular, duration in sequence:

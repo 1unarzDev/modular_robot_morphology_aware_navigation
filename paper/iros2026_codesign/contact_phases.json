@@ -1,0 +1,15 @@
+{
+  "workshop_blocked_a-00-r0-feasibility_coupled": [],
+  "workshop_blocked_a-00-r0-geometry_coupled": [
+    "transformation:unattributed"
+  ],
+  "workshop_blocked_a-00-r0-route_first_adaptation": [],
+  "workshop_blocked_b-00-r0-feasibility_coupled": [],
+  "workshop_blocked_b-00-r0-geometry_coupled": [
+    "transformation:unattributed"
+  ],
+  "workshop_blocked_b-00-r0-route_first_adaptation": [],
+  "workshop_neutral-00-r0-feasibility_coupled": [],
+  "workshop_neutral-00-r0-geometry_coupled": [],
+  "workshop_neutral-00-r0-route_first_adaptation": []
+}

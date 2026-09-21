@@ -1,6 +1,6 @@
 # Current project status
 
-Updated 2026-09-12. This is the authoritative handoff for implementation and
+Updated 2026-09-19. This is the authoritative handoff for implementation and
 evidence state.
 
 ## Research claim
@@ -21,7 +21,7 @@ and citations are maintained in the literature review.
 | Area | Current state | Evidence and limitation |
 |---|---|---|
 | Hybrid planner | Weighted search over `(x, y, heading, morphology)` with four executable methods | Host golden tests cover route and transition decisions |
-| Reconfiguration validation | Sequential compound pod/body/wheel trajectories, stationary-core collision, support/latch checks, sensing gates, and structured rejection reasons | 3D checks are geometric simulation validation, not physical certification |
+| Reconfiguration validation | Sequential compound pod/body/wheel trajectories, stationary-core collision, support/latch checks, sensing gates, the declared post-transition verification maneuver, and structured rejection reasons | 3D checks are geometric simulation validation, not physical certification; the maneuver sweep is the commanded nominal motion, with execution tolerance unmodelled |
 | Self-mobile platform | Six independently mobile differential pods; one controller owns all wheel joints; bounded effort actuation and vertical wheel suspension | Detached and compact motion gates pass |
 | Reconfiguration | Sensor-driven detach, relocate, align, latch, topology verification, and fail-closed recovery | One compact-to-narrow run reaches `READY`; reverse transition and repetition gates remain open |
 | Navigation | ROS 2 Jazzy, Nav2, lidar/odometry localization, morphology-specific footprints/controllers, collision monitor | Doorway traversal exists only as engineering evidence |
@@ -204,13 +204,155 @@ and 3D clearance still have no simulator source, transition predictions and
 outcomes are not yet returned by `NavigateHybrid`, and recovery actions are
 not counted.
 
+## Transition feasibility now covers the motion that follows the commit
+
+The workshop diagnostic exposed a gap the transition model did not cover: at a
+site the feasibility check accepted, the executor committed `narrow_tandem` and
+the automatic post-transition motion check then yawed the 1.6 m body in place
+and drove pod 0 into the obstruction. Relocation was modelled; the verification
+maneuver performed at the same site was not.
+
+The maneuver is now declared once, as `post_transition_verification` in
+`src/modular_robot_description/config/morphologies.yaml`, and consumed by both
+sides: `morphology_planner` sweeps it when deciding whether a site can host a
+transformation, and `modular_robot_bringup.qualification.VERIFICATION_SEQUENCE`
+executes it. `tests/test_post_transition_qualification.py` binds the two, so
+the planner cannot accept a site against a maneuver the robot does not perform.
+
+The check sweeps the target morphology rigidly -- core and every pod -- through
+the commanded twists from the committed pose, and rejects the edge with
+`<module>:post_transition_collision`. It is cached per (morphology, heading)
+and translated per site, as the relocation sweep already is. It applies to
+`feasibility_coupled` and `sensing_feasibility_coupled` only; `geometry_coupled`
+is unchanged, so the ablation contrast is preserved.
+
+Scope: the sweep covers declared 3D transition obstacles, which the 2D
+occupancy map cannot represent. Walls remain covered by the planar clearance
+disk, which is valid only while `swept_radius` exceeds the maneuver's reach
+(0.92 m for `compact_to_narrow` against a 1.0 m disk); a test asserts this for
+every transition. `margin_m` is declared and set to 0.0, so the sweep is the
+commanded nominal motion and execution tolerance is not yet modelled.
+
+That gap is measurable and is not currently conservative. The maneuver commands
+0.375 rad of yaw per stage, but the recorded engineering post-transition gates
+measured up to 0.5273 rad, 41% more. At the farthest swept corner (0.9534 m)
+that is 0.145 m of arc the planner does not sweep, so in principle the check
+can accept a site the executed maneuver then strikes. Re-sweeping the Blocked-A
+scenario at the observed 0.5273 rad shows the current decisions are unaffected:
+the rejected site at 1.85 m collides under both the commanded and the observed
+angle (51 and 54 swept boxes), and the chosen site at 1.55 m collides under
+neither. Derive the tolerance from the Gate 0 record set rather than from these
+two runs, and note that `margin_m` inflates boxes linearly while the error is
+angular and therefore grows with radius.
+
+A related gap is checked and currently latent. `_state_is_free` and
+`_traversal_is_free` consult only the occupancy grid, so declared 3D
+transition obstacles are invisible to ordinary traversal edges for every
+method -- including the `raised_transition_shelf`, which spans z 0.10--0.18 m
+and therefore does intersect the pod and core envelopes. Sampling the
+assembled 3D body along the planned routes of `reconfiguration_workspace`
+(1, 8) and `combined_constraints` (1, 8) found no intersection, so no current
+layout routes through a 3D obstacle. This was a coarse check, not a proof.
+Closing the gap properly would mean checking 3D obstacles on traversal edges,
+which changes what `geometry_coupled` is defined to ignore; that is a study
+design decision and must not be made silently.
+
+The nine workshop missions have been re-run end to end through Gazebo at
+commit `92cae6f`, against the same frozen design hash
+`9c608ab3e9d128af2471452f76bd6e1c24ab863b95b4825f45100217005376c2` the
+published run used, so the two are directly comparable. All nine records were
+accepted. On the frozen workshop scenarios the planner change moves exactly one
+decision, and it is the one the diagnostic showed to be physically wrong:
+
+| Variant | Method | Site before | Site after |
+|---|---|---|---|
+| Blocked-A | `geometry_coupled` | 2.15 m | 2.15 m |
+| Blocked-A | `feasibility_coupled` | 1.85 m | **1.55 m** |
+| Blocked-B | `feasibility_coupled` | 1.85 m | 1.85 m |
+| Neutral | all three | 2.15 m | 2.15 m |
+
+The Blocked-A rejection at 1.85 m is attributed to `pod_0`, which is the pod
+observed in contact during the failed verification maneuver. Neutral produces
+no rejections, so the added term still creates no artificial difference in the
+unobstructed control.
+
+Execution confirms the prediction. Both Blocked-A missions that previously
+staged at 1.85 m, transformed, and then failed their verification yaw now stage
+at 1.55 m and complete:
+
+| Cell | Published | Re-run |
+|---|---|---|
+| Blocked-A `route_first_adaptation` | 1.85 m, `motion_qualification_failure`, 1 collision | 1.55 m, completed in 118 s, 2.9 cm clearance, 0 collisions |
+| Blocked-A `feasibility_coupled` | 1.85 m, `motion_qualification_failure`, 1 collision | 1.55 m, completed in 164 s, 2.6 cm clearance, 0 collisions |
+| Blocked-A `geometry_coupled` | 2.15 m, `unsafe_topology`, 8 collisions | 2.15 m, `unsafe_topology`, 7 collisions |
+| Blocked-B, all three | unchanged | unchanged |
+
+The geometry-only baseline still fails at 2.15 m in both blocked variants, so
+the ablation contrast survives the change rather than being erased by it.
+
+One cell moved the other way and is not attributable to the planner. Neutral
+`geometry_coupled` completed in the published run and ended
+`motion_qualification_failure` in the re-run, with zero collisions and 18.3 cm
+minimum clearance: it struck nothing. Its reverse stage travelled -0.0788 m
+against the -0.08 m floor, missing by 1.2 mm, and its forward stage reached
+only 0.0813 m where every other mission reached about 0.113 m. Neutral has no
+transition obstacles and `geometry_coupled` never evaluates the verification
+sweep, so its planner decision is provably identical. Three identical-seed
+repeats in `results/debug/neutral_geometry_repro_{1,2,3}_raw` all completed,
+with reverse travel -0.1129, -0.1129, and -0.1129 m. The post-transition motion
+gate is therefore intermittently marginal under identical seeds, roughly one
+failure in four attempts here. That is a platform reliability issue, it is
+independent of method, and it will inflate failure rates in the confirmatory
+study unless the gate margin is diagnosed first.
+
+Mission completion across the nine cells went from 5/9 to 6/9 and evaluator
+collisions from 11 to 8.
+
+Reproducibility gap found while summarizing: `contact_phases.json` is consumed
+by `paper/iros2026_codesign/summarize_results.py` but nothing in the repository
+produces it, and terminal records carry `collision_count` and
+`minimum_clearance_m` without per-contact timestamps. Contact-phase attribution
+therefore cannot currently be regenerated from an accepted record set.
+
+## Gate 0 fault matrix generalizes across layouts
+
+`generate_fault_matrix_campaign` repeats the declared seven-case matrix across
+layouts and independent `fault_seed` realizations, which is roadmap Gate 0
+step 2. `generate_fault_matrix_design` is now the one-layout, one-realization
+campaign and reproduces its recorded hash
+`f1e172305fe3fb29f98a7fb54468fea16885090093a04111e1aaf0e73cfcf29e` exactly, so
+the execution that already passed remains valid. `summarize_fault_matrix`
+reports per-layout outcomes and additionally refuses a campaign with duplicated
+fault seeds or a case missing from any layout. Freeze one with:
+
+```
+python3 -m modular_robot_benchmarks.engineering_qualification freeze-fault-matrix   --output config/fault_matrix_campaign.json --family reconfiguration_workspace   --layout-index 0 --layout-index 3 --layout-index 7   --method sensing_feasibility_coupled --realizations 2
+```
+
+This is design and audit machinery only. No cross-layout campaign has been
+executed; the matrix still has one passing layout.
+
 ## Resume here
 
-Repeat the fault matrix across layouts before the pilot, then proceed to the
-disjoint pilot without spending more submission time on repeated 20-run startup
-certification. If throughput is still limiting, measure trial wall time with
-the RGB-D camera disabled before deciding whether perceived-obstacle work needs
-it at 15 Hz.
+Item 1 is a design decision; items 2 and 3 need container runs.
+
+1. Confirm that `combined_constraints` still manipulates as intended across
+   the layouts the frozen design draws. Its golden fixture was re-selected to
+   world seed 1 after the post-transition maneuver invalidated seed 8, but the
+   family separates on only 4 of 12 sampled seeds; the roadmap Gate 2 entry
+   records the sweep. `docking_observability` is unaffected at 12/12.
+2. Diagnose the intermittent post-transition motion gate before pilot
+   collection. One of four identical-seed Neutral `geometry_coupled` attempts
+   failed the reverse-travel floor by 1.2 mm without touching anything. Decide
+   whether the gate threshold, the actuator allocation, or the contact model is
+   responsible, and record the margin from the Gate 0 record set.
+3. Freeze and execute a multi-layout fault-matrix campaign. The generator,
+   runtime injection map, and per-layout auditor are ready and host-tested.
+
+Then proceed to the disjoint pilot without spending more submission time on
+repeated 20-run startup certification. If throughput is still limiting, measure
+trial wall time with the RGB-D camera disabled before deciding whether
+perceived-obstacle work needs it at 15 Hz.
 
 After mechanics pass, implement location-dependent perceived 3D obstacles and
 observability, complete evaluator outcome/provenance streams, run a disjoint

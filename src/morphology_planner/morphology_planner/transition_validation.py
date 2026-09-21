@@ -173,6 +173,7 @@ class TransitionTrajectoryValidator:
         environment: tuple[Box3, ...],
         offset_x: float,
         offset_y: float,
+        reason: str = "environment_collision",
     ) -> TransitionValidationResult:
         reasons: set[str] = set()
         for box in swept_boxes:
@@ -182,9 +183,27 @@ class TransitionTrajectoryValidator:
                 box.size,
             )
             if any(_overlap(translated, obstacle) for obstacle in environment):
-                reasons.add(f"{box.name.split('/', 1)[0]}:environment_collision")
+                reasons.add(f"{box.name.split('/', 1)[0]}:{reason}")
         return TransitionValidationResult(
             not reasons, tuple(sorted(reasons)), len(swept_boxes))
+
+
+def load_environment_boxes(path: str) -> tuple[Box3, ...]:
+    """Static 3D transition obstacles from a scenario manifest (prior map).
+
+    An empty path means no 3D prior beyond the occupancy map.
+    """
+    if not path:
+        return ()
+    import json
+
+    with open(path, encoding="utf-8") as stream:
+        manifest = json.load(stream)
+    return tuple(
+        Box3(str(box["name"]), tuple(float(v) for v in box["center"]),
+             tuple(float(v) for v in box["size"]))
+        for box in manifest.get("transition_obstacles", ())
+    )
 
 
 def _sample(trajectory: ModuleTrajectory, resolution: float) -> tuple[TrajectoryPoint, ...]:
