@@ -1,0 +1,1639 @@
+{
+  "by_layout": {
+    "reconfiguration_workspace-00": {
+      "cases_passed": 12,
+      "cases_total": 14,
+      "passed": false
+    },
+    "reconfiguration_workspace-03": {
+      "cases_passed": 1,
+      "cases_total": 14,
+      "passed": false
+    },
+    "reconfiguration_workspace-07": {
+      "cases_passed": 0,
+      "cases_total": 14,
+      "passed": false
+    }
+  },
+  "campaign_digest": "8e1f6bacd12499d644ac4df7d8d28499ff8166ce47ecfbf993bea8b79d479121",
+  "cases": [
+    {
+      "case": "detach",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": true,
+        "fail_closed_terminal": true,
+        "reconciliation_matches_observed_topology": true,
+        "recovery_required": true
+      },
+      "expected_reconciled_morphology": "compact_diff",
+      "failed_checks": [],
+      "injection": "detach:pod_0",
+      "layout_id": "reconfiguration_workspace-00",
+      "message": "reconfiguration failed; observed topology requires recovery",
+      "passed": true,
+      "realization": 0,
+      "recovery_probe": {
+        "connections_before": [
+          "compact_diff/pod_0>pod_0",
+          "compact_diff/pod_1>pod_1",
+          "compact_diff/pod_2>pod_2",
+          "compact_diff/pod_3>pod_3",
+          "compact_diff/pod_4>pod_4",
+          "compact_diff/pod_5>pod_5"
+        ],
+        "core_pose_after": {
+          "x": 1.960368861,
+          "y": 1.76775273,
+          "yaw": 0.04108520255
+        },
+        "core_pose_before": {
+          "x": 1.960368861,
+          "y": 1.76775273,
+          "yaw": 0.04108520255
+        },
+        "core_translation_m": 0.0,
+        "core_yaw_change_rad": 0.0,
+        "max_pod_command": 0.0,
+        "performed": true,
+        "reconcile": {
+          "execution_state": "READY",
+          "message": "reconciled as compact_diff",
+          "morphology": "compact_diff",
+          "success": true
+        },
+        "state_before": "RECOVERY_REQUIRED",
+        "stimulus": {
+          "body_linear_x_mps": 0.1,
+          "duration_s": 2.0
+        }
+      },
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r00"
+    },
+    {
+      "case": "stale_observation",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": true,
+        "fail_closed_terminal": true,
+        "reconciliation_matches_observed_topology": true,
+        "recovery_required": true
+      },
+      "expected_reconciled_morphology": "compact_diff",
+      "failed_checks": [],
+      "injection": "stale_feedback:pod_0",
+      "layout_id": "reconfiguration_workspace-00",
+      "message": "reconfiguration failed; observed topology requires recovery",
+      "passed": true,
+      "realization": 0,
+      "recovery_probe": {
+        "connections_before": [
+          "compact_diff/pod_0>pod_0",
+          "compact_diff/pod_1>pod_1",
+          "compact_diff/pod_2>pod_2",
+          "compact_diff/pod_3>pod_3",
+          "compact_diff/pod_4>pod_4",
+          "compact_diff/pod_5>pod_5"
+        ],
+        "core_pose_after": {
+          "x": 1.962769494,
+          "y": 1.75498054,
+          "yaw": 0.01444873282
+        },
+        "core_pose_before": {
+          "x": 1.962769494,
+          "y": 1.75498054,
+          "yaw": 0.01444873282
+        },
+        "core_translation_m": 0.0,
+        "core_yaw_change_rad": 0.0,
+        "max_pod_command": 0.0,
+        "performed": true,
+        "reconcile": {
+          "execution_state": "READY",
+          "message": "reconciled as compact_diff",
+          "morphology": "compact_diff",
+          "success": true
+        },
+        "state_before": "RECOVERY_REQUIRED",
+        "stimulus": {
+          "body_linear_x_mps": 0.1,
+          "duration_s": 2.0
+        }
+      },
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r01"
+    },
+    {
+      "case": "cancellation",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": true,
+        "fail_closed_terminal": true,
+        "reconciliation_matches_observed_topology": true,
+        "recovery_required": true
+      },
+      "expected_reconciled_morphology": "compact_diff",
+      "failed_checks": [],
+      "injection": "cancellation:pod_0",
+      "layout_id": "reconfiguration_workspace-00",
+      "message": "reconfiguration failed; observed topology requires recovery",
+      "passed": true,
+      "realization": 0,
+      "recovery_probe": {
+        "connections_before": [
+          "compact_diff/pod_0>pod_0",
+          "compact_diff/pod_1>pod_1",
+          "compact_diff/pod_2>pod_2",
+          "compact_diff/pod_3>pod_3",
+          "compact_diff/pod_4>pod_4",
+          "compact_diff/pod_5>pod_5"
+        ],
+        "core_pose_after": {
+          "x": 1.973846966,
+          "y": 1.763178848,
+          "yaw": 0.0625097675
+        },
+        "core_pose_before": {
+          "x": 1.973846966,
+          "y": 1.763178848,
+          "yaw": 0.0625097675
+        },
+        "core_translation_m": 0.0,
+        "core_yaw_change_rad": 0.0,
+        "max_pod_command": 0.0,
+        "performed": true,
+        "reconcile": {
+          "execution_state": "READY",
+          "message": "reconciled as compact_diff",
+          "morphology": "compact_diff",
+          "success": true
+        },
+        "state_before": "RECOVERY_REQUIRED",
+        "stimulus": {
+          "body_linear_x_mps": 0.1,
+          "duration_s": 2.0
+        }
+      },
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r02"
+    },
+    {
+      "case": "relocation",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": true,
+        "fail_closed_terminal": true,
+        "reconciliation_matches_observed_topology": true,
+        "recovery_required": true
+      },
+      "expected_reconciled_morphology": null,
+      "failed_checks": [],
+      "injection": "relocation:pod_0",
+      "layout_id": "reconfiguration_workspace-00",
+      "message": "reconfiguration failed; observed topology requires recovery",
+      "passed": true,
+      "realization": 0,
+      "recovery_probe": {
+        "connections_before": [
+          "compact_diff/pod_1>pod_1",
+          "compact_diff/pod_2>pod_2",
+          "compact_diff/pod_3>pod_3",
+          "compact_diff/pod_4>pod_4",
+          "compact_diff/pod_5>pod_5"
+        ],
+        "core_pose_after": {
+          "x": 1.962132672,
+          "y": 1.771108644,
+          "yaw": 0.03850572996
+        },
+        "core_pose_before": {
+          "x": 1.962132672,
+          "y": 1.771108644,
+          "yaw": 0.03850572996
+        },
+        "core_translation_m": 0.0,
+        "core_yaw_change_rad": 0.0,
+        "max_pod_command": 0.0,
+        "performed": true,
+        "reconcile": {
+          "execution_state": "RECOVERY_REQUIRED",
+          "message": "observed topology is not a known safe morphology",
+          "morphology": "compact_diff",
+          "success": false
+        },
+        "state_before": "RECOVERY_REQUIRED",
+        "stimulus": {
+          "body_linear_x_mps": 0.1,
+          "duration_s": 2.0
+        }
+      },
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r03"
+    },
+    {
+      "case": "latch",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": true,
+        "fail_closed_terminal": true,
+        "reconciliation_matches_observed_topology": true,
+        "recovery_required": true
+      },
+      "expected_reconciled_morphology": null,
+      "failed_checks": [],
+      "injection": "latch:pod_0",
+      "layout_id": "reconfiguration_workspace-00",
+      "message": "reconfiguration failed; observed topology requires recovery",
+      "passed": true,
+      "realization": 0,
+      "recovery_probe": {
+        "connections_before": [
+          "compact_diff/pod_1>pod_1",
+          "compact_diff/pod_2>pod_2",
+          "compact_diff/pod_3>pod_3",
+          "compact_diff/pod_4>pod_4",
+          "compact_diff/pod_5>pod_5"
+        ],
+        "core_pose_after": {
+          "x": 1.964900923,
+          "y": 1.76694166,
+          "yaw": 0.0123779736
+        },
+        "core_pose_before": {
+          "x": 1.964900923,
+          "y": 1.76694166,
+          "yaw": 0.0123779736
+        },
+        "core_translation_m": 0.0,
+        "core_yaw_change_rad": 0.0,
+        "max_pod_command": 0.0,
+        "performed": true,
+        "reconcile": {
+          "execution_state": "RECOVERY_REQUIRED",
+          "message": "observed topology is not a known safe morphology",
+          "morphology": "compact_diff",
+          "success": false
+        },
+        "state_before": "RECOVERY_REQUIRED",
+        "stimulus": {
+          "body_linear_x_mps": 0.1,
+          "duration_s": 2.0
+        }
+      },
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r04"
+    },
+    {
+      "case": "partial_topology",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": true,
+        "fail_closed_terminal": true,
+        "reconciliation_matches_observed_topology": true,
+        "recovery_required": true
+      },
+      "expected_reconciled_morphology": null,
+      "failed_checks": [],
+      "injection": "latch:pod_1",
+      "layout_id": "reconfiguration_workspace-00",
+      "message": "reconfiguration failed; observed topology requires recovery",
+      "passed": true,
+      "realization": 0,
+      "recovery_probe": {
+        "connections_before": [
+          "compact_diff/pod_3>pod_3",
+          "compact_diff/pod_4>pod_4",
+          "compact_diff/pod_5>pod_5",
+          "narrow_tandem/pod_0>pod_0",
+          "narrow_tandem/pod_2>pod_2"
+        ],
+        "core_pose_after": {
+          "x": 1.959366789,
+          "y": 1.762988363,
+          "yaw": 0.06373994503
+        },
+        "core_pose_before": {
+          "x": 1.959366789,
+          "y": 1.762988363,
+          "yaw": 0.06373994503
+        },
+        "core_translation_m": 0.0,
+        "core_yaw_change_rad": 0.0,
+        "max_pod_command": 0.0,
+        "performed": true,
+        "reconcile": {
+          "execution_state": "RECOVERY_REQUIRED",
+          "message": "observed topology is not a known safe morphology",
+          "morphology": "compact_diff",
+          "success": false
+        },
+        "state_before": "RECOVERY_REQUIRED",
+        "stimulus": {
+          "body_linear_x_mps": 0.1,
+          "duration_s": 2.0
+        }
+      },
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r05"
+    },
+    {
+      "case": "commit",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": true,
+        "fail_closed_terminal": true,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": true
+      },
+      "expected_reconciled_morphology": "narrow_tandem",
+      "failed_checks": [
+        "reconciliation_matches_observed_topology"
+      ],
+      "injection": "manager_commit",
+      "layout_id": "reconfiguration_workspace-00",
+      "message": "reconfiguration failed; observed topology requires recovery",
+      "passed": false,
+      "realization": 0,
+      "recovery_probe": {
+        "connections_before": [
+          "compact_diff/pod_5>pod_5",
+          "narrow_tandem/pod_0>pod_0",
+          "narrow_tandem/pod_1>pod_1",
+          "narrow_tandem/pod_2>pod_2",
+          "narrow_tandem/pod_3>pod_3"
+        ],
+        "core_pose_after": {
+          "x": 1.980980073,
+          "y": 1.764512087,
+          "yaw": 0.02733874329
+        },
+        "core_pose_before": {
+          "x": 1.980980073,
+          "y": 1.764512087,
+          "yaw": 0.02733874329
+        },
+        "core_translation_m": 0.0,
+        "core_yaw_change_rad": 0.0,
+        "max_pod_command": 0.0,
+        "performed": true,
+        "reconcile": {
+          "execution_state": "RECOVERY_REQUIRED",
+          "message": "observed topology is not a known safe morphology",
+          "morphology": "compact_diff",
+          "success": false
+        },
+        "state_before": "RECOVERY_REQUIRED",
+        "stimulus": {
+          "body_linear_x_mps": 0.1,
+          "duration_s": 2.0
+        }
+      },
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r06"
+    },
+    {
+      "case": "detach",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": true,
+        "fail_closed_terminal": true,
+        "reconciliation_matches_observed_topology": true,
+        "recovery_required": true
+      },
+      "expected_reconciled_morphology": "compact_diff",
+      "failed_checks": [],
+      "injection": "detach:pod_0",
+      "layout_id": "reconfiguration_workspace-00",
+      "message": "reconfiguration failed; observed topology requires recovery",
+      "passed": true,
+      "realization": 1,
+      "recovery_probe": {
+        "connections_before": [
+          "compact_diff/pod_0>pod_0",
+          "compact_diff/pod_1>pod_1",
+          "compact_diff/pod_2>pod_2",
+          "compact_diff/pod_3>pod_3",
+          "compact_diff/pod_4>pod_4",
+          "compact_diff/pod_5>pod_5"
+        ],
+        "core_pose_after": {
+          "x": 1.970334513,
+          "y": 1.761586526,
+          "yaw": 0.02007588558
+        },
+        "core_pose_before": {
+          "x": 1.970334513,
+          "y": 1.761586526,
+          "yaw": 0.02007588558
+        },
+        "core_translation_m": 0.0,
+        "core_yaw_change_rad": 0.0,
+        "max_pod_command": 0.0,
+        "performed": true,
+        "reconcile": {
+          "execution_state": "READY",
+          "message": "reconciled as compact_diff",
+          "morphology": "compact_diff",
+          "success": true
+        },
+        "state_before": "RECOVERY_REQUIRED",
+        "stimulus": {
+          "body_linear_x_mps": 0.1,
+          "duration_s": 2.0
+        }
+      },
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r07"
+    },
+    {
+      "case": "stale_observation",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": true,
+        "fail_closed_terminal": true,
+        "reconciliation_matches_observed_topology": true,
+        "recovery_required": true
+      },
+      "expected_reconciled_morphology": "compact_diff",
+      "failed_checks": [],
+      "injection": "stale_feedback:pod_0",
+      "layout_id": "reconfiguration_workspace-00",
+      "message": "reconfiguration failed; observed topology requires recovery",
+      "passed": true,
+      "realization": 1,
+      "recovery_probe": {
+        "connections_before": [
+          "compact_diff/pod_0>pod_0",
+          "compact_diff/pod_1>pod_1",
+          "compact_diff/pod_2>pod_2",
+          "compact_diff/pod_3>pod_3",
+          "compact_diff/pod_4>pod_4",
+          "compact_diff/pod_5>pod_5"
+        ],
+        "core_pose_after": {
+          "x": 1.9722446,
+          "y": 1.761673753,
+          "yaw": 0.02752271105
+        },
+        "core_pose_before": {
+          "x": 1.9722446,
+          "y": 1.761673753,
+          "yaw": 0.02752271105
+        },
+        "core_translation_m": 0.0,
+        "core_yaw_change_rad": 0.0,
+        "max_pod_command": 0.0,
+        "performed": true,
+        "reconcile": {
+          "execution_state": "READY",
+          "message": "reconciled as compact_diff",
+          "morphology": "compact_diff",
+          "success": true
+        },
+        "state_before": "RECOVERY_REQUIRED",
+        "stimulus": {
+          "body_linear_x_mps": 0.1,
+          "duration_s": 2.0
+        }
+      },
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r08"
+    },
+    {
+      "case": "cancellation",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": true,
+        "fail_closed_terminal": true,
+        "reconciliation_matches_observed_topology": true,
+        "recovery_required": true
+      },
+      "expected_reconciled_morphology": "compact_diff",
+      "failed_checks": [],
+      "injection": "cancellation:pod_0",
+      "layout_id": "reconfiguration_workspace-00",
+      "message": "reconfiguration failed; observed topology requires recovery",
+      "passed": true,
+      "realization": 1,
+      "recovery_probe": {
+        "connections_before": [
+          "compact_diff/pod_0>pod_0",
+          "compact_diff/pod_1>pod_1",
+          "compact_diff/pod_2>pod_2",
+          "compact_diff/pod_3>pod_3",
+          "compact_diff/pod_4>pod_4",
+          "compact_diff/pod_5>pod_5"
+        ],
+        "core_pose_after": {
+          "x": 1.96606961,
+          "y": 1.761411464,
+          "yaw": 0.04419077412
+        },
+        "core_pose_before": {
+          "x": 1.96606961,
+          "y": 1.761411464,
+          "yaw": 0.04419077412
+        },
+        "core_translation_m": 0.0,
+        "core_yaw_change_rad": 0.0,
+        "max_pod_command": 0.0,
+        "performed": true,
+        "reconcile": {
+          "execution_state": "READY",
+          "message": "reconciled as compact_diff",
+          "morphology": "compact_diff",
+          "success": true
+        },
+        "state_before": "RECOVERY_REQUIRED",
+        "stimulus": {
+          "body_linear_x_mps": 0.1,
+          "duration_s": 2.0
+        }
+      },
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r09"
+    },
+    {
+      "case": "relocation",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": true,
+        "fail_closed_terminal": true,
+        "reconciliation_matches_observed_topology": true,
+        "recovery_required": true
+      },
+      "expected_reconciled_morphology": null,
+      "failed_checks": [],
+      "injection": "relocation:pod_0",
+      "layout_id": "reconfiguration_workspace-00",
+      "message": "reconfiguration failed; observed topology requires recovery",
+      "passed": true,
+      "realization": 1,
+      "recovery_probe": {
+        "connections_before": [
+          "compact_diff/pod_1>pod_1",
+          "compact_diff/pod_2>pod_2",
+          "compact_diff/pod_3>pod_3",
+          "compact_diff/pod_4>pod_4",
+          "compact_diff/pod_5>pod_5"
+        ],
+        "core_pose_after": {
+          "x": 1.963726391,
+          "y": 1.765270825,
+          "yaw": 0.0209516795
+        },
+        "core_pose_before": {
+          "x": 1.963726391,
+          "y": 1.765270825,
+          "yaw": 0.0209516795
+        },
+        "core_translation_m": 0.0,
+        "core_yaw_change_rad": 0.0,
+        "max_pod_command": 0.0,
+        "performed": true,
+        "reconcile": {
+          "execution_state": "RECOVERY_REQUIRED",
+          "message": "observed topology is not a known safe morphology",
+          "morphology": "compact_diff",
+          "success": false
+        },
+        "state_before": "RECOVERY_REQUIRED",
+        "stimulus": {
+          "body_linear_x_mps": 0.1,
+          "duration_s": 2.0
+        }
+      },
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r10"
+    },
+    {
+      "case": "latch",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": true,
+        "fail_closed_terminal": true,
+        "reconciliation_matches_observed_topology": true,
+        "recovery_required": true
+      },
+      "expected_reconciled_morphology": null,
+      "failed_checks": [],
+      "injection": "latch:pod_0",
+      "layout_id": "reconfiguration_workspace-00",
+      "message": "reconfiguration failed; observed topology requires recovery",
+      "passed": true,
+      "realization": 1,
+      "recovery_probe": {
+        "connections_before": [
+          "compact_diff/pod_1>pod_1",
+          "compact_diff/pod_2>pod_2",
+          "compact_diff/pod_3>pod_3",
+          "compact_diff/pod_4>pod_4",
+          "compact_diff/pod_5>pod_5"
+        ],
+        "core_pose_after": {
+          "x": 1.973721,
+          "y": 1.764393633,
+          "yaw": 0.04171953325
+        },
+        "core_pose_before": {
+          "x": 1.973721,
+          "y": 1.764393633,
+          "yaw": 0.04171953325
+        },
+        "core_translation_m": 0.0,
+        "core_yaw_change_rad": 0.0,
+        "max_pod_command": 0.0,
+        "performed": true,
+        "reconcile": {
+          "execution_state": "RECOVERY_REQUIRED",
+          "message": "observed topology is not a known safe morphology",
+          "morphology": "compact_diff",
+          "success": false
+        },
+        "state_before": "RECOVERY_REQUIRED",
+        "stimulus": {
+          "body_linear_x_mps": 0.1,
+          "duration_s": 2.0
+        }
+      },
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r11"
+    },
+    {
+      "case": "partial_topology",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": true,
+        "fail_closed_terminal": true,
+        "reconciliation_matches_observed_topology": true,
+        "recovery_required": true
+      },
+      "expected_reconciled_morphology": null,
+      "failed_checks": [],
+      "injection": "latch:pod_1",
+      "layout_id": "reconfiguration_workspace-00",
+      "message": "reconfiguration failed; observed topology requires recovery",
+      "passed": true,
+      "realization": 1,
+      "recovery_probe": {
+        "connections_before": [
+          "compact_diff/pod_3>pod_3",
+          "compact_diff/pod_4>pod_4",
+          "compact_diff/pod_5>pod_5",
+          "narrow_tandem/pod_0>pod_0",
+          "narrow_tandem/pod_2>pod_2"
+        ],
+        "core_pose_after": {
+          "x": 1.96897289,
+          "y": 1.761606368,
+          "yaw": 0.02447315592
+        },
+        "core_pose_before": {
+          "x": 1.96897289,
+          "y": 1.761606368,
+          "yaw": 0.02447315592
+        },
+        "core_translation_m": 0.0,
+        "core_yaw_change_rad": 0.0,
+        "max_pod_command": 0.0,
+        "performed": true,
+        "reconcile": {
+          "execution_state": "RECOVERY_REQUIRED",
+          "message": "observed topology is not a known safe morphology",
+          "morphology": "compact_diff",
+          "success": false
+        },
+        "state_before": "RECOVERY_REQUIRED",
+        "stimulus": {
+          "body_linear_x_mps": 0.1,
+          "duration_s": 2.0
+        }
+      },
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r12"
+    },
+    {
+      "case": "commit",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": true,
+        "fail_closed_terminal": true,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": true
+      },
+      "expected_reconciled_morphology": "narrow_tandem",
+      "failed_checks": [
+        "reconciliation_matches_observed_topology"
+      ],
+      "injection": "manager_commit",
+      "layout_id": "reconfiguration_workspace-00",
+      "message": "reconfiguration failed; observed topology requires recovery",
+      "passed": false,
+      "realization": 1,
+      "recovery_probe": {
+        "connections_before": [
+          "compact_diff/pod_5>pod_5",
+          "narrow_tandem/pod_0>pod_0",
+          "narrow_tandem/pod_1>pod_1",
+          "narrow_tandem/pod_2>pod_2",
+          "narrow_tandem/pod_3>pod_3"
+        ],
+        "core_pose_after": {
+          "x": 1.96250853,
+          "y": 1.756200751,
+          "yaw": -0.005243280132
+        },
+        "core_pose_before": {
+          "x": 1.96250853,
+          "y": 1.756200751,
+          "yaw": -0.005243280132
+        },
+        "core_translation_m": 0.0,
+        "core_yaw_change_rad": 0.0,
+        "max_pod_command": 0.0,
+        "performed": true,
+        "reconcile": {
+          "execution_state": "RECOVERY_REQUIRED",
+          "message": "observed topology is not a known safe morphology",
+          "morphology": "compact_diff",
+          "success": false
+        },
+        "state_before": "RECOVERY_REQUIRED",
+        "stimulus": {
+          "body_linear_x_mps": 0.1,
+          "duration_s": 2.0
+        }
+      },
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r13"
+    },
+    {
+      "case": "detach",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": "compact_diff",
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "detach:pod_0",
+      "layout_id": "reconfiguration_workspace-03",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 0,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r00"
+    },
+    {
+      "case": "stale_observation",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": "compact_diff",
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "stale_feedback:pod_0",
+      "layout_id": "reconfiguration_workspace-03",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 0,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r01"
+    },
+    {
+      "case": "cancellation",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": "compact_diff",
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "cancellation:pod_0",
+      "layout_id": "reconfiguration_workspace-03",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 0,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r02"
+    },
+    {
+      "case": "relocation",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": true,
+        "fail_closed_terminal": true,
+        "reconciliation_matches_observed_topology": true,
+        "recovery_required": true
+      },
+      "expected_reconciled_morphology": null,
+      "failed_checks": [],
+      "injection": "relocation:pod_0",
+      "layout_id": "reconfiguration_workspace-03",
+      "message": "reconfiguration failed; observed topology requires recovery",
+      "passed": true,
+      "realization": 0,
+      "recovery_probe": {
+        "connections_before": [
+          "compact_diff/pod_1>pod_1",
+          "compact_diff/pod_2>pod_2",
+          "compact_diff/pod_3>pod_3",
+          "compact_diff/pod_4>pod_4",
+          "compact_diff/pod_5>pod_5"
+        ],
+        "core_pose_after": {
+          "x": 1.480994125,
+          "y": 1.378134601,
+          "yaw": -0.5500702847
+        },
+        "core_pose_before": {
+          "x": 1.480994125,
+          "y": 1.378134601,
+          "yaw": -0.5500702847
+        },
+        "core_translation_m": 0.0,
+        "core_yaw_change_rad": 0.0,
+        "max_pod_command": 0.0,
+        "performed": true,
+        "reconcile": {
+          "execution_state": "RECOVERY_REQUIRED",
+          "message": "observed topology is not a known safe morphology",
+          "morphology": "compact_diff",
+          "success": false
+        },
+        "state_before": "RECOVERY_REQUIRED",
+        "stimulus": {
+          "body_linear_x_mps": 0.1,
+          "duration_s": 2.0
+        }
+      },
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r03"
+    },
+    {
+      "case": "latch",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": null,
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "latch:pod_0",
+      "layout_id": "reconfiguration_workspace-03",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 0,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r04"
+    },
+    {
+      "case": "partial_topology",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": null,
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "latch:pod_1",
+      "layout_id": "reconfiguration_workspace-03",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 0,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r05"
+    },
+    {
+      "case": "commit",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": "narrow_tandem",
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "manager_commit",
+      "layout_id": "reconfiguration_workspace-03",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 0,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r06"
+    },
+    {
+      "case": "detach",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": "compact_diff",
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "detach:pod_0",
+      "layout_id": "reconfiguration_workspace-03",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 1,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r07"
+    },
+    {
+      "case": "stale_observation",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": "compact_diff",
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "stale_feedback:pod_0",
+      "layout_id": "reconfiguration_workspace-03",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 1,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r08"
+    },
+    {
+      "case": "cancellation",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": "compact_diff",
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "cancellation:pod_0",
+      "layout_id": "reconfiguration_workspace-03",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 1,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r09"
+    },
+    {
+      "case": "relocation",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": null,
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "relocation:pod_0",
+      "layout_id": "reconfiguration_workspace-03",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 1,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r10"
+    },
+    {
+      "case": "latch",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": null,
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "latch:pod_0",
+      "layout_id": "reconfiguration_workspace-03",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 1,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r11"
+    },
+    {
+      "case": "partial_topology",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": null,
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "latch:pod_1",
+      "layout_id": "reconfiguration_workspace-03",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 1,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r12"
+    },
+    {
+      "case": "commit",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": "narrow_tandem",
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "manager_commit",
+      "layout_id": "reconfiguration_workspace-03",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 1,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r13"
+    },
+    {
+      "case": "detach",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": "compact_diff",
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "detach:pod_0",
+      "layout_id": "reconfiguration_workspace-07",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 0,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r00"
+    },
+    {
+      "case": "stale_observation",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": "compact_diff",
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "stale_feedback:pod_0",
+      "layout_id": "reconfiguration_workspace-07",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 0,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r01"
+    },
+    {
+      "case": "cancellation",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": "compact_diff",
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "cancellation:pod_0",
+      "layout_id": "reconfiguration_workspace-07",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 0,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r02"
+    },
+    {
+      "case": "relocation",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": null,
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "relocation:pod_0",
+      "layout_id": "reconfiguration_workspace-07",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 0,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r03"
+    },
+    {
+      "case": "latch",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": null,
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "latch:pod_0",
+      "layout_id": "reconfiguration_workspace-07",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 0,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r04"
+    },
+    {
+      "case": "partial_topology",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": null,
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "latch:pod_1",
+      "layout_id": "reconfiguration_workspace-07",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 0,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r05"
+    },
+    {
+      "case": "commit",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": "narrow_tandem",
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "manager_commit",
+      "layout_id": "reconfiguration_workspace-07",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 0,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r06"
+    },
+    {
+      "case": "detach",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": "compact_diff",
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "detach:pod_0",
+      "layout_id": "reconfiguration_workspace-07",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 1,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r07"
+    },
+    {
+      "case": "stale_observation",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": "compact_diff",
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "stale_feedback:pod_0",
+      "layout_id": "reconfiguration_workspace-07",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 1,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r08"
+    },
+    {
+      "case": "cancellation",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": "compact_diff",
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "cancellation:pod_0",
+      "layout_id": "reconfiguration_workspace-07",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 1,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r09"
+    },
+    {
+      "case": "relocation",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": null,
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "relocation:pod_0",
+      "layout_id": "reconfiguration_workspace-07",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 1,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r10"
+    },
+    {
+      "case": "latch",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": null,
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "latch:pod_0",
+      "layout_id": "reconfiguration_workspace-07",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 1,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r11"
+    },
+    {
+      "case": "partial_topology",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": null,
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "latch:pod_1",
+      "layout_id": "reconfiguration_workspace-07",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 1,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r12"
+    },
+    {
+      "case": "commit",
+      "checks": {
+        "declared_injection": true,
+        "drive_inhibited": false,
+        "fail_closed_terminal": false,
+        "reconciliation_matches_observed_topology": false,
+        "recovery_required": false
+      },
+      "expected_reconciled_morphology": "narrow_tandem",
+      "failed_checks": [
+        "drive_inhibited",
+        "fail_closed_terminal",
+        "reconciliation_matches_observed_topology",
+        "recovery_required"
+      ],
+      "injection": "manager_commit",
+      "layout_id": "reconfiguration_workspace-07",
+      "message": "execution failed after replanning limit",
+      "passed": false,
+      "realization": 1,
+      "recovery_probe": {
+        "performed": false,
+        "state_before": "READY"
+      },
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r13"
+    }
+  ],
+  "design_hash": "de7a62328ff425bc42097cd8db5bf5ffb509c7695f398828e3c1a72ad9d9d489",
+  "distinct_fault_seeds": true,
+  "every_case_in_every_layout": true,
+  "gate_passed": false,
+  "layouts": [
+    "reconfiguration_workspace-00",
+    "reconfiguration_workspace-03",
+    "reconfiguration_workspace-07"
+  ],
+  "purpose": "engineering_qualification_not_study_evidence",
+  "realizations_per_case": 2,
+  "record_digests": {
+    "engineering_fault_matrix-reconfiguration_workspace-00-r00": "e27099bab845390986e288b599e59acb551e4ea186a15399de4dedcd5306a0be",
+    "engineering_fault_matrix-reconfiguration_workspace-00-r01": "2fddb2bc3bd9d0d8984072f4500194d14e2cd74f93f12b289e477c0505b6f50d",
+    "engineering_fault_matrix-reconfiguration_workspace-00-r02": "153c38b978691f49653b9856bfd13441ac83175123d939913576e14f39e829e2",
+    "engineering_fault_matrix-reconfiguration_workspace-00-r03": "7a6d771c6987d782268b6dea4012b1134ec809c3a82d68d3cc18754dc5f28886",
+    "engineering_fault_matrix-reconfiguration_workspace-00-r04": "36c560a5db54d2fb4b2ae61c4d12224bf1f7ccb78f57d2b23cee30aaf625aba5",
+    "engineering_fault_matrix-reconfiguration_workspace-00-r05": "e9da9eec0547c1d49f9a311a3ffb6d709eff945d46912cc2764b00f66ed2d545",
+    "engineering_fault_matrix-reconfiguration_workspace-00-r06": "3eab2e25a7c7f01e4c3332dfeaa31bbd76e66875a81b9f12d6cf80b597f7e770",
+    "engineering_fault_matrix-reconfiguration_workspace-00-r07": "a3a611a9373e7de954e7e945fe60df0df7c9fe0b79589fcb8e7a959cabfdafd1",
+    "engineering_fault_matrix-reconfiguration_workspace-00-r08": "85e87d664e4c60449dac9b73ac78510e6b4700eaceaed9b152e09a781e3a4155",
+    "engineering_fault_matrix-reconfiguration_workspace-00-r09": "b6008107d7ba157340dcf8d84b3995b3517627a6cc2acacc334873780f5a986b",
+    "engineering_fault_matrix-reconfiguration_workspace-00-r10": "757fca566b109a0a4461dacd6ca08545b715685f2a58ad1da572e25a21f25c3d",
+    "engineering_fault_matrix-reconfiguration_workspace-00-r11": "ebdd79d9997568273f196a1695b7feb95c1f7eb8eb077ee294103abd352321c2",
+    "engineering_fault_matrix-reconfiguration_workspace-00-r12": "07fde58c5727af184b64c19116993717d0a0e96eda10f75f97c4b82a1d237261",
+    "engineering_fault_matrix-reconfiguration_workspace-00-r13": "135974428e6233f6ef535e8e2b0179031f16e16aa7709555dbc72d6b64697e49",
+    "engineering_fault_matrix-reconfiguration_workspace-03-r00": "9791494e6142386fd2f3adece586d3997c03165d21bd11a5ab9f12acef88329f",
+    "engineering_fault_matrix-reconfiguration_workspace-03-r01": "39632b0a4ff9eea91a4a1d91a1ab7c3c0e84e3b5009e9f3374b82ecce8193edd",
+    "engineering_fault_matrix-reconfiguration_workspace-03-r02": "8eb69a59574f4f939df82548be79216324d3eb754490bddcf9769b266196d1fd",
+    "engineering_fault_matrix-reconfiguration_workspace-03-r03": "3af5ea248d5940a2850eb779f02554ded8075a7e3a53028a7299e636ab1c5fa0",
+    "engineering_fault_matrix-reconfiguration_workspace-03-r04": "c1ee7b974c60e0d072d519b2187878fc8e37b6ca3c1a4ed207775da2d2fc4661",
+    "engineering_fault_matrix-reconfiguration_workspace-03-r05": "eb78a8bfde562ddc7bad488d4eacfe70a49c72ccd242678a0a4f15ebcd30b99c",
+    "engineering_fault_matrix-reconfiguration_workspace-03-r06": "4d8556d36ef2c3ad1ea969c53af3f5b1e1037bfc570a1086c1949b757de78525",
+    "engineering_fault_matrix-reconfiguration_workspace-03-r07": "30335c5842ed2a5760cd69d979601b00e1817e56df32990b50682286410fa7ee",
+    "engineering_fault_matrix-reconfiguration_workspace-03-r08": "df24a3f6a11846ee91f419423aa4dc483cca7952651f80ffc4ffcf9de6772f4a",
+    "engineering_fault_matrix-reconfiguration_workspace-03-r09": "0dec82b5ac8674adb2922111d47a9a9bc8b2b0f2553362610f3de4efc964aaff",
+    "engineering_fault_matrix-reconfiguration_workspace-03-r10": "3ef0958d36249db606f440357a0098b37aa5b954d413fdf3fa2e819a2990f004",
+    "engineering_fault_matrix-reconfiguration_workspace-03-r11": "2622e05e69bf10d4bbcf783f7e4cfead1dafd6d87f9a6edf66b59ebb4d52df9b",
+    "engineering_fault_matrix-reconfiguration_workspace-03-r12": "961f2e560d82068ec491dee52c83bc452c53f50ff73a43872fb9b310f27e7a9c",
+    "engineering_fault_matrix-reconfiguration_workspace-03-r13": "00a596e54e52c8e46168859f88b35e9b55219965cbf81c7474b4c4cd548b87a4",
+    "engineering_fault_matrix-reconfiguration_workspace-07-r00": "6f730186f1f00ea02f3895c187b9f9bee41325d05eb8b5134ab2c51347bc200a",
+    "engineering_fault_matrix-reconfiguration_workspace-07-r01": "da9c7fde7a58672f61f5e57bcca8d58114a92e233ddd1ab92d94569149ca1f08",
+    "engineering_fault_matrix-reconfiguration_workspace-07-r02": "cb625177b3f783168704ca3e790b7b75ee6997f717f392627b635f0603b8771e",
+    "engineering_fault_matrix-reconfiguration_workspace-07-r03": "5d94cd33cbdd770b02f69af59a1be9c06c378e82d7c78d24963e4a4f36491b70",
+    "engineering_fault_matrix-reconfiguration_workspace-07-r04": "a5cb5a4694f556b9aa0f36584644b7faf3b367fec98eb87cfbc393b8efa91933",
+    "engineering_fault_matrix-reconfiguration_workspace-07-r05": "c620a76fef0a710ffee8701eab8827653581e0d4b07408ce8912860ec4b27395",
+    "engineering_fault_matrix-reconfiguration_workspace-07-r06": "ff064c8aadca83659c176ec1a6f87d4b2f7f068d3231c0e0a78350e16da7f10e",
+    "engineering_fault_matrix-reconfiguration_workspace-07-r07": "87ccb5a530ddb853fc0db2fc12d7d5926221c7da1849896f6dd0dcc649059109",
+    "engineering_fault_matrix-reconfiguration_workspace-07-r08": "269fe3691952ee255ea3bffc3f98d91674e152215474506e34e6dbfd20a235ea",
+    "engineering_fault_matrix-reconfiguration_workspace-07-r09": "abe5ce4ea48b02889e6a8bb8dd4614eddd226695eebed74743424fd01cfaad1c",
+    "engineering_fault_matrix-reconfiguration_workspace-07-r10": "ae52307176839fa04f96db1795ee2f4c039692f6c8cd8832f8eec2a4c72ef53a",
+    "engineering_fault_matrix-reconfiguration_workspace-07-r11": "83358aa0c04fd9c35769a42577b0a3f59b83d00c4ab9a2cddae3816fc1835bd7",
+    "engineering_fault_matrix-reconfiguration_workspace-07-r12": "fc2fe8f9011d23bc139d6d7eb92b6bacf10545b17c2d1fac929b4e944acdeb38",
+    "engineering_fault_matrix-reconfiguration_workspace-07-r13": "5f0122fb04651178f09d534b6aca03484727a9cc33cb6023003ab2210aa6996e"
+  },
+  "unexpected_records": []
+}

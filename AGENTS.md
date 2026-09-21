@@ -65,10 +65,14 @@ is why the lost campaigns could not have supplied a margin. `morphology
 qualify_roundtrip_batch audit` now reports `motion_margins` and
 `real_time_factors`, so the replacement campaign yields the margin directly.
 
-That change invalidated the `combined_constraints` Gate 2 golden layout, which
-was re-selected to world seed 1 against a recorded seed sweep in the roadmap.
-That family separates on only a third of sampled seeds and needs confirming
-across the frozen design's layouts. See `docs/current_status.md` "Resume here"
+The 20-run round-trip gate passes and Gate 2's manipulation check is closed.
+The multi-layout fault-matrix campaign was executed and fails 13/42, mostly
+without exercising its faults: on non-neutral layouts the compact robot drives
+into the raised transition shelf and never reaches the transition site, and
+`pod_4` misses its final relocation waypoint before the `commit` fault can
+fire. Its audit is committed at `studies/gate0/fault_matrix_campaign_audit.json`.
+Gate 0 now needs those two fixes, an auditor that requires evidence the
+injection fired, and a re-execution. See `docs/current_status.md` "Resume here"
 for the open items, and its retention section for the storage decision the
 confirmatory set forces: records run 3.5--5.8 MB each, so 432 trials is about
 1.9 GB and plain git tracking is not viable.

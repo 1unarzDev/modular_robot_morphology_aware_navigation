@@ -459,9 +459,50 @@ and `-07` at two independent `fault_seed` realizations each, under
 here before execution so the layouts and seeds cannot be chosen after seeing
 outcomes.
 
-It has not been executed. The previously reported one-layout pass is
-notes-only, since those records are gone, so this campaign establishes the
-fault matrix from scratch rather than extending an existing result.
+The previously reported one-layout pass is notes-only, since those records are
+gone, so this campaign establishes the fault matrix from scratch rather than
+extending an existing result.
+
+### Executed: the gate fails, and mostly did not exercise the faults
+
+The campaign ran to completion at commit `91d74d1` (interrupted once after 19
+trials and resumed; the runner skips terminal records, and the interrupted
+trial re-ran from launch). All 42 trials produced terminal records against
+design hash `de7a6232...`; campaign digest
+`8e1f6bacd12499d644ac4df7d8d28499ff8166ce47ecfbf993bea8b79d479121`. The audit
+is committed at `studies/gate0/fault_matrix_campaign_audit.json`, including
+per-record digests. `gate_passed` is false: 13/42 cases pass.
+
+| Layout | Passed | What the trials actually did |
+|---|---|---|
+| `reconfiguration_workspace-00` (neutral) | 12/14 | Six cases pass at both realizations. Both `commit` cases fail `reconciliation_matches_observed_topology`: `pod_4` did not reach relocation waypoint 5/5 of `compact_to_narrow`, so the transition failed before the commit stage and the declared fault never fired. |
+| `reconfiguration_workspace-03` | 1/14 | 13 trials end `execution failed after replanning limit` with zero reconfiguration attempts, final state `READY`: the robot never reached the transition site, so no fault was injected. `03-r03` (relocation) passes. |
+| `reconfiguration_workspace-07` | 0/14 | All 14 as layout 03: zero attempts, never reached the site. |
+
+The failures are therefore upstream of fault handling, and the outcome says
+little about the executor's fail-closed behaviour beyond layout 00, where six
+of seven cases pass at both realizations. Two causes, both diagnosed from the
+retained records and launch logs:
+
+1. **The compact robot drives into the raised transition shelf.** Non-neutral
+   `reconfiguration_workspace` layouts carry `raised_transition_shelf`
+   (underside 0.10 m, below the 0.30 m robot) along the left pod track,
+   starting just beyond the spawn footprint. The shelf exists only in the 3D
+   transition environment; neither the planner's 2D grid nor Nav2's map
+   contains it. Routes run straight for 0.2--0.3 m before turning toward the
+   site, `pod_0` contacts the shelf corner (evaluator clearance 0.0 m), and
+   the controller reports `Failed to make progress` on every replanning
+   attempt.
+2. **`pod_4` misses its final relocation waypoint** in `compact_to_narrow`,
+   the same failure the Gate 0 smoke run recorded.
+
+The auditor also has a gap: `declared_injection` checks the launch parameter,
+not that the injection fired. A trial whose fault never fired is scored as a
+fault-handling failure, and a trial whose unfired fault coincides with a
+natural failure of the expected kind could pass. Records do not carry the
+evidence to tell these apart after the fact.
+
+This record set is not replaced or re-scored by any later campaign.
 
 ## The Gate 0 record sets are not retained
 
@@ -569,7 +610,8 @@ is not comparable to figures that cannot be re-audited.
 
 ## Resume here
 
-Items 1 and 2 are closed. Item 3 is frozen but not executed.
+Items 1 and 2 are closed. Item 3 was executed and fails; see "Executed: the
+gate fails" above.
 
 1. **Closed.** `check_planner_manipulation` has been run over
    `studies/confirmatory/design.json`; the report is committed at
@@ -616,10 +658,12 @@ Items 1 and 2 are closed. Item 3 is frozen but not executed.
    yaw exceeds 0.12/0.25 = 0.48 rad, because the yaw-normalized coupling ratio
    (`<= 0.25`) is tighter below that. Runs yaw about 0.45 rad, so that bound has
    never been the constraint that rejects and its margin is not informative.
-3. Execute the multi-layout fault-matrix campaign. Its design is frozen at
-   `config/fault_matrix_campaign.json`; the generator, runtime injection map,
-   and per-layout auditor are ready and host-tested. The matrix still has one
-   passing layout, so this is the remaining Gate 0 step.
+3. **Executed, failed.** The multi-layout fault-matrix campaign
+   (`config/fault_matrix_campaign.json`) passes 13/42. Most faults never
+   fired: the compact robot cannot reach the transition site on non-neutral
+   layouts, and `pod_4` misses its final relocation waypoint before the
+   `commit` fault can fire. Gate 0 needs both fixed, an auditor that requires
+   evidence the injection fired, and a re-execution.
 
 Then proceed to the disjoint pilot without spending more submission time on
 repeated 20-run startup certification. If throughput is still limiting, measure
