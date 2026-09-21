@@ -495,12 +495,22 @@ Item 1 is a design decision; items 2 and 3 need container runs.
    world seed 1 after the post-transition maneuver invalidated seed 8, but the
    family separates on only 4 of 12 sampled seeds; the roadmap Gate 2 entry
    records the sweep. `docking_observability` is unaffected at 12/12.
-2. Record the true post-transition gate margin from the Gate 0 record set. This
-   is now measurable for the first time, because the gate no longer varies with
-   host load. The diagnosis, the fix, and its two-realization runtime
-   confirmation across a 0.54--0.98 real-time-factor span are complete; the
-   margin itself is still unquantified, and the current floors (0.08 m travel,
-   0.10 rad yaw) have never been justified against a clean record set.
+2. Read the post-transition gate margin off the re-collected Gate 0 campaign.
+   The measurement machinery is in: `audit_roundtrip_records` now emits
+   `motion_margins`, giving each signed-motion quantity's observed range and
+   its worst-case room before rejection, beside `real_time_factors` so that
+   travel's independence from load is checkable rather than asserted.
+   `MOTION_BOUNDS` mirrors the gate and a test drives the real predicate either
+   side of every bound, so a margin cannot be reported against a limit the gate
+   does not enforce. What is still missing is the campaign to read it from.
+
+   Writing that binding test surfaced a property of the gate worth knowing
+   before any threshold is set from it: the absolute yaw-translation bound
+   (`translation_m <= 0.12`) cannot bind until yaw exceeds 0.12/0.25 = 0.48 rad,
+   because the yaw-normalized coupling ratio (`<= 0.25`) is tighter below that.
+   Engineering runs yaw about 0.45 rad, so in practice that bound has never been
+   the constraint that rejects and its margin is not informative. Set the
+   operational threshold from the coupling ratio and the travel floors.
 3. Freeze and execute a multi-layout fault-matrix campaign. The generator,
    runtime injection map, and per-layout auditor are ready and host-tested.
 

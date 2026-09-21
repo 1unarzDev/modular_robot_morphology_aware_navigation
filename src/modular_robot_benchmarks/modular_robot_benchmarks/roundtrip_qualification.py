@@ -4,6 +4,7 @@ import argparse
 import json
 from dataclasses import replace
 from pathlib import Path
+from statistics import median
 
 from .design import METHODS, StudyDesign, generate_design
 from .records import TrialRecord, TrialStore
@@ -21,6 +22,104 @@ def generate_roundtrip_design(runs: int = 20, master_seed: int = 20260913) -> St
     trials = tuple(spec for spec in generated.trials
                    if spec.method == QUALIFICATION_METHOD)
     return replace(generated, trials=trials)
+
+
+# Gate 0 signed-motion bounds, mirrored from
+# `modular_robot_bringup.qualification.qualification_pass` as
+# (label, stage, field, direction, bound). `tests/test_roundtrip_qualification.py`
+# binds the two by flipping the real gate either side of every bound, so a
+# margin can never be reported against a limit the gate does not enforce.
+#
+# `min` means the value must stay at or above the bound, `max` at or below it,
+# and `abs_max` bounds its magnitude. `translation_per_yaw` is derived, not
+# recorded: it is the yaw-normalized translation coupling.
+MOTION_BOUNDS = (
+    ("positive_yaw_rad", "positive_yaw", "yaw_rad", "min", 0.10),
+    ("negative_yaw_rad", "negative_yaw", "yaw_rad", "max", -0.10),
+    ("forward_travel_m", "forward", "forward_m", "min", 0.08),
+    ("reverse_travel_m", "reverse", "forward_m", "max", -0.08),
+    ("positive_yaw_translation_m", "positive_yaw", "translation_m", "max", 0.12),
+    ("negative_yaw_translation_m", "negative_yaw", "translation_m", "max", 0.12),
+    ("positive_yaw_coupling", "positive_yaw", "translation_per_yaw", "max", 0.25),
+    ("negative_yaw_coupling", "negative_yaw", "translation_per_yaw", "max", 0.25),
+    ("forward_lateral_m", "forward", "lateral_m", "abs_max", 0.08),
+    ("reverse_lateral_m", "reverse", "lateral_m", "abs_max", 0.08),
+    ("forward_yaw_rad", "forward", "yaw_rad", "abs_max", 0.15),
+    ("reverse_yaw_rad", "reverse", "yaw_rad", "abs_max", 0.15),
+)
+
+
+def _margin(observed: float, direction: str, bound: float) -> float:
+    """Room remaining before the gate rejects. Negative means it rejected."""
+    if direction == "min":
+        return observed - bound
+    if direction == "max":
+        return bound - observed
+    return bound - abs(observed)
+
+
+def _stage_values(stages: dict, stage: str) -> dict[str, float]:
+    values = dict(stages.get(stage) or {})
+    yaw = values.get("yaw_rad")
+    if "translation_m" in values and yaw:
+        values["translation_per_yaw"] = values["translation_m"] / abs(float(yaw))
+    return values
+
+
+def motion_margins(records: list[TrialRecord]) -> dict:
+    """Each signed-motion quantity against the bound it has to meet.
+
+    Gate 0 owes a machine-readable summary of signed yaw, travel, and cross
+    coupling, not just a verdict. The worst margin over a campaign is the
+    number that says how close the platform actually came to failing, and it
+    is what an operational threshold has to be set from.
+
+    This is only meaningful for records whose command windows ran their full
+    simulated duration. `TrialRecord.validate` rejects truncated ones at load,
+    so a margin cannot be computed from load-dependent travel.
+    """
+    observed: dict[str, list[float]] = {label: [] for label, *_ in MOTION_BOUNDS}
+    for record in records:
+        for qualification in record.motion_qualifications:
+            stages = qualification.get("stages") or {}
+            for label, stage, field, _direction, _bound in MOTION_BOUNDS:
+                values = _stage_values(stages, stage)
+                if field in values:
+                    observed[label].append(float(values[field]))
+    summary = {}
+    for label, _stage, _field, direction, bound in MOTION_BOUNDS:
+        values = observed[label]
+        if not values:
+            continue
+        margins = [_margin(value, direction, bound) for value in values]
+        summary[label] = {
+            "bound": bound,
+            "direction": direction,
+            "samples": len(values),
+            "observed_min": min(values),
+            "observed_median": median(values),
+            "observed_max": max(values),
+            "worst_margin": min(margins),
+            "median_margin": median(margins),
+        }
+    return summary
+
+
+def real_time_factors(records: list[TrialRecord]) -> dict:
+    """Load spread the campaign actually met.
+
+    Commanded maneuver windows advance on the simulated clock, so travel must
+    not track this. Reporting it beside the margins is what makes that
+    checkable rather than asserted.
+    """
+    factors = [float(record.phase_timing["real_time_factor"])
+               for record in records
+               if isinstance(record.phase_timing, dict)
+               and record.phase_timing.get("real_time_factor") is not None]
+    if not factors:
+        return {}
+    return {"samples": len(factors), "minimum": min(factors),
+            "median": median(factors), "maximum": max(factors)}
 
 
 def _morphology_sequence(record: TrialRecord) -> list[str]:
@@ -78,12 +177,14 @@ def audit_roundtrip_records(records: list[TrialRecord], design: StudyDesign) -> 
     if len(disturbances) != len(set(disturbances)):
         failures.append("realized physical disturbances are not unique across runs")
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "purpose": DESIGN_KIND,
         "design_hash": design.design_hash,
         "expected_runs": 20,
         "observed_terminal_records": len(records),
         "unique_realized_disturbances": len(set(disturbances)),
+        "motion_margins": motion_margins(records),
+        "real_time_factors": real_time_factors(records),
         "passed": not failures,
         "failures": failures,
     }
