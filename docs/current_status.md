@@ -569,49 +569,57 @@ is not comparable to figures that cannot be re-audited.
 
 ## Resume here
 
-Item 1 needs a planner sweep and then possibly a design decision; items 2 and 3
-need container runs.
+Items 1 and 2 are closed. Item 3 is frozen but not executed.
 
-1. Run `check_planner_manipulation` over `studies/confirmatory/design.json` and
-   read whether `combined_constraints` still manipulates across the twelve
-   layouts the frozen design draws. Its golden fixture was re-selected to world
-   seed 1 after the post-transition maneuver invalidated seed 8, but the family
-   separates on only 4 of 12 sampled seeds; the roadmap Gate 2 entry records
-   that sweep. `docking_observability` was unaffected at 12/12.
+1. **Closed.** `check_planner_manipulation` has been run over
+   `studies/confirmatory/design.json`; the report is committed at
+   `studies/gate2/confirmatory_manipulation_check.json`. The
+   `combined_constraints` fragility the roadmap recorded does not appear on the
+   layouts the frozen design draws. `confirmatory_scenarios` makes every fourth
+   layout a neutral control (`layout_index % 4 == 0`), so of twelve layouts per
+   family, nine can separate and three must not:
 
-   The tool plans all four methods on every layout the design draws and counts,
-   per declared contrast, how many layouts decide differently. It defaults to
-   the search parameters `morphology_planner.ros_node` uses for missions. A
-   decision is only owed if the count is low: the second confirmatory contrast
-   (`sensing_feasibility_coupled` minus `feasibility_coupled`) is unidentifiable
-   in any layout where the two methods choose the same site, so a family that
-   rarely separates makes that contrast mostly noise no matter how many trials
-   are run. Options would be to drop the family from the contrast's declared
-   scope, re-draw its layouts, or strengthen the constraint the family encodes
-   -- all of which must be decided and frozen before any outcome data exists.
+   | Family | Separating, of 9 non-neutral | Agreeing, of 3 neutral |
+   |---|---|---|
+   | `docking_observability` | 9 | 3 |
+   | `combined_constraints` | 9 | 3 |
 
-   Note the check's own limit before reading too much into it: it drives the
-   planner with each scenario's declared location-dependent observability,
-   which is the manipulation the design assumes but not what missions currently
-   supply. Separation there is necessary for the contrast, not sufficient.
-2. Read the post-transition gate margin off the re-collected Gate 0 campaign.
-   The measurement machinery is in: `audit_roundtrip_records` now emits
-   `motion_margins`, giving each signed-motion quantity's observed range and
-   its worst-case room before rejection, beside `real_time_factors` so that
-   travel's independence from load is checkable rather than asserted.
-   `MOTION_BOUNDS` mirrors the gate and a test drives the real predicate either
-   side of every bound, so a margin cannot be reported against a limit the gate
-   does not enforce. What is still missing is the campaign to read it from.
+   Both declared contrasts are identified in every non-neutral layout of both
+   families, and all four methods agree in every neutral control, which is what
+   the Gate 2 entry requires. The earlier 4-of-12 figure was measured by
+   sweeping world seeds 1--12 at one layout index, not on the design's drawn
+   layouts. No design decision is owed and nothing needs freezing.
 
-   Writing that binding test surfaced a property of the gate worth knowing
-   before any threshold is set from it: the absolute yaw-translation bound
-   (`translation_m <= 0.12`) cannot bind until yaw exceeds 0.12/0.25 = 0.48 rad,
-   because the yaw-normalized coupling ratio (`<= 0.25`) is tighter below that.
-   Engineering runs yaw about 0.45 rad, so in practice that bound has never been
-   the constraint that rejects and its margin is not informative. Set the
-   operational threshold from the coupling ratio and the travel floors.
-3. Freeze and execute a multi-layout fault-matrix campaign. The generator,
-   runtime injection map, and per-layout auditor are ready and host-tested.
+   Two properties of that report bear on the analysis plan rather than on the
+   gate. In `docking_observability`, `geometry_coupled` and
+   `feasibility_coupled` choose the same site in all twelve layouts, so the
+   feasibility term never binds there and the two declared contrasts coincide;
+   independent information for `sensing_feasibility_coupled` minus
+   `feasibility_coupled` comes only from `combined_constraints`, where that
+   term does bind. And `route_first_adaptation` raises `NoPathError: fixed
+   spatial route cannot be adapted with feasible transitions` in all eighteen
+   non-neutral layouts across both families. That is the baseline behaving as
+   defined rather than a planner defect, but how a planning failure scores as a
+   mission outcome must be declared before outcome data exists.
+
+   The check's limit is unchanged: it drives the planner with each scenario's
+   declared location-dependent observability, which is the manipulation the
+   design assumes but not what missions currently supply. Separation there is
+   necessary for the contrast, not sufficient.
+2. **Closed.** The post-transition gate margin has been read off the passing
+   20-run campaign; see "The 20-run round-trip gate passes" above. The travel
+   floors bind roughly twice as tightly as anything else, so set the
+   operational threshold from them and from the coupling ratio.
+
+   The binding test surfaced a property of the gate worth keeping in view: the
+   absolute yaw-translation bound (`translation_m <= 0.12`) cannot bind until
+   yaw exceeds 0.12/0.25 = 0.48 rad, because the yaw-normalized coupling ratio
+   (`<= 0.25`) is tighter below that. Runs yaw about 0.45 rad, so that bound has
+   never been the constraint that rejects and its margin is not informative.
+3. Execute the multi-layout fault-matrix campaign. Its design is frozen at
+   `config/fault_matrix_campaign.json`; the generator, runtime injection map,
+   and per-layout auditor are ready and host-tested. The matrix still has one
+   passing layout, so this is the remaining Gate 0 step.
 
 Then proceed to the disjoint pilot without spending more submission time on
 repeated 20-run startup certification. If throughput is still limiting, measure

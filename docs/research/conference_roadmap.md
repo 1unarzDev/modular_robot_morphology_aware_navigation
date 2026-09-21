@@ -138,14 +138,25 @@ to world seed 1, which separates under both the old and the corrected model and
 by the widest margin, so it is not tuned to either. No pilot or confirmatory
 data exists (0/432), so this re-selection cannot be a response to an outcome.
 
-Remaining risk: `combined_constraints` separates on only a third of sampled
-seeds. `check_planner_manipulation` measures this directly, planning all four
-methods on every layout a frozen design draws and counting how many decide
-differently under each declared contrast. Run it over
-`studies/confirmatory/design.json` before relying on the family for the sensing
-contrast: the `sensing_feasibility_coupled` minus `feasibility_coupled`
-contrast is unidentifiable in any layout where those two methods choose the
-same site, so a low count makes the contrast noise regardless of trial count.
+That remaining risk is now measured and did not materialize. Run over
+`studies/confirmatory/design.json` on 2026-09-20, `check_planner_manipulation`
+reports that both declared contrasts separate in all nine non-neutral layouts
+of both families, and that all four methods agree in all three neutral controls
+of each (`confirmatory_scenarios` makes every fourth layout neutral). The
+4-of-12 figure above was a sweep of world seeds 1--12 at a single layout index,
+not the layouts the frozen design draws, so it did not predict the design's
+behaviour. The report is committed at
+`studies/gate2/confirmatory_manipulation_check.json`.
+
+Two findings in it bear on the analysis plan rather than on this gate. In
+`docking_observability`, `geometry_coupled` and `feasibility_coupled` choose
+the same site in all twelve layouts, so the two declared contrasts coincide
+there and independent information for `sensing_feasibility_coupled` minus
+`feasibility_coupled` comes only from `combined_constraints`. And
+`route_first_adaptation` cannot plan at all in any of the eighteen non-neutral
+layouts, raising `NoPathError: fixed spatial route cannot be adapted with
+feasible transitions`; how that scores as a mission outcome must be declared
+before outcome data exists.
 
 The check drives the planner with each scenario's declared location-dependent
 observability. Missions do not yet supply that -- the planner node consumes
