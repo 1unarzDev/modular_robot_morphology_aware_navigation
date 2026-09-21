@@ -104,6 +104,19 @@ class TrialRecord:
             if "passed" not in qualification or not isinstance(
                     qualification["passed"], bool):
                 raise ValueError("motion qualification requires a boolean passed field")
+            # A stage the simulator did not actually run for its commanded
+            # duration measures host load, not mechanics, so its verdict is not
+            # admissible. Records predating this field are unchecked.
+            for name, stage in (qualification.get("stages") or {}).items():
+                commanded = stage.get("commanded_duration_s")
+                simulated = stage.get("simulated_duration_s")
+                if commanded is None or simulated is None:
+                    continue
+                if float(simulated) < float(commanded):
+                    raise ValueError(
+                        f"motion qualification stage {name} ran "
+                        f"{float(simulated):.3f}s of simulated time against a "
+                        f"{float(commanded):.3f}s command window")
         if not self.infrastructure_attempts:
             raise ValueError("trial record requires infrastructure attempt provenance")
         if self.infrastructure_attempts[-1].get("terminal_status") != self.terminal_status:

@@ -1,3 +1,4 @@
+from collections.abc import Callable
 from dataclasses import dataclass
 from math import atan2, cos, hypot, sin
 
@@ -14,6 +15,39 @@ VERIFICATION_SEQUENCE = (
     ("forward", 0.12, 0.0, 1.0),
     ("reverse", -0.12, 0.0, 1.0),
 )
+
+
+class CommandWindow:
+    """Bounds one commanded maneuver stage in simulated time.
+
+    The robot moves in simulated time, so bounding a stage with the wall clock
+    delivers only ``duration_s * real_time_factor`` simulated seconds of
+    motion. Travel then scales with host load rather than with mechanics, and
+    a healthy robot fails the gate whenever the simulator falls behind.
+
+    The wall clock is retained only as a stall backstop: if the simulated clock
+    stops advancing, the stage ends and is reported as a stall instead of
+    blocking until the trial watchdog fires.
+    """
+
+    def __init__(self, duration_s: float, simulated_now_s: Callable[[], float],
+                 wall_now_s: Callable[[], float], stall_grace_s: float) -> None:
+        self._duration_s = float(duration_s)
+        self._simulated_now_s = simulated_now_s
+        self._wall_now_s = wall_now_s
+        self._simulated_start_s = float(simulated_now_s())
+        self._wall_deadline_s = (
+            float(wall_now_s()) + self._duration_s + float(stall_grace_s))
+        self.elapsed_s = 0.0
+
+    def keep_commanding(self) -> bool:
+        self.elapsed_s = float(self._simulated_now_s()) - self._simulated_start_s
+        return self.elapsed_s < self._duration_s
+
+    @property
+    def stalled(self) -> bool:
+        return (self.elapsed_s < self._duration_s
+                and float(self._wall_now_s()) >= self._wall_deadline_s)
 
 
 @dataclass(frozen=True)

@@ -299,11 +299,52 @@ only 0.0813 m where every other mission reached about 0.113 m. Neutral has no
 transition obstacles and `geometry_coupled` never evaluates the verification
 sweep, so its planner decision is provably identical. Three identical-seed
 repeats in `results/debug/neutral_geometry_repro_{1,2,3}_raw` all completed,
-with reverse travel -0.1129, -0.1129, and -0.1129 m. The post-transition motion
-gate is therefore intermittently marginal under identical seeds, roughly one
-failure in four attempts here. That is a platform reliability issue, it is
-independent of method, and it will inflate failure rates in the confirmatory
-study unless the gate margin is diagnosed first.
+with reverse travel -0.1129, -0.1129, and -0.1129 m.
+
+That intermittency is now diagnosed, and it was neither the gate threshold, the
+actuator allocation, nor the contact model. `_command_for` bounded each
+commanded maneuver stage with `time.monotonic()` while the robot moved in
+simulated time, so a stage delivered `duration * real_time_factor` simulated
+seconds of motion and travel scaled with host load. The recorded simulated
+windows are conclusive: all six passing qualifications ran 6.00--6.02 s against
+the 6.0 s nominal sequence, and the failing one ran 5.00 s. Within that run the
+first stage was unaffected (positive yaw +0.4413 rad against a +0.4472--0.5028
+norm) and the remaining three were uniformly short at 67--72% of norm --
+negative yaw -0.3459 rad, forward +0.0813 m, reverse -0.0788 m -- which is the
+signature of a sustained real-time-factor drop, not of a mechanical fault. No
+single mechanical cause scales yaw, forward, and reverse by one common factor
+while lateral coupling stays under 1.1 mm and minimum clearance stays at
+18.3 cm.
+
+The window is now measured on the simulated clock, the same time base the
+recorded odometry poses carry. `CommandWindow` in
+`modular_robot_bringup.qualification` owns the rule, and the wall clock is
+retained only as a stall backstop: a simulated clock that stops advancing ends
+the stage with `motion_command_window_unavailable` after
+`motion_command_stall_grace_s` rather than blocking until the trial watchdog.
+Each stage now records `commanded_duration_s` and `simulated_duration_s`, and
+`TrialRecord.validate` rejects any record whose stage ran less simulated time
+than it commanded, so a truncated verdict cannot enter a record set again.
+Records predating those fields are unchecked and remain valid. The standalone
+`modular_robot_benchmarks.motion_qualification` engineering tool already
+advanced its stages on `node.sim_time` behind a wall watchdog; the navigator had
+diverged from that pattern and now matches it.
+
+The same defect was latent one node downstream and is fixed with it.
+`assembly_drive_adapter` compared command staleness against `time.monotonic()`
+while its publisher and its commander are both paced by simulated time, so with
+a 0.3 s timeout and a 0.05 s republish period it zeroes a live command once the
+real-time factor drops below about 0.17. That was unreachable while the window
+itself ended early under load, and reachable afterwards. Staleness is now
+measured on the node's ROS clock, and an unset command time is explicitly
+stale rather than arithmetically fresh at simulated time zero.
+
+This was a measurement fault that fails healthy robots, so it inflated failure
+rates identically across all four methods. It did not bias the method contrast,
+but it did cost one of the nine workshop cells. The re-run evidence stands; the
+published Neutral `geometry_coupled` `motion_qualification_failure` should be
+read as an instrumentation artifact, not a platform reliability figure. The
+"roughly one failure in four attempts" reliability estimate is withdrawn.
 
 Mission completion across the nine cells went from 5/9 to 6/9 and evaluator
 collisions from 11 to 8.
@@ -341,11 +382,12 @@ Item 1 is a design decision; items 2 and 3 need container runs.
    world seed 1 after the post-transition maneuver invalidated seed 8, but the
    family separates on only 4 of 12 sampled seeds; the roadmap Gate 2 entry
    records the sweep. `docking_observability` is unaffected at 12/12.
-2. Diagnose the intermittent post-transition motion gate before pilot
-   collection. One of four identical-seed Neutral `geometry_coupled` attempts
-   failed the reverse-travel floor by 1.2 mm without touching anything. Decide
-   whether the gate threshold, the actuator allocation, or the contact model is
-   responsible, and record the margin from the Gate 0 record set.
+2. Re-run the identical-seed Neutral `geometry_coupled` attempt under a loaded
+   host to confirm the simulated-time window holds travel at the 0.113 m norm
+   regardless of real-time factor. The diagnosis and fix are in; only the
+   runtime confirmation is outstanding. Then record the true gate margin from
+   the Gate 0 record set, which is now measurable because it is no longer
+   contaminated by host load.
 3. Freeze and execute a multi-layout fault-matrix campaign. The generator,
    runtime injection map, and per-layout auditor are ready and host-tested.
 

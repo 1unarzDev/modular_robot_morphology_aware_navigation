@@ -69,3 +69,49 @@ def test_executed_sequence_matches_the_planned_verification_declaration():
     assert declared == VERIFICATION_SEQUENCE
     assert set(name for name, *_ in VERIFICATION_SEQUENCE) == {
         "positive_yaw", "negative_yaw", "forward", "reverse"}
+
+
+def _run_window(duration, real_time_factor, stall_grace_s=30.0, tick_s=0.05,
+                stall_after_s=None):
+    """Drive one command window with a simulated clock at a fixed rate.
+
+    Returns the simulated seconds the stage was commanded for, or None if the
+    window reported a stalled simulated clock.
+    """
+    from modular_robot_bringup.qualification import CommandWindow
+
+    wall = [0.0]
+    simulated = [0.0]
+    window = CommandWindow(duration, lambda: simulated[0], lambda: wall[0],
+                           stall_grace_s)
+    while window.keep_commanding():
+        if window.stalled:
+            return None
+        wall[0] += tick_s
+        if stall_after_s is None or wall[0] < stall_after_s:
+            simulated[0] += tick_s * real_time_factor
+    return window.elapsed_s
+
+
+def test_command_window_delivers_full_motion_when_simulation_lags():
+    """The gate must measure mechanics, not host load.
+
+    The published Neutral `geometry_coupled` failure ran the four-stage
+    maneuver for 5.00 s of simulated time where every passing repeat ran
+    6.00 s, because the window was bounded by `time.monotonic()` while the
+    robot moved in simulated time. Travel then scales with the real-time
+    factor: that run reached 0.0813 m forward and -0.0788 m reverse against a
+    -0.08 m floor and a 0.113 m norm, having struck nothing.
+    """
+    for real_time_factor in (1.0, 0.94, 0.68, 0.25):
+        assert _run_window(1.0, real_time_factor) >= 1.0
+        assert _run_window(1.5, real_time_factor) >= 1.5
+
+
+def test_command_window_reports_a_stalled_simulated_clock():
+    """A simulated clock that stops must not block until the trial watchdog."""
+    assert _run_window(1.0, 1.0, stall_grace_s=2.0, stall_after_s=0.5) is None
+
+
+def test_command_window_does_not_stall_on_a_merely_slow_simulator():
+    assert _run_window(1.0, 0.1, stall_grace_s=30.0) >= 1.0

@@ -187,3 +187,30 @@ def test_transition_decision_records_require_auditable_fields():
     record = _records(design)[0]
     with pytest.raises(ValueError, match="audit fields"):
         replace(record, transition_edge_decisions=[{"feasible": False}]).validate()
+
+
+def test_trial_record_rejects_a_truncated_motion_qualification_window():
+    """A stage the simulator did not run for its full command window measures
+    host load, not mechanics, so its verdict is not admissible evidence."""
+    design = generate_design(layouts_per_family=1, replicates=1)
+    truncated = replace(_records(design)[0], motion_qualifications=[{
+        "passed": False,
+        "stages": {"forward": {"forward_m": 0.0813, "lateral_m": 0.0,
+                               "translation_m": 0.0813, "yaw_rad": 0.0,
+                               "commanded_duration_s": 1.0,
+                               "simulated_duration_s": 0.72}},
+    }])
+    with pytest.raises(ValueError, match="simulated time"):
+        truncated.validate()
+
+
+def test_trial_record_accepts_a_complete_motion_qualification_window():
+    design = generate_design(layouts_per_family=1, replicates=1)
+    complete = replace(_records(design)[0], motion_qualifications=[{
+        "passed": True,
+        "stages": {"forward": {"forward_m": 0.1128, "lateral_m": 0.0,
+                               "translation_m": 0.1128, "yaw_rad": 0.0,
+                               "commanded_duration_s": 1.0,
+                               "simulated_duration_s": 1.02}},
+    }])
+    complete.validate()

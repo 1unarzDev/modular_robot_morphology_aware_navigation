@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import time
-
 import rclpy
 import yaml
 from ament_index_python.packages import get_package_share_directory
@@ -36,7 +34,11 @@ class AssemblyDriveAdapter(Node):
         if self.morphology not in self.catalog["morphologies"]:
             raise ValueError(f"unknown initial morphology: {self.morphology}")
         self.last_twist = Twist()
-        self.last_command_time = 0.0
+        # Command staleness is measured on the same clock the robot moves
+        # on. A wall-clock threshold against a simulated-time publisher expires
+        # once the real-time factor falls below `publish period / timeout`,
+        # zeroing a live command mid-maneuver.
+        self.last_command_time: float | None = None
         self.pod_publishers = {
             pod: self.create_publisher(Twist, f"/model/{pod}/cmd_vel", 10)
             for pod, value in self.catalog["inventory"].items()
@@ -63,7 +65,7 @@ class AssemblyDriveAdapter(Node):
 
     def _on_twist(self, message: Twist) -> None:
         self.last_twist = message
-        self.last_command_time = time.monotonic()
+        self.last_command_time = self._now_s()
 
     def _set_enabled(self, request, response):
         self.enabled = bool(request.data)
@@ -75,13 +77,17 @@ class AssemblyDriveAdapter(Node):
         )
         return response
 
+    def _now_s(self) -> float:
+        return self.get_clock().now().nanoseconds / 1e9
+
     def _publish(self) -> None:
         if not self.enabled or not self.morphology:
             return
         timeout = float(self.get_parameter("command_timeout").value)
         command = (
             self.last_twist
-            if time.monotonic() - self.last_command_time <= timeout
+            if (self.last_command_time is not None
+                and self._now_s() - self.last_command_time <= timeout)
             else Twist()
         )
         morphology = self.catalog["morphologies"][self.morphology]

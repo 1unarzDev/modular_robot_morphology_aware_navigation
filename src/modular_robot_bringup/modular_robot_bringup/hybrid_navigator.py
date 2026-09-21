@@ -21,8 +21,8 @@ from std_srvs.srv import SetBool
 from tf2_ros import Buffer, TransformException, TransformListener
 
 from .qualification import (
-    VERIFICATION_SEQUENCE, PlanarPose, goal_position_reached, motion_delta,
-    qualification_pass,
+    VERIFICATION_SEQUENCE, CommandWindow, PlanarPose, goal_position_reached,
+    motion_delta, qualification_pass,
 )
 
 
@@ -36,6 +36,7 @@ class HybridNavigator(Node):
         self.declare_parameter("costmap_footprint_timeout", 3.0)
         self.declare_parameter("costmap_footprint_padding", 0.01)
         self.declare_parameter("qualify_after_reconfiguration", True)
+        self.declare_parameter("motion_command_stall_grace_s", 30.0)
         self.declare_parameter("terminal_position_tolerance", 0.15)
         qos = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL,
                          reliability=ReliabilityPolicy.RELIABLE)
@@ -435,31 +436,56 @@ class HybridNavigator(Node):
         return PlanarPose(float(pose.position.x), float(pose.position.y), yaw)
 
     async def _command_for(self, linear: float, angular: float,
-                           duration: float) -> tuple[PlanarPose, PlanarPose] | None:
+                           duration: float) -> dict | None:
         if self.latest_odometry is None:
             return None
         start = self._pose_from_odometry(self.latest_odometry)
         command = Twist()
         command.linear.x, command.angular.z = linear, angular
-        deadline = time.monotonic() + duration
-        while time.monotonic() < deadline:
+        # The robot moves in simulated time, so the command window is measured
+        # in simulated time. A wall-clock window instead delivers only
+        # `duration * real_time_factor` simulated seconds of motion, which
+        # shortens the maneuver in proportion to host load and fails a
+        # mechanically healthy robot. Under `use_sim_time` this clock is
+        # `/clock`, the same time base the recorded odometry poses carry.
+        clock = self.get_clock()
+        window = CommandWindow(
+            duration,
+            lambda: clock.now().nanoseconds / 1e9,
+            time.monotonic,
+            float(self.get_parameter("motion_command_stall_grace_s").value),
+        )
+        while window.keep_commanding():
+            if window.stalled:
+                self.command_publisher.publish(Twist())
+                self.get_logger().error(
+                    "simulated clock stalled during assembled motion command; "
+                    f"requested={duration:.3f}s advanced={window.elapsed_s:.3f}s")
+                return None
             self.command_publisher.publish(command)
             await self._sleep(0.05)
         self.command_publisher.publish(Twist())
         await self._sleep(0.25)
         if self.latest_odometry is None:
             return None
-        return start, self._pose_from_odometry(self.latest_odometry)
+        delta = motion_delta(start, self._pose_from_odometry(self.latest_odometry))
+        delta["commanded_duration_s"] = float(duration)
+        delta["simulated_duration_s"] = window.elapsed_s
+        return delta
 
     async def _qualify_assembled_motion(self) -> tuple[bool, dict]:
         sequence = VERIFICATION_SEQUENCE
         stages = {}
         start_time_s = self._odometry_time_s()
         for name, linear, angular, duration in sequence:
-            endpoints = await self._command_for(linear, angular, duration)
-            if endpoints is None:
-                return False, {"passed": False, "reason": "odometry_unavailable"}
-            stages[name] = motion_delta(*endpoints)
+            stage = await self._command_for(linear, angular, duration)
+            if stage is None:
+                return False, {"passed": False,
+                               "reason": "motion_command_window_unavailable",
+                               "stages": stages,
+                               "start_time_s": start_time_s,
+                               "end_time_s": self._odometry_time_s()}
+            stages[name] = stage
         passed = qualification_pass(stages)
         log = self.get_logger().info if passed else self.get_logger().error
         log(f"post-transition motion qualification passed={passed}; stages={stages}")
