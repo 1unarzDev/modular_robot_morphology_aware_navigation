@@ -157,7 +157,12 @@ def main() -> None:
                   "layouts": sorted({spec.layout_id for spec in design.trials})}
     else:
         design = StudyDesign.read_frozen(args.design)
-        summary = summarize_fault_matrix(design, TrialStore(args.raw).load_all())
+        store = TrialStore(args.raw)
+        summary = summarize_fault_matrix(design, store.load_all())
+        # As for the round-trip audit: the committed summary must identify the
+        # record set, because the records themselves are not version-controlled.
+        summary["record_digests"] = store.digests()
+        summary["campaign_digest"] = store.campaign_digest()
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n",
                                encoding="utf-8")
