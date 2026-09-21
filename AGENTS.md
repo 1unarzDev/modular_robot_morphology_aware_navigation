@@ -50,10 +50,12 @@ verification maneuver (ADR 0003), which closed the failure the workshop
 diagnostic exposed; the nine workshop missions were re-run end to end and both
 previously failing Blocked-A missions now complete.
 
-The post-transition motion gate is intermittently marginal: one of four
-identical-seed attempts failed the reverse-travel floor by 1.2 mm without
-contact. Diagnose that before pilot collection, because it inflates failure
-rates independently of method.
+That intermittent post-transition motion gate was an evaluation-harness fault,
+not mechanics. Commanded maneuver windows were bounded by the wall clock while
+the robot moves in simulated time, so travel scaled with the real-time factor.
+Windows now advance on the simulated clock, and travel is confirmed invariant
+across a 0.54--0.98 real-time-factor span. The gate's true margin is still
+unrecorded: measure it from the Gate 0 record set before pilot collection.
 
 That change invalidated the `combined_constraints` Gate 2 golden layout, which
 was re-selected to world seed 1 against a recorded seed sweep in the roadmap.
