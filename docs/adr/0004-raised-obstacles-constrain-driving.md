@@ -55,7 +55,53 @@ The geometry contrast (the shelf manipulation) survives at every length:
 feasibility-aware methods back off to an earlier site whose sweep clears the
 shelf.
 
-## Consequence that blocks adoption as-is
+## Resolution of the sensing contrast (item 4, proposed)
+
+4. The `combined_constraints` occlusion moves from the lower lane to the
+   door-line staging stretch where the feasibility-aware site now falls:
+   `x in [shelf_x0 - 0.50, shelf_x0 + 0.10]`, `|y - center_y| <= 0.25`,
+   connector not visible. This is the original rule ("occlude the lane where
+   the feasibility site falls, keeping a distinct visible feasible site")
+   applied to the new geometry. The random draw order is unchanged.
+
+Screened on the 9 non-neutral `combined_constraints` layouts (shelf 0.6 m):
+
+| Occlusion (lead, trail, half-height) | Solvable, each method | geometry != feasibility | feasibility != sensing |
+|---|---|---|---|
+| 0.50, 0.10, 0.25 (declared default) | 9/9 | 9 | 9 |
+| 0.70, 0.20, 0.35 (robustness) | 9/9 | 9 | 9 |
+
+Full Gate 2 manipulation check on `studies/confirmatory/design.json` with
+items 1-4 (`studies/gate2/confirmatory_manipulation_check_adr0004.json`),
+against the committed report on the frozen worlds:
+
+| Contrast / family | Frozen worlds | Items 1-4 |
+|---|---|---|
+| sensing vs feasibility, `combined_constraints` | 9 site- and route-separating, 0 unplanned | 9, 9, 0 |
+| sensing vs feasibility, `docking_observability` | 9, 9, 0 | 9, 9, 0 |
+| sensing vs geometry, `combined_constraints` | 9, 9, 0 | 9, 9, 0 |
+| sensing vs geometry, `docking_observability` | 9, 9, 0 | 9, 9, 0 |
+
+Host suite on the proposal branch: 164 passed, including the golden-layout
+separation test. The contrast summary is identical, and the non-neutral
+routes it now reports are ones the robot can physically drive.
+
+`SHELF_LENGTH_M = 0.60` was set as the default before screening, as twice
+pod_4's lateral-excursion span (x +0.15..+0.45 m) to cover the direct site's
+lattice position; it was not selected from the screen, which was insensitive
+to it over 0.4-0.8 m. The occlusion default was likewise declared before its
+screen.
+
+## Recommendation
+
+Adopt items 1-4. Before any pilot: merge the proposal branch, replace the
+committed Gate 2 report, and confirm in Gazebo that the compact robot reaches
+the transition site on fault-matrix layout 03 before re-executing the frozen
+fault-matrix campaign. The shelf's inner edge clears the planner's compact
+safety footprint by 5 mm (the physical robot by 7.75 cm), so that live check
+is what shows whether Nav2's path following respects it.
+
+## Superseded: consequence of items 1-3 alone
 
 The **sensing contrast is lost at every length**. Gate 2 recorded
 `feasibility_coupled` and `sensing_feasibility_coupled` separating in 9/9
@@ -70,9 +116,9 @@ region: occlude the band where the feasibility-aware site now falls, leaving
 a distinct visible feasible site. That is a further change to frozen worlds
 and is the author's decision.
 
-## Options
+## Options considered
 
-- **A.** Adopt items 1-3 with a rule-derived length, and redesign the
+- **A (taken forward as item 4).** Adopt items 1-3 with a rule-derived length, and redesign the
   `combined_constraints` occlusion by a declared rule; re-run the Gate 2
   manipulation check on all 24 layouts before freezing.
 - **B.** Adopt items 1-3 and accept that `combined_constraints` no longer
