@@ -33,6 +33,10 @@ The prospective design contains 432 trials and has hash
 `e9115d543af0969db7825398f7e2691361bdb536530d93e49db4528f21c51cf5`.
 Confirmatory evidence is **0/432**.
 
+Read the Gate 0 rows above with the retention finding below: the records
+behind them no longer exist, so those entries are unverifiable prose rather
+than auditable evidence.
+
 ## Supported scope
 
 Only `compact_diff` and `narrow_tandem` are confirmatory morphologies. Both use
@@ -411,6 +415,48 @@ python3 -m modular_robot_benchmarks.engineering_qualification freeze-fault-matri
 
 This is design and audit machinery only. No cross-layout campaign has been
 executed; the matrix still has one passing layout.
+
+## The Gate 0 record sets are not retained
+
+Every record set this document cites as Gate 0 evidence is absent from the
+workspace, from the host, and from every checkout on this machine. `results/`
+is listed in `.gitignore`, so raw terminal records were never under version
+control, and no archive, tarball, or external copy was found. Nine of the
+thirteen cited directories are gone:
+
+`native_velocity_transition_latest22_raw`, `ack_roundtrip_latest34_raw`,
+`disturbed_roundtrip_latest36_raw`, `rigidity_roundtrip_latest43_raw`,
+`roundtrip_r15_repro_raw`, `gate0_smoke_fault`,
+`retry_provenance_20260913_220228`, `qualification/roundtrip_20_raw`, and
+`qualification/roundtrip_20_retry1_raw`.
+
+Only `results/workshop_diagnostic/` and the three
+`results/debug/neutral_geometry_repro_*` sets survive, because they were
+produced most recently. The two campaigns this document describes as
+"retained as a failed qualification" and as preserving 37/40 completed
+missions are not retained. Gate 0's required artifact -- a machine-readable
+qualification summary over those records -- cannot currently be produced, and
+none of the numbers quoted from them above can be recomputed or audited. They
+are reported here as prose only and should be read that way until re-collected.
+
+This also settles what to do about the wall-clock command window. Every motion
+gate measurement in those campaigns was taken through the truncating window, so
+even had the records survived they could not establish a signed-motion margin:
+their travel figures scale with whatever host load each run happened to meet.
+Re-collection was required on correctness grounds independently of the loss.
+
+Two things must change before the pilot, and the second is a decision:
+
+1. Gate 0 signed-motion evidence is being re-collected post-fix against the
+   same frozen design, whose hash
+   `9c74a26749d466ba382caa6b4d227a033139ef24b8600a3d10ef90608a088b5e` still
+   reproduces from `config/engineering_roundtrip_design.json`.
+2. Retention needs a mechanism, not a convention. Terminal records run
+   3.5--5.8 MB each, so the 432-trial confirmatory set will be roughly 1.9 GB
+   and plain git tracking is not viable. Choose between git-lfs, an external
+   archive addressed by recorded content hashes, or a reduced retained record
+   schema, and write the choice down as an ADR. Until then the study rule
+   "preserve failed runs and structured failure reasons" is enforced by nothing.
 
 ## Resume here
 
