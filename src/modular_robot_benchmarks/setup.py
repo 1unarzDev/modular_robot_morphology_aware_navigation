@@ -26,6 +26,7 @@ setup(
             "qualify_assembly_motion = modular_robot_benchmarks.motion_qualification:main",
             "qualify_detached_pod = modular_robot_benchmarks.detached_pod_qualification:main",
             "qualify_roundtrip_batch = modular_robot_benchmarks.roundtrip_qualification:main",
+            "check_planner_manipulation = modular_robot_benchmarks.manipulation_check:main",
         ]
     },
     test_suite="unittest.TestSuite",
