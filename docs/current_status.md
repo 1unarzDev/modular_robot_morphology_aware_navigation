@@ -491,6 +491,16 @@ Two things must change before the pilot, and the second is a decision:
    schema, and write the choice down as an ADR. Until then the study rule
    "preserve failed runs and structured failure reasons" is enforced by nothing.
 
+   The part of this that does not depend on the decision is in.
+   `TrialStore.digests` and `TrialStore.campaign_digest` hash every terminal
+   record file, and `qualify_roundtrip_batch audit` emits both beside its
+   verdict. The audit summary is small enough to commit, so a record set stays
+   identifiable after its bulk is gone: a re-collection can be shown to differ
+   from the set a claim was computed on, and a restored archive can be shown
+   to be the original. Had this existed, the lost campaigns would at least be
+   provably lost rather than merely absent. Commit the audit summary for every
+   campaign from here on.
+
 ## Resume here
 
 Item 1 is a design decision; items 2 and 3 need container runs.

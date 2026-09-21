@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -191,3 +192,25 @@ class TrialStore:
 
     def pending(self, specs: Iterable[TrialSpec]) -> list[TrialSpec]:
         return [spec for spec in specs if not self.contains(spec.trial_id)]
+
+    def digests(self) -> dict[str, str]:
+        """SHA-256 of every terminal record file, keyed by trial id.
+
+        Records are far too large to keep in version control, so the set that
+        backs a published claim can go missing without anything noticing. These
+        digests are small enough to commit beside the analysis, which makes a
+        record set identifiable after the fact: a re-collection can be proven
+        to differ from the one a result was computed on, and a restored archive
+        can be proven to be the original.
+        """
+        digests = {}
+        for path in sorted(self.root.glob("*.json")):
+            digests[path.stem] = hashlib.sha256(path.read_bytes()).hexdigest()
+        return digests
+
+    def campaign_digest(self) -> str:
+        """One digest over the whole record set, order-independent."""
+        digests = self.digests()
+        joined = "".join(f"{trial}:{digest}\n"
+                          for trial, digest in sorted(digests.items()))
+        return hashlib.sha256(joined.encode("utf-8")).hexdigest()

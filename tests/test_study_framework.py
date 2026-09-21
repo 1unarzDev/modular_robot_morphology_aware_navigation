@@ -214,3 +214,29 @@ def test_trial_record_accepts_a_complete_motion_qualification_window():
                                "simulated_duration_s": 1.02}},
     }])
     complete.validate()
+
+
+def test_trial_store_digests_identify_a_record_set(tmp_path):
+    """Records are too large for version control, so their digests stand in.
+
+    A campaign digest that survives in git is what makes a later re-collection
+    distinguishable from the set a published claim was computed on.
+    """
+    design = generate_design(layouts_per_family=1, replicates=1)
+    record = _records(design)[0]
+    store = TrialStore(tmp_path / "raw")
+    store.write_terminal(record)
+    digests = store.digests()
+    assert set(digests) == {record.spec.trial_id}
+    assert len(digests[record.spec.trial_id]) == 64
+    first = store.campaign_digest()
+    assert store.campaign_digest() == first
+
+    other = TrialStore(tmp_path / "other")
+    other.write_terminal(record)
+    assert other.campaign_digest() == first
+
+    changed = TrialStore(tmp_path / "changed")
+    changed.write_terminal(replace(record, simulated_duration_s=record.simulated_duration_s + 1.0))
+    assert changed.campaign_digest() != first
+    assert TrialStore(tmp_path / "empty").campaign_digest() != first

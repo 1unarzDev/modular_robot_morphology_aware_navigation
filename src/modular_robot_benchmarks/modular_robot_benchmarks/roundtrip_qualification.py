@@ -209,7 +209,14 @@ def main() -> None:
                           "runs": len(design.trials)}, indent=2, sort_keys=True))
         return
     design = StudyDesign.read_frozen(args.design)
-    result = audit_roundtrip_records(TrialStore(args.raw).load_all(), design)
+    store = TrialStore(args.raw)
+    result = audit_roundtrip_records(store.load_all(), design)
+    # Committing this summary preserves the record set's identity even though
+    # the records themselves are far too large for version control. A later
+    # re-collection can then be shown to differ from the set a claim was made
+    # on, and a restored archive can be shown to be the original.
+    result["record_digests"] = store.digests()
+    result["campaign_digest"] = store.campaign_digest()
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n",
                            encoding="utf-8")
