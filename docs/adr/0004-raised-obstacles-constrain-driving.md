@@ -92,6 +92,14 @@ lattice position; it was not selected from the screen, which was insensitive
 to it over 0.4-0.8 m. The occlusion default was likewise declared before its
 screen.
 
+Live debug check in Gazebo (not evidence; records in
+`results/debug/fm_smoke_adr0004`), frozen fault-matrix specs on the proposal
+branch: `03-r00` and `07-r00` (`detach:pod_0`) both reached the transition
+site on the first attempt, the fault fired (37.3 s and 41.7 s simulated),
+minimum evaluator clearance was 0.075 m and 0.066 m with no contact, and both
+cases pass the audit. On the frozen worlds both trials had made zero
+transition attempts after `pod_0` contacted the shelf.
+
 ## Recommendation
 
 Adopt items 1-4. Before any pilot: merge the proposal branch, replace the
