@@ -29,6 +29,21 @@ WORKSHOP_SITE_SETBACK_M = 1.0
 COMPACT_HALF_LENGTH_M = 0.40
 # Covers the declared +/-0.015 m spawn offset and +/-0.035 rad spawn yaw with margin.
 SPAWN_SHELF_CLEARANCE_M = 0.10
+# The shelf must obstruct relocation, not driving. On the pod track (+0.20 m)
+# it also lay on the door approach, where the narrow robot's left pods run, so
+# no route to the goal existed once it was treated as a driving obstacle.
+# Following the workshop post, it sits in the band only the relocation sweep
+# reaches: inner edge 0.365 m clears the compact 0.36 m safety footprint (and
+# the physical robot's 0.2875 m) while overlapping pod_4's sweep to 0.423 m.
+SHELF_LATERAL_OFFSET_M = 0.415
+SHELF_DEPTH_M = 0.10
+# A shelf reaching back to the spawn covers every door-line site, so with it
+# also blocking driving no feasible site remains (the narrow robot has +/-0.02 m
+# of lateral slack in the doorway and must transition on the door line). It
+# ends where it did, at the staging band's door side, over a fixed length that
+# covers the direct site's pod_4 excursion (x +0.15..+0.45 m) and leaves an
+# earlier door-line site whose sweep clears it. PROPOSED, NOT YET ADOPTED.
+SHELF_LENGTH_M = 0.60
 
 
 @dataclass(frozen=True)
@@ -123,15 +138,15 @@ def make_confirmatory_scenario(
     band_x1 = wall_x * resolution - 0.8 + 0.05 * rng.randrange(3)
     center_y = (door_center + 0.5) * resolution
     band_half_height = 0.45 + 0.05 * rng.randrange(3)
-    # The shelf spans the left pod track (y + 0.20) below pod-body height, so it
-    # must begin beyond the compact robot's spawn footprint; otherwise the left
-    # pods start interpenetrating it and the robot cannot move.
+    # The shelf is below pod-body height, so it still begins beyond the compact
+    # robot's spawn footprint in x.
     start_x_m = (start[0] + 0.5) * resolution
-    shelf_x0 = start_x_m + COMPACT_HALF_LENGTH_M + SPAWN_SHELF_CLEARANCE_M
+    shelf_x0 = max(start_x_m + COMPACT_HALF_LENGTH_M + SPAWN_SHELF_CLEARANCE_M,
+                   band_x1 - SHELF_LENGTH_M)
     obstacle = Box3(
         "raised_transition_shelf",
-        ((shelf_x0 + band_x1) / 2.0, center_y + 0.20, 0.14),
-        (band_x1 - shelf_x0, 0.16, 0.08),
+        ((shelf_x0 + band_x1) / 2.0, center_y + SHELF_LATERAL_OFFSET_M, 0.14),
+        (band_x1 - shelf_x0, SHELF_DEPTH_M, 0.08),
     )
     poor_region = ObservabilityRegion(
         band_x0, band_x1,

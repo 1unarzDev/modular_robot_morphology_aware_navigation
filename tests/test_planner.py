@@ -8,7 +8,9 @@ from morphology_planner import (
 )
 from morphology_planner.grid import OCCUPIED
 from morphology_planner.grid import UNKNOWN
+from morphology_planner.methods import make_method_planner
 from morphology_planner.planner import NoPathError
+from morphology_planner.transition_validation import Box3
 
 
 CATALOG = Path(__file__).parents[1] / "src/modular_robot_description/config/morphologies.yaml"
@@ -97,6 +99,37 @@ def test_motion_primitive_checks_swept_footprint_between_endpoints():
     assert planner._state_is_free(source)
     assert planner._state_is_free(target)
     assert not planner._traversal_is_free(source, target)
+
+
+def _shelf_ahead(z_center: float):
+    # Spans the compact robot's left pod track just beyond its front edge.
+    return (Box3("shelf", (1.8, 2.25, z_center), (0.6, 0.16, 0.08)),)
+
+
+@pytest.mark.parametrize("method", [
+    "route_first_adaptation", "geometry_coupled",
+    "feasibility_coupled", "sensing_feasibility_coupled",
+])
+def test_raised_obstacle_below_robot_height_blocks_driving_for_every_method(method):
+    catalog = load_catalog(CATALOG).supported_experiment_subset()
+    source = HybridState(10, 20, 0, "compact_diff")
+    forward = HybridState(11, 20, 0, "compact_diff")
+    for z_center, blocked in ((0.14, True), (0.50, False)):
+        wrapper = make_method_planner(
+            method, catalog, OccupancyGrid(40, 40, 0.1), heading_bins=4,
+            environment=_shelf_ahead(z_center))
+        hybrid = getattr(wrapper.planner, "hybrid", wrapper.planner)
+        assert hybrid._state_is_free(source)
+        assert hybrid._traversal_is_free(source, forward) is not blocked
+
+
+def test_raised_obstacle_leaves_transition_disk_check_to_the_policy():
+    catalog = load_catalog(CATALOG).supported_experiment_subset()
+    planner = MorphologyAStar(catalog, OccupancyGrid(40, 40, 0.1), heading_bins=4,
+                              drive_obstacles=_shelf_ahead(0.14))
+    compact_to_narrow = next(t for t in catalog.transitions if t.id == "compact_to_narrow")
+    # Only driving sees the shelf; the 2D transition check is unchanged.
+    assert planner._validate_transition(compact_to_narrow, HybridState(20, 20, 0, "compact_diff"))
 
 
 def test_footprint_rejects_occupied_cell_corner_overlap():

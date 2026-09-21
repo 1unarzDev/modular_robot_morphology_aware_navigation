@@ -8,7 +8,8 @@ from typing import Callable, Literal
 
 from .catalog import Catalog, Morphology, Transition
 from .cost_model import AnalyticCostModel, EdgeCostModel
-from .grid import OccupancyGrid
+from .grid import OccupancyGrid, polygon_intersects_rectangle
+from .transition_validation import Box3
 
 
 @dataclass(frozen=True, order=True)
@@ -65,6 +66,7 @@ class MorphologyAStar:
         heading_bins: int = 16,
         transition_validator: TransitionValidator | None = None,
         cost_model: EdgeCostModel | None = None,
+        drive_obstacles: tuple[Box3, ...] = (),
     ) -> None:
         if heading_bins < 4 or heading_bins % 4:
             raise ValueError("heading_bins must be a multiple of four")
@@ -73,6 +75,20 @@ class MorphologyAStar:
         self.heading_bins = heading_bins
         self.transition_validator = transition_validator or self._validate_transition
         self.cost_model = cost_model or AnalyticCostModel()
+        # Raised 3D obstacles are absent from the 2D occupancy grid, which also
+        # feeds the transition disk check, so they constrain driving only: a
+        # box whose underside is below a morphology's height blocks that
+        # morphology's footprint during traversal. Transition validation is
+        # unchanged and remains the only place methods differ.
+        self._drive_rectangles = {
+            morphology.id: tuple(
+                (box.center[0] - box.size[0] / 2.0, box.center[1] - box.size[1] / 2.0,
+                 box.center[0] + box.size[0] / 2.0, box.center[1] + box.size[1] / 2.0)
+                for box in drive_obstacles
+                if box.center[2] - box.size[2] / 2.0 < morphology.height
+            )
+            for morphology in catalog.morphologies.values()
+        }
         self._state_collision_cache: dict[HybridState, bool] = {}
         self._traversal_collision_cache: dict[tuple[HybridState, HybridState], bool] = {}
 
@@ -226,11 +242,24 @@ class MorphologyAStar:
             wx = source_x + fraction * (target_x - source_x)
             wy = source_y + fraction * (target_y - source_y)
             yaw = source_yaw + fraction * delta_yaw
-            if not self.grid.footprint_is_free(wx, wy, yaw, morphology.footprint):
+            if (not self.grid.footprint_is_free(wx, wy, yaw, morphology.footprint)
+                    or self._footprint_hits_drive_obstacle(wx, wy, yaw, morphology)):
                 self._traversal_collision_cache[cache_key] = False
                 return False
         self._traversal_collision_cache[cache_key] = True
         return True
+
+    def _footprint_hits_drive_obstacle(
+        self, wx: float, wy: float, yaw: float, morphology: Morphology,
+    ) -> bool:
+        rectangles = self._drive_rectangles.get(morphology.id, ())
+        if not rectangles:
+            return False
+        c, s = cos(yaw), sin(yaw)
+        polygon = tuple((wx + c * x - s * y, wy + s * x + c * y)
+                        for x, y in morphology.footprint)
+        return any(polygon_intersects_rectangle(polygon, *rectangle)
+                   for rectangle in rectangles)
 
     def _validate_transition(self, transition: Transition, state: HybridState) -> bool:
         wx, wy = self.grid.cell_center(state.x, state.y)

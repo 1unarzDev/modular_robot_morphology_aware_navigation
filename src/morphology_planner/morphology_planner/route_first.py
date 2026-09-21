@@ -16,6 +16,7 @@ from .planner import (
     NoPathError,
     TransitionValidator,
 )
+from .transition_validation import Box3
 
 
 @dataclass(frozen=True, order=True)
@@ -42,9 +43,11 @@ class RouteFirstAdaptationPlanner:
         heading_bins: int = 16,
         transition_validator: TransitionValidator | None = None,
         cost_model: EdgeCostModel | None = None,
+        drive_obstacles: tuple[Box3, ...] = (),
     ) -> None:
         self.hybrid = MorphologyAStar(
-            catalog, grid, heading_bins, transition_validator, cost_model)
+            catalog, grid, heading_bins, transition_validator, cost_model,
+            drive_obstacles)
         self.catalog = catalog
         self.grid = grid
         self.heading_bins = heading_bins

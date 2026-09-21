@@ -195,8 +195,14 @@ def _polygon_intersects_cell(
     resolution: float,
 ) -> bool:
     half = resolution / 2.0
-    left, right = center_x - half, center_x + half
-    bottom, top = center_y - half, center_y + half
+    return polygon_intersects_rectangle(
+        polygon, center_x - half, center_y - half, center_x + half, center_y + half)
+
+
+def polygon_intersects_rectangle(
+    polygon: tuple[tuple[float, float], ...],
+    left: float, bottom: float, right: float, top: float,
+) -> bool:
     corners = ((left, bottom), (right, bottom), (right, top), (left, top))
     if any(_point_in_polygon(x, y, polygon) for x, y in corners):
         return True

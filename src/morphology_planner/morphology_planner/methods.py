@@ -111,9 +111,12 @@ def make_method_planner(
         RouteFirstAdaptationPlanner
         if method == "route_first_adaptation" else MorphologyAStar
     )
+    # Every method drives around the same raised obstacles; only transition
+    # validation distinguishes them.
     planner = planner_type(
         catalog, grid, heading_bins=heading_bins,
         transition_validator=policy, cost_model=cost_model,
+        drive_obstacles=environment,
     )
     return MethodPlanner(
         method, planner, policy, topology_revision, sensing_revision)
