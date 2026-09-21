@@ -616,22 +616,28 @@ only then freeze and execute the confirmatory schedule.
 
 ## Last verified checkpoint
 
-- Platform commit: `945f044` (`Confirm the simulated-time window at a 0.54
-  real-time factor`), on `main` after the workshop branch was merged into it.
+- Platform commit: `95a03c5` (`Pass the 20-run round-trip gate and commit its
+  audit`), on `main` after the workshop branch was merged into it.
 - Commanded maneuver windows advance on the simulated clock. Two replays at
   0.5377 and 0.8806 real-time factor both completed with zero collisions and
   both gates passing at the unloaded travel norm.
-- Two independent engineering campaigns retain 37/40 completed missions; all
-  three failures occurred before mission execution.
-- Fault matrix: 7/7 cases passed in one engineering execution; the refactored
-  generator reproduces its frozen design hash and the records re-summarize as
-  passing.
+- The 20-run round-trip gate passes for the first time: 20/20 completed, no
+  audit failures, 20 unique disturbances, collected at `5713195` with campaign
+  digest `009e9efa...`. Worst signed-motion margins are +0.0317 m forward and
+  +0.0307 m reverse travel.
+- Every record set behind the previous Gate 0 claims is absent from this
+  machine and cannot be re-audited.
+- The two earlier engineering campaigns are described from notes only; their
+  records are gone, so the 37/40 figure cannot be recomputed.
+- Fault matrix: reported as 7/7 in one engineering execution, from notes only;
+  those records are also gone. The refactored generator still reproduces its
+  frozen design hash, so the campaign can be re-executed unchanged.
 - Single-threaded executor regression: a frozen-design round trip completed with
   both motion and rigidity gates passing at mission real-time factor 0.95, and
   the identical seven-case fault matrix passed again with the same
   reconciliation outcomes in 405.8 s of summed trial wall time (519.4 s before
   the change).
-- `python3 -m pytest -q`: 146 passed in 148.06 s.
+- `python3 -m pytest -q`: 157 passed in 171.37 s.
 - `colcon build --symlink-install`: all nine packages passed.
 - `colcon test`: all five packages containing smoke tests passed; the remaining
   four contain no package-level tests.
