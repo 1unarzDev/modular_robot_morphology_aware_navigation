@@ -203,10 +203,25 @@ observer lists, so localization, odometry, command, topology, and execution
 histories absorbed samples from the post-terminal recovery probe. Terminal
 observations now snapshot every stream. A static test also rejects any
 reference to evaluator topics, `/module_pose` (bridged Gazebo truth without an
-`/evaluator` prefix), or evaluator pose fields in autonomy packages. Collision
-and 3D clearance still have no simulator source, transition predictions and
-outcomes are not yet returned by `NavigateHybrid`, and recovery actions are
-not counted.
+`/evaluator` prefix), or evaluator pose fields in autonomy packages. All three
+gaps this paragraph previously listed are closed, and the merge of the workshop
+branch is what closed them; the claim that they were open was stale. Collision
+and 3D clearance are computed by `evaluator_metrics.clearance_metrics` from
+evaluator-only module poses against occupancy-derived boxes and the declared
+transition obstacles. `NavigateHybrid` returns a pre-action
+`predicted_failure_probability` beside the observed transition outcome, and
+`transition_calibration_pairs` consumes them. `recovery_actions` is populated.
+
+Three limits on that remain, and they are limits of definition rather than of
+wiring. Contact is geometric, not physical: it is clearance at or below zero,
+debounced at 0.5 s per module, computed from poses rather than read from a
+simulator contact sensor, so it cannot see forces or contacts with undeclared
+geometry. Clearance is only evaluated within 1.0 m of a known obstacle, so
+`evaluated_samples` is the denominator and not the sample count. And
+`recovery_actions` counts navigator replans after an execution failure only --
+Nav2 recovery behaviors, executor `RECOVERY_REQUIRED` reconciliations, and
+docking retries are not included in it, so it must not be reported as a total
+recovery count.
 
 ## Transition feasibility now covers the motion that follows the commit
 
@@ -392,11 +407,24 @@ themselves are unaffected, since no method contrast depended on that cell.
 Mission completion across the nine cells went from 5/9 to 6/9 and evaluator
 collisions from 11 to 8.
 
-Reproducibility gap found while summarizing: `contact_phases.json` is consumed
-by `paper/iros2026_codesign/summarize_results.py` but nothing in the repository
-produces it, and terminal records carry `collision_count` and
-`minimum_clearance_m` without per-contact timestamps. Contact-phase attribution
-therefore cannot currently be regenerated from an accepted record set.
+Reproducibility gap found while summarizing, now closed at both ends.
+`contact_phases.json` is consumed by
+`paper/iros2026_codesign/summarize_results.py`, and
+`make_contact_phases.py` now produces it by attributing each mission's
+contacts to a phase from its execution outcome. That inference is sound for
+the published records but cannot separate two contacts that occurred in
+different phases of one mission, because the records carried only a scalar
+`collision_count`.
+
+`clearance_metrics` already distinguished contacts in order to count them and
+then discarded the distinction. It now returns `contact_events`, one entry per
+debounced contact carrying the module, the simulated time, and the clearance
+that triggered it, with `collision_count` defined as its length. Contact-phase
+attribution is a property of newly collected records rather than a consumer's
+inference. The existing workshop records predate the field and still require
+the outcome-based generator, so the paper's artifacts are unaffected; switch
+the generator to `contact_events` when the records behind a figure have been
+re-collected.
 
 ## Gate 0 fault matrix generalizes across layouts
 

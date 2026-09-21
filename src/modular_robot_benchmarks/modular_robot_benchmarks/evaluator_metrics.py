@@ -184,7 +184,11 @@ def clearance_metrics(
     """Minimum 3D clearance and contact events over evaluator module poses."""
     minimum = None
     minimum_at = None
-    events = 0
+    # Each debounced contact is retained with the module and time that produced
+    # it. The loop already distinguishes them in order to count events; keeping
+    # them makes contact-phase attribution a property of the record instead of
+    # something a consumer has to infer from the mission's execution outcome.
+    contact_events: list[dict[str, Any]] = []
     last_contact: dict[str, float] = {}
     evaluated = 0
     for sample in module_samples:
@@ -204,10 +208,14 @@ def clearance_metrics(
         if clearance <= CONTACT_CLEARANCE_M:
             previous = last_contact.get(sample["module"])
             if previous is None or sample["time_s"] - previous > COLLISION_EVENT_GAP_S:
-                events += 1
+                contact_events.append({"module": sample["module"],
+                                       "time_s": float(sample["time_s"]),
+                                       "clearance_m": float(clearance)})
             last_contact[sample["module"]] = sample["time_s"]
+    contact_events.sort(key=lambda event: (event["time_s"], event["module"]))
     return {"minimum_clearance_m": minimum, "minimum_clearance_at": minimum_at,
-            "collision_count": events, "evaluated_samples": evaluated}
+            "collision_count": len(contact_events),
+            "contact_events": contact_events, "evaluated_samples": evaluated}
 
 
 def transition_calibration_pairs(

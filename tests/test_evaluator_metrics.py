@@ -226,3 +226,28 @@ def test_autonomy_packages_never_reference_simulator_ground_truth():
             offenders += [f"{path.relative_to(ROOT)}: {marker}"
                           for marker in GROUND_TRUTH_MARKERS if marker in text]
     assert offenders == []
+
+
+def test_clearance_metrics_retain_the_module_and_time_of_each_contact():
+    """Contact-phase attribution must be a property of the record.
+
+    `collision_count` alone forces a consumer to infer the phase from the
+    mission's execution outcome, which cannot distinguish two contacts in
+    different phases of the same mission.
+    """
+    from modular_robot_benchmarks.evaluator_metrics import clearance_metrics
+
+    wall = [((1.0, 0.0, 0.5), (0.1, 1.0, 1.0))]
+    def module(name, time_s, x):
+        return {"time_s": time_s, "module": name, "x": x, "y": 0.0, "z": 0.0, "yaw": 0.0}
+    samples = [
+        module("pod_0", 0.0, 0.5), module("pod_0", 0.1, 0.87),
+        module("pod_1", 0.2, 0.87), module("pod_0", 2.0, 0.5),
+        module("pod_0", 3.0, 0.87),
+    ]
+    metrics = clearance_metrics(samples, wall)
+    assert metrics["collision_count"] == len(metrics["contact_events"]) == 3
+    assert [(e["module"], e["time_s"]) for e in metrics["contact_events"]] == [
+        ("pod_0", 0.1), ("pod_1", 0.2), ("pod_0", 3.0)]
+    assert all(e["clearance_m"] == 0.0 for e in metrics["contact_events"])
+    assert clearance_metrics([module("pod_0", 0.0, 0.5)], wall)["contact_events"] == []
