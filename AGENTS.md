@@ -43,8 +43,8 @@ before changing the platform or collecting data.
 
 ## Current resumption point
 
-Gate 0 is not yet satisfied: items 2--4 have retained evidence, item 1 does
-not (see the last paragraph). The records
+Gate 0 is satisfied (2026-09-21): every roadmap item has a committed audit in
+`studies/gate0/`. The older records
 behind every previous Gate 0 claim are absent from this machine -- `results/`
 is gitignored and no archive exists -- so the gate's required artifact cannot
 be produced from them. They needed re-collecting regardless, for the reason in
@@ -72,9 +72,11 @@ the multi-layout fault matrix passes 42/42 on its third execution
 ADR 0004 (raised obstacles constrain driving; the shelf moved off the route),
 and fixed pod_4's final alignment, executor waits on the wall clock, the
 auditor's blindness to unfired faults, and transforming away from the planned
-site pose. The one open Gate 0 item is a retained artifact for detached-pod
-and compact-assembly velocity qualification (roadmap item 1), whose records
-were lost. See `docs/current_status.md` "Resume here", and its retention
+site pose. Detached-pod and compact-assembly qualification (roadmap item 1)
+was re-collected, 6/6 passing (`studies/gate0/gate0_item1_audit.json`). Next
+is the post-Gate 0 roadmap: location-dependent perceived obstacles and
+observability, the disjoint pilot, then the confirmatory freeze. See
+`docs/current_status.md` "Resume here", and its retention
 section for the storage decision the confirmatory set forces: records run
 3.5--5.8 MB each, so 432 trials is about 1.9 GB and plain git tracking is not
 viable.

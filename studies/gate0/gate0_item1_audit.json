@@ -1,0 +1,176 @@
+{
+  "commit": "bc40fb66b0ae4470b01b97917e3ed382520d056e",
+  "compact_assembly": [
+    {
+      "morphology": "compact_diff",
+      "passed": true,
+      "rep_103_signs_pass": true,
+      "run": "1",
+      "stages": {
+        "negative_yaw": {
+          "body_forward_displacement_m": -0.00015245070655434134,
+          "body_lateral_displacement_m": -0.0016891977992240384,
+          "delta_x": 0.0011832251259598081,
+          "delta_y": -0.0012151579009040958,
+          "delta_yaw": -0.8306597468782112,
+          "duration_s": 3.9480000000000004,
+          "translation_m": 0.0016960632131003408
+        },
+        "positive_yaw": {
+          "body_forward_displacement_m": 0.0028770001976889245,
+          "body_lateral_displacement_m": 0.0029901768664176943,
+          "delta_x": 0.0028754110725353055,
+          "delta_y": 0.0029917050312326943,
+          "delta_yaw": 0.8522117212172022,
+          "duration_s": 3.9480000000000004,
+          "translation_m": 0.004149492478600443
+        },
+        "straight": {
+          "body_forward_displacement_m": 0.7376403859290418,
+          "body_lateral_displacement_m": 0.00021955303415017828,
+          "delta_x": 0.7376054407927799,
+          "delta_y": 0.007183374553037858,
+          "delta_yaw": 0.000298399491744988,
+          "duration_s": 3.928000000000001,
+          "translation_m": 0.7376404186031839
+        }
+      },
+      "straight_motion_pass": true,
+      "yaw_translation_pass": true
+    },
+    {
+      "morphology": "compact_diff",
+      "passed": true,
+      "rep_103_signs_pass": true,
+      "run": "2",
+      "stages": {
+        "negative_yaw": {
+          "body_forward_displacement_m": -0.0001524509814639694,
+          "body_lateral_displacement_m": -0.001689198017986487,
+          "delta_x": 0.0011832251131624894,
+          "delta_y": -0.0012151582519575044,
+          "delta_yaw": -0.8306597469728155,
+          "duration_s": 3.9480000000000004,
+          "translation_m": 0.0016960634556875528
+        },
+        "positive_yaw": {
+          "body_forward_displacement_m": 0.002877000154742762,
+          "body_lateral_displacement_m": 0.0029901765282845613,
+          "delta_x": 0.002875411029745978,
+          "delta_y": 0.002991704693098729,
+          "delta_yaw": 0.8522117212663373,
+          "duration_s": 3.9480000000000004,
+          "translation_m": 0.004149492205161227
+        },
+        "straight": {
+          "body_forward_displacement_m": 0.7414278171436874,
+          "body_lateral_displacement_m": 0.00022068318058673236,
+          "delta_x": 0.7413926925542742,
+          "delta_y": 0.0072202605661368935,
+          "delta_yaw": 0.000298399557856115,
+          "duration_s": 3.9399999999999977,
+          "translation_m": 0.7414278499864431
+        }
+      },
+      "straight_motion_pass": true,
+      "yaw_translation_pass": true
+    },
+    {
+      "morphology": "compact_diff",
+      "passed": true,
+      "rep_103_signs_pass": true,
+      "run": "3",
+      "stages": {
+        "negative_yaw": {
+          "body_forward_displacement_m": -0.0001524509814639694,
+          "body_lateral_displacement_m": -0.001689198017986487,
+          "delta_x": 0.0011832251131624894,
+          "delta_y": -0.0012151582519575044,
+          "delta_yaw": -0.8306597469728155,
+          "duration_s": 3.9480000000000004,
+          "translation_m": 0.0016960634556875528
+        },
+        "positive_yaw": {
+          "body_forward_displacement_m": 0.002877000154742762,
+          "body_lateral_displacement_m": 0.0029901765282845613,
+          "delta_x": 0.002875411029745978,
+          "delta_y": 0.002991704693098729,
+          "delta_yaw": 0.8522117212663373,
+          "duration_s": 3.9480000000000004,
+          "translation_m": 0.004149492205161227
+        },
+        "straight": {
+          "body_forward_displacement_m": 0.7414278171436874,
+          "body_lateral_displacement_m": 0.00022068318058673236,
+          "delta_x": 0.7413926925542742,
+          "delta_y": 0.0072202605661368935,
+          "delta_yaw": 0.000298399557856115,
+          "duration_s": 3.9399999999999977,
+          "translation_m": 0.7414278499864431
+        }
+      },
+      "straight_motion_pass": true,
+      "yaw_translation_pass": true
+    }
+  ],
+  "detached_pod": [
+    {
+      "forward_m": 0.6923074722977541,
+      "max_lateral_m": 0.0006194591913709453,
+      "negative_yaw_rad": -1.2284522121500001,
+      "passed": true,
+      "positive_yaw_rad": 1.233646112191664,
+      "reverse_m": -0.6923074713660717,
+      "run": "1",
+      "wheel_tracking_mae_radps": {
+        "forward": 0.24177792761666683,
+        "negative_yaw": 0.09879688993333333,
+        "positive_yaw": 0.09857493877666663,
+        "reverse": 0.24178161946666682
+      }
+    },
+    {
+      "forward_m": 0.6804431281418669,
+      "max_lateral_m": 0.0006207299634366677,
+      "negative_yaw_rad": -1.2080243814499998,
+      "passed": true,
+      "positive_yaw_rad": 1.216095628191664,
+      "reverse_m": -0.6804432189936296,
+      "run": "2",
+      "wheel_tracking_mae_radps": {
+        "forward": 0.2242573776666668,
+        "negative_yaw": 0.09563505093666665,
+        "positive_yaw": 0.09540085877333332,
+        "reverse": 0.2242601056333335
+      }
+    },
+    {
+      "forward_m": 0.6823407998518163,
+      "max_lateral_m": 0.000624066685565524,
+      "negative_yaw_rad": -1.21132823985,
+      "passed": true,
+      "positive_yaw_rad": 1.220023006191664,
+      "reverse_m": -0.6823408991549467,
+      "run": "3",
+      "wheel_tracking_mae_radps": {
+        "forward": 0.3024398962000001,
+        "negative_yaw": 0.10385620819499998,
+        "positive_yaw": 0.10064787061999998,
+        "reverse": 0.30244482780000015
+      }
+    }
+  ],
+  "passed": true,
+  "protocol": "declared before running: three repeats each of qualify_detached_pod (self_mobile_pod_qualification world) and qualify_assembly_motion --expected-morphology compact_diff (motion_qualification.launch.py); all six must pass the tool built-in criteria",
+  "purpose": "gate0_item1_engineering_qualification_not_study_evidence",
+  "record_digests": {
+    "compact_assembly_1.json": "19817e0025c45c7f4504eb0f80188239d473efc5ad1e764dcb9127c104286e31",
+    "compact_assembly_2.json": "e425d216ad7b31de148042545510b0b5b31e98dc0e896b235838e4b995c508cc",
+    "compact_assembly_3.json": "e425d216ad7b31de148042545510b0b5b31e98dc0e896b235838e4b995c508cc",
+    "detached_pod_1.json": "11c6223b079907cb0e63628750fc8e92c0e83030fb76534bf341cdfa8212ef33",
+    "detached_pod_2.json": "2ad6379b09f946fbbb33a7c9be7e68027902fd2989ffbf855b465564992f2a89",
+    "detached_pod_3.json": "4d1b448f13dada14ce33167fa12652fed6656617bee59e98b283ecbb8f412d53"
+  },
+  "schema_version": 1,
+  "transport_note": "FASTDDS_BUILTIN_TRANSPORTS=SHM because WSL mirrored networking filtered inter-process UDP; transport only"
+}

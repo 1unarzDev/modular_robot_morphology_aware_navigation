@@ -711,7 +711,7 @@ is not comparable to figures that cannot be re-audited.
 
 ## Resume here
 
-Items 1--3 are closed; item 4 is the last open Gate 0 item.
+Items 1--4 are closed and Gate 0 is satisfied.
 
 1. **Closed.** `check_planner_manipulation` has been run over
    `studies/confirmatory/design.json`; the report is committed at
@@ -765,12 +765,24 @@ Items 1--3 are closed; item 4 is the last open Gate 0 item.
    `pod_4` alignment fix, simulated-clock executor waits, fired-injection
    evidence, and site alignment. The first two executions (13/42, 38/42) stay
    on record.
-4. **Open: Gate 0 item 1 has no retained artifact.** Detached-pod and
-   compact-assembly native-velocity qualification is reported above from
-   notes only; its records (`native_velocity_transition_latest22_raw`) are
-   among those lost. The post-transition narrow assembly is covered by the
-   round-trip audit's signed-motion gates. Re-collect the detached-pod and
-   compact figures with a committed audit before declaring Gate 0 satisfied.
+4. **Closed: Gate 0 item 1 re-collected.** Declared before running: three
+   repeats each of `qualify_detached_pod` (world
+   `self_mobile_pod_qualification.sdf`) and `qualify_assembly_motion
+   --expected-morphology compact_diff`, all six to pass the tools' built-in
+   criteria. All six pass at `bc40fb6`; summary with per-file digests at
+   `studies/gate0/gate0_item1_audit.json`. Detached pod: yaw +1.216..+1.234 /
+   -1.208..-1.228 rad, travel +/-0.680..0.692 m, lateral at most 0.001 m.
+   Compact assembly: yaw +0.852 / -0.831 rad with at most 0.004 m translation,
+   straight 0.738..0.741 m with 0.0002 m lateral. The compact repeats are
+   near bit-identical (the simulation is deterministic here), so they show
+   reproducibility, not independent samples. The post-transition narrow
+   assembly is covered by the round-trip audit's signed-motion gates. These
+   runs used `FASTDDS_BUILTIN_TRANSPORTS=SHM` because WSL mirrored networking
+   had begun filtering inter-process UDP; that changes transport only.
+
+**Gate 0 is satisfied**: every roadmap item now has a committed,
+machine-readable audit (`studies/gate0/`: `gate0_item1_audit.json`,
+`roundtrip_20_postfix_audit.json`, `fault_matrix_campaign_r3_audit.json`).
 
 Then proceed to the disjoint pilot without spending more submission time on
 repeated 20-run startup certification. If throughput is still limiting, measure

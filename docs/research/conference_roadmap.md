@@ -22,10 +22,10 @@ claims out of the paper; the literature review defines the prior-art boundary.
 
 Required artifact: machine-readable qualification summary with signed yaw,
 straight/reverse travel, cross-coupling, docking errors, observed topology, and
-failure-matrix results. Current state: **items 2--4 re-collected and passing
-with committed audits** (`studies/gate0/roundtrip_20_postfix_audit.json`,
-`studies/gate0/fault_matrix_campaign_r3_audit.json`, 42/42); **item 1 still
-lacks a retained artifact**. Earlier history: The records behind every previous Gate 0 claim are gone --
+failure-matrix results. Current state: **satisfied (2026-09-21)**, every item
+re-collected with a committed audit (`studies/gate0/gate0_item1_audit.json`,
+`studies/gate0/roundtrip_20_postfix_audit.json`,
+`studies/gate0/fault_matrix_campaign_r3_audit.json`, 42/42). Earlier history: The records behind every previous Gate 0 claim are gone --
 `results/` is gitignored and no archive exists -- so the required artifact
 cannot be produced from them and none of their figures can be audited. They
 would have needed re-collection regardless: every signed-motion measurement in

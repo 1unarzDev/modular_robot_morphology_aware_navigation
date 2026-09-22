@@ -41,6 +41,14 @@ wsl -e bash -lc '
 '
 ```
 
+WSL runs in `networkingMode=mirrored`, and inter-process UDP inside the VM can
+stop working (seen 2026-09-21 after a VM restart): separate ROS processes then
+cannot discover each other, so tools time out waiting for `/clock` while
+Gazebo runs fine. Test with `ros2 topic pub` in one process and `ros2 topic
+echo` in another; if it fails, export `FASTDDS_BUILTIN_TRANSPORTS=SHM` for
+every ROS process, and clear `/dev/shm/fastrtps_*` between stacks that were
+killed with `-9`.
+
 The WSL clone cannot read a Windows *worktree*; fetch from the main repository
 path. When copying uncommitted files across, strip CRLF (`sed -i 's/\r$//'`).
 Long runs exceed the 120 s tool timeout and land in the background — check the
