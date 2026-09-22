@@ -25,7 +25,7 @@ and citations are maintained in the literature review.
 | Self-mobile platform | Six independently mobile differential pods; one controller owns all wheel joints; bounded effort actuation and vertical wheel suspension | Detached and compact motion gates pass |
 | Reconfiguration | Sensor-driven detach, relocate, align, latch, topology verification, and fail-closed recovery | One compact-to-narrow run reaches `READY`; reverse transition and repetition gates remain open |
 | Navigation | ROS 2 Jazzy, Nav2, lidar/odometry localization, morphology-specific footprints/controllers, collision monitor | Doorway traversal exists only as engineering evidence |
-| Sensing | Wheel odometry and visibility/staleness/covariance-gated connector observations | Connector camera and latch remain idealized; location-dependent predicted observability is incomplete |
+| Sensing | Wheel odometry and visibility/staleness/covariance-gated connector observations | Connector camera and latch remain idealized; connector visibility is a frustum test with no occlusion and covariance is a function of range alone, so no world geometry can degrade observability anywhere (ADR 0006) |
 | Experiment runner | Deterministic paired seeds, randomized method order, generated SDF/manifests, isolated process launch, immutable terminal records, resumability | Debug runs only; no accepted pilot records |
 | Statistics | Layout-balanced estimands, stratified bootstrap, sign-flip tests, Holm correction, power grids with Wilson bounds, and hierarchical logistic sensitivity analysis | Pipeline-tested; no confirmatory outcomes |
 
@@ -793,6 +793,47 @@ After mechanics pass, implement location-dependent perceived 3D obstacles and
 observability, complete evaluator outcome/provenance streams, run a disjoint
 pilot, freeze the operational effect threshold and conservative power grid, and
 only then freeze and execute the confirmatory schedule.
+
+### The observability manipulation has no physical cause (2026-09-22)
+
+Measured while starting roadmap item 3. The planner already accepts a
+location-dependent `sensing_provider` per candidate site
+(`transition_policy.py:311-315`), which the Gate 2 check drives with
+`ConfirmatoryScenario.sensing_for`; missions pass a flat dict of the last live
+`RelativePoseEstimate` instead (`ros_node.py:172`). Wiring that hook is small.
+It is also not sufficient.
+
+`docking_observability` layout 1 declares a poor-observability band
+(`connector_visible=False`, `covariance_trace=0.04`, 2.7x the 0.015 gate) and
+places **zero** transition obstacles, and `export_confirmatory_sdf` emits
+bodies only for `transition_obstacles`. At the band center the mission sensing
+model puts all six moved pods in frustum at 0.40--0.74 m with covariance traces
+of 9.5e-06 to 2.5e-05 — about 1600x below the declared value and on the
+accepting side of the gate. The connector sensors are Gazebo `logical_camera`
+frustum tests with no occlusion, and `sensing_node.py:148-151` derives
+covariance from range alone, so no object placed anywhere in the world can make
+the declared band occur. `combined_constraints` places a shelf but authors its
+occlusion region from where the feasibility-aware site falls, not from optics.
+
+This is not only a planner-input gap. The planner's sensing predicate
+(`transition_policy.py:365-370`) and the executor's docking acceptance
+(`sensing.py:146-151`) share the same two criteria, so a declared-prior wiring
+would make `sensing_feasibility_coupled` avoid sites the executor would have
+docked at without difficulty: a decision contrast with no outcome mechanism
+behind it. Both sensing-contrast families are affected, and the roadmap already
+records that independent information for the second declared contrast comes
+only from `combined_constraints`.
+
+ADR 0006 records the options and proposes giving the manipulation a physical
+cause. It is **proposed and awaiting an author decision**; nothing has been
+changed in the scenarios, the sensing node, or the planner. Note that editing
+`confirmatory_scenarios.py` redefines the frozen design's layouts without
+moving `design_hash`, which covers trial assignments only (`design.py:63-94`);
+per-trial `configuration_hash` does cover the world and manifest and
+`analysis.py:35` rejects a mixed campaign, so drift is caught within a campaign
+but not between the freeze and collection. Whichever option is taken, the
+committed Gate 2 report describes layouts that would no longer exist and must
+be regenerated.
 
 ## Last verified checkpoint
 

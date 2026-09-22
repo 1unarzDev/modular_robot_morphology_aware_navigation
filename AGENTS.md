@@ -80,3 +80,14 @@ observability, the disjoint pilot, then the confirmatory freeze. See
 section for the storage decision the confirmatory set forces: records run
 3.5--5.8 MB each, so 432 trials is about 1.9 GB and plain git tracking is not
 viable.
+
+**Two author decisions now block progress; do not resolve either in code.**
+ADR 0005 proposes the record-retention mechanism the confirmatory set forces.
+ADR 0006 proposes giving the observability manipulation a physical cause: both
+sensing-contrast families declare poor-observability regions that nothing in
+the world can produce, because the connector sensors are frustum-only logical
+cameras and covariance is a function of range alone. Wiring the planner's
+existing per-site `sensing_provider` to the declared regions would close
+roadmap item 3 as literally written while leaving the sensing contrast with no
+outcome mechanism, so it is not a shortcut worth taking. Both ADRs are
+`proposed`; no scenario, sensing, or planner code has been changed for either.
