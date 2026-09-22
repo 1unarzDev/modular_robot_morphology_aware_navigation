@@ -1,6 +1,6 @@
 # ADR 0004: Raised transition obstacles constrain driving, and the shelf leaves the route clear
 
-- Status: **proposed** (not adopted; awaiting author decision)
+- Status: accepted (author decision, 2026-09-21; items 1-4)
 - Date: 2026-09-21
 
 ## Context
@@ -21,7 +21,7 @@ shelf's span. The frozen worlds were solvable only because planning ignored
 an obstacle the robot physically hits. No pilot or confirmatory data exists,
 so this can be corrected without responding to an outcome.
 
-## Decision (proposed)
+## Decision
 
 1. `MorphologyAStar` takes `drive_obstacles`; a box whose underside is below
    a morphology's height blocks that morphology's footprint during traversal.
@@ -55,7 +55,7 @@ The geometry contrast (the shelf manipulation) survives at every length:
 feasibility-aware methods back off to an earlier site whose sweep clears the
 shelf.
 
-## Resolution of the sensing contrast (item 4, proposed)
+## Resolution of the sensing contrast (item 4)
 
 4. The `combined_constraints` occlusion moves from the lower lane to the
    door-line staging stretch where the feasibility-aware site now falls:
@@ -72,8 +72,8 @@ Screened on the 9 non-neutral `combined_constraints` layouts (shelf 0.6 m):
 | 0.70, 0.20, 0.35 (robustness) | 9/9 | 9 | 9 |
 
 Full Gate 2 manipulation check on `studies/confirmatory/design.json` with
-items 1-4 (`studies/gate2/confirmatory_manipulation_check_adr0004.json`),
-against the committed report on the frozen worlds:
+items 1-4 (now the committed `studies/gate2/confirmatory_manipulation_check.json`;
+the frozen-world report it replaces is in git history at `a28b295`):
 
 | Contrast / family | Frozen worlds | Items 1-4 |
 |---|---|---|

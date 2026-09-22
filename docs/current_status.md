@@ -508,29 +508,25 @@ This record set is not replaced or re-scored by any later campaign.
 
 Recorded here before any re-execution data exists.
 
-1. **Open design decision: the shelf blocks the route, not only transitions.**
-   The author chose (2026-09-21) to make every method treat a
-   transition-environment box whose underside is below a morphology's height
-   as a driving obstacle, leaving world geometry and transition validation
-   unchanged. It was implemented and **not adopted**: with the shelf as a
-   driving obstacle, `sensing_feasibility_coupled` finds no plan on any
-   sampled non-neutral layout (`reconfiguration_workspace` and
-   `combined_constraints`, layout indices 1, 2, 3, 5, 7 at world seed 8),
-   against a plan on every one without it, and the Gate 2 golden-layout test
-   raises `NoPathError`. The likely reason, not yet verified by locating
-   where search is cut off: the shelf sits on the door-approach line
-   (`center_y + 0.20`, the compact robot's left pod track) and ends about
-   0.8 m before the wall, inside the length the 1.76 m narrow robot needs to
-   line up with the doorway. So the frozen scenario geometry is only solvable
-   because the planner ignores a physical obstacle the robot then hits. The
-   remedy changes either the confirmatory worlds or the driving model and is
-   an author decision; no pilot or confirmatory data exists, so it can still
-   be made without responding to an outcome. Until then non-neutral layouts
-   cannot exercise the fault matrix. A remedy is drafted as ADR 0004
-   (`docs/adr/0004-raised-obstacles-constrain-driving.md`, status proposed;
-   code on branch `proposal/adr-0004-driving-obstacles`, not `main`). It makes
-   all 18 shelf layouts solvable and keeps the geometry contrast, but as
-   drafted it loses the `combined_constraints` sensing contrast (0/18).
+1. **Adopted: ADR 0004, the shelf constrains driving and leaves the route
+   clear (author decision, 2026-09-21).** Treating the frozen shelf as a
+   driving obstacle left no plan on any sampled non-neutral layout: the
+   shelf lay on the door-approach line (`center_y + 0.20`, the pods' left
+   track) along the stretch the 1.76 m narrow robot needs to line up with the
+   doorway, so the frozen worlds were solvable only because planning ignored
+   an obstacle the robot then hit. ADR 0004
+   (`docs/adr/0004-raised-obstacles-constrain-driving.md`) makes all methods
+   drive around raised obstacles, moves the shelf to `center_y + 0.415`
+   (0.10 m deep, 0.60 m long, ending where it did), and moves the
+   `combined_constraints` occlusion to where the feasibility-aware site now
+   falls. This changes the confirmatory worlds (design hash unchanged, since
+   worlds are generated from seeds); no pilot or confirmatory data existed.
+   The Gate 2 manipulation check was re-run and its committed report
+   replaced: both contrasts still separate in 9/9 non-neutral layouts per
+   family with 0 unplanned, identical to the frozen-world summary. In a
+   Gazebo debug check, fault-matrix specs `03-r00` and `07-r00` reached the
+   transition site, fired their fault, kept 0.066--0.075 m clearance, and
+   passed.
 2. **`pod_4` final alignment.** The final-alignment branch now calls
    `docking_command` with `terminal_gain=0.0`. With the target yaw coupled in,
    a pod that stops just past its target (target within about 36 degrees of
@@ -554,13 +550,13 @@ Recorded here before any re-execution data exists.
    `fired_injections`; the auditor's new `injection_fired` check fails any case
    whose declared fault did not fire, and reports `cases_not_exercised` per
    layout. Records predating the field fail this check by construction.
-5. **Re-execution uses the same frozen design, after item 1 is decided.**
+5. **Re-execution uses the same frozen design.**
    `config/fault_matrix_campaign.json` (hash `de7a6232...`: layouts 00, 03, 07,
-   two realizations, same seeds) will be re-executed unchanged into a new
-   record directory, `results/qualification/fault_matrix_campaign_r2_raw`. No
-   layout, seed, case, or sample-size choice is made after seeing the first
-   execution. Re-executing before item 1 is resolved would reproduce the
-   layout 03/07 failures by construction.
+   two realizations, same seeds) is re-executed unchanged into a new record
+   directory, `results/qualification/fault_matrix_campaign_r2_raw`, at the
+   commit adopting ADR 0004. No layout, seed, case, or sample-size choice is
+   made after seeing the first execution. Layouts 03 and 07 now carry the
+   ADR 0004 shelf, so this is the same design on corrected worlds.
 
 ## The Gate 0 record sets are not retained
 
@@ -673,7 +669,8 @@ gate fails" above.
 
 1. **Closed.** `check_planner_manipulation` has been run over
    `studies/confirmatory/design.json`; the report is committed at
-   `studies/gate2/confirmatory_manipulation_check.json`. The
+   `studies/gate2/confirmatory_manipulation_check.json` (regenerated under
+   ADR 0004 on 2026-09-21 with an identical contrast summary). The
    `combined_constraints` fragility the roadmap recorded does not appear on the
    layouts the frozen design draws. `confirmatory_scenarios` makes every fourth
    layout a neutral control (`layout_index % 4 == 0`), so of twelve layouts per

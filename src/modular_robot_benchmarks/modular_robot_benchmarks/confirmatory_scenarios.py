@@ -42,9 +42,9 @@ SHELF_DEPTH_M = 0.10
 # of lateral slack in the doorway and must transition on the door line). It
 # ends where it did, at the staging band's door side, over a fixed length that
 # covers the direct site's pod_4 excursion (x +0.15..+0.45 m) and leaves an
-# earlier door-line site whose sweep clears it. PROPOSED, NOT YET ADOPTED.
+# earlier door-line site whose sweep clears it. See ADR 0004.
 SHELF_LENGTH_M = 0.60
-# combined_constraints occlusion around the feasibility-aware site (PROPOSED).
+# combined_constraints occlusion around the feasibility-aware site (ADR 0004).
 OCCLUSION_LEAD_M = 0.50
 OCCLUSION_TRAIL_M = 0.10
 OCCLUSION_HALF_HEIGHT_M = 0.25
