@@ -558,6 +558,34 @@ Recorded here before any re-execution data exists.
    made after seeing the first execution. Layouts 03 and 07 now carry the
    ADR 0004 shelf, so this is the same design on corrected worlds.
 
+### Second execution: 38/42, one remaining execution fault
+
+Re-executed unchanged at `4c5edc7` (ADR 0004 adopted) into
+`results/qualification/fault_matrix_campaign_r2_raw`; audit committed at
+`studies/gate0/fault_matrix_campaign_r2_audit.json`, campaign digest
+`fb6d5dee01a9c7d8ec94d2d27ec985b42fa2557380aac4700565f84ac7185db0`.
+`gate_passed` is false: 38/42. Layout 00 passes 14/14; layouts 03 and 07 pass
+12/14 each. Every passing case's fault is recorded as fired.
+
+The four failures are the `commit` cases on the shelf layouts (`03-r06`,
+`03-r13`, `07-r06`, `07-r13`), each `not exercised`: the transition failed
+before the commit stage, so the declared fault never fired. All four share one
+cause. The planner chose a site at heading -45 degrees, where pod_4's
+relocation sweep clears the shelf (re-validated offline, feasible). The path
+follower accepts arrival within 0.12 m at any heading (`yaw_goal_tolerance`
+3.14159), so the robot stopped about 0.10 m short facing the door
+(yaw 0.02--0.06 rad), the navigator transformed there, and pod_4 contacted the
+shelf at relocation waypoint 2/5. Only `commit` moves pod_4, since every other
+case's fault fires earlier in the pod order. The system failed closed in all
+four.
+
+Fix: before every transition the navigator aligns to the planned site pose
+(0.03 m, 0.05 rad, on the simulated clock with a wall-clock stall backstop)
+and replans rather than transforming if it cannot. This binds the executed
+site to the checked one, as ADR 0003 did for the post-transition maneuver.
+The frozen design is then executed a third time, in full, into
+`fault_matrix_campaign_r3_raw`.
+
 ## The Gate 0 record sets are not retained
 
 Every record set this document cites as Gate 0 evidence is absent from the
