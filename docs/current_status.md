@@ -586,6 +586,25 @@ site to the checked one, as ADR 0003 did for the post-transition maneuver.
 The frozen design is then executed a third time, in full, into
 `fault_matrix_campaign_r3_raw`.
 
+### Third execution: the fault matrix passes, 42/42
+
+Re-executed unchanged at `bc40fb6` (site alignment) from a clean tree into
+`results/qualification/fault_matrix_campaign_r3_raw`, after a debug check of
+specs `03-r06` and `07-r06` passed (pod_4 relocated, `manager_commit` fired at
+99.5 s and 95.0 s, clearance 0.066 m and 0.050 m). Audit committed at
+`studies/gate0/fault_matrix_campaign_r3_audit.json`, campaign digest
+`95a8afa218bd14131c4f2aa54b4e7aa6d016930e87d5f35866604c8bb0a80f1c`, design
+hash `de7a6232...`. `gate_passed` is true: 42/42, 14/14 in each of
+`reconfiguration_workspace-00`, `-03`, and `-07`, `cases_not_exercised` 0 in
+every layout, distinct fault seeds, every declared case in every layout. Every
+case's declared fault is recorded as fired, every incomplete topology
+inhibited assembled drive, and reconciliation matched the observed topology.
+
+This is roadmap Gate 0 item 4. Together with the 20-run round-trip audit
+(items 2 and 3) it is retained, machine-readable evidence. It is engineering
+qualification, not pilot or confirmatory evidence. The first two executions
+remain on record as failures and are not re-scored.
+
 ## The Gate 0 record sets are not retained
 
 Every record set this document cites as Gate 0 evidence is absent from the
@@ -692,8 +711,7 @@ is not comparable to figures that cannot be re-audited.
 
 ## Resume here
 
-Items 1 and 2 are closed. Item 3 was executed and fails; see "Executed: the
-gate fails" above.
+Items 1--3 are closed; item 4 is the last open Gate 0 item.
 
 1. **Closed.** `check_planner_manipulation` has been run over
    `studies/confirmatory/design.json`; the report is committed at
@@ -741,12 +759,18 @@ gate fails" above.
    yaw exceeds 0.12/0.25 = 0.48 rad, because the yaw-normalized coupling ratio
    (`<= 0.25`) is tighter below that. Runs yaw about 0.45 rad, so that bound has
    never been the constraint that rejects and its margin is not informative.
-3. **Executed, failed.** The multi-layout fault-matrix campaign
-   (`config/fault_matrix_campaign.json`) passes 13/42. Most faults never
-   fired: the compact robot cannot reach the transition site on non-neutral
-   layouts, and `pod_4` misses its final relocation waypoint before the
-   `commit` fault can fire. Gate 0 needs both fixed, an auditor that requires
-   evidence the injection fired, and a re-execution.
+3. **Closed.** The multi-layout fault-matrix campaign
+   (`config/fault_matrix_campaign.json`) passes 42/42 on its third execution
+   (`studies/gate0/fault_matrix_campaign_r3_audit.json`), after ADR 0004, the
+   `pod_4` alignment fix, simulated-clock executor waits, fired-injection
+   evidence, and site alignment. The first two executions (13/42, 38/42) stay
+   on record.
+4. **Open: Gate 0 item 1 has no retained artifact.** Detached-pod and
+   compact-assembly native-velocity qualification is reported above from
+   notes only; its records (`native_velocity_transition_latest22_raw`) are
+   among those lost. The post-transition narrow assembly is covered by the
+   round-trip audit's signed-motion gates. Re-collect the detached-pod and
+   compact figures with a committed audit before declaring Gate 0 satisfied.
 
 Then proceed to the disjoint pilot without spending more submission time on
 repeated 20-run startup certification. If throughput is still limiting, measure

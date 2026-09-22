@@ -43,7 +43,8 @@ before changing the platform or collecting data.
 
 ## Current resumption point
 
-Gate 0 is not satisfied and its evidence is being re-collected. The records
+Gate 0 is not yet satisfied: items 2--4 have retained evidence, item 1 does
+not (see the last paragraph). The records
 behind every previous Gate 0 claim are absent from this machine -- `results/`
 is gitignored and no archive exists -- so the gate's required artifact cannot
 be produced from them. They needed re-collecting regardless, for the reason in
@@ -65,14 +66,15 @@ is why the lost campaigns could not have supplied a margin. `morphology
 qualify_roundtrip_batch audit` now reports `motion_margins` and
 `real_time_factors`, so the replacement campaign yields the margin directly.
 
-The 20-run round-trip gate passes and Gate 2's manipulation check is closed.
-The multi-layout fault-matrix campaign was executed and fails 13/42, mostly
-without exercising its faults: on non-neutral layouts the compact robot drives
-into the raised transition shelf and never reaches the transition site, and
-`pod_4` misses its final relocation waypoint before the `commit` fault can
-fire. Its audit is committed at `studies/gate0/fault_matrix_campaign_audit.json`.
-Gate 0 now needs those two fixes, an auditor that requires evidence the
-injection fired, and a re-execution. See `docs/current_status.md` "Resume here"
-for the open items, and its retention section for the storage decision the
-confirmatory set forces: records run 3.5--5.8 MB each, so 432 trials is about
-1.9 GB and plain git tracking is not viable.
+The 20-run round-trip gate passes, Gate 2's manipulation check is closed, and
+the multi-layout fault matrix passes 42/42 on its third execution
+(`studies/gate0/fault_matrix_campaign_r3_audit.json`). Getting there adopted
+ADR 0004 (raised obstacles constrain driving; the shelf moved off the route),
+and fixed pod_4's final alignment, executor waits on the wall clock, the
+auditor's blindness to unfired faults, and transforming away from the planned
+site pose. The one open Gate 0 item is a retained artifact for detached-pod
+and compact-assembly velocity qualification (roadmap item 1), whose records
+were lost. See `docs/current_status.md` "Resume here", and its retention
+section for the storage decision the confirmatory set forces: records run
+3.5--5.8 MB each, so 432 trials is about 1.9 GB and plain git tracking is not
+viable.
