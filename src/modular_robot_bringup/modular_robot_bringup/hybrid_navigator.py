@@ -22,7 +22,7 @@ from tf2_ros import Buffer, TransformException, TransformListener
 
 from .qualification import (
     VERIFICATION_SEQUENCE, CommandWindow, PlanarPose, goal_position_reached,
-    motion_delta, qualification_pass,
+    motion_delta, qualification_pass, site_alignment_command,
 )
 
 
@@ -38,6 +38,11 @@ class HybridNavigator(Node):
         self.declare_parameter("qualify_after_reconfiguration", True)
         self.declare_parameter("motion_command_stall_grace_s", 30.0)
         self.declare_parameter("terminal_position_tolerance", 0.15)
+        # Transition feasibility is checked at the planned site pose; the path
+        # follower stops within 0.12 m at any heading. Align before transforming.
+        self.declare_parameter("site_position_tolerance", 0.03)
+        self.declare_parameter("site_yaw_tolerance", 0.05)
+        self.declare_parameter("site_alignment_timeout_s", 30.0)
         qos = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL,
                          reliability=ReliabilityPolicy.RELIABLE)
         self.morphology: MorphologyState | None = None
@@ -154,6 +159,14 @@ class HybridNavigator(Node):
                     goal_handle.canceled()
                     return result
                 if segment.kind == HybridSegment.RECONFIGURE:
+                    # A transformation at a pose the planner did not check can
+                    # sweep a pod into an obstacle the check was there to avoid;
+                    # failing to align replans instead of transforming.
+                    if not await self._align_to_site(segment.execution_pose):
+                        self.get_logger().error(
+                            "could not align to the planned transition site; not transforming")
+                        execution_failed = True
+                        break
                     success = await self._execute_transition(segment)
                     reconfigurations += 1
                     # Pair the planner's pre-action risk with the committed,
@@ -399,6 +412,41 @@ class HybridNavigator(Node):
             return False
         response = (await handle.get_result_async()).result
         return int(response.error_code) == 0
+
+    async def _align_to_site(self, execution_pose: PoseStamped) -> bool:
+        orientation = execution_pose.pose.orientation
+        site = PlanarPose(execution_pose.pose.position.x, execution_pose.pose.position.y,
+                          2.0 * atan2(orientation.z, orientation.w))
+        position_tolerance = float(self.get_parameter("site_position_tolerance").value)
+        yaw_tolerance = float(self.get_parameter("site_yaw_tolerance").value)
+        clock = self.get_clock()
+        window = CommandWindow(
+            float(self.get_parameter("site_alignment_timeout_s").value),
+            lambda: clock.now().nanoseconds / 1e9, time.monotonic,
+            float(self.get_parameter("motion_command_stall_grace_s").value))
+        translating = True
+        while window.keep_commanding():
+            if window.stalled:
+                self.get_logger().error("simulated clock stalled during site alignment")
+                break
+            current = self._current_pose()
+            if current is None:
+                await self._sleep(0.05)
+                continue
+            quaternion = current.pose.orientation
+            linear, angular, translating, aligned = site_alignment_command(
+                PlanarPose(current.pose.position.x, current.pose.position.y,
+                           2.0 * atan2(quaternion.z, quaternion.w)),
+                site, position_tolerance, yaw_tolerance, translating)
+            command = Twist()
+            command.linear.x, command.angular.z = linear, angular
+            self.command_publisher.publish(command)
+            if aligned:
+                await self._sleep(0.25)
+                return True
+            await self._sleep(0.05)
+        self.command_publisher.publish(Twist())
+        return False
 
     async def _execute_transition(self, segment):
         if not self.reconfigure.wait_for_server(timeout_sec=3.0):

@@ -88,6 +88,43 @@ def qualification_pass(stages: dict[str, dict[str, float]]) -> bool:
     )
 
 
+def _wrap(angle: float) -> float:
+    return atan2(sin(angle), cos(angle))
+
+
+def site_alignment_command(
+    current: PlanarPose, site: PlanarPose, position_tolerance: float,
+    yaw_tolerance: float, translating: bool,
+    max_linear: float = 0.15, max_angular: float = 0.6,
+) -> tuple[float, float, bool, bool]:
+    """Differential command bringing the assembly onto a planned transition site.
+
+    Transition feasibility is checked at the exact planned site pose, but the
+    path follower arrives anywhere within its goal tolerance and ignores
+    heading, so the transformation could run at a pose nobody checked. Returns
+    ``(linear, angular, translating, aligned)``: close position first (forward
+    or reverse, whichever faces the site), then turn in place to the planned
+    yaw. ``translating`` carries hysteresis so a small drift while turning
+    does not restart translation until it doubles the tolerance.
+    """
+    dx, dy = site.x - current.x, site.y - current.y
+    distance = hypot(dx, dy)
+    if distance > (position_tolerance if translating else 2.0 * position_tolerance):
+        bearing = _wrap(atan2(dy, dx) - current.yaw)
+        direction = 1.0
+        if abs(bearing) > 1.5707963267948966:
+            bearing, direction = _wrap(bearing - 3.141592653589793), -1.0
+        angular = max(-max_angular, min(max_angular, 1.5 * bearing))
+        if abs(bearing) > 0.15:
+            return 0.0, angular, True, False
+        return direction * min(max_linear, max(0.03, 0.8 * distance)), angular, True, False
+    yaw_error = _wrap(site.yaw - current.yaw)
+    if abs(yaw_error) <= yaw_tolerance:
+        return 0.0, 0.0, False, True
+    magnitude = min(max_angular, max(0.15, 1.5 * abs(yaw_error)))
+    return 0.0, magnitude if yaw_error > 0 else -magnitude, False, False
+
+
 def goal_position_reached(current: PlanarPose, goal: PlanarPose,
                           tolerance: float) -> bool:
     """Independent mission completion check in the common map frame."""
