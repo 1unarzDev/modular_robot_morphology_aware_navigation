@@ -1,6 +1,8 @@
 # ADR 0006: Location-dependent observability needs a physical cause
 
-- Status: **proposed** (awaiting author decision)
+- Status: **proposed**; A chosen 2026-09-22, then found unrealizable as written
+  (see "Occlusion cannot be the physical cause"). Awaiting a decision between
+  A1 and D.
 - Date: 2026-09-22
 
 ## Context
@@ -142,10 +144,70 @@ response to an outcome. It is still a design decision that must be frozen
 before data exists, which is why it is recorded here rather than made as a side
 effect of wiring the `sensing_provider`.
 
+## Occlusion cannot be the physical cause (measured 2026-09-22)
+
+A was chosen, and then measured before implementation. Occluding a connector
+sight line is not possible on this platform.
+
+All four connector cameras are mounted at the core origin and differ only in
+yaw (`sensing_node.py:60-65`), covering 4 x 1.8 rad, so a sight line is the
+segment from the robot's own center to a pod. `compact_to_narrow` moves its
+pods radially outward from 0.20--0.31 m to 0.35--0.74 m, which means the sight
+line to a pod is very nearly the pod's own path.
+
+Sampling each sight line against the real swept collision geometry (the core
+box plus every collision part at every trajectory sample, 106 boxes) gives the
+free runs available to an occluder:
+
+| sight line | free run from core | candidate post | inside the robot's own footprint |
+|---|---|---|---|
+| `pod_0` (0.710, 0.200) | 14--41 cm | (+0.260, +0.073) | yes |
+| `pod_1` (0.710, -0.200) | 14--54 cm | (+0.323, -0.091) | yes |
+| `pod_2` (-0.710, 0.200) | 14--54 cm | (-0.323, +0.091) | yes |
+| `pod_3` (-0.710, -0.200) | 14--41 cm | (-0.260, -0.073) | yes |
+| `pod_4` (0.350, 0.200) | none >= 12 cm | -- | -- |
+| `pod_5` (-0.350, -0.200) | none >= 12 cm | -- | -- |
+
+Every free run lies between the relocating pods, at 14--54 cm from the site
+center, and `narrow_tandem` has half-extent 0.88 x 0.33 m. So every placement
+that would block a sight line is inside the robot's own post-transition
+footprint: the target-footprint check and the ADR 0003 verification sweep would
+reject the site for geometry, and `feasibility_coupled` would reject it too.
+That collapses the contrast the manipulation exists to create.
+
+The connector sensing geometry is entirely intra-robot. No external body can
+occlude it without colliding with the machine.
+
+## Revised options
+
+- **A1. External fiducial dependence (the only remaining form of A).** Make the
+  connector relative-pose estimate depend on an external workspace landmark.
+  The `/fiducials/pod_N/pose` hook already exists in the sensing node
+  (`sensing_node.py:56-59`) and nothing publishes it; visibility fusion already
+  keys on `source == "fiducial"` (`sensing.py:112`). A sim-side publisher would
+  model line of sight from a fixed marker to each pod, physical occluders in
+  the world would block *that* line, and the planner's `sensing_provider` would
+  predict visibility at a candidate site by raycasting the prior 3D map to the
+  known marker pose. The occluder is then far from the robot, so there is no
+  motion conflict, and the manipulation is both physical and location-dependent.
+  Cost: a new sim-side node, marker placement in the generated worlds, sensing
+  node changes inside a guarded autonomy package, a planner provider, scenario
+  changes, a regenerated Gate 2 report, and re-qualification of the round-trip
+  and fault-matrix gates that currently pass. It also changes the docking
+  sensing architecture from a self-contained intra-robot design to one with an
+  infrastructure dependency, which is a claim the paper would have to carry.
+- **D. Withdraw the sensing contrast from the confirmatory design.** Unchanged
+  from above, and now the cheap option rather than the fallback.
+
+B and C are unchanged and still rejected: neither supplies an outcome
+mechanism.
+
 ## Decision (proposed)
 
-Adopt A. B is the change the roadmap item literally describes and would take an
-afternoon, but it would buy a decision contrast that no outcome can follow, and
-the confirmatory sensing result would not mean what the paper would say it
-means. D is the correct fallback if A proves impractical on this platform, and
-is preferable to B.
+A is not implementable as written. The choice is between A1 and D. A1 is the
+only path that keeps the sensing contrast meaningful, but it is a larger change
+than A appeared to be and it adds an infrastructure assumption to the platform.
+D is honest, cheap, and costs a research claim.
+
+This is recorded rather than resolved in code because it decides what the
+confirmatory study can claim.

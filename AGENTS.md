@@ -83,11 +83,16 @@ viable.
 
 **Two author decisions now block progress; do not resolve either in code.**
 ADR 0005 proposes the record-retention mechanism the confirmatory set forces.
-ADR 0006 proposes giving the observability manipulation a physical cause: both
-sensing-contrast families declare poor-observability regions that nothing in
-the world can produce, because the connector sensors are frustum-only logical
-cameras and covariance is a function of range alone. Wiring the planner's
-existing per-site `sensing_provider` to the declared regions would close
-roadmap item 3 as literally written while leaving the sensing contrast with no
-outcome mechanism, so it is not a shortcut worth taking. Both ADRs are
-`proposed`; no scenario, sensing, or planner code has been changed for either.
+ADR 0006 concerns the observability manipulation: both sensing-contrast
+families declare poor-observability regions that nothing in the world can
+produce, because the connector sensors are frustum-only logical cameras and
+covariance is a function of range alone. Wiring the planner's existing per-site
+`sensing_provider` to the declared regions would close roadmap item 3 as
+literally written while leaving the sensing contrast with no outcome mechanism,
+so it is not a shortcut worth taking. Giving it a physical cause by occlusion
+was chosen and then measured to be impossible: the connector cameras sit at the
+core origin and the pods move radially outward, so every sight-line-blocking
+placement is inside the robot's own footprint. The open choice is A1 (depend on
+an external workspace landmark via the unused `/fiducials/pod_N/pose` hook) or
+D (withdraw the sensing contrast). Both ADRs are `proposed`; no scenario,
+sensing, or planner code has been changed for either.

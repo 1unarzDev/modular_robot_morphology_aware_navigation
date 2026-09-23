@@ -825,8 +825,22 @@ records that independent information for the second declared contrast comes
 only from `combined_constraints`.
 
 ADR 0006 records the options and proposes giving the manipulation a physical
-cause. It is **proposed and awaiting an author decision**; nothing has been
-changed in the scenarios, the sensing node, or the planner. Note that editing
+cause. That option was chosen on 2026-09-22 and then measured before
+implementation: **occlusion cannot be the physical cause.** All four connector
+cameras sit at the core origin, and `compact_to_narrow` moves its pods radially
+outward, so a sight line is very nearly the pod's own path. Against the real
+swept collision geometry the only free runs lie 14--54 cm from the site center,
+between the relocating pods, and `narrow_tandem` has half-extent 0.88 x 0.33 m
+— so every sight-line-blocking placement is inside the robot's own
+post-transition footprint and would be rejected for geometry by
+`feasibility_coupled` as well, collapsing the contrast. The connector sensing
+geometry is entirely intra-robot.
+
+The remaining choice is A1 (make the connector estimate depend on an external
+workspace landmark, via the unused `/fiducials/pod_N/pose` hook, and occlude
+that line instead) or D (withdraw the sensing contrast). Both are open;
+nothing has been changed in the scenarios, the sensing node, or the planner.
+Note that editing
 `confirmatory_scenarios.py` redefines the frozen design's layouts without
 moving `design_hash`, which covers trial assignments only (`design.py:63-94`);
 per-trial `configuration_hash` does cover the world and manifest and
