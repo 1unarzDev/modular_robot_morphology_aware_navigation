@@ -1,8 +1,7 @@
 # ADR 0006: Location-dependent observability needs a physical cause
 
-- Status: **proposed**; A chosen 2026-09-22, then found unrealizable as written
-  (see "Occlusion cannot be the physical cause"). Awaiting a decision between
-  A1 and D.
+- Status: **accepted** as A1, 2026-09-22. A was chosen first and found
+  unrealizable as written; see "Occlusion cannot be the physical cause".
 - Date: 2026-09-22
 
 ## Context
@@ -202,12 +201,56 @@ occlude it without colliding with the machine.
 B and C are unchanged and still rejected: neither supplies an outcome
 mechanism.
 
-## Decision (proposed)
+## Decision
 
-A is not implementable as written. The choice is between A1 and D. A1 is the
-only path that keeps the sensing contrast meaningful, but it is a larger change
-than A appeared to be and it adds an infrastructure assumption to the platform.
-D is honest, cheap, and costs a research claim.
+**A1, decided 2026-09-22.** A is not implementable as written; B and C supply
+no outcome mechanism; D was declined because it costs the sensing contrast.
+The platform therefore gains an infrastructure assumption, which the paper must
+state: precision docking depends on an external workspace fiducial station, and
+a transition site is only well observed where that station can see the pods.
 
-This is recorded rather than resolved in code because it decides what the
-confirmatory study can claim.
+### Design
+
+The manipulation acts on **covariance**, not on the visibility flag, so the
+onboard connector cameras keep their present role and the existing
+qualification worlds are unaffected.
+
+- A **fiducial station** is a fixed workspace pose declared with the world. A
+  pod is *station-observed* when the segment from the station to the pod is
+  unoccluded by the declared 3D environment and within the station's range.
+- Station-observed pods get the precise, low covariance that precision docking
+  needs. Pods seen only by the onboard connector cameras keep visibility but
+  carry a coarse covariance above the 0.015 gate, which is the physically
+  honest reading of a short-range relative sensor with no absolute reference.
+  `covariance_too_large` already exists as a rejection reason in both the
+  planner predicate and `docking_acceptance`, so no new failure path is needed.
+- **Backwards compatible**: a world that declares no station keeps today's
+  behaviour exactly. Stations are opt-in per world, so the passing round-trip
+  and fault-matrix gates and the Gate 0 qualification worlds are untouched, and
+  only the confirmatory scenarios take on the new regime.
+- **Sim side** (`modular_robot_sim`, not a guarded package): a node synthesizes
+  `/fiducials/pod_N/pose` from simulator state and the declared occluders, via
+  the hook that already exists at `sensing_node.py:56-59` and the fusion that
+  already keys on `source == "fiducial"` (`sensing.py:112`).
+- **Autonomy side**: the planner's `sensing_provider` predicts, for each
+  candidate site, whether each moved pod would be station-observed there, using
+  only priors it already holds — the station pose declared with the map, the
+  `transition_environment` boxes, and the catalog's own transition geometry.
+  No evaluator truth is consumed, so the guard at
+  `test_evaluator_metrics.py:218` continues to hold.
+
+Prediction and measurement are then two independent computations of the same
+physical fact, which is what makes the manipulation auditable rather than
+declared: an evaluator check can compare predicted station observability at the
+chosen site against what the station actually delivered there.
+
+### Before this is evidence
+
+1. Regenerate `studies/gate2/confirmatory_manipulation_check.json`; the
+   committed report describes layouts that will no longer exist.
+2. Add the check that a declared observability region is reproduced by the
+   mission sensing model at the sites it covers. It fails today by about 1600x.
+3. Re-qualify the 20-run round-trip gate and the 42/42 fault matrix, which
+   should be unaffected by backwards compatibility but must be shown so.
+4. Consider binding the scenario generator's output into the frozen design
+   envelope, so redefining a layout moves a hash at freeze time.

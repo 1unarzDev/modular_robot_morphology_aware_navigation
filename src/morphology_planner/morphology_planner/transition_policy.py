@@ -6,6 +6,9 @@ from typing import Callable, Literal, Mapping
 
 from .catalog import Catalog, PostTransitionVerification, Transition
 from .grid import OccupancyGrid
+from .observability import (
+    STATION_UNOBSERVED_TRACE, FiducialStation, observed_by_any, precise_trace,
+)
 from .planner import HybridState
 from .transition_validation import (
     Box3,
@@ -423,3 +426,46 @@ class CoupledTransitionPolicy:
             )
             for pod in transition.moved_pods
         }
+
+
+def station_sensing_provider(
+    catalog: Catalog,
+    stations: tuple[FiducialStation, ...],
+    environment: tuple[Box3, ...],
+    grid: OccupancyGrid,
+    heading_bins: int,
+) -> SensingProvider:
+    """Predict station observability at each candidate site (ADR 0006).
+
+    A pod is well observed where the workspace fiducial station has a clear
+    line to where it will be docked. This reads only priors the robot already
+    holds -- the stations declared with the map, the prior 3D environment, and
+    the catalog's own transition geometry -- so it stays inside the
+    ground-truth guard, and it is an independent computation of the same
+    physical fact the simulator's station synthesizes.
+
+    Docked poses are used because that is where `docking_acceptance` runs.
+    """
+    def provider(transition: Transition, state: HybridState):
+        cached = cache.get((transition.id, state.x, state.y, state.heading))
+        if cached is not None:
+            return cached
+        wx, wy = grid.cell_center(state.x, state.y)
+        base = Pose3(wx, wy, 0.0, state.heading * 2.0 * pi / heading_bins)
+        sensing: dict[str, PodSensingState] = {}
+        for pod in transition.moved_pods:
+            docked = _world_pose(
+                catalog.morphologies[transition.target].pod_poses[pod],
+                base, catalog.module_sizes[pod][2])
+            point = (docked.x, docked.y, docked.z)
+            station = observed_by_any(stations, point, environment)
+            sensing[pod] = (
+                PodSensingState(True, precise_trace(station.range_to(point)))
+                if station is not None
+                else PodSensingState(False, STATION_UNOBSERVED_TRACE)
+            )
+        cache[(transition.id, state.x, state.y, state.heading)] = sensing
+        return sensing
+
+    cache: dict[tuple[str, int, int, int], dict[str, PodSensingState]] = {}
+    return provider
