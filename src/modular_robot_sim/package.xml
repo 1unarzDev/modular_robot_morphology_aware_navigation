@@ -6,9 +6,16 @@
   <maintainer email="maintainer@example.com">Morphology Navigation Team</maintainer>
   <license>Apache-2.0</license>
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
   <exec_depend>modular_robot_gz_plugins</exec_depend>
   <exec_depend>ros_gz_bridge</exec_depend>
   <exec_depend>ros_gz_sim</exec_depend>
+  <!-- The fiducial station shares the planner's observability geometry, so
+       prediction and measurement cannot drift apart. -->
+  <exec_depend>morphology_planner</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
   <export><build_type>ament_cmake</build_type></export>
 </package>
 

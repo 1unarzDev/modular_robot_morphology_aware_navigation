@@ -10,8 +10,9 @@ placement falls inside the robot's own footprint.
 This module is pure geometry and carries no ROS or simulator dependency. The
 simulator synthesizes station observations from it, and the planner predicts
 them from it using only priors it already holds (the station pose declared with
-the map, and the `transition_environment` boxes). Prediction and measurement are
-therefore independent computations of the same physical fact.
+the map, and the `transition_environment` boxes). They share this rule on
+purpose, so prediction and measurement cannot drift apart; what differs is the
+input, priors at candidate sites against simulator state at the actual pose.
 """
 
 from __future__ import annotations
@@ -22,11 +23,13 @@ from math import sqrt
 from .transition_validation import Box3
 
 
-# Covariance trace a station-refined observation achieves, as a function of
-# range from the observer. Matches the onboard connector camera's existing
-# model (`sensing_node.py`): 2 * (1e-6 + 1e-5 r^2) + (1e-6 + 2e-5 r^2).
-PRECISE_BASE_TRACE = 3e-6
-PRECISE_RANGE_COEFFICIENT = 4e-5
+# Covariance a station-refined observation achieves, as a function of range
+# from the observer. Matches the onboard connector camera's existing model
+# (`sensing_node.py`): per-axis position 1e-6 + 1e-5 r^2, yaw 1e-6 + 2e-5 r^2.
+PRECISE_POSITION_BASE = 1e-6
+PRECISE_POSITION_COEFFICIENT = 1e-5
+PRECISE_YAW_BASE = 1e-6
+PRECISE_YAW_COEFFICIENT = 2e-5
 
 # Covariance trace attributed to a pod the station cannot see. The onboard
 # connector cameras still report it, but a short-range relative sensor with no
@@ -49,8 +52,16 @@ class FiducialStation:
         return sqrt(sum((a - b) ** 2 for a, b in zip(self.position, point)))
 
 
+def precise_variances(range_m: float) -> tuple[float, float]:
+    """Per-axis position variance and yaw variance at a given range."""
+    squared = range_m * range_m
+    return (PRECISE_POSITION_BASE + PRECISE_POSITION_COEFFICIENT * squared,
+            PRECISE_YAW_BASE + PRECISE_YAW_COEFFICIENT * squared)
+
+
 def precise_trace(range_m: float) -> float:
-    return PRECISE_BASE_TRACE + PRECISE_RANGE_COEFFICIENT * range_m * range_m
+    position, yaw = precise_variances(range_m)
+    return 2.0 * position + yaw
 
 
 def segment_intersects_box(

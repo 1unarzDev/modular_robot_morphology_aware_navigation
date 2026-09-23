@@ -26,7 +26,13 @@ class RelativePoseObservation:
     visible: bool = True
 
     def validate(self) -> None:
-        if self.source not in {"wheel_odometry", "imu", "fiducial"}:
+        # `fiducial` is the only source that establishes connector visibility
+        # (see `RelativePoseEstimator.estimate`). `connector_camera` is the
+        # onboard short-range relative sensor: it refines the pose but carries
+        # no absolute reference, so under ADR 0006 it does not by itself make a
+        # connector observable.
+        if self.source not in {
+                "wheel_odometry", "imu", "fiducial", "connector_camera"}:
             raise ValueError(f"unsupported sensor source: {self.source}")
         if min(self.variance_x, self.variance_y, self.variance_yaw) <= 0:
             raise ValueError("observation variances must be positive")

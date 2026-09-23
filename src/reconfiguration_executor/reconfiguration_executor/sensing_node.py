@@ -33,6 +33,17 @@ class SensorRelativePoseNode(Node):
         self.declare_parameter("stale_after_s", 0.5)
         self.declare_parameter("wheel_position_variance", 0.0025)
         self.declare_parameter("wheel_yaw_variance", 0.0076)
+        # ADR 0006. Where the world declares a fiducial station, connector
+        # observability is established by that station, and the onboard
+        # connector cameras report as `connector_camera` so they refine the
+        # pose without asserting observability. Default off, which is exactly
+        # the behaviour of every world before ADR 0006.
+        self.declare_parameter("station_gated_visibility", False)
+        self._connector_camera_source = (
+            "connector_camera"
+            if bool(self.get_parameter("station_gated_visibility").value)
+            else "fiducial"
+        )
         default_catalog = get_package_share_directory("modular_robot_description") + "/config/morphologies.yaml"
         self.declare_parameter("catalog", default_catalog)
         with open(self.get_parameter("catalog").value, encoding="utf-8") as stream:
@@ -147,8 +158,9 @@ class SensorRelativePoseNode(Node):
             # must inject pose noise and change this covariance together.
             position_variance = 1e-6 + 1e-5 * range_squared
             if not self._update(RelativePoseObservation(
-                pod_id, "fiducial", now, in_core, position_variance,
-                position_variance, 1e-6 + 2e-5 * range_squared, True,
+                pod_id, self._connector_camera_source, now, in_core,
+                position_variance, position_variance,
+                1e-6 + 2e-5 * range_squared, True,
             )):
                 continue
             self._publish(pod_id, now)

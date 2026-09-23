@@ -1,7 +1,15 @@
 cmake_minimum_required(VERSION 3.16)
 project(modular_robot_sim)
 find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
 install(DIRECTORY config launch models worlds DESTINATION share/${PROJECT_NAME})
+
+# The fiducial station (ADR 0006) is a simulator sensor model, so it lives on
+# the simulation side rather than in an autonomy package.
+ament_python_install_package(${PROJECT_NAME})
+install(PROGRAMS ${PROJECT_NAME}/fiducial_station_node.py
+        DESTINATION lib/${PROJECT_NAME}
+        RENAME fiducial_station)
 
 # DART merges fixed-joint children into one skeleton. Generate unique internal
 # link and joint names so six instances do not collide when they are redocked.

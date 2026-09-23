@@ -26,6 +26,38 @@ def test_sensor_fusion_reduces_covariance_and_increments_revision():
     assert fused.visible and fused.sensing_revision == 2
 
 
+def test_connector_camera_alone_does_not_establish_visibility():
+    """ADR 0006: the onboard connector camera refines the relative pose but
+    carries no absolute reference, so it cannot by itself make a connector
+    observable. Only a station fiducial does."""
+    estimator = RelativePoseEstimator()
+    estimator.update(observation("connector_camera", 1.0, x=0.1, variance=0.001))
+    estimate = estimator.estimate("pod_0", 1.1)
+    assert estimate.sources == ("connector_camera",)
+    assert estimate.visible is False
+
+
+def test_a_station_fiducial_establishes_visibility_alongside_the_camera():
+    estimator = RelativePoseEstimator()
+    estimator.update(observation("connector_camera", 1.0, x=0.1, variance=0.001))
+    estimator.update(observation("fiducial", 1.05, x=0.1, variance=0.001))
+    estimate = estimator.estimate("pod_0", 1.1)
+    assert estimate.sources == ("connector_camera", "fiducial")
+    assert estimate.visible is True
+
+
+def test_losing_the_station_while_the_camera_holds_drops_visibility():
+    """A pod that drives into the station's shadow stops being observable even
+    though the onboard camera still sees it."""
+    estimator = RelativePoseEstimator(stale_after_s=0.5)
+    estimator.update(observation("fiducial", 1.0, x=0.1, variance=0.001))
+    estimator.update(observation("connector_camera", 1.0, x=0.1, variance=0.001))
+    assert estimator.estimate("pod_0", 1.1).visible is True
+    # The camera keeps reporting; the station observation goes stale.
+    estimator.update(observation("connector_camera", 1.6, x=0.1, variance=0.001))
+    assert estimator.estimate("pod_0", 1.7).visible is False
+
+
 def test_planning_revision_ignores_high_rate_pose_updates_until_policy_state_changes():
     tracker = PlanningSensingRevision()
     first = RelativePoseEstimate(

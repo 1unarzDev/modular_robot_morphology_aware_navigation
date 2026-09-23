@@ -239,10 +239,14 @@ qualification worlds are unaffected.
   No evaluator truth is consumed, so the guard at
   `test_evaluator_metrics.py:218` continues to hold.
 
-Prediction and measurement are then two independent computations of the same
-physical fact, which is what makes the manipulation auditable rather than
-declared: an evaluator check can compare predicted station observability at the
-chosen site against what the station actually delivered there.
+Prediction and measurement deliberately share the geometry rule, so they cannot
+drift apart, but they differ in their inputs: the planner predicts at candidate
+sites from priors, and the station computes at the robot's actual pose from
+simulator state. An evaluator check comparing predicted observability at the
+chosen site against what the station actually delivered there therefore
+audits the placement and the inputs, not the rule. That is weaker than two
+independent implementations would be, and is the deliberate trade for a single
+source of truth; a rule bug would satisfy the audit.
 
 ### Before this is evidence
 
