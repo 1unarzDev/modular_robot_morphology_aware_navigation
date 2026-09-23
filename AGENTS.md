@@ -118,7 +118,9 @@ wheel_odometry`), which is the outcome mechanism ADR 0006 existed to create.
 0.20 m off the route line at 45 degrees, and failed `_align_to_site` three
 times with zero transition attempts; closest map-frame approach 0.098 m against
 a 0.03 m tolerance. Nav2 hands over within 0.12 m ignoring yaw entirely, and
-`site_alignment_command` cannot close a lateral offset. Every sensing-
+`site_alignment_command` cannot close a lateral offset. Alignment is marginal
+even where it works: the on-route `geometry_coupled` site was reached at
+0.0287 m against the 0.030 m tolerance, a 1.3 mm margin. Every sensing-
 manipulated site is off-route by construction, and the declared regions placed
 them further off (about 0.50 m) than ADR 0006 does, so this blocks the sensing
 contrast under either design and is not caused by ADR 0006. Decide how to close

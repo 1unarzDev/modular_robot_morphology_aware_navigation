@@ -1,0 +1,50 @@
+{
+  "design_kind": "engineering_station_smoke",
+  "evidence_class": "engineering_debug_never_pilot_or_confirmatory",
+  "findings": {
+    "off_route_sites_unreachable": "sensing_feasibility_coupled avoided the shadowed site and could not align to the one it chose. Nav2 hands over within xy_goal_tolerance 0.12 m with yaw_goal_tolerance 3.14159, and site_alignment_command must close to 0.03 m and 0.05 rad in a 30 s simulated window. Open blocker, not caused by ADR 0006: the declared regions placed sensing sites about 0.50 m off the route line against about 0.20 m now.",
+    "outcome_mechanism_present": "geometry_coupled chose the direct site, aligned, attempted the transition, and the docking gate refused it with connector_not_visible and sources=connector_camera,wheel_odometry: a well-measured pod that the station cannot see. Before ADR 0006 no site choice could do this, covariance being 2.5e-05 everywhere."
+  },
+  "layout": "docking_observability-01",
+  "note": "Single trials on the layout and seeds the frozen design draws, run to exercise the ADR 0006 runtime path. Raw records are gitignored under results/debug/station_smoke/.",
+  "purpose": "adr0006_station_smoke",
+  "schema_version": 1,
+  "trials": [
+    {
+      "bytes": 7582720,
+      "closest_map_frame_approach_m": 0.0979,
+      "completed": false,
+      "method": "sensing_feasibility_coupled",
+      "planned_site": {
+        "x": 1.95,
+        "y": 1.55,
+        "yaw": 0.785
+      },
+      "reconfiguration_attempts": 0,
+      "record": "results/debug/station_smoke/raw/docking_observability-01-r0-sensing_feasibility_coupled.json",
+      "sha256": "32086868f0e830dcc8d179c64740227a2105a989802c0d815b4d046f8ee51a2e",
+      "simulated_duration_s": 217.1,
+      "site_position_tolerance_m": 0.03,
+      "site_yaw_tolerance_rad": 0.05,
+      "terminal_status": "controller_failure"
+    },
+    {
+      "bytes": 2192468,
+      "closest_map_frame_approach_m": 0.0287,
+      "completed": false,
+      "method": "geometry_coupled",
+      "planned_site": {
+        "x": 2.15,
+        "y": 1.75,
+        "yaw": 0.0
+      },
+      "reconfiguration_attempts": 1,
+      "record": "results/debug/station_smoke/raw_geom/docking_observability-01-r0-geometry_coupled.json",
+      "sha256": "eeaad6403f2962dbb445661398437fec899432ece6091bb06b09a82a64a96d0b",
+      "simulated_duration_s": 62.0,
+      "site_position_tolerance_m": 0.03,
+      "site_yaw_tolerance_rad": 0.05,
+      "terminal_status": "unsafe_topology"
+    }
+  ]
+}

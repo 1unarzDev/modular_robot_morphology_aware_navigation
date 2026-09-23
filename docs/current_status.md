@@ -929,9 +929,15 @@ closest it sat 2 cm off in x and 9.6 cm off in y, parked on the route line.
 
 Nav2 hands over inside `xy_goal_tolerance: 0.12` with `yaw_goal_tolerance:
 3.14159`, so heading is ignored entirely, and `site_alignment_command` must
-close the rest to 0.03 m and 0.05 rad within a 30 s simulated window. It does
-that for an on-route, axis-aligned site; it does not for one about 20 cm off
-the route line at 45 degrees.
+close the rest to 0.03 m and 0.05 rad within a 30 s simulated window.
+
+**Site alignment is marginal even where it succeeds.** The on-route,
+axis-aligned `geometry_coupled` site was reached at **0.0287 m** against the
+0.030 m tolerance -- a margin of 1.3 mm -- while the off-route site reached
+only 0.0979 m. So this is not simply "off-route sites fail": the alignment
+stage clears its tolerance by a hair on the easy case, and any confirmatory
+campaign would be resting on that. Digests and figures are committed at
+`studies/engineering/adr0006_station_smoke.json`.
 
 **This is not caused by ADR 0006.** Every sensing-manipulated site is off-route
 by construction -- moving the site is the manipulation -- and the declared

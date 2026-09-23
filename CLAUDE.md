@@ -51,6 +51,10 @@ killed with `-9`.
 
 The WSL clone cannot read a Windows *worktree*; fetch from the main repository
 path. When copying uncommitted files across, strip CRLF (`sed -i 's/\r$//'`).
+Those copies then block the next `git merge --ff-only` ("local changes would be
+overwritten"), so once the work is committed on Windows, bring the clone across
+with `git fetch <path> main && git reset --hard FETCH_HEAD`, deleting any
+copied files that are untracked there, rather than merging onto the copies.
 Long runs exceed the 120 s tool timeout and land in the background — check the
 task output file rather than re-running.
 
