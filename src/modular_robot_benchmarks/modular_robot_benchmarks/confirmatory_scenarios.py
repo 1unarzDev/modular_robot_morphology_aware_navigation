@@ -44,10 +44,49 @@ SHELF_DEPTH_M = 0.10
 # covers the direct site's pod_4 excursion (x +0.15..+0.45 m) and leaves an
 # earlier door-line site whose sweep clears it. See ADR 0004.
 SHELF_LENGTH_M = 0.60
-# combined_constraints occlusion around the feasibility-aware site (ADR 0004).
-OCCLUSION_LEAD_M = 0.50
-OCCLUSION_TRAIL_M = 0.10
+# combined_constraints occlusion around the feasibility-aware site (ADR 0004),
+# widened under ADR 0006 from 0.60 m to 2.10 m about the same centre. A site is
+# rejected when any moved pod is shadowed, and the pods sit at only four
+# discrete x offsets, so a shadow narrower than the 0.70 m gap between -0.35 and
+# +0.35 m produces disjoint slivers a site can sit between. A contiguous
+# rejected band therefore needs about 2.12 m, and the declared 0.60 m band was
+# not physically realizable at all. Screened at 9/9 separating, 0 unplanned;
+# 1.60 m gives 0/9, exactly as the discrete-offset argument predicts.
+OCCLUSION_LEAD_M = 1.25
+OCCLUSION_TRAIL_M = 0.85
 OCCLUSION_HALF_HEIGHT_M = 0.25
+
+# ADR 0006. An observability region states what the design intends; the
+# fiducial station and the elevated screen are the physical cause that produces
+# it. The screen hangs between a station on the south wall and the staging
+# corridor: a sight line falling from STATION_HEIGHT_M to a pod at ground level
+# stays above SCREEN_UNDERSIDE_M for the first ~0.67 of its length, so a screen
+# at SCREEN_FRACTION of the way lies inside that span and shadows whatever the
+# ray reaches beyond it. Sites nearer the station -- lower in y -- keep a clear
+# line and stay observable, which leaves a distinct feasible site to choose.
+#
+# The shadow is the declared region ERODED by the pods' reach, because the
+# rejected set is the shadow dilated by that reach and never equal to it.
+#
+# The screen clears the tallest morphology (0.30 m), so by the rule at
+# `planner.py:88` it constrains no driving; it is z-disjoint from the
+# relocation sweeps, so it changes no transition feasibility; it is above the
+# lidar plane (0.12 m), so it never enters `/scan`, the occupancy map, or the
+# static map AMCL localizes against; and `box_clearance` is 3D, so it stays
+# about 0.4 m clear of the pods and cannot register as a contact. It is an
+# optical obstacle only, and the Gate 2 report confirms it by leaving every
+# geometry and feasibility site where it was before ADR 0006.
+#
+# What the physical model reproduces is the region's x extent. Its y extent is
+# a consequence of the station and screen geometry rather than of the declared
+# bounds, so `observability_regions` remains the statement of intent in y.
+STATION_WALL_OFFSET_M = 0.15
+STATION_HEIGHT_M = 1.80
+SCREEN_UNDERSIDE_M = 0.60
+SCREEN_TOP_M = 2.00
+SCREEN_DEPTH_M = 0.10
+SCREEN_FRACTION = 0.50
+TRANSITION_POD_REACH_M = 0.71
 
 
 @dataclass(frozen=True)
@@ -193,9 +232,21 @@ def make_confirmatory_scenario(
         "direct_band_x": [band_x0, band_x1],
         "direct_band_half_height": band_half_height,
     }
+    # Every confirmatory layout carries a station: without one the sensing
+    # method has no observation source at all and fails closed everywhere,
+    # including in the neutral controls it must agree in. Only a layout that
+    # declares a region gets the screen that shadows it.
+    #
+    # The station sits abeam the region it has to shadow, which for
+    # `combined_constraints` is offset from the staging band's centre. Anchoring
+    # it on the band instead skews the projection and costs that family one
+    # separating layout.
+    station = _station_for(regions[0] if regions else poor_region)
+    if regions:
+        obstacles = (*obstacles, _screen_for(station, regions[0], center_y))
     return ConfirmatoryScenario(
         family, layout_index, world_seed, neutral, grid, start, goal,
-        obstacles, regions, parameters,
+        obstacles, regions, parameters, (station,),
     )
 
 
@@ -222,6 +273,42 @@ def make_workshop_scenario(
     return ConfirmatoryScenario(
         variant, 0, world_seed, variant == "workshop_neutral", base.grid,
         base.start, base.goal, obstacles, (), parameters,
+    )
+
+
+def _station_for(region: ObservabilityRegion) -> FiducialStation:
+    """The workspace station, on the south wall abeam the region it shadows.
+
+    A layout with no declared region passes the staging band, which only fixes
+    where its station stands; with no screen every site stays observable.
+    """
+    return FiducialStation(
+        "staging_station",
+        ((region.min_x + region.max_x) / 2.0, STATION_WALL_OFFSET_M,
+         STATION_HEIGHT_M),
+    )
+
+
+def _screen_for(
+    station: FiducialStation, region: ObservabilityRegion, center_y: float,
+) -> Box3 | None:
+    """The elevated screen whose shadow produces `region`, or None if the
+    region is narrower than the pods' reach can realize."""
+    low = region.min_x + TRANSITION_POD_REACH_M
+    high = region.max_x - TRANSITION_POD_REACH_M
+    if high <= low:
+        raise ValueError(
+            f"an observability region {region.max_x - region.min_x:.2f} m wide "
+            f"cannot be realized: the pods' reach is "
+            f"{TRANSITION_POD_REACH_M:.2f} m (ADR 0006)")
+    x_station, y_station = station.position[0], station.position[1]
+    y_screen = y_station + SCREEN_FRACTION * (center_y - y_station)
+    near = x_station + SCREEN_FRACTION * (low - x_station)
+    far = x_station + SCREEN_FRACTION * (high - x_station)
+    return Box3(
+        "elevated_sight_screen",
+        ((near + far) / 2.0, y_screen, (SCREEN_UNDERSIDE_M + SCREEN_TOP_M) / 2.0),
+        (far - near, SCREEN_DEPTH_M, SCREEN_TOP_M - SCREEN_UNDERSIDE_M),
     )
 
 

@@ -154,10 +154,10 @@
             "pod_5:covariance_too_large",
             "target_footprint"
           ],
-          "route_signature": "78277b8bd532620ce674295617eacef1330ea372fd9d5f98ffb5c23f9d27a780",
+          "route_signature": "21fe08f3651f21d538431b5acbbd7bd5d669484fd8745d01c3e2cda02780b144",
           "transition_site": [
-            16,
-            22
+            19,
+            15
           ]
         }
       },
@@ -227,10 +227,10 @@
             "pod_5:covariance_too_large",
             "target_footprint"
           ],
-          "route_signature": "20f5bc6922a8f9168aec5238f27c1cbb21a319d245fbd317cbbf02e75db1b53e",
+          "route_signature": "d74d486c1f9c4e4b906367e9d033f17255e6d5efb518ed4ecdc09d0050381bb9",
           "transition_site": [
-            15,
-            23
+            18,
+            16
           ]
         }
       },
@@ -300,10 +300,10 @@
             "pod_5:covariance_too_large",
             "target_footprint"
           ],
-          "route_signature": "bf69ef97f6eb84477528a004e4738cd7e9536a4e9b8f9e490b0d75b3e6283e2a",
+          "route_signature": "6bd71ae713b55cbd4b80e66387fcd16a3a801b620bf0e5052f93848d4614bc99",
           "transition_site": [
-            15,
-            14
+            17,
+            16
           ]
         }
       },
@@ -442,10 +442,10 @@
             "pod_5:covariance_too_large",
             "target_footprint"
           ],
-          "route_signature": "bf69ef97f6eb84477528a004e4738cd7e9536a4e9b8f9e490b0d75b3e6283e2a",
+          "route_signature": "6bd71ae713b55cbd4b80e66387fcd16a3a801b620bf0e5052f93848d4614bc99",
           "transition_site": [
-            15,
-            14
+            17,
+            16
           ]
         }
       },
@@ -515,10 +515,10 @@
             "pod_5:covariance_too_large",
             "target_footprint"
           ],
-          "route_signature": "c8af215dd16f2ebe1f3ba4049a715d701e6a554dc9d2035a93b65a530263a21a",
+          "route_signature": "89a32b07b036c9977e6390b65d9c02c05ab9989332c9dc265a1afdff5a4e3dfb",
           "transition_site": [
-            15,
-            13
+            18,
+            16
           ]
         }
       },
@@ -588,10 +588,10 @@
             "pod_5:covariance_too_large",
             "target_footprint"
           ],
-          "route_signature": "b06afee782b96ca501f1e0800c3189692c1aa36f01f531603b68a58ac760db0a",
+          "route_signature": "7ae30615a245f304bfd8af8bcb0c3ba59edcddd7bcff9ebaab00e1e066e15abc",
           "transition_site": [
-            13,
-            23
+            17,
+            15
           ]
         }
       },
@@ -730,10 +730,10 @@
             "pod_5:covariance_too_large",
             "target_footprint"
           ],
-          "route_signature": "78277b8bd532620ce674295617eacef1330ea372fd9d5f98ffb5c23f9d27a780",
+          "route_signature": "21fe08f3651f21d538431b5acbbd7bd5d669484fd8745d01c3e2cda02780b144",
           "transition_site": [
-            16,
-            22
+            19,
+            15
           ]
         }
       },
@@ -803,10 +803,10 @@
             "pod_5:covariance_too_large",
             "target_footprint"
           ],
-          "route_signature": "b06afee782b96ca501f1e0800c3189692c1aa36f01f531603b68a58ac760db0a",
+          "route_signature": "7ae30615a245f304bfd8af8bcb0c3ba59edcddd7bcff9ebaab00e1e066e15abc",
           "transition_site": [
-            13,
-            23
+            17,
+            15
           ]
         }
       },
@@ -876,10 +876,10 @@
             "pod_5:covariance_too_large",
             "target_footprint"
           ],
-          "route_signature": "10cf80e899a4765d4b4d4d2ffb6cf80fa5324d1db49ee03068ae4d9b93da492e",
+          "route_signature": "f1eb7553e4660a6891c3283d70a382b36e144ba65bb3df7e12e611906c0e6893",
           "transition_site": [
-            13,
-            13
+            16,
+            16
           ]
         }
       },
@@ -1038,10 +1038,10 @@
             "pod_5:environment_collision",
             "target_footprint"
           ],
-          "route_signature": "0d988232172ee579014463d00c0c8ed7efe4da34fb0f598388d2206fec6041ab",
+          "route_signature": "5da4519d642d12abc919c8209c9fd614c7f28a46b62064f2a3f00ae3ce57615e",
           "transition_site": [
-            11,
-            19
+            14,
+            15
           ]
         }
       },
@@ -1131,10 +1131,10 @@
             "pod_5:environment_collision",
             "target_footprint"
           ],
-          "route_signature": "07574dd5279aff0f5bd45f323bbb82fa4d0938336a6157158ef471b59085b5d2",
+          "route_signature": "c2751dd322e6f3102156b59728575959480bf8ece20231ec80d207efc5e9189b",
           "transition_site": [
-            17,
-            15
+            14,
+            16
           ]
         }
       },
@@ -1224,10 +1224,10 @@
             "pod_5:environment_collision",
             "target_footprint"
           ],
-          "route_signature": "e87da55c795d5b3f08239bb4652c99942109ad7f32df3f72013c9a5d9e830d3b",
+          "route_signature": "1282303d5ba8a48eb6b03fc075f32765332a74d5b848a1fcf1372adb73192a83",
           "transition_site": [
-            17,
-            16
+            14,
+            17
           ]
         }
       },
@@ -1386,10 +1386,10 @@
             "pod_5:environment_collision",
             "target_footprint"
           ],
-          "route_signature": "382f2ef866983831ecc6c3a29ff875d223a65414b4d63abd2a94668842736554",
+          "route_signature": "fcf409fe1a96e30d38e7a25d20acf8a67599109120e112d63cfdeebce14b9f48",
           "transition_site": [
-            11,
-            17
+            15,
+            15
           ]
         }
       },
@@ -1479,9 +1479,9 @@
             "pod_5:environment_collision",
             "target_footprint"
           ],
-          "route_signature": "e87da55c795d5b3f08239bb4652c99942109ad7f32df3f72013c9a5d9e830d3b",
+          "route_signature": "98a0c298dd7c6ef8de44e811ad50c3778534fd0dcaf41e087ef1a1900655c1ac",
           "transition_site": [
-            17,
+            13,
             16
           ]
         }
@@ -1572,10 +1572,10 @@
             "pod_5:environment_collision",
             "target_footprint"
           ],
-          "route_signature": "2816120a1e90b3bb4227dc6f390ff86437c0aefb3a33d4acec0beea044c89ef5",
+          "route_signature": "8335bad29be7a5ae98a396d619733cf6d8a7a90ad8b26069e08acc0cbc4761af",
           "transition_site": [
-            12,
-            18
+            15,
+            13
           ]
         }
       },
@@ -1734,10 +1734,10 @@
             "pod_5:environment_collision",
             "target_footprint"
           ],
-          "route_signature": "1bf4a2b2dd8f9883dfbcbb40ebccd4f91fdc2ab005f83baed432daa784ec06ba",
+          "route_signature": "47b30e8d117ab9a1dd86a678fdb26b070fe2d93b0d905acfb98e8f489d3b4022",
           "transition_site": [
-            12,
-            19
+            15,
+            15
           ]
         }
       },
@@ -1827,10 +1827,10 @@
             "pod_5:environment_collision",
             "target_footprint"
           ],
-          "route_signature": "7303271162f0f0dbc14b5c218fd1b124f04eb0230978cefef8f4f7fd29a69e45",
+          "route_signature": "94202d0432df9a3e0203faf7cae67ae1cab3300ffe28ce845bf1cbb109cf0de2",
           "transition_site": [
-            11,
-            18
+            15,
+            16
           ]
         }
       },
@@ -1920,10 +1920,10 @@
             "pod_5:environment_collision",
             "target_footprint"
           ],
-          "route_signature": "0d988232172ee579014463d00c0c8ed7efe4da34fb0f598388d2206fec6041ab",
+          "route_signature": "5da4519d642d12abc919c8209c9fd614c7f28a46b62064f2a3f00ae3ce57615e",
           "transition_site": [
-            11,
-            19
+            14,
+            15
           ]
         }
       },
@@ -1944,6 +1944,6 @@
   ],
   "purpose": "gate2_planner_manipulation_check",
   "schema_version": 1,
-  "sensing": "scenario_declared_location_dependent_observability",
-  "sensing_caveat": "Missions feed the planner live RelativePoseEstimate sensing, not this provider; separation here is necessary but not sufficient."
+  "sensing": "station_observability_predicted_from_priors",
+  "sensing_caveat": "ADR 0006: this is the predictor the planner node installs in a mission, reading the station and obstacles the scenario declares, so the planner is no longer handed a declared answer. What it still does not show is that the simulator's station delivers the same observability in a running mission; that is what station_observability_audit has to establish."
 }

@@ -327,9 +327,39 @@ band around the feasibility-aware site to most of the staging band, which is a
 coarser manipulation than ADR 0004 authored, even though the contrast it
 exists to support still separates 9/9 with nothing unplanned.
 
-The scenario placement is therefore **not committed** pending that decision.
-The mechanism is, and is inert: no layout declares a station, so nothing has
-changed behaviourally.
+### Adopted and regenerated (2026-09-22)
+
+The author widened `combined_constraints` to 2.10 m and the placement is in.
+`studies/gate2/confirmatory_manipulation_check.json` is regenerated and now
+reports `station_observability_predicted_from_priors`:
+
+| Contrast | Family | site | route | unplanned |
+|---|---|---|---|---|
+| sensing vs feasibility | `docking_observability` | 9/9 | 9 | 0 |
+| sensing vs feasibility | `combined_constraints` | 9/9 | 9 | 0 |
+| sensing vs geometry | `docking_observability` | 9/9 | 9 | 0 |
+| sensing vs geometry | `combined_constraints` | 9/9 | 9 | 0 |
+
+Matching the report it replaces, with all four methods agreeing in all six
+neutral controls. Against that report **0 of 24 geometry and feasibility sites
+changed**, which is the empirical confirmation that the elevated screen is an
+optical obstacle only.
+
+The station sits abeam the region it shadows. Anchoring it on the staging band
+instead skews the projection where the two differ and costs
+`combined_constraints` one separating layout (8/9); that was an implementation
+deviation from the screened rule, corrected rather than accepted.
+
+**Consequence for layout heterogeneity, recorded because the analysis is
+layout-clustered.** The declared regions produced scattered sensing sites, in
+`docking_observability` at y cells 13 to 23 either side of the route. A station
+on the south wall produces a manipulation with a direction: every non-neutral
+sensing site now falls between it and the route, at y cells 13 to 17, and the
+sites cluster more tightly than before. The manipulation is more physically
+coherent and less heterogeneous across layouts. Nothing in the analysis plan
+depends on that heterogeneity today, but Gate 3 uses pilot data to characterize
+layout heterogeneity, and this is a property of the design rather than of the
+pilot.
 
 ### Before this is evidence
 

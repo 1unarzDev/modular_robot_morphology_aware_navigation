@@ -7,13 +7,15 @@ entered the transition model, so whether the family still manipulates has to be
 measured on the layouts the frozen design draws rather than on one golden
 fixture.
 
-Scope, which bounds what a passing report means. This exercises the planner
-against each scenario's declared location-dependent observability, because that
-is the manipulation the design assumes. Missions do not yet supply it:
-`morphology_planner.ros_node` feeds the planner live `RelativePoseEstimate`
-sensing instead, and location-dependent perceived observability is an open
-roadmap item. A family separating here is therefore a necessary condition for
-its contrast, not evidence that a mission would exhibit it.
+Scope, which bounds what a passing report means. Under ADR 0006 this drives
+the planner with `station_sensing_provider` -- the same predictor
+`morphology_planner.ros_node` installs in a mission, reading the same fiducial
+station and 3D obstacles the scenario declares. The planner is no longer handed
+a declared answer, and a mission now runs the same model.
+
+What this still does not show is that the simulator's station delivers the
+predicted observability in a running mission. Establishing that is the job of
+`evaluator_metrics.station_observability_audit`, not of this report.
 
 This is a manipulation check and never an outcome. It reports planner decisions
 only, receives no significance test, and must not be used to choose families,
@@ -28,6 +30,7 @@ from pathlib import Path
 
 from morphology_planner import (
     HybridState, load_catalog, make_method_planner, plan_signature,
+    station_sensing_provider,
 )
 from morphology_planner.planner import NoPathError
 
@@ -75,7 +78,12 @@ def method_decision(method: str, scenario, catalog, heading_bins: int,
     planner = make_method_planner(
         method, catalog, scenario.grid, heading_bins=heading_bins,
         environment=scenario.transition_obstacles,
-        sensing_provider=scenario.sensing_for,
+        # ADR 0006: the same predictor the planner node installs in a mission,
+        # reading the station and obstacles the scenario declares. The planner
+        # is no longer handed a declared answer.
+        sensing_provider=station_sensing_provider(
+            catalog, scenario.fiducial_stations, scenario.transition_obstacles,
+            scenario.grid, heading_bins),
     )
     try:
         plan = planner.plan(
@@ -168,10 +176,14 @@ def separation_report(design: StudyDesign, families: tuple[str, ...],
         "design_hash": design.design_hash,
         "heading_bins": heading_bins,
         "epsilon": epsilon,
-        "sensing": "scenario_declared_location_dependent_observability",
+        "sensing": "station_observability_predicted_from_priors",
         "sensing_caveat": (
-            "Missions feed the planner live RelativePoseEstimate sensing, not "
-            "this provider; separation here is necessary but not sufficient."),
+            "ADR 0006: this is the predictor the planner node installs in a "
+            "mission, reading the station and obstacles the scenario declares, "
+            "so the planner is no longer handed a declared answer. What it "
+            "still does not show is that the simulator's station delivers the "
+            "same observability in a running mission; that is what "
+            "station_observability_audit has to establish."),
         "contrast_summary": summary,
         "layouts": layouts,
     }

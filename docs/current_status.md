@@ -868,15 +868,14 @@ recorded. Like `telemetry_audit` it is a library function with tests and is not
 yet wired into the runner, because what fails a trial is an outcome-semantics
 decision.
 
-**Placement is blocked, and the reason is a platform property.** A site is
-rejected when *any* moved pod is shadowed, so the rejected set is the screen's
-shadow dilated by the pods' reach. The declared regions were authored under
-`sensing_for`, which gates on the site centre and returns one verdict for all
-six pods, so realizing one physically needs the shadow eroded, not expanded.
-The first placement expanded it, and the Gate 2 report came back with
-`sensing_feasibility_coupled` unable to plan in 5 of 9 `docking_observability`
-and 4 of 9 `combined_constraints` layouts, against 0 in the committed report.
-That placement was reverted and is not committed.
+**Placement is in and Gate 2 is regenerated.** A site is rejected when *any*
+moved pod is shadowed, so the rejected set is the screen's shadow dilated by
+the pods' reach. The declared regions were authored under `sensing_for`, which
+gates on the site centre and returns one verdict for all six pods, so realizing
+one physically needs the shadow eroded, not expanded. The first placement
+expanded it and left `sensing_feasibility_coupled` unable to plan in 5 of 9
+`docking_observability` and 4 of 9 `combined_constraints` layouts; that was
+reverted.
 
 Eroding fixes the arithmetic but exposes a floor. The pods sit at only four
 discrete x offsets (-0.71, -0.35, +0.35, +0.71 m), so dilating a narrow shadow
@@ -890,12 +889,20 @@ layouts of each family:
 | `combined_constraints` widened to 1.60 m | 0/9 | 0 |
 | `combined_constraints` widened to 2.10 m | 9/9 | 0 |
 
-Every geometry and feasibility site in all three is identical to the committed
-Gate 2 report, confirming the elevated screen is optical only. So the
-correction restores `docking_observability` with no design change, and
-`combined_constraints` needs its declared occlusion widened from 0.60 m to
-about 2.10 m — an author decision, because it coarsens a manipulation ADR 0004
-targeted deliberately. See ADR 0006.
+The author widened `combined_constraints` from 0.60 m to 2.10 m on 2026-09-22,
+and `studies/gate2/confirmatory_manipulation_check.json` is regenerated against
+`station_observability_predicted_from_priors`: **9/9 site- and
+route-separating with 0 unplanned in all four contrast cells**, matching the
+report it replaces, with all four methods agreeing in all six neutral controls.
+Against that report **0 of 24 geometry and feasibility sites changed**, which
+is the empirical confirmation that the elevated screen is optical only.
+
+Recorded consequence: the manipulation now has a direction. Declared regions
+produced scattered sensing sites (y cells 13--23 either side of the route); a
+south-wall station puts every non-neutral sensing site between it and the route
+at y cells 13--17. More physically coherent, less heterogeneous across layouts.
+Gate 3 characterizes layout heterogeneity from pilot data, and this is a
+property of the design rather than of the pilot. See ADR 0006.
 
 Note that editing
 `confirmatory_scenarios.py` redefines the frozen design's layouts without

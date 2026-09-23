@@ -144,6 +144,111 @@ def test_a_shadow_rejects_a_region_dilated_by_the_pods_reach():
         f"floor is {2 * reach:.2f} m")
 
 
+def _scenario_sensing(scenario, catalog, transition, wx, wy):
+    provider = station_sensing_provider(
+        catalog, scenario.fiducial_stations, scenario.transition_obstacles,
+        scenario.grid, HEADING_BINS)
+    return provider(
+        transition,
+        HybridState(*scenario.grid.world_to_cell(wx, wy), 0, "compact_diff"))
+
+
+def test_the_declared_region_is_reproduced_by_the_station_model():
+    """ADR 0006, the check that makes the manipulation auditable rather than
+    declared: `observability_regions` states the intent, and the station and
+    elevated screen are the physical cause that produces it.
+
+    Before ADR 0006 this failed by a factor of about 1600 -- the scenarios
+    declared a poorly observed band that nothing in the world could cause.
+    """
+    from modular_robot_benchmarks.confirmatory_scenarios import (
+        make_confirmatory_scenario,
+    )
+
+    catalog, transition, _ = _setup()
+    for family in ("docking_observability", "combined_constraints"):
+        scenario = make_confirmatory_scenario(family, 1, 1)
+        assert scenario.fiducial_stations, family
+        region = scenario.observability_regions[0]
+        sensing = _scenario_sensing(
+            scenario, catalog, transition,
+            (region.min_x + region.max_x) / 2.0,
+            (region.min_y + region.max_y) / 2.0)
+        assert not all(state.connector_visible for state in sensing.values()), (
+            f"{family}: the declared poor region is still fully observable")
+        assert max(state.covariance_trace for state in sensing.values()) > GATE
+
+
+def test_the_manipulation_leaves_a_distinct_observed_site():
+    """A screen that shadows everything removes the contrast instead of
+    creating it."""
+    from modular_robot_benchmarks.confirmatory_scenarios import (
+        make_confirmatory_scenario,
+    )
+
+    catalog, transition, _ = _setup()
+    for family in ("docking_observability", "combined_constraints"):
+        scenario = make_confirmatory_scenario(family, 1, 1)
+        provider = station_sensing_provider(
+            catalog, scenario.fiducial_stations, scenario.transition_obstacles,
+            scenario.grid, HEADING_BINS)
+        observed = [
+            (cell_x, cell_y)
+            for cell_x in range(8, scenario.grid.width - 8, 2)
+            for cell_y in range(4, scenario.grid.height - 4, 2)
+            if all(state.connector_visible for state in provider(
+                transition,
+                HybridState(cell_x, cell_y, 0, "compact_diff")).values())
+        ]
+        assert observed, family
+
+
+def test_a_neutral_control_carries_a_station_and_no_screen():
+    """Neutral controls must let all four methods agree, so they need an
+    observation source but no shadow."""
+    from modular_robot_benchmarks.confirmatory_scenarios import (
+        make_confirmatory_scenario,
+    )
+
+    scenario = make_confirmatory_scenario("docking_observability", 0, 1)
+    assert scenario.neutral_control
+    assert scenario.fiducial_stations
+    assert scenario.observability_regions == ()
+    assert scenario.transition_obstacles == ()
+
+
+def test_the_screen_is_an_optical_obstacle_only():
+    """Above the tallest morphology by the rule at planner.py:88, and above
+    the lidar plane so it never reaches the occupancy map."""
+    from modular_robot_benchmarks.confirmatory_scenarios import (
+        make_confirmatory_scenario,
+    )
+
+    catalog, _, _ = _setup()
+    tallest = max(value.height for value in catalog.morphologies.values())
+    for family in ("docking_observability", "combined_constraints"):
+        scenario = make_confirmatory_scenario(family, 1, 1)
+        screen = next(box for box in scenario.transition_obstacles
+                      if box.name == "elevated_sight_screen")
+        underside = screen.center[2] - screen.size[2] / 2.0
+        assert underside > tallest, family
+        assert underside > 0.12, f"{family}: screen reaches the lidar plane"
+
+
+def test_a_region_narrower_than_the_pods_reach_is_refused():
+    """ADR 0006's floor, enforced rather than silently producing a screen that
+    shadows nothing."""
+    from modular_robot_benchmarks.confirmatory_scenarios import (
+        ObservabilityRegion, _screen_for, _station_for,
+    )
+
+    band = ObservabilityRegion(0.0, 2.10, 1.45, 2.45, False, 0.04)
+    narrow = ObservabilityRegion(1.00, 1.60, 1.70, 2.20, False, 0.04)
+    station = _station_for(band)
+    with pytest.raises(ValueError, match="cannot be realized"):
+        _screen_for(station, narrow, 1.95)
+
+
 def test_declared_stations_survive_the_manifest_round_trip(tmp_path):
     """The planner node reads stations from the same manifest that carries the
     3D obstacles, so a scenario's stations must serialize and reload intact."""
@@ -175,6 +280,8 @@ def test_a_scenario_without_stations_round_trips_to_none(tmp_path):
 
     scenario = make_confirmatory_scenario("workshop_neutral", 0, 1)
     assert scenario.fiducial_stations == ()
+    assert not any(box.name == "elevated_sight_screen"
+                   for box in scenario.transition_obstacles)
     path = tmp_path / "world.manifest.json"
     path.write_text(json.dumps(scenario.manifest()), encoding="utf-8")
     assert load_fiducial_stations(str(path)) == ()

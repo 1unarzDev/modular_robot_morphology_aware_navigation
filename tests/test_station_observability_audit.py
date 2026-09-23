@@ -5,13 +5,8 @@ pods will dock. These cover the two ways that can be wrong: the planner
 choosing a site the station cannot see, and the mission recording sensing that
 contradicts the prediction.
 
-The scenarios here attach a station explicitly rather than relying on the
-confirmatory generator, which does not place one: the placement rule is still
-open, because the declared `combined_constraints` region is narrower than this
-platform can physically realize.
 """
 
-from dataclasses import replace
 from pathlib import Path
 
 from modular_robot_benchmarks.confirmatory_scenarios import (
@@ -21,9 +16,8 @@ from modular_robot_benchmarks.evaluator_metrics import (
     STATION_OBSERVABILITY_GATE, station_observability_audit,
 )
 from morphology_planner import (
-    FiducialStation, HybridState, load_catalog, station_sensing_provider,
+    HybridState, load_catalog, station_sensing_provider,
 )
-from morphology_planner.transition_validation import Box3
 
 CATALOG = Path(__file__).parents[1] / "src/modular_robot_description/config/morphologies.yaml"
 PRECISE_VARIANCE = 8.3e-06
@@ -46,17 +40,11 @@ def _transition(catalog):
 
 
 def _station_scenario():
-    """A layout with a station on the south wall and a screen shadowing part
-    of the staging corridor."""
+    """A confirmatory layout, which under ADR 0006 carries a station and the
+    elevated screen that shadows its declared region."""
     scenario = make_confirmatory_scenario("docking_observability", 1, 1)
-    centre_y = (scenario.parameters["door_center_cell"] + 0.5) * 0.1
-    station = FiducialStation("staging_station", (1.05, 0.15, 1.80))
-    screen = Box3("elevated_sight_screen",
-                  (1.05, 0.15 + 0.5 * (centre_y - 0.15), 1.30),
-                  (1.20, 0.10, 1.40))
-    return replace(scenario,
-                   fiducial_stations=(station,),
-                   transition_obstacles=(*scenario.transition_obstacles, screen))
+    assert scenario.fiducial_stations
+    return scenario
 
 
 def _cells_by_visibility(scenario, catalog):
@@ -90,9 +78,10 @@ def _site(scenario, cell, yaw=0.0):
 
 
 def test_a_world_without_a_station_is_exempt():
-    """Worlds that declare no station keep the pre-ADR-0006 behaviour."""
+    """The workshop diagnostic worlds declare no station, so they keep the
+    pre-ADR-0006 behaviour and the audit has nothing to check."""
     catalog = _catalog()
-    scenario = make_confirmatory_scenario("docking_observability", 1, 1)
+    scenario = make_confirmatory_scenario("workshop_neutral", 0, 1)
     assert scenario.fiducial_stations == ()
     record = _Record([_site(scenario, (20, 18))], [])
     assert station_observability_audit(record, scenario, catalog) == []

@@ -101,13 +101,14 @@ nothing has changed behaviourally. Keep every step backwards compatible — a
 world declaring no station must behave exactly as before, which is what leaves
 the round-trip and fault-matrix gates untouched.
 
-**Placement is blocked on an author decision.** A site is rejected when any
-moved pod is shadowed, so a rejected region can never be narrower than twice
-the pods' reach, 1.42 m. `combined_constraints` declares a 0.60 m occlusion,
-which no station geometry can produce. Widening it changes a declared
-manipulation of the frozen design and risks swallowing the distinct feasible
-site ADR 0004 preserved. Do not place stations in the confirmatory scenarios
-until that is decided; the first attempt regressed Gate 2 from 9/9 separating
-to 4-5, with 4-5 layouts unplanned, and was reverted. Before this counts as
-evidence: regenerate the Gate 2 report, and re-qualify the round-trip and
-fault-matrix gates. ADR 0005 remains `proposed`.
+Placement is in. A site is rejected when any moved pod is shadowed, so the
+rejected set is the shadow dilated by the pods' reach and the shadow is the
+declared region eroded by it; because the pods sit at four discrete offsets, a
+contiguous rejected band needs a declared region of about 2.12 m, so
+`combined_constraints` was widened from 0.60 m to 2.10 m (author decision,
+2026-09-22). Gate 2 is regenerated: 9/9 separating, 0 unplanned in all four
+cells, all six neutral controls agreeing, and 0 of 24 geometry and feasibility
+sites changed. **Nothing has run in Gazebo**: the container build, the station
+node against live diagnostics, and `station_gated_visibility` are all
+unexercised, and the round-trip and fault-matrix gates are not re-qualified.
+ADR 0005 remains `proposed`.

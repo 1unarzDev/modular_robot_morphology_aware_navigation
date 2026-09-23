@@ -29,9 +29,22 @@ def test_family_manipulations_are_isolated_and_sensing_is_location_dependent():
     workspace = make_confirmatory_scenario("reconfiguration_workspace", 1, 8)
     sensing = make_confirmatory_scenario("docking_observability", 1, 8)
     combined = make_confirmatory_scenario("combined_constraints", 1, 8)
-    assert workspace.transition_obstacles and not workspace.observability_regions
-    assert sensing.observability_regions and not sensing.transition_obstacles
-    assert combined.transition_obstacles and combined.observability_regions
+    # ADR 0006 gives the sensing manipulation a physical cause, so a sensing
+    # family now carries a body. The invariant that matters is unchanged: only
+    # the workspace families constrain geometry. The sensing body is the
+    # elevated screen, which by the rule at `planner.py:88` cannot constrain
+    # any morphology's driving and is z-disjoint from the relocation sweeps.
+    tallest = max(value.height for value in catalog.morphologies.values())
+
+    def constrains_geometry(scenario):
+        return [box for box in scenario.transition_obstacles
+                if box.center[2] - box.size[2] / 2.0 < tallest]
+
+    assert constrains_geometry(workspace) and not workspace.observability_regions
+    assert sensing.observability_regions and not constrains_geometry(sensing)
+    assert [box.name for box in sensing.transition_obstacles] == [
+        "elevated_sight_screen"]
+    assert constrains_geometry(combined) and combined.observability_regions
     region = sensing.observability_regions[0]
     direct_xy = sensing.grid.world_to_cell(
         (region.min_x + region.max_x) / 2,
