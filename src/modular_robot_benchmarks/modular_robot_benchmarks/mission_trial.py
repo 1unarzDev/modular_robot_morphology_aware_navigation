@@ -663,7 +663,11 @@ def _observation(node, status, completed, message, simulated, wall_start, attemp
         planned_route_signature=(
             navigation_result.planned_route_signature if navigation_result else ""),
         planned_transition_sites=([{"transition_id": transition_id,
-           "x": pose.pose.position.x, "y": pose.pose.position.y}
+           "x": pose.pose.position.x, "y": pose.pose.position.y,
+           # Where the pods end up is heading-dependent, so the site's yaw is
+           # needed to recompute what the planner predicted the station could
+           # see there (ADR 0006).
+           "yaw": _yaw(pose.pose.orientation)}
           for transition_id, pose in zip(
               navigation_result.planned_transition_ids,
               navigation_result.planned_transition_poses)]

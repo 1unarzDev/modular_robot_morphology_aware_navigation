@@ -836,10 +836,55 @@ post-transition footprint and would be rejected for geometry by
 `feasibility_coupled` as well, collapsing the contrast. The connector sensing
 geometry is entirely intra-robot.
 
-The remaining choice is A1 (make the connector estimate depend on an external
-workspace landmark, via the unused `/fiducials/pod_N/pose` hook, and occlude
-that line instead) or D (withdraw the sensing contrast). Both are open;
-nothing has been changed in the scenarios, the sensing node, or the planner.
+A1 was chosen on 2026-09-22 and is being built: connector observability is
+established by an external workspace fiducial station, and an **elevated**
+screen occludes the station's sight line without touching the robot. That
+works where occluding the connector cameras could not, because `planner.py:88`
+blocks a morphology only when a box underside is below its height and the
+tallest morphology is 0.30 m, so a screen with a 0.60 m underside constrains
+neither driving nor the relocation sweeps, which are z-disjoint at pod height.
+`box_clearance` is genuinely 3D, so such a screen also cannot register as a
+false contact in the evaluator streams.
+
+Landed so far, all backwards compatible — a world declaring no station behaves
+exactly as before, so the round-trip and fault-matrix gates are untouched by
+construction:
+
+- `morphology_planner.observability`: the station model, a segment/box
+  occlusion test, and the covariance model. Station-refined observations keep
+  the present range-based precision; a pod the station cannot see carries
+  0.04, which is 2.7x the 0.015 gate and the value the scenarios already
+  declared for a poorly observed region.
+- `station_sensing_provider`: predicts observability per candidate site from
+  priors only, so the ground-truth guard still holds.
+- `modular_robot_sim` gains a `fiducial_station` node feeding the
+  `/fiducials/pod_N/pose` hook that had existed unused; `sensing_node` gains
+  `station_gated_visibility`, which demotes the onboard cameras to
+  `connector_camera` so they refine the pose without asserting observability.
+
+Also landed: `station_observability_audit`, which recomputes the prediction at
+the site a mission planned and checks it against the sensing the mission
+recorded. Like `telemetry_audit` it is a library function with tests and is not
+yet wired into the runner, because what fails a trial is an outcome-semantics
+decision.
+
+**Placement is blocked, and the reason is a platform property.** A site is
+rejected when *any* moved pod is shadowed, so the rejected set is the screen's
+shadow dilated by the pods' reach. The declared regions were authored under
+`sensing_for`, which gates on the site centre and returns one verdict for all
+six pods, so realizing one physically needs the shadow eroded, not expanded.
+The first placement expanded it, and the Gate 2 report came back with
+`sensing_feasibility_coupled` unable to plan in 5 of 9 `docking_observability`
+and 4 of 9 `combined_constraints` layouts, against 0 in the committed report.
+That placement was reverted and is not committed.
+
+Eroding fixes the arithmetic but exposes a floor: `compact_to_narrow` docks its
+pods at x offsets of +/-0.71 m, so **no station geometry can produce a rejected
+band narrower than 1.42 m**. `docking_observability` declares 2.10 m and is
+realizable; `combined_constraints` declares 0.60 m and **is not**. Widening it
+is an author decision on a declared manipulation of the frozen design, and
+risks swallowing the distinct feasible site ADR 0004 preserved. See ADR 0006.
+
 Note that editing
 `confirmatory_scenarios.py` redefines the frozen design's layouts without
 moving `design_hash`, which covers trial assignments only (`design.py:63-94`);

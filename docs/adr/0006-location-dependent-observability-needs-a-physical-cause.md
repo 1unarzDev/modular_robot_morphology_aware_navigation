@@ -248,6 +248,51 @@ audits the placement and the inputs, not the rule. That is weaker than two
 independent implementations would be, and is the deliberate trade for a single
 source of truth; a rule bug would satisfy the audit.
 
+### The declared regions are not all physically realizable (measured 2026-09-22)
+
+The mechanism is built and tested, and the first attempt to place the station
+and screen in the confirmatory layouts failed. It is recorded here because the
+reason is a property of the platform, not of the placement.
+
+A site is rejected when **any** moved pod is shadowed, so the rejected set is
+the screen's shadow **dilated** by the pods' reach, never equal to it. The
+declared `observability_regions` were authored under a different model:
+`ConfirmatoryScenario.sensing_for` gates on whether the *site centre* falls in
+the region, and returns one verdict for all six pods. Realizing such a region
+physically therefore needs the shadow **eroded** by the pods' reach. The first
+placement expanded it instead, which dilated the rejected set twice over; the
+Gate 2 report came back with `sensing_feasibility_coupled` unable to plan in 5
+of 9 `docking_observability` layouts and 4 of 9 `combined_constraints` layouts,
+against 0 in the committed report.
+
+Eroding fixes the arithmetic but exposes a floor. `compact_to_narrow` docks its
+pods at x offsets of +/-0.71 m, so:
+
+| | declared | realizable |
+|---|---|---|
+| minimum rejected width in x | -- | **1.42 m** (2 x 0.71) |
+| minimum rejected height in y | -- | 0.40 m (2 x 0.20) |
+| `docking_observability` | 2.10 x 1.00 m | yes |
+| `combined_constraints` | 0.60 x 0.50 m | **no**, needs 1.42 m in x |
+
+The `combined_constraints` occlusion is 0.60 m wide. **No station geometry can
+produce a rejected band that narrow on this platform.** That occlusion is the
+one ADR 0004 authored specifically to restore the sensing contrast, under the
+rule "occlude the band where the feasibility-aware site falls, keeping a
+distinct visible feasible site", and ADR 0004 records what happens when it
+stops binding: the sensing contrast is lost in that family, leaving
+`docking_observability` as the only source, where the feasibility term never
+binds.
+
+Widening it to 1.42 m or more is a change to a declared manipulation of the
+frozen design. No pilot or confirmatory data exists (0/432), so it is not a
+response to an outcome, but it is an author decision and it carries a real
+risk: the wider band may swallow the distinct feasible site that ADR 0004
+preserved, which would remove the contrast rather than realize it.
+
+The scenario placement is therefore **not committed**. The mechanism is, and is
+inert: no layout declares a station, so nothing has changed behaviourally.
+
 ### Before this is evidence
 
 1. Regenerate `studies/gate2/confirmatory_manipulation_check.json`; the

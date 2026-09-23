@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Workspace fiducial station (ADR 0006).
 
 Precision docking depends on an external observer, so this node synthesizes
@@ -13,6 +14,13 @@ This is the simulator's sensor model, so it reads simulator state, exactly as
 the lidar and the logical cameras do. It lives outside the five autonomy
 packages the ground-truth guard scans, and nothing it reads reaches autonomy
 except as this synthesized observation.
+
+Limitation: only the manifest's declared 3D obstacles occlude, so the station
+sees through the arena walls, which live in the occupancy grid rather than in
+`transition_obstacles`. The planner's predictor reads the same set, so the two
+stay consistent, and every transition site in the confirmatory layouts is on
+the station's side of the doorway wall. A layout that placed a site beyond a
+wall from its station would need the walls added to both.
 """
 
 from __future__ import annotations
@@ -42,6 +50,15 @@ class FiducialStationNode(Node):
         manifest = str(self.get_parameter("scenario_manifest").value)
         self.stations = load_fiducial_stations(manifest)
         self.obstacles = load_environment_boxes(manifest)
+        self._warned_missing_fields = False
+        if not self.stations:
+            # Nothing to synthesize, so take no subscriptions at all: trial
+            # throughput is already sensitive to host load.
+            self.get_logger().info(
+                "no fiducial station declared; connector observability is not "
+                "station-gated in this world")
+            self.publishers_by_pod = {}
+            return
         self.publishers_by_pod = {
             pod: self.create_publisher(
                 PoseWithCovarianceStamped, f"/fiducials/{pod}/pose", 20)
@@ -53,25 +70,27 @@ class FiducialStationNode(Node):
                 lambda message, observed=pod: self._on_diagnostics(observed, message),
                 20,
             )
-        if not self.stations:
-            self.get_logger().info(
-                "no fiducial station declared; connector observability is not "
-                "station-gated in this world")
-        else:
-            self.get_logger().info(
-                f"{len(self.stations)} fiducial station(s), "
-                f"{len(self.obstacles)} declared obstacle(s)")
+        self.get_logger().info(
+            f"{len(self.stations)} fiducial station(s), "
+            f"{len(self.obstacles)} declared obstacle(s)")
 
     def _on_diagnostics(self, pod: str, message: String) -> None:
-        if not self.stations:
-            return
         try:
             sample = json.loads(message.data)
         except (ValueError, TypeError):
             return
-        if not all(key in sample for key in POSE_KEYS):
-            return
-        if not all(key in sample for key in CORE_KEYS):
+        if not all(key in sample for key in (*POSE_KEYS, *CORE_KEYS)):
+            # Fail closed: without a pose the station has not observed this
+            # pod. Warn once, because silently never publishing would look
+            # like a world with no station rather than a broken sensor.
+            if not self._warned_missing_fields:
+                self._warned_missing_fields = True
+                missing = sorted(
+                    set((*POSE_KEYS, *CORE_KEYS)) - set(sample))
+                self.get_logger().warning(
+                    f"{pod} diagnostics lack {missing}; the station cannot "
+                    "synthesize observations and every connector will read "
+                    "unobservable")
             return
         point = (float(sample["world_x"]), float(sample["world_y"]),
                  float(sample["world_z"]))

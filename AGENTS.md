@@ -92,7 +92,22 @@ literally written while leaving the sensing contrast with no outcome mechanism,
 so it is not a shortcut worth taking. Giving it a physical cause by occlusion
 was chosen and then measured to be impossible: the connector cameras sit at the
 core origin and the pods move radially outward, so every sight-line-blocking
-placement is inside the robot's own footprint. The open choice is A1 (depend on
-an external workspace landmark via the unused `/fiducials/pod_N/pose` hook) or
-D (withdraw the sensing contrast). Both ADRs are `proposed`; no scenario,
-sensing, or planner code has been changed for either.
+placement is inside the robot's own footprint. ADR 0006 is now **accepted as
+A1** and partly built: observability is established by an external workspace
+fiducial station, occluded by an *elevated* screen that clears the robot
+entirely. The geometry, the planner predictor, the simulator station node and
+the sensing gate are in; the station is not yet placed in any scenario, so
+nothing has changed behaviourally. Keep every step backwards compatible — a
+world declaring no station must behave exactly as before, which is what leaves
+the round-trip and fault-matrix gates untouched.
+
+**Placement is blocked on an author decision.** A site is rejected when any
+moved pod is shadowed, so a rejected region can never be narrower than twice
+the pods' reach, 1.42 m. `combined_constraints` declares a 0.60 m occlusion,
+which no station geometry can produce. Widening it changes a declared
+manipulation of the frozen design and risks swallowing the distinct feasible
+site ADR 0004 preserved. Do not place stations in the confirmatory scenarios
+until that is decided; the first attempt regressed Gate 2 from 9/9 separating
+to 4-5, with 4-5 layouts unplanned, and was reverted. Before this counts as
+evidence: regenerate the Gate 2 report, and re-qualify the round-trip and
+fault-matrix gates. ADR 0005 remains `proposed`.

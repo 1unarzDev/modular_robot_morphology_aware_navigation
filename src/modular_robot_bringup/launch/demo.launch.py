@@ -22,6 +22,7 @@ def generate_launch_description():
     initial_yaw = LaunchConfiguration("initial_yaw")
     failure_injection = LaunchConfiguration("failure_injection")
     transition_environment = LaunchConfiguration("transition_environment")
+    station_gated_visibility = LaunchConfiguration("station_gated_visibility")
     has_map = PythonExpression(["'", map_file, "' != ''"])
     localization_params = os.path.join(bringup, "config", "localization.yaml")
     return LaunchDescription([
@@ -37,6 +38,12 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "transition_environment", default_value="",
             description="Scenario manifest with static 3D transition obstacles (prior map)"),
+        DeclareLaunchArgument(
+            "station_gated_visibility", default_value="false",
+            description="ADR 0006: connector observability is established by a "
+                        "declared workspace fiducial station rather than by the "
+                        "onboard connector cameras. Set when the scenario "
+                        "manifest declares a station."),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(os.path.join(sim, "launch", "simulation.launch.py")),
             launch_arguments={"world": world}.items()),
@@ -78,6 +85,16 @@ def generate_launch_description():
             "use_sim_time": True,
             "failure_injection": ParameterValue(failure_injection, value_type=str),
         }]),
-        Node(package="reconfiguration_executor", executable="pod_relative_pose_estimator", output="screen", parameters=[{"use_sim_time": True}]),
+        Node(package="reconfiguration_executor", executable="pod_relative_pose_estimator", output="screen", parameters=[{
+            "use_sim_time": True,
+            "station_gated_visibility": ParameterValue(
+                station_gated_visibility, value_type=bool),
+        }]),
+        # The station is a simulator sensor model; it reads the same manifest
+        # the planner does, and does nothing when no station is declared.
+        Node(package="modular_robot_sim", executable="fiducial_station", output="screen", parameters=[{
+            "use_sim_time": True,
+            "scenario_manifest": ParameterValue(transition_environment, value_type=str),
+        }]),
         Node(package="modular_robot_bringup", executable="hybrid_navigator", output="screen", parameters=[{"use_sim_time": True}]),
     ])

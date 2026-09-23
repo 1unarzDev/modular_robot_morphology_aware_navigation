@@ -7,7 +7,7 @@ planning, docking, or recovery.
 from __future__ import annotations
 
 from bisect import bisect_left
-from math import cos, hypot, sin, sqrt
+from math import cos, hypot, pi, sin, sqrt
 from typing import Any, Iterable, Mapping, Sequence
 
 # Localization is logged at 2 Hz while each pod diagnostic carries a same-tick
@@ -243,6 +243,93 @@ MINIMUM_TRUTH_MATCH_FRACTION = 0.9
 TRUTH_SPAN_SLACK_S = 1.0
 # Trials shorter than this never started navigation and carry no telemetry.
 MINIMUM_AUDITED_DURATION_S = 5.0
+
+
+# The acceptance gate shared by the planner predicate and `docking_acceptance`.
+STATION_OBSERVABILITY_GATE = 0.015
+
+
+def station_observability_audit(record, scenario, catalog,
+                                heading_bins: int = 8) -> list[str]:
+    """Reasons the station did not deliver the observability the planner predicted.
+
+    ADR 0006: a transition site is chosen because the workspace fiducial station
+    is predicted to see where the pods will dock. That prediction only means
+    something if the station actually delivers it there, so this recomputes the
+    prediction at the site the mission planned and checks it against the sensing
+    the mission recorded.
+
+    What this can and cannot catch. Prediction and the simulator's station share
+    the geometry rule deliberately, so a bug in that rule would satisfy this
+    audit; what it does catch is the site, the heading, the declared obstacles
+    and the station pose disagreeing between planning and execution, and a pod
+    the planner expected to be seen that the mission recorded as unobserved.
+
+    A world that declares no station is exempt: it is not station-gated and
+    keeps the behaviour it had before ADR 0006.
+    """
+    from morphology_planner import HybridState, station_sensing_provider
+
+    if not scenario.fiducial_stations:
+        return []
+    transitions = {value.id: value for value in catalog.transitions}
+    provider = station_sensing_provider(
+        catalog, scenario.fiducial_stations, scenario.transition_obstacles,
+        scenario.grid, heading_bins)
+    problems = []
+    for site in record.planned_transition_sites:
+        transition = transitions.get(str(site.get("transition_id", "")))
+        if transition is None:
+            continue
+        cell_x, cell_y = scenario.grid.world_to_cell(
+            float(site["x"]), float(site["y"]))
+        heading = round(
+            float(site.get("yaw", 0.0)) % (2.0 * pi) * heading_bins
+            / (2.0 * pi)) % heading_bins
+        predicted = provider(
+            transition, HybridState(cell_x, cell_y, heading, "compact_diff"))
+        blind = sorted(pod for pod, state in predicted.items()
+                       if not state.connector_visible)
+        if blind:
+            problems.append(
+                f"{transition.id}: planner chose a site where the station "
+                f"cannot see {', '.join(blind)}")
+        problems.extend(_measured_disagreements(record, transition, predicted))
+    return problems
+
+
+def _measured_disagreements(record, transition, predicted) -> list[str]:
+    """Pods the planner expected observed that the mission recorded otherwise."""
+    snapshots = [value for value in record.pod_alignment_history
+                 if value.get("execution_state") in ("TRANSITIONING", "READY")]
+    if not snapshots:
+        return []
+    problems = []
+    for pod in transition.moved_pods:
+        if not predicted.get(pod) or not predicted[pod].connector_visible:
+            continue
+        observed = [
+            snapshot["pods"][pod] for snapshot in snapshots
+            if pod in snapshot.get("pods", {})
+        ]
+        if not observed:
+            continue
+        # The docking gate needs one accepted observation, not every sample.
+        if any(bool(value.get("connector_visible"))
+               and _trace(value) <= STATION_OBSERVABILITY_GATE
+               for value in observed):
+            continue
+        best = min((_trace(value) for value in observed), default=float("inf"))
+        problems.append(
+            f"{transition.id}: station predicted to see {pod}, but no recorded "
+            f"observation was both visible and within the gate "
+            f"(best covariance trace {best:.4g})")
+    return problems
+
+
+def _trace(estimate: Mapping[str, Any]) -> float:
+    return float(estimate.get("variance_x", 0.0)) + float(
+        estimate.get("variance_y", 0.0)) + float(estimate.get("variance_yaw", 0.0))
 
 
 def telemetry_audit(record) -> list[str]:

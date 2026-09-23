@@ -239,6 +239,12 @@ def run_batch(
                  # Static 3D transition obstacles as a known prior map, like
                  # the occupancy map; no live simulator state is exposed.
                  f"transition_environment:={scenario_manifest.resolve()}",
+                 # ADR 0006: a scenario that declares a workspace fiducial
+                 # station establishes connector observability through it, so
+                 # the onboard cameras stop asserting it. Scenarios without a
+                 # station keep the pre-ADR-0006 behaviour.
+                 "station_gated_visibility:="
+                 f"{'true' if scenario.fiducial_stations else 'false'}",
                  *([f"failure_injection:={failure_injection}"] if failure_injection else [])],
                 cwd=root, stdout=launch_log, stderr=subprocess.STDOUT,
                 text=True, start_new_session=True,

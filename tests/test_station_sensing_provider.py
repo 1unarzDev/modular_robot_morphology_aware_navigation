@@ -1,4 +1,4 @@
-"""The planner's prediction of station observability at a candidate site.
+﻿"""The planner's prediction of station observability at a candidate site.
 
 ADR 0006: precision docking depends on an external workspace fiducial station,
 so a site is well observed only where the station can see where the pods will
@@ -6,6 +6,8 @@ be docked. The planner predicts that from priors alone.
 """
 
 from pathlib import Path
+
+import pytest
 
 from morphology_planner import (
     FiducialStation, HybridState, OccupancyGrid, load_catalog,
@@ -105,6 +107,43 @@ def test_prediction_is_stable_and_cached_per_site():
     assert provider(transition, _site(grid)) is first
 
 
+def test_a_shadow_rejects_a_region_dilated_by_the_pods_reach():
+    """The granularity floor on any station manipulation.
+
+    A site is rejected when ANY moved pod is shadowed, so the rejected set is
+    the screen's shadow dilated by the pods' reach, never equal to it. Realizing
+    a declared region therefore needs the shadow eroded by that reach, and a
+    region narrower than twice the reach cannot be realized at all.
+
+    compact_to_narrow docks pods at x offsets of +/-0.71 m, so the narrowest
+    rejected band this platform can produce is about 1.42 m wide.
+    """
+    catalog, transition, grid = _setup()
+    reach = max(
+        abs(catalog.morphologies[transition.target].pod_poses[pod][0])
+        for pod in transition.moved_pods)
+    assert reach == pytest.approx(0.71, abs=1e-6)
+
+    wx, wy = grid.cell_center(30, 17)
+    station = FiducialStation("south", (wx, wy - 3.0, 1.8))
+    # A narrow screen, far narrower than the pods' reach.
+    screen = Box3("screen", (wx, wy - 1.5, 1.3), (0.10, 0.1, 1.4))
+    provider = station_sensing_provider(
+        catalog, (station,), (screen,), grid, HEADING_BINS)
+    rejected = [
+        grid.cell_center(cell_x, 17)[0]
+        for cell_x in range(10, 50)
+        if not all(state.connector_visible
+                   for state in provider(
+                       transition, _site(grid, x=cell_x, y=17)).values())
+    ]
+    assert rejected
+    width = max(rejected) - min(rejected)
+    assert width >= 2 * reach - grid.resolution, (
+        f"a {screen.size[0]:.2f} m screen rejected only {width:.2f} m; the "
+        f"floor is {2 * reach:.2f} m")
+
+
 def test_declared_stations_survive_the_manifest_round_trip(tmp_path):
     """The planner node reads stations from the same manifest that carries the
     3D obstacles, so a scenario's stations must serialize and reload intact."""
@@ -125,6 +164,8 @@ def test_declared_stations_survive_the_manifest_round_trip(tmp_path):
 
 
 def test_a_scenario_without_stations_round_trips_to_none(tmp_path):
+    """The workshop diagnostic worlds declare no station, so they keep the
+    pre-ADR-0006 behaviour and must not become station-gated."""
     import json
 
     from modular_robot_benchmarks.confirmatory_scenarios import (
@@ -132,7 +173,8 @@ def test_a_scenario_without_stations_round_trips_to_none(tmp_path):
     )
     from morphology_planner import load_fiducial_stations
 
-    scenario = make_confirmatory_scenario("docking_observability", 1, 1)
+    scenario = make_confirmatory_scenario("workshop_neutral", 0, 1)
+    assert scenario.fiducial_stations == ()
     path = tmp_path / "world.manifest.json"
     path.write_text(json.dumps(scenario.manifest()), encoding="utf-8")
     assert load_fiducial_stations(str(path)) == ()
