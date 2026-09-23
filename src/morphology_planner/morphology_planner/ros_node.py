@@ -20,8 +20,9 @@ from .catalog import load_catalog
 from .cost_model import LinearCalibratedCostModel, OnnxCostModel
 from .grid import OccupancyGrid
 from .methods import make_method_planner
+from .observability import load_fiducial_stations
 from .planner import HybridState, NoPathError
-from .transition_policy import PodSensingState
+from .transition_policy import PodSensingState, station_sensing_provider
 from .transition_validation import load_environment_boxes
 
 
@@ -42,6 +43,13 @@ class PlannerServer(Node):
         # means the occupancy map is the only environment model.
         self.declare_parameter("transition_environment", "")
         self._environment = load_environment_boxes(
+            str(self.get_parameter("transition_environment").value))
+        # ADR 0006: where the world declares a fiducial station, connector
+        # observability is a property of the site rather than of wherever the
+        # robot happens to be standing, so candidate sites are scored by
+        # predicted station visibility. A manifest that declares no station
+        # keeps the live-sensing behaviour every world had before.
+        self._stations = load_fiducial_stations(
             str(self.get_parameter("transition_environment").value))
         catalog = load_catalog(self.get_parameter("catalog").value)
         self._catalog = (
@@ -135,11 +143,18 @@ class PlannerServer(Node):
                 margin=max(value.radius for value in self._catalog.morphologies.values()),
             )
             method = str(request.planner_method or self.get_parameter("planner_method").value)
+            heading_bins = self.get_parameter("heading_bins").value
             planner = make_method_planner(
                 method, self._catalog, planning_grid,
-                heading_bins=self.get_parameter("heading_bins").value,
+                heading_bins=heading_bins,
                 environment=self._environment,
                 sensing=self._sensing,
+                sensing_provider=(
+                    station_sensing_provider(
+                        self._catalog, self._stations, self._environment,
+                        planning_grid, heading_bins)
+                    if self._stations else None
+                ),
                 cost_model=self._cost_model(),
                 topology_revision=self._topology_revision,
                 sensing_revision=self._sensing_revision,

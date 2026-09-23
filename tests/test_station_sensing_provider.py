@@ -105,6 +105,39 @@ def test_prediction_is_stable_and_cached_per_site():
     assert provider(transition, _site(grid)) is first
 
 
+def test_declared_stations_survive_the_manifest_round_trip(tmp_path):
+    """The planner node reads stations from the same manifest that carries the
+    3D obstacles, so a scenario's stations must serialize and reload intact."""
+    import json
+    from dataclasses import replace
+
+    from modular_robot_benchmarks.confirmatory_scenarios import (
+        make_confirmatory_scenario,
+    )
+    from morphology_planner import load_fiducial_stations
+
+    scenario = make_confirmatory_scenario("docking_observability", 1, 1)
+    station = FiducialStation("staging", (0.3, 1.8, 1.8), max_range=6.0)
+    scenario = replace(scenario, fiducial_stations=(station,))
+    path = tmp_path / "world.manifest.json"
+    path.write_text(json.dumps(scenario.manifest()), encoding="utf-8")
+    assert load_fiducial_stations(str(path)) == (station,)
+
+
+def test_a_scenario_without_stations_round_trips_to_none(tmp_path):
+    import json
+
+    from modular_robot_benchmarks.confirmatory_scenarios import (
+        make_confirmatory_scenario,
+    )
+    from morphology_planner import load_fiducial_stations
+
+    scenario = make_confirmatory_scenario("docking_observability", 1, 1)
+    path = tmp_path / "world.manifest.json"
+    path.write_text(json.dumps(scenario.manifest()), encoding="utf-8")
+    assert load_fiducial_stations(str(path)) == ()
+
+
 def test_covariance_tracks_range_from_the_station():
     catalog, transition, grid = _setup()
     wx, wy = grid.cell_center(20, 17)

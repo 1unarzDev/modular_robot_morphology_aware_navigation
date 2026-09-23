@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from random import Random
 
-from morphology_planner import HybridState, PodSensingState
+from morphology_planner import FiducialStation, HybridState, PodSensingState
 from morphology_planner.catalog import Transition
 from morphology_planner.grid import OCCUPIED, OccupancyGrid
 from morphology_planner.transition_validation import Box3
@@ -75,6 +75,11 @@ class ConfirmatoryScenario:
     transition_obstacles: tuple[Box3, ...]
     observability_regions: tuple[ObservabilityRegion, ...]
     parameters: dict
+    # ADR 0006. `observability_regions` states the design's intent; the station
+    # and the elevated screen in `transition_obstacles` are the physical cause
+    # that has to reproduce it. A layout declaring no station is not
+    # station-gated and keeps the behaviour every world had before ADR 0006.
+    fiducial_stations: tuple[FiducialStation, ...] = ()
 
     @property
     def layout_id(self) -> str:
@@ -105,6 +110,7 @@ class ConfirmatoryScenario:
             "parameters": self.parameters,
             "transition_obstacles": [asdict(box) for box in self.transition_obstacles],
             "observability_regions": [asdict(region) for region in self.observability_regions],
+            "fiducial_stations": [asdict(station) for station in self.fiducial_stations],
         }
 
 
