@@ -878,12 +878,24 @@ The first placement expanded it, and the Gate 2 report came back with
 and 4 of 9 `combined_constraints` layouts, against 0 in the committed report.
 That placement was reverted and is not committed.
 
-Eroding fixes the arithmetic but exposes a floor: `compact_to_narrow` docks its
-pods at x offsets of +/-0.71 m, so **no station geometry can produce a rejected
-band narrower than 1.42 m**. `docking_observability` declares 2.10 m and is
-realizable; `combined_constraints` declares 0.60 m and **is not**. Widening it
-is an author decision on a declared manipulation of the frozen design, and
-risks swallowing the distinct feasible site ADR 0004 preserved. See ADR 0006.
+Eroding fixes the arithmetic but exposes a floor. The pods sit at only four
+discrete x offsets (-0.71, -0.35, +0.35, +0.71 m), so dilating a narrow shadow
+gives disjoint slivers a site can sit between; a **contiguous** rejected band
+needs a declared region of about **2.12 m**. Screened over the 9 non-neutral
+layouts of each family:
+
+| Configuration | separating | unplanned |
+|---|---|---|
+| `docking_observability`, declared 2.10 m, eroded | 9/9 | 0 |
+| `combined_constraints` widened to 1.60 m | 0/9 | 0 |
+| `combined_constraints` widened to 2.10 m | 9/9 | 0 |
+
+Every geometry and feasibility site in all three is identical to the committed
+Gate 2 report, confirming the elevated screen is optical only. So the
+correction restores `docking_observability` with no design change, and
+`combined_constraints` needs its declared occlusion widened from 0.60 m to
+about 2.10 m — an author decision, because it coarsens a manipulation ADR 0004
+targeted deliberately. See ADR 0006.
 
 Note that editing
 `confirmatory_scenarios.py` redefines the frozen design's layouts without

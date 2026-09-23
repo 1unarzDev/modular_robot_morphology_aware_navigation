@@ -284,14 +284,52 @@ stops binding: the sensing contrast is lost in that family, leaving
 `docking_observability` as the only source, where the feasibility term never
 binds.
 
-Widening it to 1.42 m or more is a change to a declared manipulation of the
-frozen design. No pilot or confirmatory data exists (0/432), so it is not a
-response to an outcome, but it is an author decision and it carries a real
-risk: the wider band may swallow the distinct feasible site that ADR 0004
-preserved, which would remove the contrast rather than realize it.
+### The floor is higher than 1.42 m, because the pod offsets are discrete
 
-The scenario placement is therefore **not committed**. The mechanism is, and is
-inert: no layout declares a station, so nothing has changed behaviourally.
+Screening the corrected placement refined this. The pods do not occupy a
+continuum: `compact_to_narrow` docks them at x offsets of only
+-0.71, -0.35, +0.35, +0.71 m. Dilating a narrow shadow by that set yields four
+narrow slivers with gaps between them, not a band, and a site can sit in a gap.
+The largest gap is the 0.70 m between -0.35 and +0.35, so a **contiguous**
+rejected band needs a shadow at least that wide, and hence a declared region of
+at least 0.70 + 2 x 0.71 = **about 2.12 m**.
+
+Screened over the 9 non-neutral layouts of each family, heading bins 8,
+epsilon 2.5:
+
+| Configuration | separating | unplanned |
+|---|---|---|
+| `docking_observability`, declared 2.10 m, eroded | **9/9** | 0 |
+| `combined_constraints` widened to 1.60 m | 0/9 | 0 |
+| `combined_constraints` widened to 2.10 m | **9/9** | 0 |
+
+1.60 m fails exactly as the discrete-offset argument predicts: its shadow is
+0.18 m wide, its rejected slivers miss the feasibility-aware site, and sensing
+chooses the same site as feasibility in all nine layouts. Both working
+configurations sit at 2.10 m, just under the 2.12 m estimate, because at 0.1 m
+grid resolution no site centre lands in the residual 2 cm gap.
+
+In every configuration above, **every geometry and feasibility site is
+identical to the committed Gate 2 report**, in both families and all 18
+layouts. That is the empirical confirmation that the elevated screen is an
+optical obstacle only, alongside the structural one: `methods.py:97` routes
+only `sensing_feasibility_coupled` and `route_first_adaptation` through the
+sensing predicate, so the other two methods never consult the provider at all.
+
+So the correction restores `docking_observability` with no design change at
+all, and `combined_constraints` needs its declared occlusion widened from
+0.60 m to about 2.10 m.
+
+That widening is a change to a declared manipulation of the frozen design. No
+pilot or confirmatory data exists (0/432), so it is not a response to an
+outcome, but it is an author decision: it takes the occlusion from a targeted
+band around the feasibility-aware site to most of the staging band, which is a
+coarser manipulation than ADR 0004 authored, even though the contrast it
+exists to support still separates 9/9 with nothing unplanned.
+
+The scenario placement is therefore **not committed** pending that decision.
+The mechanism is, and is inert: no layout declares a station, so nothing has
+changed behaviourally.
 
 ### Before this is evidence
 
