@@ -897,6 +897,54 @@ report it replaces, with all four methods agreeing in all six neutral controls.
 Against that report **0 of 24 geometry and feasibility sites changed**, which
 is the empirical confirmation that the elevated screen is optical only.
 
+### The outcome mechanism works; off-route sites are unreachable (2026-09-22)
+
+First Gazebo execution of the ADR 0006 path, engineering only
+(`results/debug/station_smoke`, `design_kind: engineering_station_smoke`, never
+pilot or confirmatory evidence). Two single-trial runs on
+`docking_observability-01`, the same layout and seeds the frozen design draws.
+
+**The manipulation now has an outcome mechanism, which is what ADR 0006 set out
+to create.** `geometry_coupled` ignores sensing, chose the direct site
+(2.15, 1.75), aligned to it cleanly, attempted the transition, and was refused
+by the docking gate:
+
+```
+docking evidence rejected: connector_not_visible;
+covariance=(6.34e-06, 6.34e-06, 1.17e-05); connector_visible=false;
+sources=connector_camera,wheel_odometry; latch_observation=detached
+```
+
+The pod is well measured and simply not station-observed, `sources` confirms
+`station_gated_visibility` demoted the onboard cameras, and the trial ends
+`unsafe_topology`. Before ADR 0006 no site choice could produce that: covariance
+was 2.5e-05 everywhere and `connector_visible` was always true.
+
+**But the sensing method cannot execute the site it chooses.**
+`sensing_feasibility_coupled` correctly avoided the shadowed site and planned
+(1.95, 1.55) at yaw 0.79, then failed alignment three times and made **zero**
+transition attempts, ending `controller_failure`. In the map frame its closest
+approach was **0.098 m** against a 0.03 m tolerance, never within 0.06 m; at
+closest it sat 2 cm off in x and 9.6 cm off in y, parked on the route line.
+
+Nav2 hands over inside `xy_goal_tolerance: 0.12` with `yaw_goal_tolerance:
+3.14159`, so heading is ignored entirely, and `site_alignment_command` must
+close the rest to 0.03 m and 0.05 rad within a 30 s simulated window. It does
+that for an on-route, axis-aligned site; it does not for one about 20 cm off
+the route line at 45 degrees.
+
+**This is not caused by ADR 0006.** Every sensing-manipulated site is off-route
+by construction -- moving the site is the manipulation -- and the declared
+regions placed them *further* off: layout 1's sensing site was 5 cells
+(about 0.50 m) off the route line under the old model against 2 cells
+(about 0.20 m) now. The execution gap would have blocked the sensing contrast
+under either design, and no confirmatory layout had ever been run in Gazebo to
+expose it. It is an open blocker and needs a decision: tighten the handover
+(a Nav2 goal at the exact site pose, or a tighter goal checker for
+transition-site goals), make `site_alignment_command` able to close a lateral
+offset, or constrain the manipulation to sites the navigator can reach, which
+would weaken it.
+
 Recorded consequence: the manipulation now has a direction. Declared regions
 produced scattered sensing sites (y cells 13--23 either side of the route); a
 south-wall station puts every non-neutral sensing site between it and the route

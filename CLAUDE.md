@@ -76,7 +76,15 @@ Console entry points installed by `modular_robot_benchmarks` (see its
 `setup.py`) are the study interface: `morphology_study`,
 `run_morphology_missions`, `morphology_engineering`, `qualify_roundtrip_batch`,
 `qualify_assembly_motion`, `qualify_detached_pod`, `check_planner_manipulation`.
-A planner sweep over the frozen design's 24 layouts takes tens of minutes.
+They are **not on `PATH`** — colcon installs them under
+`install/modular_robot_benchmarks/lib/modular_robot_benchmarks/`, so invoke
+them as `ros2 run modular_robot_benchmarks <name> -- <args>` (or import the
+module's `main`). A planner sweep over the frozen design's 24 layouts takes
+tens of minutes.
+
+Rebuild after adding a Python module to an `ament_cmake` package such as
+`modular_robot_sim`: `--symlink-install` only picks up edits to sources that
+are already installed.
 
 ## Evidence discipline
 

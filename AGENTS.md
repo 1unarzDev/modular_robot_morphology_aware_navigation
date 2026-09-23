@@ -108,7 +108,19 @@ contiguous rejected band needs a declared region of about 2.12 m, so
 `combined_constraints` was widened from 0.60 m to 2.10 m (author decision,
 2026-09-22). Gate 2 is regenerated: 9/9 separating, 0 unplanned in all four
 cells, all six neutral controls agreeing, and 0 of 24 geometry and feasibility
-sites changed. **Nothing has run in Gazebo**: the container build, the station
-node against live diagnostics, and `station_gated_visibility` are all
-unexercised, and the round-trip and fault-matrix gates are not re-qualified.
-ADR 0005 remains `proposed`.
+sites changed. The container builds and the runtime path works: a smoke run shows
+`geometry_coupled` choosing a poorly observed site and being refused by the
+docking gate (`connector_not_visible`, `sources=connector_camera,
+wheel_odometry`), which is the outcome mechanism ADR 0006 existed to create.
+
+**Open blocker: off-route transition sites are unreachable.**
+`sensing_feasibility_coupled` avoided the shadowed site, planned one about
+0.20 m off the route line at 45 degrees, and failed `_align_to_site` three
+times with zero transition attempts; closest map-frame approach 0.098 m against
+a 0.03 m tolerance. Nav2 hands over within 0.12 m ignoring yaw entirely, and
+`site_alignment_command` cannot close a lateral offset. Every sensing-
+manipulated site is off-route by construction, and the declared regions placed
+them further off (about 0.50 m) than ADR 0006 does, so this blocks the sensing
+contrast under either design and is not caused by ADR 0006. Decide how to close
+the handover before running confirmatory layouts. The round-trip and
+fault-matrix gates are still not re-qualified. ADR 0005 remains `proposed`.
