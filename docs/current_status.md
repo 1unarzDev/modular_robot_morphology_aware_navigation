@@ -1077,16 +1077,80 @@ was tuned for is also the one that rotates best.
 
 **The reach is well beyond this blocker, and it is not only rotation.** Straight
 travel is heading-dependent too: 0.5830 m at +/-90 against 0.7397 m at heading 0,
-a 21.2% shortfall, restored to 0.7336--0.7407 m by either variant. The 20-run
-round-trip gate's forward travel norm is 0.113 m against a 0.08 m floor,
-collected at the spawn heading near zero; scaled by 0.788 the margin falls from
-+0.0317 m to +0.0091 m. That is an extrapolation across stages rather than a
-measurement of the gate -- the stage measured here is 4 s at 0.20 m/s, not the
-gate's short burst -- but it sizes the exposure. Every signed-motion, travel and
+restored to 0.7336--0.7407 m by either variant. Every signed-motion, travel and
 reconfiguration figure on record was collected near the most favourable heading,
 and the confirmatory layouts route in all directions. This is the same class of
 defect as the wall-clock command window: a simulation artifact that silently
 scales results rather than failing loudly.
+
+**The full curve was then measured, and it is not a notch at +/-90.**
+`studies/engineering/heading_traction_curve.json` (protocol declared at
+`4350fce`, unmodified model throughout, 13 headings plus repeats in an
+obstruction-free world so the straight stage measures traction rather than
+geometry). The stage totals could not answer the question as declared: a 4 s
+rotation stage turns the body up to 1 rad and each stage starts where the last
+ended, so a total is authority integrated over the arc traversed. That is what
+produced an apparent asymmetry between a heading and its 180-degree partner --
++yaw from 150 degrees sweeps toward the favourable 180 and totalled 0.9621 rad,
+while +yaw from 30 sweeps into the collapsing region and totalled 0.5727 rad.
+The records sample true pose at 0.05 s, so the heading-local quantity is
+recoverable from them without new runs. Over 2200 windows from 17 retained runs,
+median local yaw rate as a fraction of command:
+
+| Heading, mod 180 | 0--10 | 20--30 | 40--50 | 60--70 | 80--90 | 90--100 | 130--140 | 170--180 |
+|---|---|---|---|---|---|---|---|---|
+| Fraction of command | 0.733 | 0.656 | 0.453 | 0.261 | 0.042 | 0.090 | 0.441 | 0.735 |
+
+Symmetric about 90 with a 180-degree period, which is what world-fixed friction
+axes predict and what the totals obscured: the ends agree to 0.002 and every
+mirrored pair to within 0.04. Authority is already down to 78% of its best value
+by 30 degrees, 62% by 45 and 20% by 75. A pyramid friction limit would have
+collapsed to 0.309 by 15 degrees, which is not what happens; the measured
+falloff is fit reasonably by `0.73*cos^2(heading)`, post hoc and as a
+description rather than a mechanism.
+
+**Projected onto the gate, a third of all headings fail.** The signed-motion
+yaw stages command 0.25 rad/s for 1.5 s against a 0.10 rad floor, so they need a
+fraction of 0.267, which the measured medians hold only up to about 60 degrees
+and again from about 120. Measured directly at 0.35 rad/s the tool's own
+criterion fails at 85 and 90 degrees (0.0558 and 0.0000 rad) and passes at 95
+(0.1346). The projection uses a curve measured at 0.35 rad/s and has not been
+run at the gate's own stage.
+
+**Translation loses its ground in the ramp, not at speed, and this corrects the
+extrapolation above.** Instantaneous straight-line speed after the ramp is
+0.927--0.928 of command at every heading including 90; what changes is the time
+to reach 85% of command, 0.05--0.10 s at 0, 15, 165 and 180 degrees rising to
+1.44--1.54 s at 85--95. The deficit is a fixed startup penalty, 0.154 m at 90
+degrees on this stage, which is Coulomb-limited traction behaving correctly: the
+friction limit caps acceleration, not constant-velocity rolling. So scaling the
+round-trip gate's 0.113 m forward travel by 0.788 to get a +0.0091 m margin,
+as the intervention study did, is not valid arithmetic -- a startup cost hurts a
+short stage proportionally more, while a lower target speed shortens the ramp.
+The gate's forward stage is 0.12 m/s for 1.0 s, comparable to the ramp itself.
+Whether its floor survives an unfavourable heading must be measured at the
+gate's own stage, and no run has done that.
+
+**The detached pod splits the two effects, which settles the other half of
+Gate 0 item 1.** Its rotation is essentially unaffected -- +1.1892/-1.1700 rad at
+heading 0 against +1.1749/-1.2015 at +90 and +1.2026/-1.2143 at -90, all passing
+-- because a two-wheel pod turning in place needs little tractive force. Its
+translation is affected exactly as the assembly's is: +0.6694/-0.6690 m at
+heading 0 against +0.5316/-0.5410 at +90 and +0.5541/-0.5560 at -90, 17--21%
+short against committed figures of +/-0.680--0.692 m collected at the favourable
+heading. That was previously inferred from the shared wheel template and is now
+measured.
+
+Two runs are on record as failures and are not re-scored. The first pass at 90
+degrees produced no record at all -- a readiness timeout before any measurement,
+re-launched. The first pass at 165 degrees produced a record in which the
+assembly was immobile in every stage, 0.0088 m of straight travel with correct
+pod commands, at a heading whose neighbours travel 0.7144 and 0.7374 m; it did
+not reproduce (0.7319 m on re-run) and is excluded from the curve under a
+criterion stated before the curve was computed: no motion in any stage,
+translation included, is a stuck state. That criterion does not touch the real
+collapse at 90, which translates 0.5793 m normally. It happened once in 22
+pose-imposed runs, all of which teleport the robot where missions never do.
 
 **Which repair to adopt is still an author decision, and it is now the expensive
 one.** Adopting either moves Gate 0 item 1, the 20-run round-trip audit and the

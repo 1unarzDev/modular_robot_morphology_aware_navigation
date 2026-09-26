@@ -50,6 +50,13 @@
     }
   ],
   "commit_declared_at": "e2bc940",
+  "correction": {
+    "date": "2026-09-26",
+    "supersedes": "findings.translation_is_heading_dependent_too.indicative_consequence_for_gate_0",
+    "what_stands": "Everything else here. The heading dependence of straight travel on this 4 s stage is measured, and whether the gate's own forward floor survives an unfavourable heading is unmeasured rather than estimated.",
+    "what_was_wrong": "That entry scaled the round-trip gate's 0.113 m forward travel norm by the 0.788 ratio measured here and reported a resulting margin of +0.0091 m. The original text is left in place rather than edited.",
+    "why": "studies/engineering/heading_traction_curve.json shows the translation deficit is a startup penalty, not a proportional one: instantaneous speed after the ramp is 0.927-0.928 of command at every heading including 90, while the time to reach 85% of command rises from 0.05-0.10 s near 0 and 180 to 1.44-1.54 s near 90. A short stage is therefore hurt proportionally more than a long one, while a lower target speed demands less force and shortens the ramp. The gate's forward stage is 0.12 m/s for 1.0 s, comparable to the ramp itself, so neither direction of the scaling is reliable."
+  },
   "correction_to_the_earlier_citation": "The earlier entry cited src/modular_robot_sim/models/drive_pod/model.sdf lines 10-11, mu 1.2 and mu2 0.35. No world and no model includes drive_pod or the generated drive_pod_0..5: it is a legacy model that CMakeLists.txt still generates and nothing loads. Every wheel that has ever touched ground in this repository belongs to articulated_pod, generated from models/articulated_pod/model.sdf.in, whose collisions declare mu 1.2 and mu2 0.08. The assembled robot includes articulated_pod_0..5 directly and the detached-pod world reaches the same template through self_mobile_pod, so both Gate 0 item 1 halves share it. The anisotropy behind every recorded figure is therefore 15:1, not the 3.4:1 that was cited, which makes a total collapse more expected than a partial one. Both templates omit fdir1, so the mechanism is unchanged.",
   "design_kind": "engineering_wheel_friction_intervention",
   "evidence_class": "engineering_debug_never_pilot_or_confirmatory",

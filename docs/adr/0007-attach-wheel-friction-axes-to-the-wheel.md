@@ -62,11 +62,8 @@ a bug fix.
    dependence too but yields 46%, because skid-steer rotation is resisted by
    lateral scrub and isotropy raises that resistance from 0.08 to 1.2. The
    engine reads `fdir1`: that was the stated risk and it did not materialize.
-3. **Straight travel is heading-dependent as well**, by 21.2% at +/-90. The
-   20-run round-trip gate's forward travel norm is 0.113 m against a 0.08 m
-   floor, collected at the spawn heading near zero. Scaled by 0.788 the margin
-   falls from +0.0317 m to +0.0091 m. That is an extrapolation across stages,
-   not a measurement of the gate, but it sizes the exposure: the confirmatory
+3. **Straight travel is heading-dependent as well**, by 21.2% at +/-90, against
+   committed figures collected at the spawn heading near zero. The confirmatory
    layouts route in all directions and no layout has ever been run at a heading
    near +/-90.
 4. **Adopting any repair moves every recorded figure.** Gate 0 item 1, the
@@ -74,6 +71,41 @@ a bug fix.
    unmodified model, and the fault-matrix and round-trip gates already need
    re-qualification for the ADR 0006 work. The repair makes those figures
    better, not worse, but it makes them different.
+
+## The full curve, and what it costs
+
+`studies/engineering/heading_traction_curve.json` measures the dependence across
+13 headings on the unmodified model, in an obstruction-free world so the straight
+stage measures traction rather than geometry. Two results bear on the options.
+
+**Rotation authority falls off across most of the circle, not in a notch.**
+Stage totals cannot answer this -- a 4 s stage turns the body up to 1 rad, so a
+total integrates authority over the arc traversed -- but the records sample true
+pose at 0.05 s, and local rate against instantaneous heading over 2200 windows
+is symmetric about 90 degrees with a 180-degree period:
+
+| Heading, mod 180 | 0--10 | 20--30 | 40--50 | 60--70 | 80--90 | 90--100 | 130--140 | 170--180 |
+|---|---|---|---|---|---|---|---|---|
+| Fraction of command | 0.733 | 0.656 | 0.453 | 0.261 | 0.042 | 0.090 | 0.441 | 0.735 |
+
+Authority is down to 78% of its best value by 30 degrees, 62% by 45 and 20% by
+75. The gate's yaw stages need a fraction of 0.267 (0.25 rad/s for 1.5 s against
+a 0.10 rad floor), which the medians hold only up to about 60 degrees and again
+from about 120, so **the signed-motion yaw floor projects to fail for roughly a
+third of all headings**.
+
+**The translation deficit is a startup penalty.** Instantaneous speed after the
+ramp is 0.927--0.928 of command at every heading; the time to reach 85% of
+command rises from 0.05--0.10 s near 0 and 180 to 1.44--1.54 s near 90. The
+friction limit caps acceleration, not constant-velocity rolling. So the gate's
+forward floor cannot be assessed by scaling: its stage is 0.12 m/s for 1.0 s,
+comparable to the ramp, and a short stage is hurt proportionally more than a
+long one.
+
+**The detached pod is affected in travel and not in yaw**, 17--21% short at
++/-90 with rotation unchanged, because a two-wheel pod turning in place needs
+little tractive force. Both halves of Gate 0 item 1 are therefore heading-
+dependent, which was previously inference.
 
 ## Options
 
@@ -89,11 +121,12 @@ a bug fix.
   pod-pitch and scrub work in `docs/current_status.md`), and rotates at 46%
   rather than 74%. Same re-collection cost.
 - **C. Leave the model and constrain the study to favourable headings.** No
-  re-collection, but it would mean declaring that the platform is only qualified
-  near 0 and 180 degrees while the confirmatory design routes in all directions,
-  and every published figure would carry an unquantified heading term. It also
-  leaves the ADR 0006 sensing contrast unexecutable, since its sites are off-route
-  by construction.
+  re-collection, but the curve prices it: the band that keeps the gate's own yaw
+  floor is roughly +/-60 degrees of the favourable axis, so a third of all
+  headings are excluded, and authority is already down 38% at 45 degrees inside
+  the retained band. Every published figure would carry a heading term that is
+  now measured rather than unknown, and it leaves the ADR 0006 sensing contrast
+  unexecutable, since its sites are off-route by construction.
 - **D. Repair the model and separately give the alignment law a floor.** A is
   necessary but does not by itself make `_align_to_site` robust: the law refuses
   to translate while `|bearing| > 0.15 rad` and its bearing branch has no angular
@@ -112,9 +145,12 @@ Two things should be added with the repair, both cheap:
 
 - A test that fails any collision declaring `mu != mu2` without `fdir1`, so the
   class of defect cannot return silently.
-- A signed-motion measurement at a heading near +/-90 in the re-collected
-  Gate 0 item 1, so heading invariance is part of the gate rather than an
-  engineering note. The gate currently measures one heading.
+- A signed-motion measurement at the worst heading in the re-collected Gate 0
+  item 1, so heading invariance is part of the gate rather than an engineering
+  note. The gate currently measures one heading, and the projection above says a
+  third of headings would fail its yaw floor on the unmodified model. Measure it
+  at the gate's own stage rather than scaling the 4 s figures, because the
+  translation penalty is a startup cost.
 
 `site_position_tolerance` remains a separate open decision: at 0.030 m it sits
 below the localization error the controller must servo against, and no friction

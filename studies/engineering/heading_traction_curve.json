@@ -1,32 +1,762 @@
 {
-  "schema_version": 1,
+  "commit_declared_at": "4350fce",
   "design_kind": "engineering_heading_traction_curve",
   "evidence_class": "engineering_debug_never_pilot_or_confirmatory",
-  "status": "declared_before_execution",
-  "purpose": "measure_the_full_heading_dependence_of_assembled_and_detached_motion_on_the_unmodified_model",
-  "why": "studies/engineering/wheel_friction_intervention.json establishes that world-fixed friction axes cause the collapse, from five headings on the assembled robot at one rate. Two things it does not establish are needed before the ADR 0007 decision can be costed. First, the shape of the curve between the samples: a narrow notch at +/-90 and a broad degradation have very different consequences for a confirmatory design that routes in all directions. Second, whether the detached pod is affected. Gate 0 item 1 has two halves and the detached half has never been run at any heading but the spawn one, so the claim that every recorded figure is heading-dependent is measured for the assembly and inferred for the pod. They share the articulated_pod wheel template, so the inference is reasonable, but it is an inference.",
-  "no_platform_change": "The model tree is unmodified for every run here. This measures the platform as every committed figure was collected on it.",
-  "protocol": {
-    "declared_before_running": true,
-    "obstruction_free_world": "The straight stage must measure traction, not geometry. In the retained smoke world the straight stage reaches 0.7397 m at heading 0, 0.5830 m at +/-90 and 0.2238 m at 180, and the last of those is an obstruction rather than a traction effect. The assembled runs therefore use indoor_doorway.sdf with its six wall models removed and nothing else changed: the same ground plane, which declares no friction and so runs at the SDF default of 1.0, and the same spawn position (1.0, 2.75, 0.18). The detached-pod world already contains only a ground plane and the pod, so it is used unchanged.",
-    "assembled": {
-      "tool": "qualify_assembly_motion --yaw-rate 0.35 --expected-morphology compact_diff",
-      "rate_choice": "0.35 rad/s is the rate Gate 0 item 1 was collected at, so the rotation and travel columns are directly comparable with the committed figures. The rate sweep already showed no rate dependence between 0.20 and 0.35, and the collapse has been measured at 0.271, so this also tests it at the gate's own rate.",
-      "headings_deg": [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180],
-      "pose": "imposed with gz set_pose at the spawn position, settled before the declared stage sequence"
-    },
-    "detached": {
-      "tool": "qualify_detached_pod",
-      "world": "self_mobile_pod_qualification.sdf, unchanged",
-      "headings_deg": [0, 90, -90],
-      "pose": "imposed on the self_mobile_pod model at its spawn position"
-    },
-    "hygiene": "one simulator only; each case aborts unless the simulator process count is zero beforehand, and tears down afterwards"
+  "findings": {
+    "heading_local_rotation_authority": "Local yaw rate against instantaneous heading, over 2200 windows from 17 retained runs, is symmetric about 90 degrees with a 180-degree period -- what world-fixed friction axes predict and what the stage totals obscured. Median fraction of commanded rate: 0.733 at 0-10 degrees, 0.656 at 20-30, 0.453 at 40-50, 0.261 at 60-70, 0.042 at 80-90, then 0.090 at 90-100, 0.441 at 130-140 and 0.735 at 170-180. The two ends agree to 0.002 and each mirrored pair agrees to within 0.04.",
+    "it_is_not_a_notch": "Authority is already down to 78% of its best value by 30 degrees, 62% by 45, 36% by 65 and 20% by 75. Half the heading circle carries less than half the available authority. A pyramid friction limit, min(mu/|cos|, mu2/|sin|), would have collapsed to 0.309 by 15 degrees, which is not what happens: the measured falloff is far gentler and is fit reasonably by 0.73*cos^2(heading). That fit is post hoc and is offered as a description, not a mechanism.",
+    "one_anomaly_retained": "The first pass at 165 degrees produced a record in which the assembly was immobile in every stage -- 0.0263 rad of rotation and 0.0088 m of straight travel, with pod commands correct throughout -- at a heading whose neighbours travel 0.7144 and 0.7374 m. It did not reproduce: the re-run at the same heading gave 0.9443 rad and 0.7319 m. Both records are retained and listed. The exclusion criterion was stated before the curve was computed and is a mechanical-state one rather than an outcome one: a run with no motion in any stage, translation included, is a stuck state and is excluded, which does not touch the real collapse at 90 degrees because that run translates 0.5793 m normally. It occurred once in 22 pose-imposed runs across both studies, all of which teleport the robot where missions never do, so pose imposition is the plausible difference; that is not established.",
+    "one_infrastructure_failure": "The first pass at 90 degrees produced no record: the tool timed out waiting for clock, odometry and morphology, before any measurement. It was re-launched and the re-run is the measurement.",
+    "projection_onto_the_signed_motion_gate": "The gate's yaw stages command 0.25 rad/s for 1.5 s against a 0.10 rad floor, so they need a mean rate of 0.0667 rad/s, a fraction of 0.267. The measured medians hold that up to about 60 degrees and again from about 120, so the gate's yaw floor projects to fail for roughly a third of all headings rather than in a narrow band at 90. This is a projection from a curve measured at 0.35 rad/s; the rate sweep found fractions flat between 0.20 and 0.35, so 0.25 is inside the swept band, but it has not been measured at the gate's own stage. Measured directly at 0.35 rad/s over 4 s, the tool's own criterion fails at 85 and 90 degrees (0.0558 and 0.0000 rad) and passes at 95 (0.1346).",
+    "the_detached_pod_splits_the_two_effects": "Rotation is essentially unaffected: +1.1892/-1.1700 rad at heading 0 against +1.1749/-1.2015 at +90 and +1.2026/-1.2143 at -90, all passing. A single two-wheel pod turning in place needs little tractive force, so the friction limit does not bind. Translation is affected exactly as the assembly is: +0.6694/-0.6690 m at heading 0 against +0.5316/-0.5410 at +90 and +0.5541/-0.5560 at -90, 17-21% short. So the detached half of Gate 0 item 1 is heading-dependent in travel and not in yaw, and its committed figures (+/-0.680-0.692 m) were collected at the favourable heading. This measures what was previously inferred from the shared wheel template.",
+    "the_stage_totals_could_not_answer_the_question_as_declared": "A 4 s rotation stage turns the body up to 1 rad and each stage starts where the previous one ended, so a stage total is rotation authority integrated over the arc traversed, not authority at the stage's heading. That skews the totals toward whichever direction leads into a favourable heading: +yaw from 150 degrees sweeps toward 180 and totalled 0.9621 rad, while +yaw from 30 degrees sweeps into the collapsing region and totalled 0.5727 rad. The declaration predicted that no asymmetry between a heading and its 180-degree partner could occur, and the totals showed one; this is the reason, and it is a property of the measurement rather than of the robot. The records sample true pose at 0.05 s, so the heading-local quantity is recoverable from them without new runs.",
+    "this_corrects_the_earlier_gate_extrapolation": "The intervention study scaled the round-trip gate's 0.113 m forward travel by the 0.788 ratio measured on a 4 s stage and reported a margin of +0.0091 m. That arithmetic does not hold: the penalty is a startup cost, not a proportional one, so a short stage is hurt proportionally more than a long one. The gate's forward stage is 0.12 m/s for 1.0 s, comparable to the ramp itself, while a lower target speed also demands less force and so shortens the ramp. Whether the gate's forward floor survives an unfavourable heading has to be measured at the gate's own stage, which no run has done.",
+    "translation_loses_its_ground_in_the_ramp_not_at_speed": "Instantaneous straight-line speed after the ramp is 0.927-0.928 of command at every heading, including 90. What changes is the time to reach 85% of command: 0.05-0.10 s at 0, 15, 165 and 180 degrees, rising monotonically to 1.44-1.54 s at 85-95. Once rolling, traction is sufficient at any heading; the deficit is a fixed startup penalty, 0.154 m at 90 degrees on this stage. That is Coulomb-limited traction behaving as it should: the friction limit caps acceleration, not constant-velocity rolling."
   },
+  "heading_local_curve": {
+    "method": {
+      "finite_difference_window_s": 0.2,
+      "folding": "friction axes are axes, so the prediction has period 180 degrees; both folded and unfolded bins are reported so the period is measured, not assumed",
+      "records": [
+        "asm_0.json",
+        "asm_15.json",
+        "asm_30.json",
+        "asm_45.json",
+        "asm_60.json",
+        "asm_75.json",
+        "asm_90_r2.json",
+        "asm_105.json",
+        "asm_120.json",
+        "asm_135.json",
+        "asm_150.json",
+        "asm_165_r2.json",
+        "asm_180.json",
+        "asm_75_r2.json",
+        "asm_105_r2.json",
+        "asm_85_r2.json",
+        "asm_95_r2.json"
+      ],
+      "source": "recorded true pose at 0.05 s from every retained run",
+      "spin_up_discarded_s": 0.5,
+      "why": "A 4 s rotation stage sweeps up to 1 rad, so its total is authority integrated over the arc traversed rather than at the stage heading, and the stages compound because each starts where the last ended. Local rate against instantaneous heading is the heading-local quantity."
+    },
+    "rotation_folded_mod_180": {
+      "0": {
+        "max": 0.908,
+        "median_fraction_of_command": 0.733,
+        "min": 0.658,
+        "n": 84
+      },
+      "10": {
+        "max": 0.802,
+        "median_fraction_of_command": 0.722,
+        "min": 0.628,
+        "n": 111
+      },
+      "100": {
+        "max": 0.226,
+        "median_fraction_of_command": 0.184,
+        "min": 0.115,
+        "n": 110
+      },
+      "110": {
+        "max": 0.325,
+        "median_fraction_of_command": 0.253,
+        "min": 0.193,
+        "n": 153
+      },
+      "120": {
+        "max": 0.431,
+        "median_fraction_of_command": 0.335,
+        "min": 0.292,
+        "n": 73
+      },
+      "130": {
+        "max": 0.562,
+        "median_fraction_of_command": 0.441,
+        "min": 0.385,
+        "n": 49
+      },
+      "140": {
+        "max": 0.681,
+        "median_fraction_of_command": 0.57,
+        "min": 0.472,
+        "n": 68
+      },
+      "150": {
+        "max": 0.782,
+        "median_fraction_of_command": 0.661,
+        "min": 0.578,
+        "n": 54
+      },
+      "160": {
+        "max": 0.886,
+        "median_fraction_of_command": 0.733,
+        "min": 0.618,
+        "n": 55
+      },
+      "170": {
+        "max": 0.883,
+        "median_fraction_of_command": 0.735,
+        "min": 0.566,
+        "n": 73
+      },
+      "20": {
+        "max": 0.763,
+        "median_fraction_of_command": 0.656,
+        "min": 0.547,
+        "n": 118
+      },
+      "30": {
+        "max": 0.672,
+        "median_fraction_of_command": 0.568,
+        "min": 0.468,
+        "n": 146
+      },
+      "40": {
+        "max": 0.564,
+        "median_fraction_of_command": 0.453,
+        "min": 0.384,
+        "n": 150
+      },
+      "50": {
+        "max": 0.437,
+        "median_fraction_of_command": 0.354,
+        "min": 0.303,
+        "n": 132
+      },
+      "60": {
+        "max": 0.329,
+        "median_fraction_of_command": 0.261,
+        "min": 0.186,
+        "n": 138
+      },
+      "70": {
+        "max": 0.227,
+        "median_fraction_of_command": 0.147,
+        "min": 0.103,
+        "n": 180
+      },
+      "80": {
+        "max": 0.133,
+        "median_fraction_of_command": 0.042,
+        "min": 0.0,
+        "n": 408
+      },
+      "90": {
+        "max": 0.123,
+        "median_fraction_of_command": 0.09,
+        "min": 0.065,
+        "n": 98
+      }
+    },
+    "rotation_unfolded": {
+      "0": {
+        "max": 0.801,
+        "median_fraction_of_command": 0.693,
+        "min": 0.591,
+        "n": 99
+      },
+      "120": {
+        "max": 0.681,
+        "median_fraction_of_command": 0.439,
+        "min": 0.292,
+        "n": 190
+      },
+      "150": {
+        "max": 0.886,
+        "median_fraction_of_command": 0.728,
+        "min": 0.566,
+        "n": 182
+      },
+      "180": {
+        "max": 0.908,
+        "median_fraction_of_command": 0.722,
+        "min": 0.547,
+        "n": 214
+      },
+      "210": {
+        "max": 0.672,
+        "median_fraction_of_command": 0.552,
+        "min": 0.392,
+        "n": 82
+      },
+      "30": {
+        "max": 0.655,
+        "median_fraction_of_command": 0.43,
+        "min": 0.303,
+        "n": 346
+      },
+      "60": {
+        "max": 0.329,
+        "median_fraction_of_command": 0.103,
+        "min": 0.0,
+        "n": 726
+      },
+      "90": {
+        "max": 0.325,
+        "median_fraction_of_command": 0.2,
+        "min": 0.065,
+        "n": 361
+      }
+    },
+    "sample_counts": {
+      "rotation_windows": 2200,
+      "straight_windows": 1100
+    },
+    "straight_folded_mod_180": {
+      "0": {
+        "max": 1.103,
+        "median_fraction_of_command": 0.928,
+        "min": 0.812,
+        "n": 129
+      },
+      "10": {
+        "max": 1.02,
+        "median_fraction_of_command": 0.928,
+        "min": 0.919,
+        "n": 65
+      },
+      "100": {
+        "max": 1.031,
+        "median_fraction_of_command": 0.919,
+        "min": 0.399,
+        "n": 129
+      },
+      "120": {
+        "max": 1.02,
+        "median_fraction_of_command": 0.918,
+        "min": 0.585,
+        "n": 65
+      },
+      "130": {
+        "max": 1.03,
+        "median_fraction_of_command": 0.925,
+        "min": 0.707,
+        "n": 64
+      },
+      "140": {
+        "max": 1.128,
+        "median_fraction_of_command": 0.927,
+        "min": 0.786,
+        "n": 63
+      },
+      "160": {
+        "max": 1.021,
+        "median_fraction_of_command": 0.928,
+        "min": 0.91,
+        "n": 65
+      },
+      "30": {
+        "max": 1.113,
+        "median_fraction_of_command": 0.927,
+        "min": 0.803,
+        "n": 65
+      },
+      "40": {
+        "max": 1.02,
+        "median_fraction_of_command": 0.918,
+        "min": 0.723,
+        "n": 65
+      },
+      "60": {
+        "max": 1.03,
+        "median_fraction_of_command": 0.918,
+        "min": 0.565,
+        "n": 65
+      },
+      "70": {
+        "max": 1.041,
+        "median_fraction_of_command": 0.919,
+        "min": 0.409,
+        "n": 130
+      },
+      "80": {
+        "max": 1.031,
+        "median_fraction_of_command": 0.919,
+        "min": 0.316,
+        "n": 130
+      },
+      "90": {
+        "max": 1.021,
+        "median_fraction_of_command": 0.919,
+        "min": 0.343,
+        "n": 65
+      }
+    },
+    "straight_unfolded": {
+      "0": {
+        "max": 1.021,
+        "median_fraction_of_command": 0.928,
+        "min": 0.919,
+        "n": 130
+      },
+      "120": {
+        "max": 1.128,
+        "median_fraction_of_command": 0.921,
+        "min": 0.585,
+        "n": 192
+      },
+      "150": {
+        "max": 1.021,
+        "median_fraction_of_command": 0.928,
+        "min": 0.91,
+        "n": 65
+      },
+      "180": {
+        "max": 1.103,
+        "median_fraction_of_command": 0.928,
+        "min": 0.812,
+        "n": 64
+      },
+      "30": {
+        "max": 1.113,
+        "median_fraction_of_command": 0.927,
+        "min": 0.723,
+        "n": 130
+      },
+      "60": {
+        "max": 1.041,
+        "median_fraction_of_command": 0.919,
+        "min": 0.316,
+        "n": 325
+      },
+      "90": {
+        "max": 1.031,
+        "median_fraction_of_command": 0.919,
+        "min": 0.343,
+        "n": 194
+      }
+    }
+  },
+  "no_platform_change": "The model tree is unmodified for every run here. This measures the platform as every committed figure was collected on it.",
   "predictions_declared_before_running": {
     "assembled": "Rotation authority and straight travel both vary with a 180-degree period, full near 0 and 180 and collapsing near 90. The shape between is not predicted: an elliptical combination of mu 1.2 and mu2 0.08 would fall off slowly and collapse only very near 90, while a sharper transition would mean a wider band of unusable headings.",
     "detached": "The detached pod shows the same dependence, since its wheels come from the same template. If it does not, the reach of the defect is narrower than currently stated and the detached half of Gate 0 item 1 survives a repair unchanged.",
     "what_would_surprise": "Any asymmetry between a heading and its 180-degree partner, which world-fixed friction axes cannot produce."
   },
-  "runs": []
+  "protocol": {
+    "assembled": {
+      "headings_deg": [
+        0,
+        15,
+        30,
+        45,
+        60,
+        75,
+        90,
+        105,
+        120,
+        135,
+        150,
+        165,
+        180
+      ],
+      "pose": "imposed with gz set_pose at the spawn position, settled before the declared stage sequence",
+      "rate_choice": "0.35 rad/s is the rate Gate 0 item 1 was collected at, so the rotation and travel columns are directly comparable with the committed figures. The rate sweep already showed no rate dependence between 0.20 and 0.35, and the collapse has been measured at 0.271, so this also tests it at the gate's own rate.",
+      "tool": "qualify_assembly_motion --yaw-rate 0.35 --expected-morphology compact_diff"
+    },
+    "declared_before_running": true,
+    "detached": {
+      "headings_deg": [
+        0,
+        90,
+        -90
+      ],
+      "pose": "imposed on the self_mobile_pod model at its spawn position",
+      "tool": "qualify_detached_pod",
+      "world": "self_mobile_pod_qualification.sdf, unchanged"
+    },
+    "hygiene": "one simulator only; each case aborts unless the simulator process count is zero beforehand, and tears down afterwards",
+    "obstruction_free_world": "The straight stage must measure traction, not geometry. In the retained smoke world the straight stage reaches 0.7397 m at heading 0, 0.5830 m at +/-90 and 0.2238 m at 180, and the last of those is an obstruction rather than a traction effect. The assembled runs therefore use indoor_doorway.sdf with its six wall models removed and nothing else changed: the same ground plane, which declares no friction and so runs at the SDF default of 1.0, and the same spawn position (1.0, 2.75, 0.18). The detached-pod world already contains only a ground plane and the pod, so it is used unchanged."
+  },
+  "purpose": "measure_the_full_heading_dependence_of_assembled_and_detached_motion_on_the_unmodified_model",
+  "runs": {
+    "assembled": [
+      {
+        "commanded_yaw_rate_radps": 0.35,
+        "declared_heading_deg": 0,
+        "observed_initial_yaw_rad": -0.0,
+        "record": "results/debug/heading_curve/asm_0.json",
+        "sha256": "219f13fc9dd7f6353b3f94dba7a6c7de35c0803ee6c8d0aac6051a5d987a61d7",
+        "signed_motion_gate_pass": true,
+        "stage_total_negative_yaw_rad": -0.8279,
+        "stage_total_positive_yaw_rad": 0.847,
+        "straight_forward_m": 0.7362,
+        "straight_lateral_m": 0.0002
+      },
+      {
+        "commanded_yaw_rate_radps": 0.35,
+        "declared_heading_deg": 15,
+        "observed_initial_yaw_rad": 0.2618,
+        "record": "results/debug/heading_curve/asm_15.json",
+        "sha256": "831b74be9ba6592868fbc76ff5b459c618af2d25791cbd4215b71af74282551e",
+        "signed_motion_gate_pass": true,
+        "stage_total_negative_yaw_rad": -0.6969,
+        "stage_total_positive_yaw_rad": 0.7156,
+        "straight_forward_m": 0.739,
+        "straight_lateral_m": -0.0087
+      },
+      {
+        "commanded_yaw_rate_radps": 0.35,
+        "declared_heading_deg": 30,
+        "observed_initial_yaw_rad": 0.5236,
+        "record": "results/debug/heading_curve/asm_30.json",
+        "sha256": "766f53cdcef01e0b71b95309f2613f8971860dfa2d8cd34df9670c8b062315f2",
+        "signed_motion_gate_pass": true,
+        "stage_total_negative_yaw_rad": -0.5569,
+        "stage_total_positive_yaw_rad": 0.5727,
+        "straight_forward_m": 0.7188,
+        "straight_lateral_m": -0.0324
+      },
+      {
+        "commanded_yaw_rate_radps": 0.35,
+        "declared_heading_deg": 45,
+        "observed_initial_yaw_rad": 0.7854,
+        "record": "results/debug/heading_curve/asm_45.json",
+        "sha256": "d16f395c8d69d59e3fca2ebf2ef55b383542c9bbc0c78a3d11e0a222f1fac459",
+        "signed_motion_gate_pass": true,
+        "stage_total_negative_yaw_rad": -0.4238,
+        "stage_total_positive_yaw_rad": 0.4335,
+        "straight_forward_m": 0.6869,
+        "straight_lateral_m": -0.0556
+      },
+      {
+        "commanded_yaw_rate_radps": 0.35,
+        "declared_heading_deg": 60,
+        "observed_initial_yaw_rad": 1.0472,
+        "record": "results/debug/heading_curve/asm_60.json",
+        "sha256": "e7d151a056064c5a0599380601d520e0976f62e88d97b42e0b5b09bbf12ec042",
+        "signed_motion_gate_pass": true,
+        "stage_total_negative_yaw_rad": -0.2934,
+        "stage_total_positive_yaw_rad": 0.2971,
+        "straight_forward_m": 0.6357,
+        "straight_lateral_m": -0.0602
+      },
+      {
+        "commanded_yaw_rate_radps": 0.35,
+        "declared_heading_deg": 75,
+        "observed_initial_yaw_rad": 1.309,
+        "record": "results/debug/heading_curve/asm_75.json",
+        "sha256": "dcde0762eba83953bb164a43ca68cab725fed1ae2aea9b03744eaf0826796bca",
+        "signed_motion_gate_pass": true,
+        "stage_total_negative_yaw_rad": -0.156,
+        "stage_total_positive_yaw_rad": 0.1579,
+        "straight_forward_m": 0.5989,
+        "straight_lateral_m": -0.039
+      },
+      {
+        "commanded_yaw_rate_radps": 0.35,
+        "declared_heading_deg": 75,
+        "observed_initial_yaw_rad": 1.309,
+        "record": "results/debug/heading_curve/asm_75_r2.json",
+        "sha256": "d35f1fd76b69d48459d1b64ea9c4d493e97602ae892347c1f228b37460214210",
+        "signed_motion_gate_pass": true,
+        "stage_total_negative_yaw_rad": -0.1532,
+        "stage_total_positive_yaw_rad": 0.1574,
+        "straight_forward_m": 0.5913,
+        "straight_lateral_m": -0.0393
+      },
+      {
+        "commanded_yaw_rate_radps": 0.35,
+        "declared_heading_deg": 85,
+        "observed_initial_yaw_rad": 1.4835,
+        "record": "results/debug/heading_curve/asm_85_r2.json",
+        "sha256": "535142077e8b6d6263a8885a8149f6892cc8903c51f05f6644fbe326855ff68e",
+        "signed_motion_gate_pass": false,
+        "stage_total_negative_yaw_rad": -0.0557,
+        "stage_total_positive_yaw_rad": 0.0558,
+        "straight_forward_m": 0.5848,
+        "straight_lateral_m": -0.014
+      },
+      {
+        "commanded_yaw_rate_radps": 0.35,
+        "declared_heading_deg": 90,
+        "observed_initial_yaw_rad": 1.5708,
+        "record": "results/debug/heading_curve/asm_90_r2.json",
+        "sha256": "7d0c9c073c26c131671d13ea49aa3a0e783fde8d4cfff18a73db3164afe62897",
+        "signed_motion_gate_pass": false,
+        "stage_total_negative_yaw_rad": 0.0,
+        "stage_total_positive_yaw_rad": 0.0,
+        "straight_forward_m": 0.5793,
+        "straight_lateral_m": -0.0
+      },
+      {
+        "commanded_yaw_rate_radps": 0.35,
+        "declared_heading_deg": 95,
+        "observed_initial_yaw_rad": 1.6581,
+        "record": "results/debug/heading_curve/asm_95_r2.json",
+        "sha256": "ee444d98d83fd4c29dfbbeb5571b28cef40cad629b5860ac302c08fcfe6e7e54",
+        "signed_motion_gate_pass": true,
+        "stage_total_negative_yaw_rad": -0.1372,
+        "stage_total_positive_yaw_rad": 0.1346,
+        "straight_forward_m": 0.5773,
+        "straight_lateral_m": 0.0143
+      },
+      {
+        "commanded_yaw_rate_radps": 0.35,
+        "declared_heading_deg": 105,
+        "observed_initial_yaw_rad": 1.8326,
+        "record": "results/debug/heading_curve/asm_105.json",
+        "sha256": "f1813b86c5041652f1c1a7da4f2474011e170e275eca1d55a814916d03be323c",
+        "signed_motion_gate_pass": true,
+        "stage_total_negative_yaw_rad": -0.3412,
+        "stage_total_positive_yaw_rad": 0.3344,
+        "straight_forward_m": 0.5942,
+        "straight_lateral_m": 0.0395
+      },
+      {
+        "commanded_yaw_rate_radps": 0.35,
+        "declared_heading_deg": 105,
+        "observed_initial_yaw_rad": 1.8326,
+        "record": "results/debug/heading_curve/asm_105_r2.json",
+        "sha256": "7e23a5c4a35cf0bd5763bfb054a6f749a3a7ed02ddd0ff3e687cabeb75ba5fb5",
+        "signed_motion_gate_pass": true,
+        "stage_total_negative_yaw_rad": -0.3417,
+        "stage_total_positive_yaw_rad": 0.332,
+        "straight_forward_m": 0.5988,
+        "straight_lateral_m": 0.0389
+      },
+      {
+        "commanded_yaw_rate_radps": 0.35,
+        "declared_heading_deg": 120,
+        "observed_initial_yaw_rad": 2.0944,
+        "record": "results/debug/heading_curve/asm_120.json",
+        "sha256": "3ae677a4f5a0232ca9abd76d7da7c2059520458c418552aee3dd2d127b40944d",
+        "signed_motion_gate_pass": true,
+        "stage_total_negative_yaw_rad": -0.6505,
+        "stage_total_positive_yaw_rad": 0.6388,
+        "straight_forward_m": 0.6396,
+        "straight_lateral_m": 0.06
+      },
+      {
+        "commanded_yaw_rate_radps": 0.35,
+        "declared_heading_deg": 135,
+        "observed_initial_yaw_rad": 2.3562,
+        "record": "results/debug/heading_curve/asm_135.json",
+        "sha256": "572ac167c248dd99a7b25f11408ae55d2f8853d0f136863c53f8215157d59560",
+        "signed_motion_gate_pass": true,
+        "stage_total_negative_yaw_rad": -0.8966,
+        "stage_total_positive_yaw_rad": 0.8871,
+        "straight_forward_m": 0.6814,
+        "straight_lateral_m": 0.0548
+      },
+      {
+        "commanded_yaw_rate_radps": 0.35,
+        "declared_heading_deg": 150,
+        "observed_initial_yaw_rad": 2.618,
+        "record": "results/debug/heading_curve/asm_150.json",
+        "sha256": "628f5155662209fcb72fc20f9d17abdfe19391e2cdc153902d41b90d4d914ccb",
+        "signed_motion_gate_pass": true,
+        "stage_total_negative_yaw_rad": -0.9773,
+        "stage_total_positive_yaw_rad": 0.9621,
+        "straight_forward_m": 0.7144,
+        "straight_lateral_m": 0.0337
+      },
+      {
+        "commanded_yaw_rate_radps": 0.35,
+        "declared_heading_deg": 165,
+        "observed_initial_yaw_rad": 2.8798,
+        "record": "results/debug/heading_curve/asm_165.json",
+        "sha256": "25f25504cbc8e75782a3b0082b0cf54116a593ac049939e1cfed066f454b7263",
+        "signed_motion_gate_pass": false,
+        "stage_total_negative_yaw_rad": -0.0254,
+        "stage_total_positive_yaw_rad": 0.0263,
+        "straight_forward_m": 0.0088,
+        "straight_lateral_m": -0.0001
+      },
+      {
+        "commanded_yaw_rate_radps": 0.35,
+        "declared_heading_deg": 165,
+        "observed_initial_yaw_rad": 2.8798,
+        "record": "results/debug/heading_curve/asm_165_r2.json",
+        "sha256": "afffcaca876d2d73e358cd1b0f6f8465c570ec18c106515c1a992908c8373c26",
+        "signed_motion_gate_pass": true,
+        "stage_total_negative_yaw_rad": -0.9262,
+        "stage_total_positive_yaw_rad": 0.9443,
+        "straight_forward_m": 0.7319,
+        "straight_lateral_m": 0.0092
+      },
+      {
+        "commanded_yaw_rate_radps": 0.35,
+        "declared_heading_deg": 180,
+        "observed_initial_yaw_rad": 3.1416,
+        "record": "results/debug/heading_curve/asm_180.json",
+        "sha256": "ee0525777c88b1dbe8042a7fcdadda7c98d48451bd0a2475277bd24ace64e9ce",
+        "signed_motion_gate_pass": true,
+        "stage_total_negative_yaw_rad": -0.8263,
+        "stage_total_positive_yaw_rad": 0.8446,
+        "straight_forward_m": 0.7374,
+        "straight_lateral_m": 0.0002
+      }
+    ],
+    "detached": [
+      {
+        "declared_heading_deg": 0,
+        "forward_lateral_m": -0.0006,
+        "forward_m": 0.6694,
+        "negative_yaw_rad": -1.17,
+        "passed": true,
+        "positive_yaw_rad": 1.1892,
+        "record": "results/debug/heading_curve/pod_0.json",
+        "reverse_m": -0.669,
+        "sha256": "f8694fd22dbd61c327c589213a0d10a51d995386f303722d94ae49e4e346608d"
+      },
+      {
+        "declared_heading_deg": 90,
+        "forward_lateral_m": -0.0036,
+        "forward_m": 0.5316,
+        "negative_yaw_rad": -1.2015,
+        "passed": true,
+        "positive_yaw_rad": 1.1749,
+        "record": "results/debug/heading_curve/pod_90.json",
+        "reverse_m": -0.541,
+        "sha256": "2e47ab67a251fd1d175bc3fa5bfd32f3fbd6062a591889fa47416215b03d4c46"
+      },
+      {
+        "declared_heading_deg": -90,
+        "forward_lateral_m": -0.0038,
+        "forward_m": 0.5541,
+        "negative_yaw_rad": -1.2143,
+        "passed": true,
+        "positive_yaw_rad": 1.2026,
+        "record": "results/debug/heading_curve/pod_-90.json",
+        "reverse_m": -0.556,
+        "sha256": "3ce0bb208e6fcc10654d85f442266a94caff11c68a0fbfb2c66bd1630f3bfe8e"
+      }
+    ]
+  },
+  "schema_version": 1,
+  "status": "executed",
+  "straight_acceleration": [
+    {
+      "heading_deg": 0.3,
+      "mean_speed_fraction_of_command": 0.932,
+      "median_speed_after_that_fraction": 0.928,
+      "record": "asm_0.json",
+      "time_to_85_percent_s": 0.1,
+      "total_translation_m": 0.7362
+    },
+    {
+      "heading_deg": 15.5,
+      "mean_speed_fraction_of_command": 0.936,
+      "median_speed_after_that_fraction": 0.928,
+      "record": "asm_15.json",
+      "time_to_85_percent_s": 0.05,
+      "total_translation_m": 0.7391
+    },
+    {
+      "heading_deg": 30.0,
+      "mean_speed_fraction_of_command": 0.909,
+      "median_speed_after_that_fraction": 0.927,
+      "record": "asm_30.json",
+      "time_to_85_percent_s": 0.21,
+      "total_translation_m": 0.7195
+    },
+    {
+      "heading_deg": 45.1,
+      "mean_speed_fraction_of_command": 0.871,
+      "median_speed_after_that_fraction": 0.927,
+      "record": "asm_45.json",
+      "time_to_85_percent_s": 0.77,
+      "total_translation_m": 0.6891
+    },
+    {
+      "heading_deg": 60.1,
+      "mean_speed_fraction_of_command": 0.806,
+      "median_speed_after_that_fraction": 0.927,
+      "record": "asm_60.json",
+      "time_to_85_percent_s": 1.13,
+      "total_translation_m": 0.6386
+    },
+    {
+      "heading_deg": 75.0,
+      "mean_speed_fraction_of_command": 0.76,
+      "median_speed_after_that_fraction": 0.928,
+      "record": "asm_75.json",
+      "time_to_85_percent_s": 1.49,
+      "total_translation_m": 0.6002
+    },
+    {
+      "heading_deg": 90.0,
+      "mean_speed_fraction_of_command": 0.734,
+      "median_speed_after_that_fraction": 0.928,
+      "record": "asm_90_r2.json",
+      "time_to_85_percent_s": 1.54,
+      "total_translation_m": 0.5793
+    },
+    {
+      "heading_deg": 105.0,
+      "mean_speed_fraction_of_command": 0.758,
+      "median_speed_after_that_fraction": 0.928,
+      "record": "asm_105.json",
+      "time_to_85_percent_s": 1.38,
+      "total_translation_m": 0.5955
+    },
+    {
+      "heading_deg": 120.0,
+      "mean_speed_fraction_of_command": 0.814,
+      "median_speed_after_that_fraction": 0.927,
+      "record": "asm_120.json",
+      "time_to_85_percent_s": 1.18,
+      "total_translation_m": 0.6424
+    },
+    {
+      "heading_deg": 135.1,
+      "mean_speed_fraction_of_command": 0.873,
+      "median_speed_after_that_fraction": 0.927,
+      "record": "asm_135.json",
+      "time_to_85_percent_s": 0.88,
+      "total_translation_m": 0.6836
+    },
+    {
+      "heading_deg": 149.6,
+      "mean_speed_fraction_of_command": 0.909,
+      "median_speed_after_that_fraction": 0.924,
+      "record": "asm_150.json",
+      "time_to_85_percent_s": 0.36,
+      "total_translation_m": 0.7152
+    },
+    {
+      "heading_deg": 165.2,
+      "mean_speed_fraction_of_command": 0.927,
+      "median_speed_after_that_fraction": 0.928,
+      "record": "asm_165_r2.json",
+      "time_to_85_percent_s": 0.1,
+      "total_translation_m": 0.7319
+    },
+    {
+      "heading_deg": 180.3,
+      "mean_speed_fraction_of_command": 0.938,
+      "median_speed_after_that_fraction": 0.928,
+      "record": "asm_180.json",
+      "time_to_85_percent_s": 0.05,
+      "total_translation_m": 0.7374
+    },
+    {
+      "heading_deg": 85.0,
+      "mean_speed_fraction_of_command": 0.741,
+      "median_speed_after_that_fraction": 0.928,
+      "record": "asm_85_r2.json",
+      "time_to_85_percent_s": 1.49,
+      "total_translation_m": 0.585
+    },
+    {
+      "heading_deg": 95.0,
+      "mean_speed_fraction_of_command": 0.731,
+      "median_speed_after_that_fraction": 0.928,
+      "record": "asm_95_r2.json",
+      "time_to_85_percent_s": 1.44,
+      "total_translation_m": 0.5774
+    },
+    {
+      "heading_deg": 165.1,
+      "mean_speed_fraction_of_command": 0.011,
+      "median_speed_after_that_fraction": null,
+      "record": "asm_165.json",
+      "time_to_85_percent_s": null,
+      "total_translation_m": 0.0088
+    }
+  ],
+  "why": "studies/engineering/wheel_friction_intervention.json establishes that world-fixed friction axes cause the collapse, from five headings on the assembled robot at one rate. Two things it does not establish are needed before the ADR 0007 decision can be costed. First, the shape of the curve between the samples: a narrow notch at +/-90 and a broad degradation have very different consequences for a confirmatory design that routes in all directions. Second, whether the detached pod is affected. Gate 0 item 1 has two halves and the detached half has never been run at any heading but the spawn one, so the claim that every recorded figure is heading-dependent is measured for the assembly and inferred for the pod. They share the articulated_pod wheel template, so the inference is reasonable, but it is an inference."
 }

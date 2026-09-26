@@ -156,8 +156,17 @@ than the most favourable heading ever produced; isotropy gives 46%, because it
 raises lateral scrub resistance. The engine does read `fdir1`. Straight travel
 is heading-dependent too, 21.2% short at +/-90, which would take the round-trip
 gate's forward margin from +0.0317 m to about +0.0091 m. Numbers with digests:
-`studies/engineering/wheel_friction_intervention.json`. **Which repair to adopt
-is still an author decision** because it moves Gate 0 item 1, the round-trip
+`studies/engineering/wheel_friction_intervention.json`. The full curve is then in
+`studies/engineering/heading_traction_curve.json`: rotation authority is
+symmetric about 90 degrees with a 180-degree period and falls off across most of
+the circle rather than notching -- 73% of command near 0 and 180, 66% by 30, 45%
+by 45, 26% by 65, 4--9% within 10 degrees of 90 -- so the gate's yaw floor
+projects to fail for about a third of all headings. Stage totals cannot measure
+this (a 4 s stage integrates authority over the arc it sweeps); the figures come
+from local rate against instantaneous heading in the recorded traces. Straight
+travel loses its ground in the ramp and not at speed, so the gate's forward
+floor cannot be assessed by scaling, and the detached pod is affected in travel
+but not in yaw. **Which repair to adopt is still an author decision** because it moves Gate 0 item 1, the round-trip
 audit and the fault matrix, all collected near the most favourable heading while
 confirmatory layouts route in all directions; ADR 0007 is `proposed` and holds
 the options and a re-collection order. Independent of the cause, the law turning a failed rotation into
