@@ -16,6 +16,9 @@ from rosgraph_msgs.msg import Clock
 
 from .motion_metrics import summarize
 
+#: Rate the Gate 0 item 1 qualification was collected at; do not change it.
+DEFAULT_YAW_RATE = 0.35
+
 
 class MotionQualifier(Node):
     def __init__(self) -> None:
@@ -74,7 +77,16 @@ def yaw(quaternion) -> float:
 
 
 def run(output: Path, watchdog_s: float = 90.0,
-        expected_morphology: str | None = None) -> dict:
+        expected_morphology: str | None = None,
+        yaw_rate: float = DEFAULT_YAW_RATE) -> dict:
+    """Drive the declared stage sequence and summarize the signed motion.
+
+    ``yaw_rate`` defaults to the rate the Gate 0 item 1 qualification was
+    collected at, so the gate is unchanged. It is a parameter only so the
+    assembled in-place rotation authority can be swept as engineering evidence:
+    the gate checks the sign of rotation (``delta_yaw > 0.1`` over 4 s), not
+    whether the assembly can break away at the rates site alignment commands.
+    """
     rclpy.init()
     node = MotionQualifier()
     started = time.monotonic()
@@ -94,9 +106,9 @@ def run(output: Path, watchdog_s: float = 90.0,
                 f"{node.morphology.morphology_id}")
         stages = (
             ("settle", 0.0, 0.0, 2.0),
-            ("positive_yaw", 0.0, 0.35, 4.0),
+            ("positive_yaw", 0.0, yaw_rate, 4.0),
             ("settle", 0.0, 0.0, 2.0),
-            ("negative_yaw", 0.0, -0.35, 4.0),
+            ("negative_yaw", 0.0, -yaw_rate, 4.0),
             ("settle", 0.0, 0.0, 2.0),
             ("straight", 0.20, 0.0, 4.0),
             ("settle", 0.0, 0.0, 2.0),
@@ -110,6 +122,7 @@ def run(output: Path, watchdog_s: float = 90.0,
                     raise RuntimeError("motion qualification watchdog exceeded")
         result = summarize(node.samples)
         result["morphology"] = node.morphology.morphology_id
+        result["commanded_yaw_rate_radps"] = yaw_rate
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
         return result
@@ -126,9 +139,13 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--watchdog", type=float, default=90.0)
     parser.add_argument("--expected-morphology")
+    parser.add_argument(
+        "--yaw-rate", type=float, default=DEFAULT_YAW_RATE,
+        help="commanded in-place yaw rate (rad/s); the default is the rate Gate 0 "
+             "item 1 was collected at, so leave it alone for gate runs")
     args = parser.parse_args()
     print(json.dumps(run(
-        args.output, args.watchdog, args.expected_morphology),
+        args.output, args.watchdog, args.expected_morphology, args.yaw_rate),
         indent=2, sort_keys=True))
 
 
