@@ -1,0 +1,91 @@
+{
+  "cases": [
+    {
+      "imposed_yaw_rad": 1.5708,
+      "role": "same-session reproduction of the collapse",
+      "tag": "base_yawplus90",
+      "tree": "unmodified"
+    },
+    {
+      "imposed_yaw_rad": 1.5708,
+      "role": "decisive test of the cause",
+      "tag": "iso_yawplus90",
+      "tree": "isotropic"
+    },
+    {
+      "imposed_yaw_rad": -1.5708,
+      "role": "decisive test of the cause, other sign",
+      "tag": "iso_yawminus90",
+      "tree": "isotropic"
+    },
+    {
+      "imposed_yaw_rad": 0.0,
+      "role": "control that the variant does not break the favourable heading",
+      "tag": "iso_yaw0",
+      "tree": "isotropic"
+    },
+    {
+      "imposed_yaw_rad": 1.5708,
+      "role": "test of the repair that keeps the declared anisotropy",
+      "tag": "fdir_yawplus90",
+      "tree": "fdir1"
+    },
+    {
+      "imposed_yaw_rad": -1.5708,
+      "role": "test of the repair, other sign",
+      "tag": "fdir_yawminus90",
+      "tree": "fdir1"
+    },
+    {
+      "imposed_yaw_rad": 0.0,
+      "role": "control at the favourable heading",
+      "tag": "fdir_yaw0",
+      "tree": "fdir1"
+    },
+    {
+      "imposed_yaw_rad": 1.5708,
+      "role": "proves the container tree is back to the state every other measurement was taken in",
+      "tag": "restore_yawplus90",
+      "tree": "restored to unmodified"
+    }
+  ],
+  "correction_to_the_earlier_citation": "The earlier entry cited src/modular_robot_sim/models/drive_pod/model.sdf lines 10-11, mu 1.2 and mu2 0.35. No world and no model includes drive_pod or the generated drive_pod_0..5: it is a legacy model that CMakeLists.txt still generates and nothing loads. Every wheel that has ever touched ground in this repository belongs to articulated_pod, generated from models/articulated_pod/model.sdf.in, whose collisions declare mu 1.2 and mu2 0.08. The assembled robot includes articulated_pod_0..5 directly and the detached-pod world reaches the same template through self_mobile_pod, so both Gate 0 item 1 halves share it. The anisotropy behind every recorded figure is therefore 15:1, not the 3.4:1 that was cited, which makes a total collapse more expected than a partial one. Both templates omit fdir1, so the mechanism is unchanged.",
+  "design_kind": "engineering_wheel_friction_intervention",
+  "evidence_class": "engineering_debug_never_pilot_or_confirmatory",
+  "hypothesis_under_test": "studies/engineering/rotation_authority_sweep.json establishes by signature that assembled in-place rotation authority depends on the robot's heading in the world with a 180 degree period, reaching exactly 0 percent of command at +1.571 and -1.571 rad and 65 percent at 0 and 3.142 rad. The proposed cause is that the pod wheels declare anisotropic Coulomb friction while fdir1 is never specified, so the friction principal axes are world-fixed rather than attached to the wheel.",
+  "intervention": {
+    "also_covered_by_this_template": "self_mobile_pod includes articulated_pod_0, so patching the generated articulated_pod models changes the detached-pod qualification path as well. This experiment only runs assembled cases; the detached figures are untouched because the tree is restored.",
+    "target": "the 12 wheel collision surfaces of the six generated articulated_pod models in install/modular_robot_sim/share/modular_robot_sim/models/articulated_pod_{0..5}/model.sdf",
+    "unmodified_declaration": "<surface><friction><ode><mu>1.2</mu><mu2>0.08</mu2></ode></friction></surface>",
+    "variants": {
+      "fdir1": {
+        "caveat": "The physics engine is the gz sim default, dartsim. If dartsim ignores fdir1 this variant will not move while the isotropic variant does, which is a finding about the available repairs rather than a refutation of the cause.",
+        "edit": "<mu>1.2</mu><mu2>0.08</mu2> becomes <mu>1.2</mu><mu2>0.08</mu2><fdir1>1 0 0</fdir1>, mu and mu2 unchanged",
+        "tests": "whether attaching the friction axes to the wheel repairs it while keeping the declared anisotropy. The wheel collision pose rotates +1.5708 rad about x, so collision-frame x is the link's forward axis and therefore the rolling direction: fdir1 1 0 0 puts mu 1.2 along rolling and mu2 0.08 along lateral scrub, which is what the declaration appears to intend."
+      },
+      "isotropic": {
+        "edit": "<mu>1.2</mu><mu2>0.08</mu2> becomes <mu>1.2</mu><mu2>1.2</mu2>",
+        "tests": "whether anisotropy is the cause at all. Direction-independent Coulomb friction cannot depend on heading, so if heading dependence survives this variant the hypothesis is refuted."
+      }
+    }
+  },
+  "predictions_declared_before_running": {
+    "if_it_is_refuted": "the isotropic variant still rotates at 0 percent at +/-90, which would leave the 180 degree periodicity unexplained and send the diagnosis back to the contact model or the pod allocation.",
+    "if_the_hypothesis_holds": "base_yawplus90 and restore_yawplus90 rotate at 0 percent of command; iso_yawplus90 and iso_yawminus90 rotate at a non-zero fraction comparable to the 58-75 percent band the rate sweep measured at favourable headings.",
+    "not_predicted_either_way": "the straight stage. At +/-90 in this world the straight stage drives toward different geometry than at heading 0, so its translation is not comparable across headings and is not evidence here."
+  },
+  "protocol": {
+    "commanded_yaw_rate_radps": 0.271,
+    "declared_before_running": true,
+    "hygiene": "one simulator only; the run aborts unless the simulator process count is zero beforehand, and every stack is torn down afterwards, which is the rule adopted after the contaminated measurement recorded in rotation_authority_sweep.json",
+    "pose": "imposed with gz set_pose at the spawn position (0.6472, 1.7383), the position the +/-90 collapse was measured at, then settled 2 s before the declared stage sequence",
+    "restoration": "each patched file is restored from a byte-for-byte backup and every sha256 is compared before the final control run",
+    "tool": "qualify_assembly_motion --yaw-rate 0.271 --expected-morphology compact_diff, via motion_qualification.launch.py",
+    "world": "results/debug/station_smoke/artifacts/docking_observability-01-r0-sensing_feasibility_coupled/world.sdf, the retained generated smoke world the original stall occurred in"
+  },
+  "purpose": "test_by_intervention_whether_unattached_anisotropic_wheel_friction_causes_the_heading_dependent_collapse_of_assembled_in_place_rotation",
+  "runs": [],
+  "schema_version": 1,
+  "status": "declared_before_execution",
+  "why_this_is_not_the_author_decision": "Adopting a friction repair changes every recorded motion figure, so whether to adopt one is an author decision and is not made here. This experiment changes nothing that any figure or gate depends on: the intervention is applied only to the built and installed model tree inside the development container, the repository source template is untouched, the tree is restored afterwards, and the restoration is verified by re-running one collapsing case. Its output is evidence for the author's decision, not the decision."
+}
