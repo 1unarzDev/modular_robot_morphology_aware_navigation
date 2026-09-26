@@ -1,6 +1,6 @@
 # ADR 0007: Attach the wheel friction axes to the wheel
 
-- Status: **proposed** (awaiting author decision)
+- Status: **accepted** as A, 2026-09-26
 - Date: 2026-09-26
 
 ## Context
@@ -134,10 +134,10 @@ dependent, which was previously inference.
   degraded progress. `reconfiguration_executor` already applies
   `min_pod_angular = 0.30` to pod in-place turns (`node.py:408-417`).
 
-## Decision (proposed)
+## Decision
 
-Adopt A, and treat D's second half as a separate repair rather than a
-consequence of it. Then re-collect, in this order, because each stage's evidence
+**A is adopted (author decision, 2026-09-26)**, and D's second half is treated as
+a separate repair rather than a consequence of it (see ADR 0009). Then re-collect, in this order, because each stage's evidence
 is a precondition for the next: Gate 0 item 1, the 20-run round-trip gate, the
 fault matrix, and only then the ADR 0006 station smoke runs that exposed this.
 
