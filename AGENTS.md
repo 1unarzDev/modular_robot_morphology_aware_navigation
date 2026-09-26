@@ -139,8 +139,10 @@ of command at yaw -0.03, 58% at -0.8, **exactly 0% at both +1.571 and -1.571**,
 and 65% again at +3.142 -- a 180-degree period. The original run froze at yaw
 -1.577 with no teleport. Position, teleporting, the world, the commanded rate,
 attitude, suspension and actuator stall are all eliminated by controls. The
-wheels declare anisotropic friction (`mu 1.2`, `mu2 0.35`,
-`drive_pod/model.sdf:10-11`) and **`fdir1` is never specified anywhere**, so the
+wheels declare anisotropic friction (`mu 1.2`, `mu2 0.08`,
+`articulated_pod/model.sdf.in:19-20`; the earlier citation of
+`drive_pod/model.sdf` named a model nothing loads) and **`fdir1` is never
+specified anywhere**, so the
 friction axes are not attached to the wheel and traction depends on world
 heading; `kinematics.py` is innocent, being body-frame only. Confirmed by
 signature, not by intervention: setting `fdir1` or making the friction isotropic

@@ -1016,16 +1016,30 @@ Teleporting is not the variable either -- a null teleport to the unchanged spawn
 pose gives 65%, and a teleport to yaw -0.8 gives 58%. The original run froze at
 yaw **-1.577**, which is -90 degrees, with no teleport involved.
 
-**Root cause, by signature rather than intervention.** The drive pod wheels
-declare anisotropic Coulomb friction, `mu 1.2` and `mu2 0.35`
-(`modular_robot_sim/models/drive_pod/model.sdf:10-11`), and **`fdir1` is never
-specified anywhere in the repository**. Without `fdir1` the friction principal
-axes are not attached to the wheel, so which coefficient resists rolling and
-which resists lateral scrub depends on the orientation of the robot in the world.
-That predicts precisely the 180-degree periodicity and the collapse at +/-90
-measured above. The allocation is innocent: `kinematics.py` `distribute_twist`
-works purely in body frame and cannot depend on world heading, and the pod
-commands recorded during the original stall match its body-frame prediction.
+**Root cause, by signature rather than intervention.** The pod wheels declare
+anisotropic Coulomb friction, `mu 1.2` and `mu2 0.08`
+(`modular_robot_sim/models/articulated_pod/model.sdf.in:19-20`), and **`fdir1`
+is never specified anywhere in the repository**. Without `fdir1` the friction
+principal axes are not attached to the wheel, so which coefficient resists
+rolling and which resists lateral scrub depends on the orientation of the robot
+in the world. That predicts precisely the 180-degree periodicity and the collapse
+at +/-90 measured above, and it predicts the recorded effort signature directly:
+with the primary axis across the wheel instead of along it, the tractive
+coefficient falls to 0.08, which is why the wheels reached 92% of commanded
+speed at 0.081 N*m while doing no work on the body. The allocation is innocent:
+`kinematics.py` `distribute_twist` works purely in body frame and cannot depend
+on world heading, and the pod commands recorded during the original stall match
+its body-frame prediction.
+
+Corrected 2026-09-26: the first write-up of this cited
+`drive_pod/model.sdf:10-11` and `mu2 0.35`. Nothing loads `drive_pod` or the
+generated `drive_pod_0..5` -- it is a legacy model `CMakeLists.txt` still
+configures and no world or model includes. Every wheel that has touched ground
+in this repository is an `articulated_pod` wheel: the assembled robot includes
+`articulated_pod_0..5`, and the detached-pod world reaches the same template
+through `self_mobile_pod`, so both halves of Gate 0 item 1 share it. The
+anisotropy behind every recorded motion figure is therefore 15:1 rather than
+the 3.4:1 that was cited.
 
 This is a hypothesis confirmed by signature, not yet by intervention. The
 decisive test is to set `fdir1` on the wheel collisions, or make the wheel
