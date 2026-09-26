@@ -144,12 +144,23 @@ wheels declare anisotropic friction (`mu 1.2`, `mu2 0.08`,
 `drive_pod/model.sdf` named a model nothing loads) and **`fdir1` is never
 specified anywhere**, so the
 friction axes are not attached to the wheel and traction depends on world
-heading; `kinematics.py` is innocent, being body-frame only. Confirmed by
-signature, not by intervention: setting `fdir1` or making the friction isotropic
-and re-running +/-90 is the decisive test, and it is **an author decision**
-because it touches every recorded motion figure -- Gate 0 item 1 is collected at
-the spawn heading near zero, the most favourable one, while confirmatory layouts
-route in all directions. Independent of the cause, the law turning a failed rotation into
+heading; `kinematics.py` is innocent, being body-frame only. **Confirmed by
+intervention 2026-09-26** (protocol declared first at `e2bc940`; patch applied
+to the built tree inside the container only, restored and verified, source
+template untouched, so no figure moved): both `fdir1 1 0 0` and isotropic
+friction remove the heading dependence completely -- the same rotation and the
+same straight travel to four decimals at +1.571, -1.571 and 0 -- while the
+unmodified tree still gives 0.000 rad at +90 in the same session. `fdir1` keeps
+the declared anisotropy and rotates at 74% of command at every heading, better
+than the most favourable heading ever produced; isotropy gives 46%, because it
+raises lateral scrub resistance. The engine does read `fdir1`. Straight travel
+is heading-dependent too, 21.2% short at +/-90, which would take the round-trip
+gate's forward margin from +0.0317 m to about +0.0091 m. Numbers with digests:
+`studies/engineering/wheel_friction_intervention.json`. **Which repair to adopt
+is still an author decision** because it moves Gate 0 item 1, the round-trip
+audit and the fault matrix, all collected near the most favourable heading while
+confirmatory layouts route in all directions; ADR 0007 is `proposed` and holds
+the options and a re-collection order. Independent of the cause, the law turning a failed rotation into
 a hard stop -- it refuses to translate while `|bearing| > 0.15 rad`, and its
 bearing branch has no angular floor while its yaw branch has 0.15 rad/s -- is a
 robustness defect; `reconfiguration_executor` already applies
@@ -158,7 +169,7 @@ localization error the controller must servo against (0.0296 m at the one
 successful alignment, up to 0.1021 m), so the 1.3 mm margin recorded earlier is
 not a physical margin. Reduced trace with digests:
 `studies/engineering/adr0006_alignment_diagnosis.json`. Both are author
-decisions, about rotation authority and about the tolerance; do not resolve
-either as a side effect of a tuning change, and see `docs/current_status.md`
-for the options. The round-trip and fault-matrix gates are still not
+decisions, about rotation authority (ADR 0007) and about the tolerance; do not
+resolve either as a side effect of a tuning change, and see
+`docs/current_status.md` for the options. The round-trip and fault-matrix gates are still not
 re-qualified. ADR 0005 remains `proposed`.

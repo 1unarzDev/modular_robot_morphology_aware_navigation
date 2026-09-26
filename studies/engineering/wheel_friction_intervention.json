@@ -49,9 +49,22 @@
       "tree": "restored to unmodified"
     }
   ],
+  "commit_declared_at": "e2bc940",
   "correction_to_the_earlier_citation": "The earlier entry cited src/modular_robot_sim/models/drive_pod/model.sdf lines 10-11, mu 1.2 and mu2 0.35. No world and no model includes drive_pod or the generated drive_pod_0..5: it is a legacy model that CMakeLists.txt still generates and nothing loads. Every wheel that has ever touched ground in this repository belongs to articulated_pod, generated from models/articulated_pod/model.sdf.in, whose collisions declare mu 1.2 and mu2 0.08. The assembled robot includes articulated_pod_0..5 directly and the detached-pod world reaches the same template through self_mobile_pod, so both Gate 0 item 1 halves share it. The anisotropy behind every recorded figure is therefore 15:1, not the 3.4:1 that was cited, which makes a total collapse more expected than a partial one. Both templates omit fdir1, so the mechanism is unchanged.",
   "design_kind": "engineering_wheel_friction_intervention",
   "evidence_class": "engineering_debug_never_pilot_or_confirmatory",
+  "findings": {
+    "cause": "The heading-dependent collapse of assembled in-place rotation is caused by the wheels' anisotropic Coulomb friction having no fdir1. Both interventions remove the heading dependence completely: under each variant the imposed headings +1.5708, -1.5708 and 0.0000 return the same rotation and the same straight-stage translation to four decimals, where the unmodified tree rotates 0.000 rad at +/-90 and 0.699 rad at 0.",
+    "dartsim_honours_fdir1": "Worth recording because it was the stated risk in the declaration: the fdir1 variant changed the outcome, so the default gz sim engine reads the field. A repair does not have to give up the intended low lateral scrub.",
+    "hygiene": "Every case launched with the simulator process count at zero and was torn down afterwards. The patched tree was restored from byte-for-byte backups and all six sha256 sums matched before the final control, whose 0.000 rad and 0.5830 m reproduce the unmodified collapse exactly.",
+    "not_established_here": "Nothing about which repair to adopt, and nothing about the rest of the platform under a repair. A repair changes every signed-motion, travel and reconfiguration figure on record and would require Gate 0 item 1, the 20-run round-trip gate and the fault matrix to be re-collected. That is the author decision this experiment exists to inform, and ADR 0007 records it.",
+    "the_repairs_are_not_equivalent": "fdir1 1 0 0 with the declared mu 1.2 / mu2 0.08 gives 74% of commanded yaw rate at every heading, which is more authority than the most favourable heading has ever produced (65%). Making the friction isotropic at mu 1.2 also removes the heading dependence but yields only 46%, because skid-steer rotation is resisted by lateral scrub and isotropy raises that resistance from 0.08 to 1.2. So the repair that keeps the declared anisotropy is also the one that rotates best.",
+    "translation_is_heading_dependent_too": {
+      "indicative_consequence_for_gate_0": "The 20-run round-trip gate's forward travel norm is 0.113 m against a 0.08 m floor, a +0.0317 m margin, measured at the spawn heading near zero. Scaled by 0.788 that norm is 0.0891 m and the margin is +0.0091 m: still passing, but 3.5x closer to the floor. This is an extrapolation across stages -- the measurement here is a 4 s 0.20 m/s stage, not the gate's short burst -- so it indicates the size of the exposure rather than measuring the gate. The confirmatory layouts route in all directions and were never run at a heading near +/-90.",
+      "measurement": "The straight stage travels 0.5830 m at +/-90 against 0.7397 m at heading 0 on the unmodified tree, a 21.2% shortfall, and both repairs return it to 0.7336-0.7407 m at every heading. Straight travel loses traction at the unfavourable heading for the same reason rotation does."
+    },
+    "verdict": "confirmed_by_intervention"
+  },
   "hypothesis_under_test": "studies/engineering/rotation_authority_sweep.json establishes by signature that assembled in-place rotation authority depends on the robot's heading in the world with a 180 degree period, reaching exactly 0 percent of command at +1.571 and -1.571 rad and 65 percent at 0 and 3.142 rad. The proposed cause is that the pod wheels declare anisotropic Coulomb friction while fdir1 is never specified, so the friction principal axes are world-fixed rather than attached to the wheel.",
   "intervention": {
     "also_covered_by_this_template": "self_mobile_pod includes articulated_pod_0, so patching the generated articulated_pod models changes the detached-pod qualification path as well. This experiment only runs assembled cases; the detached figures are untouched because the tree is restored.",
@@ -84,8 +97,373 @@
     "world": "results/debug/station_smoke/artifacts/docking_observability-01-r0-sensing_feasibility_coupled/world.sdf, the retained generated smoke world the original stall occurred in"
   },
   "purpose": "test_by_intervention_whether_unattached_anisotropic_wheel_friction_causes_the_heading_dependent_collapse_of_assembled_in_place_rotation",
-  "runs": [],
+  "runs": [
+    {
+      "commanded_yaw_rate_radps": 0.271,
+      "observed_initial_pose": {
+        "x": 0.6472,
+        "y": 1.7383,
+        "yaw": 1.5708
+      },
+      "qualification_pass": false,
+      "record": "results/debug/friction_intervention/base_yawplus90.json",
+      "rep_103_signs_pass": false,
+      "sha256": "4bea3809630b593848535288c3aede09a01cb145ec22efcfbac84c9b6c5b2dcc",
+      "stages": {
+        "negative_yaw": {
+          "achieved_radps": 0.0,
+          "delta_yaw_rad": 0.0,
+          "duration_s": 3.948,
+          "fraction_of_command": 0.0,
+          "translation_m": 0.0
+        },
+        "positive_yaw": {
+          "achieved_radps": 0.0,
+          "delta_yaw_rad": 0.0,
+          "duration_s": 3.998,
+          "fraction_of_command": 0.0,
+          "translation_m": 0.0
+        },
+        "straight": {
+          "body_forward_displacement_m": 0.583,
+          "delta_yaw_rad": -0.0,
+          "duration_s": 3.948,
+          "translation_m": 0.583
+        }
+      },
+      "tag": "base_yawplus90"
+    },
+    {
+      "commanded_yaw_rate_radps": 0.271,
+      "observed_initial_pose": {
+        "x": 0.6472,
+        "y": 1.7383,
+        "yaw": 1.5708
+      },
+      "qualification_pass": true,
+      "record": "results/debug/friction_intervention/iso_yawplus90.json",
+      "rep_103_signs_pass": true,
+      "sha256": "932e20e2457de97729cea2855cb353a5f48cac80c387b9b2bc61bf83bbf865d4",
+      "stages": {
+        "negative_yaw": {
+          "achieved_radps": 0.128,
+          "delta_yaw_rad": -0.5118,
+          "duration_s": 3.998,
+          "fraction_of_command": 0.472,
+          "translation_m": 0.0031
+        },
+        "positive_yaw": {
+          "achieved_radps": 0.1242,
+          "delta_yaw_rad": 0.4904,
+          "duration_s": 3.948,
+          "fraction_of_command": 0.458,
+          "translation_m": 0.001
+        },
+        "straight": {
+          "body_forward_displacement_m": 0.7407,
+          "delta_yaw_rad": 0.0,
+          "duration_s": 3.948,
+          "translation_m": 0.7407
+        }
+      },
+      "tag": "iso_yawplus90"
+    },
+    {
+      "commanded_yaw_rate_radps": 0.271,
+      "observed_initial_pose": {
+        "x": 0.6472,
+        "y": 1.7383,
+        "yaw": -1.5708
+      },
+      "qualification_pass": true,
+      "record": "results/debug/friction_intervention/iso_yawminus90.json",
+      "rep_103_signs_pass": true,
+      "sha256": "53c8c8453b16c8ac3bf825e90e3ce5c9177dad3c4067f4a9aac499d6f1cf135c",
+      "stages": {
+        "negative_yaw": {
+          "achieved_radps": 0.128,
+          "delta_yaw_rad": -0.5118,
+          "duration_s": 3.998,
+          "fraction_of_command": 0.472,
+          "translation_m": 0.0031
+        },
+        "positive_yaw": {
+          "achieved_radps": 0.1242,
+          "delta_yaw_rad": 0.4904,
+          "duration_s": 3.948,
+          "fraction_of_command": 0.458,
+          "translation_m": 0.001
+        },
+        "straight": {
+          "body_forward_displacement_m": 0.7407,
+          "delta_yaw_rad": 0.0,
+          "duration_s": 3.948,
+          "translation_m": 0.7407
+        }
+      },
+      "tag": "iso_yawminus90"
+    },
+    {
+      "commanded_yaw_rate_radps": 0.271,
+      "observed_initial_pose": {
+        "x": 0.6472,
+        "y": 1.7383,
+        "yaw": -0.0
+      },
+      "qualification_pass": true,
+      "record": "results/debug/friction_intervention/iso_yaw0.json",
+      "rep_103_signs_pass": true,
+      "sha256": "0563c899fb7427fb8bfb8c3da7629186e1d5a30d1aa1ea2565edaccc5c01106a",
+      "stages": {
+        "negative_yaw": {
+          "achieved_radps": 0.128,
+          "delta_yaw_rad": -0.5117,
+          "duration_s": 3.998,
+          "fraction_of_command": 0.472,
+          "translation_m": 0.0031
+        },
+        "positive_yaw": {
+          "achieved_radps": 0.1242,
+          "delta_yaw_rad": 0.4904,
+          "duration_s": 3.948,
+          "fraction_of_command": 0.458,
+          "translation_m": 0.001
+        },
+        "straight": {
+          "body_forward_displacement_m": 0.7407,
+          "delta_yaw_rad": 0.0,
+          "duration_s": 3.948,
+          "translation_m": 0.7407
+        }
+      },
+      "tag": "iso_yaw0"
+    },
+    {
+      "commanded_yaw_rate_radps": 0.271,
+      "observed_initial_pose": {
+        "x": 0.6472,
+        "y": 1.7383,
+        "yaw": 1.5708
+      },
+      "qualification_pass": true,
+      "record": "results/debug/friction_intervention/fdir_yawplus90.json",
+      "rep_103_signs_pass": true,
+      "sha256": "fa89f114a7125853ee8ababa687014b8fac9a6204050099fa4a40f9fc6ad8281",
+      "stages": {
+        "negative_yaw": {
+          "achieved_radps": 0.2012,
+          "delta_yaw_rad": -0.7944,
+          "duration_s": 3.948,
+          "fraction_of_command": 0.742,
+          "translation_m": 0.0034
+        },
+        "positive_yaw": {
+          "achieved_radps": 0.2009,
+          "delta_yaw_rad": 0.794,
+          "duration_s": 3.952,
+          "fraction_of_command": 0.741,
+          "translation_m": 0.0043
+        },
+        "straight": {
+          "body_forward_displacement_m": 0.7336,
+          "delta_yaw_rad": 0.0,
+          "duration_s": 3.948,
+          "translation_m": 0.7336
+        }
+      },
+      "tag": "fdir_yawplus90"
+    },
+    {
+      "commanded_yaw_rate_radps": 0.271,
+      "observed_initial_pose": {
+        "x": 0.6472,
+        "y": 1.7383,
+        "yaw": -1.5708
+      },
+      "qualification_pass": true,
+      "record": "results/debug/friction_intervention/fdir_yawminus90.json",
+      "rep_103_signs_pass": true,
+      "sha256": "4442026c5e4688102cc50dca4c12140165f3dad17e434d395d75a05455823f6c",
+      "stages": {
+        "negative_yaw": {
+          "achieved_radps": 0.201,
+          "delta_yaw_rad": -0.7944,
+          "duration_s": 3.952,
+          "fraction_of_command": 0.742,
+          "translation_m": 0.0034
+        },
+        "positive_yaw": {
+          "achieved_radps": 0.2011,
+          "delta_yaw_rad": 0.794,
+          "duration_s": 3.948,
+          "fraction_of_command": 0.742,
+          "translation_m": 0.0043
+        },
+        "straight": {
+          "body_forward_displacement_m": 0.7336,
+          "delta_yaw_rad": 0.0,
+          "duration_s": 3.948,
+          "translation_m": 0.7336
+        }
+      },
+      "tag": "fdir_yawminus90"
+    },
+    {
+      "commanded_yaw_rate_radps": 0.271,
+      "observed_initial_pose": {
+        "x": 0.6472,
+        "y": 1.7383,
+        "yaw": -0.0
+      },
+      "qualification_pass": true,
+      "record": "results/debug/friction_intervention/fdir_yaw0.json",
+      "rep_103_signs_pass": true,
+      "sha256": "225abd8fdea121f2c354a318805cc86bc426db4aad0235db5b2bf04ad9bf000f",
+      "stages": {
+        "negative_yaw": {
+          "achieved_radps": 0.2021,
+          "delta_yaw_rad": -0.7985,
+          "duration_s": 3.95,
+          "fraction_of_command": 0.746,
+          "translation_m": 0.0034
+        },
+        "positive_yaw": {
+          "achieved_radps": 0.2006,
+          "delta_yaw_rad": 0.794,
+          "duration_s": 3.958,
+          "fraction_of_command": 0.74,
+          "translation_m": 0.0043
+        },
+        "straight": {
+          "body_forward_displacement_m": 0.7374,
+          "delta_yaw_rad": 0.0,
+          "duration_s": 3.948,
+          "translation_m": 0.7374
+        }
+      },
+      "tag": "fdir_yaw0"
+    },
+    {
+      "commanded_yaw_rate_radps": 0.271,
+      "observed_initial_pose": {
+        "x": 0.6472,
+        "y": 1.7383,
+        "yaw": 1.5708
+      },
+      "qualification_pass": false,
+      "record": "results/debug/friction_intervention/restore_yawplus90.json",
+      "rep_103_signs_pass": false,
+      "sha256": "b4600f94e15dfb81df6ffc840a95267c2aaab1994a0be8cc474e7557db4c188c",
+      "stages": {
+        "negative_yaw": {
+          "achieved_radps": 0.0,
+          "delta_yaw_rad": 0.0,
+          "duration_s": 3.946,
+          "fraction_of_command": 0.0,
+          "translation_m": 0.0
+        },
+        "positive_yaw": {
+          "achieved_radps": 0.0,
+          "delta_yaw_rad": 0.0,
+          "duration_s": 3.964,
+          "fraction_of_command": 0.0,
+          "translation_m": 0.0
+        },
+        "straight": {
+          "body_forward_displacement_m": 0.583,
+          "delta_yaw_rad": -0.0,
+          "duration_s": 3.948,
+          "translation_m": 0.583
+        }
+      },
+      "tag": "restore_yawplus90"
+    }
+  ],
   "schema_version": 1,
-  "status": "declared_before_execution",
+  "status": "executed",
+  "table": {
+    "columns": [
+      "tree",
+      "imposed yaw",
+      "+yaw fraction of command",
+      "-yaw fraction of command",
+      "straight m",
+      "signed-motion gate"
+    ],
+    "rows": [
+      [
+        "unmodified",
+        "+1.5708",
+        0.0,
+        0.0,
+        0.583,
+        "fails"
+      ],
+      [
+        "unmodified",
+        "0 (rotation_authority_sweep.json)",
+        0.65,
+        0.644,
+        0.7397,
+        "passes"
+      ],
+      [
+        "isotropic mu2 1.2",
+        "+1.5708",
+        0.458,
+        0.472,
+        0.7407,
+        "passes"
+      ],
+      [
+        "isotropic mu2 1.2",
+        "-1.5708",
+        0.458,
+        0.472,
+        0.7407,
+        "passes"
+      ],
+      [
+        "isotropic mu2 1.2",
+        "0.0000",
+        0.458,
+        0.472,
+        0.7407,
+        "passes"
+      ],
+      [
+        "fdir1 1 0 0",
+        "+1.5708",
+        0.741,
+        0.742,
+        0.7336,
+        "passes"
+      ],
+      [
+        "fdir1 1 0 0",
+        "-1.5708",
+        0.742,
+        0.742,
+        0.7336,
+        "passes"
+      ],
+      [
+        "fdir1 1 0 0",
+        "0.0000",
+        0.74,
+        0.746,
+        0.7374,
+        "passes"
+      ],
+      [
+        "restored",
+        "+1.5708",
+        0.0,
+        0.0,
+        0.583,
+        "fails"
+      ]
+    ]
+  },
   "why_this_is_not_the_author_decision": "Adopting a friction repair changes every recorded motion figure, so whether to adopt one is an author decision and is not made here. This experiment changes nothing that any figure or gate depends on: the intervention is applied only to the built and installed model tree inside the development container, the repository source template is untouched, the tree is restored afterwards, and the restoration is verified by re-running one collapsing case. Its output is evidence for the author's decision, not the decision."
 }

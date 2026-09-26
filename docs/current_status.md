@@ -897,7 +897,7 @@ report it replaces, with all four methods agreeing in all six neutral controls.
 Against that report **0 of 24 geometry and feasibility sites changed**, which
 is the empirical confirmation that the elevated screen is optical only.
 
-### The outcome mechanism works; site alignment deadlocks before it (2026-09-22, mechanism corrected 2026-09-25)
+### The outcome mechanism works; site alignment deadlocks before it (2026-09-22, mechanism corrected 2026-09-25, cause confirmed 2026-09-26)
 
 First Gazebo execution of the ADR 0006 path, engineering only
 (`results/debug/station_smoke`, `design_kind: engineering_station_smoke`, never
@@ -1041,18 +1041,58 @@ through `self_mobile_pod`, so both halves of Gate 0 item 1 share it. The
 anisotropy behind every recorded motion figure is therefore 15:1 rather than
 the 3.4:1 that was cited.
 
-This is a hypothesis confirmed by signature, not yet by intervention. The
-decisive test is to set `fdir1` on the wheel collisions, or make the wheel
-friction isotropic, and re-run the +/-90 cases. **That is not done here**: it
-touches every recorded motion figure and is an author decision.
+**Confirmed by intervention, 2026-09-26.** The protocol was declared at
+`e2bc940` before it ran, and it was run without changing anything a figure
+depends on: the patch was applied to the built and installed model tree inside
+the container only, the source template was untouched, the tree was restored
+from byte-for-byte backups with all six sha256 sums matched, and the final
+control reproduces the collapse exactly. At 0.271 rad/s at the position the
+collapse was measured at:
 
-**If it holds, the reach is well beyond this blocker.** Every signed-motion,
-travel and reconfiguration figure the platform has recorded is heading-dependent,
-and Gate 0 item 1 is collected at the spawn heading near zero -- the most
-favourable one. Confirmatory layouts route the robot in all directions. This is
-the same class of defect as the wall-clock command window: a simulation artifact
-that silently scales results rather than failing loudly. Full runs with digests
-are in `studies/engineering/rotation_authority_sweep.json`.
+| Tree | Imposed yaw | Rotation, fraction of command | Straight (m) | Gate |
+|---|---|---|---|---|
+| unmodified | +1.5708 | 0.000 / 0.000 | 0.5830 | fails |
+| unmodified | 0 (earlier sweep) | 0.650 / 0.644 | 0.7397 | passes |
+| isotropic, `mu2` 1.2 | +1.5708 | 0.458 / 0.472 | 0.7407 | passes |
+| isotropic, `mu2` 1.2 | -1.5708 | 0.458 / 0.472 | 0.7407 | passes |
+| isotropic, `mu2` 1.2 | 0.0000 | 0.458 / 0.472 | 0.7407 | passes |
+| `fdir1 1 0 0` | +1.5708 | 0.741 / 0.742 | 0.7336 | passes |
+| `fdir1 1 0 0` | -1.5708 | 0.742 / 0.742 | 0.7336 | passes |
+| `fdir1 1 0 0` | 0.0000 | 0.740 / 0.746 | 0.7374 | passes |
+| restored | +1.5708 | 0.000 / 0.000 | 0.5830 | fails |
+
+Under either variant the three imposed headings return the same rotation and the
+same straight travel to four decimals, so the heading dependence is gone rather
+than reduced. The imposed yaw is read back from each record's own first sample,
+so the invariance is not a failed teleport, and the record digests differ. Full
+runs with digests: `studies/engineering/wheel_friction_intervention.json`.
+
+**The two repairs are not equivalent, and the engine does read `fdir1`.**
+`fdir1 1 0 0` keeps the declared anisotropy and rotates at 74% of command at
+every heading -- better than the most favourable heading has ever produced.
+Isotropy also removes the heading dependence but yields 46%, because skid-steer
+rotation is resisted by lateral scrub and isotropy raises that resistance from
+0.08 to 1.2. So the repair that preserves the low lateral scrub the pod model
+was tuned for is also the one that rotates best.
+
+**The reach is well beyond this blocker, and it is not only rotation.** Straight
+travel is heading-dependent too: 0.5830 m at +/-90 against 0.7397 m at heading 0,
+a 21.2% shortfall, restored to 0.7336--0.7407 m by either variant. The 20-run
+round-trip gate's forward travel norm is 0.113 m against a 0.08 m floor,
+collected at the spawn heading near zero; scaled by 0.788 the margin falls from
++0.0317 m to +0.0091 m. That is an extrapolation across stages rather than a
+measurement of the gate -- the stage measured here is 4 s at 0.20 m/s, not the
+gate's short burst -- but it sizes the exposure. Every signed-motion, travel and
+reconfiguration figure on record was collected near the most favourable heading,
+and the confirmatory layouts route in all directions. This is the same class of
+defect as the wall-clock command window: a simulation artifact that silently
+scales results rather than failing loudly.
+
+**Which repair to adopt is still an author decision, and it is now the expensive
+one.** Adopting either moves Gate 0 item 1, the 20-run round-trip audit and the
+42/42 fault matrix, all collected on the unmodified model. ADR 0007 records the
+options, the measurement, and a proposed re-collection order; it is `proposed`
+and must not be resolved as a side effect of a tuning change.
 
 **The deadlock is a robustness defect regardless of why rotation failed.** The
 law refuses to translate while `|bearing| > 0.15 rad`, so a rotation that does
@@ -1087,23 +1127,29 @@ regions placed them *further* off: layout 1's sensing site was 5 cells
 under either design, and no confirmatory layout had ever been run in Gazebo to
 expose it.
 
-It is an open blocker and needs a decision, and the corrected mechanism changes
-what the options are -- they are about rotation authority and about the
-tolerance, not about lateral offsets. Do not resolve this as a side effect of a
+It is an open blocker and needs a decision. With the cause now confirmed by
+intervention the list has shortened: the first item below is the repair and the
+rest are what it does not fix. Do not resolve any of it as a side effect of a
 tuning change:
 
-- Give the bearing branch breakaway authority. It currently has no floor at all,
-  while the final yaw branch has 0.15 rad/s; note that a 0.15 rad/s floor would
-  not have helped, since 0.271 rad/s already produces nothing. Any floor has to
-  sit at the breakaway threshold.
+- **Repair the friction model.** Setting `fdir1` restores 74% of commanded yaw
+  rate at every heading, including the -1.577 rad the mission froze at. This is
+  the one option that addresses the cause, and it is the one that moves every
+  recorded figure. ADR 0007 has the measurement and the options.
+- Give the bearing branch an angular floor anyway. It has none, while the final
+  yaw branch has 0.15 rad/s, so any future rotation failure still becomes a hard
+  stop rather than degraded progress. No floor would have helped here -- 0.271
+  rad/s already produced nothing -- so this is robustness, not the fix.
 - Have Nav2 deliver the site heading -- a goal at the exact site pose with a
-  real `yaw_goal_tolerance` instead of 3.14159 -- so no in-place rotation is
-  needed. That is precisely the condition under which the direct site worked.
-- Raise the assembly's in-place rotation authority in the simulator, by steering
-  the pods tangentially rather than scrubbing twelve wheels.
-- Set `site_position_tolerance` above the localization error floor. That is a
-  measurement decision rather than a tuning one, and it governs what a
-  "reached the site" claim can mean at all.
+  real `yaw_goal_tolerance` instead of 3.14159 -- so less in-place rotation is
+  needed. That is the condition under which the direct site worked, and it stays
+  worth having: it shortens the rotation rather than relying on its authority.
+- Set `site_position_tolerance` above the localization error floor. Untouched by
+  the friction repair. That is a measurement decision rather than a tuning one,
+  and it governs what a "reached the site" claim can mean at all.
+
+Steering the pods tangentially instead of scrubbing twelve wheels is no longer on
+the list as a fix for this: the scrub was not what limited rotation.
 
 Constraining the manipulation to sites the navigator can already reach remains
 an option and would weaken it.
