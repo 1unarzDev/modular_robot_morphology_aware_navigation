@@ -133,11 +133,14 @@ assembly from rest at every rate from 0.20 to 0.35 rad/s at 58--75% of command
 in the fixed world Gate 0 used, 0.27 rad/s included; see
 `studies/engineering/rotation_authority_sweep.json`, whose 0.35 control
 reproduces the committed Gate 0 figures. The companion claim that no gate covers
-the navigator's regime is retracted with it. The stall is specific to that run:
-candidates are the generated world's `ground_friction` 0.9146, the local surface
-at (1.992, 1.705), and state accumulated over the preceding 60 s of motion. The
-next diagnostic is the same sweep in the retained smoke `world.sdf` under that
-run's artifacts. Independent of the cause, the law turning a failed rotation into
+the navigator's regime is retracted with it. The stall is specific to that run, and the
+world is eliminated as well: the same sweep in the retained smoke `world.sdf`
+rotates at 67% and 65% of command at 0.27 rad/s, against 66% and 64% in the
+qualification world. Also eliminated are attitude, ride height and suspension
+(identical between turning and stalled), an actuator stall, and wheels off the
+ground. What remains is pose-local geometry at (1.992, 1.705) or state
+accumulated over the preceding 60 s of motion; the next discriminator is to place
+the robot at the stall pose in that world and command 0.271 rad/s. Independent of the cause, the law turning a failed rotation into
 a hard stop -- it refuses to translate while `|bearing| > 0.15 rad`, and its
 bearing branch has no angular floor while its yaw branch has 0.15 rad/s -- is a
 robustness defect; `reconfiguration_executor` already applies

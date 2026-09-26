@@ -3,8 +3,16 @@
   "contamination_note": "A first attempt was discarded. A Gazebo stack from an earlier killed run survived about seven hours and a second stack was launched alongside it, so two simulators published /clock during the 0.20 measurement. That record is quarantined as CONTAMINATED_two_simulators_rate_0.20.json and is not used. The sweep harness now aborts unless the process count is zero before each launch.",
   "control_check": "The 0.35 run reproduces studies/gate0/gate0_item1_audit.json (+0.8522/-0.8307 rad over 3.948 s) within run-to-run variation, so the --yaw-rate parameter did not disturb the gate path.",
   "design_kind": "engineering_rotation_authority_sweep",
+  "eliminated_causes": [
+    "commanded rate: 0.20-0.35 rad/s all rotate from rest in both worlds, and 0.166 rad/s worked inside the stalled run itself",
+    "world, ground friction and geometry: the retained smoke world rotates as well as the qualification world",
+    "attitude, ride height and suspension: core z 0.1780, roll and pitch 0.0000, pod suspension 0.0020 m, identical while turning and while stalled",
+    "actuator stall: wheels measured 0.91 of 0.99 rad/s commanded during the stall",
+    "wheels off the ground: suspension travel and pod z identical between the two states"
+  ],
   "evidence_class": "engineering_debug_never_pilot_or_confirmatory",
   "finding": "No commanded-rate floor exists. Every rate from 0.20 to 0.35 rad/s rotated the assembly from rest, at 58-75% of command, with no knee. This refutes the (0.271, 0.350] breakaway bracket recorded on 2026-09-25, which had inferred a threshold from one stalled run plus the Gate 0 figure. In particular 0.27 rad/s rotates here at 64% of command, while 0.271 rad/s produced 0.0000 rad over 29.5 s twice in the station-smoke run. The station-smoke stall is therefore specific to that run rather than a property of the commanded rate.",
+  "open_question": "Why grip was lost at that point in that mission. What remains after the eliminations is pose-local geometry at (1.992, 1.705) or state accumulated over the preceding 60 s of driving and turning. Wheel effort during the stall was 0.081 N*m against 0.260 N*m while the same run turned successfully, roughly an order of magnitude below what Coulomb friction at the declared coefficients and the mass of the robot would imply, which is itself unexplained. The next discriminator is to place the robot at the stall pose in the smoke world and command 0.271 rad/s: pose-local geometry would reproduce the stall, mission state would not.",
   "protocol": "Declared before running: sweep the commanded in-place yaw rate across the band site_alignment_command can produce, each run from the tool stage sequence (2 s settle, so from rest), one run per rate, and require zero gz sim or ros2 launch processes immediately before each launch and after each teardown. The 0.35 rate is the control: it must reproduce the committed Gate 0 item 1 figures.",
   "purpose": "test_whether_assembled_in_place_rotation_has_a_commanded_rate_floor",
   "runs": [
@@ -178,6 +186,59 @@
     }
   ],
   "schema_version": 1,
+  "smoke_world_runs": {
+    "finding": "It does not. 0.27 rad/s achieves 67 and 65 percent of command here against 66 and 64 percent in indoor_doorway, and 0.35 achieves 63 and 61 against 58 and 62. The generated world, its declared friction and its geometry are eliminated. Note that indoor_doorway declares no ground friction at all and so runs at the SDF default of 1.0, slightly higher than the 0.9146 in the generated world, so friction magnitude was never a plausible discriminator.",
+    "purpose": "test whether the generated world rather than the commanded rate explains the stall",
+    "runs": [
+      {
+        "commanded_yaw_rate_radps": 0.27,
+        "morphology": "compact_diff",
+        "record": "results/debug/rotation_authority/rate_smokeworld_0.27.json",
+        "rep_103_signs_pass": true,
+        "sha256": "ccb6f7588008f9b78a02e6a984392ad7fc366a83567e745647917d0608b63079",
+        "stages": {
+          "negative_yaw": {
+            "achieved_radps": 0.1757,
+            "delta_yaw_rad": -0.6935,
+            "duration_s": 3.948,
+            "fraction_of_command": 0.651,
+            "translation_m": 0.0021
+          },
+          "positive_yaw": {
+            "achieved_radps": 0.1796,
+            "delta_yaw_rad": 0.7039,
+            "duration_s": 3.918,
+            "fraction_of_command": 0.665,
+            "translation_m": 0.0022
+          }
+        }
+      },
+      {
+        "commanded_yaw_rate_radps": 0.35,
+        "morphology": "compact_diff",
+        "record": "results/debug/rotation_authority/rate_smokeworld_0.35.json",
+        "rep_103_signs_pass": true,
+        "sha256": "7766d0ba92d12316ff6688e49f89d09d2cf00f26a60810c08b874201b31ef146",
+        "stages": {
+          "negative_yaw": {
+            "achieved_radps": 0.2124,
+            "delta_yaw_rad": -0.838,
+            "duration_s": 3.946,
+            "fraction_of_command": 0.607,
+            "translation_m": 0.0016
+          },
+          "positive_yaw": {
+            "achieved_radps": 0.2192,
+            "delta_yaw_rad": 0.8593,
+            "duration_s": 3.92,
+            "fraction_of_command": 0.626,
+            "translation_m": 0.0042
+          }
+        }
+      }
+    ],
+    "world": "results/debug/station_smoke/artifacts/docking_observability-01-r0-sensing_feasibility_coupled/world.sdf, the retained generated world used by the stalled run, ground mu and mu2 both 0.9145579669301721"
+  },
   "tool": "qualify_assembly_motion --yaw-rate R --expected-morphology compact_diff, via motion_qualification.launch.py",
   "world": "modular_robot_sim/worlds/indoor_doorway.sdf (the fixed world Gate 0 item 1 used)"
 }

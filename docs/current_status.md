@@ -987,16 +987,27 @@ stack was launched alongside it, and two simulators published `/clock` during
 the first 0.20 run. That record is quarantined, unused, and the sweep harness now
 refuses to launch unless the simulator process count is zero.
 
-**So the cause of the stall is open.** What is established is that the assembly
-lost wheel grip at that pose in that world and did not recover it at any rate
-the alignment law produces, while the same platform turns from rest across the
-whole band in the qualification world. The candidates are the generated world's
-realized `ground_friction` of 0.9146 against whatever the fixed world uses, the
-local surface or geometry at (1.992, 1.705), and state accumulated over the
-preceding 60 s of driving and turning. The next diagnostic is cheap and
-separates the first from the rest: the smoke world is retained at
-`results/debug/station_smoke/artifacts/docking_observability-01-r0-sensing_feasibility_coupled/world.sdf`,
-so the same sweep can be run in it.
+**The world is eliminated too.** The smoke world is retained under that run's
+artifacts, so the same sweep was run in it. It rotates just as well: 0.27 rad/s
+achieves **67% and 65%** of command there against 66% and 64% in
+`indoor_doorway`, and 0.35 achieves 63% and 61% against 58% and 62%. The
+generated world, its declared friction and its geometry are not the cause.
+Friction magnitude was never a plausible discriminator in the first place --
+`indoor_doorway` declares no ground friction at all, so it runs at the SDF
+default of 1.0, slightly *higher* than the 0.9146 the generated world realized.
+
+**So the cause is narrowed but still open.** Eliminated: the commanded rate, the
+world and its friction and geometry, attitude and ride height and suspension
+(core z 0.1780, roll and pitch 0.0000, pod suspension 0.0020 m, all identical
+between turning and stalled), an actuator stall, and wheels off the ground. What
+remains is pose-local geometry at (1.992, 1.705) or state accumulated over the
+preceding 60 s of driving and turning. One number is unexplained and worth
+keeping in view: 0.081 N*m of wheel effort during the stall is roughly an order
+of magnitude below what Coulomb friction at the declared coefficients and the
+robot mass would imply, so the contact was not merely slipping at its limit. The
+next discriminator is to place the robot at the stall pose in the smoke world and
+command 0.271 rad/s -- pose-local geometry reproduces the stall, mission state
+does not.
 
 **The deadlock is a robustness defect regardless of why rotation failed.** The
 law refuses to translate while `|bearing| > 0.15 rad`, so a rotation that does
