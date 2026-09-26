@@ -133,14 +133,21 @@ assembly from rest at every rate from 0.20 to 0.35 rad/s at 58--75% of command
 in the fixed world Gate 0 used, 0.27 rad/s included; see
 `studies/engineering/rotation_authority_sweep.json`, whose 0.35 control
 reproduces the committed Gate 0 figures. The companion claim that no gate covers
-the navigator's regime is retracted with it. The stall is specific to that run, and the
-world is eliminated as well: the same sweep in the retained smoke `world.sdf`
-rotates at 67% and 65% of command at 0.27 rad/s, against 66% and 64% in the
-qualification world. Also eliminated are attitude, ride height and suspension
-(identical between turning and stalled), an actuator stall, and wheels off the
-ground. What remains is pose-local geometry at (1.992, 1.705) or state
-accumulated over the preceding 60 s of motion; the next discriminator is to place
-the robot at the stall pose in that world and command 0.271 rad/s. Independent of the cause, the law turning a failed rotation into
+the navigator's regime is retracted with it. **The cause is the heading of the robot in the
+world.** Imposing poses in the smoke world at 0.271 rad/s: rotation reaches 65%
+of command at yaw -0.03, 58% at -0.8, **exactly 0% at both +1.571 and -1.571**,
+and 65% again at +3.142 -- a 180-degree period. The original run froze at yaw
+-1.577 with no teleport. Position, teleporting, the world, the commanded rate,
+attitude, suspension and actuator stall are all eliminated by controls. The
+wheels declare anisotropic friction (`mu 1.2`, `mu2 0.35`,
+`drive_pod/model.sdf:10-11`) and **`fdir1` is never specified anywhere**, so the
+friction axes are not attached to the wheel and traction depends on world
+heading; `kinematics.py` is innocent, being body-frame only. Confirmed by
+signature, not by intervention: setting `fdir1` or making the friction isotropic
+and re-running +/-90 is the decisive test, and it is **an author decision**
+because it touches every recorded motion figure -- Gate 0 item 1 is collected at
+the spawn heading near zero, the most favourable one, while confirmatory layouts
+route in all directions. Independent of the cause, the law turning a failed rotation into
 a hard stop -- it refuses to translate while `|bearing| > 0.15 rad`, and its
 bearing branch has no angular floor while its yaw branch has 0.15 rad/s -- is a
 robustness defect; `reconfiguration_executor` already applies

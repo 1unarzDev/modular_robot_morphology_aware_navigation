@@ -996,18 +996,49 @@ Friction magnitude was never a plausible discriminator in the first place --
 `indoor_doorway` declares no ground friction at all, so it runs at the SDF
 default of 1.0, slightly *higher* than the 0.9146 the generated world realized.
 
-**So the cause is narrowed but still open.** Eliminated: the commanded rate, the
-world and its friction and geometry, attitude and ride height and suspension
-(core z 0.1780, roll and pitch 0.0000, pod suspension 0.0020 m, all identical
-between turning and stalled), an actuator stall, and wheels off the ground. What
-remains is pose-local geometry at (1.992, 1.705) or state accumulated over the
-preceding 60 s of driving and turning. One number is unexplained and worth
-keeping in view: 0.081 N*m of wheel effort during the stall is roughly an order
-of magnitude below what Coulomb friction at the declared coefficients and the
-robot mass would imply, so the contact was not merely slipping at its limit. The
-next discriminator is to place the robot at the stall pose in the smoke world and
-command 0.271 rad/s -- pose-local geometry reproduces the stall, mission state
-does not.
+**The cause is the robot's heading in the world, and it reproduces on demand.**
+Imposing a pose with `gz set_pose` in the smoke world and running the declared
+stage sequence at 0.271 rad/s:
+
+| imposed yaw | rotation, +/- | straight | gate criterion |
+|---|---|---|---|
+| -0.030 (null teleport) | 65% / 65% | 0.7397 m | passes |
+| -0.800 | 58% / 59% | 0.6864 m | passes |
+| **+1.571** | **0% / 0%** | 0.5830 m | **fails** |
+| **-1.571** | **0% / 0%** | 0.5830 m | **fails** |
+| +3.142 | 65% / 64% | 0.2238 m | passes |
+
+Rotation authority is full at 0 and at 180 degrees and **exactly zero at both
++90 and -90**, a 180-degree period, and the two 90-degree runs return identical
+straight-stage translation to four decimals. Position is not the variable: the
+original stall pose rotates at 65% and 64% when only its yaw is set to zero.
+Teleporting is not the variable either -- a null teleport to the unchanged spawn
+pose gives 65%, and a teleport to yaw -0.8 gives 58%. The original run froze at
+yaw **-1.577**, which is -90 degrees, with no teleport involved.
+
+**Root cause, by signature rather than intervention.** The drive pod wheels
+declare anisotropic Coulomb friction, `mu 1.2` and `mu2 0.35`
+(`modular_robot_sim/models/drive_pod/model.sdf:10-11`), and **`fdir1` is never
+specified anywhere in the repository**. Without `fdir1` the friction principal
+axes are not attached to the wheel, so which coefficient resists rolling and
+which resists lateral scrub depends on the orientation of the robot in the world.
+That predicts precisely the 180-degree periodicity and the collapse at +/-90
+measured above. The allocation is innocent: `kinematics.py` `distribute_twist`
+works purely in body frame and cannot depend on world heading, and the pod
+commands recorded during the original stall match its body-frame prediction.
+
+This is a hypothesis confirmed by signature, not yet by intervention. The
+decisive test is to set `fdir1` on the wheel collisions, or make the wheel
+friction isotropic, and re-run the +/-90 cases. **That is not done here**: it
+touches every recorded motion figure and is an author decision.
+
+**If it holds, the reach is well beyond this blocker.** Every signed-motion,
+travel and reconfiguration figure the platform has recorded is heading-dependent,
+and Gate 0 item 1 is collected at the spawn heading near zero -- the most
+favourable one. Confirmatory layouts route the robot in all directions. This is
+the same class of defect as the wall-clock command window: a simulation artifact
+that silently scales results rather than failing loudly. Full runs with digests
+are in `studies/engineering/rotation_authority_sweep.json`.
 
 **The deadlock is a robustness defect regardless of why rotation failed.** The
 law refuses to translate while `|bearing| > 0.15 rad`, so a rotation that does
