@@ -952,10 +952,29 @@ under Nav2, rotation-only samples at 0.10--0.19 rad/s achieved **69--88%** of
 command. What fails is breakaway from rest.
 
 So there is a dead zone. Above 0.15 rad of bearing error the law refuses to
-translate; below the breakaway threshold it cannot rotate. Breakaway is
-bracketed in `(0.271, 0.600]` rad/s commanded, so in bearing terms
-`(0.181, 0.400]` rad. The run settled at **0.181 rad** -- inside the zone by
-0.031 rad -- and sat there. The 45-degree site yaw is what put it there: its
+translate; below the breakaway threshold it cannot rotate. The smoke run alone
+brackets breakaway in `(0.271, 0.600]` rad/s commanded, and the committed Gate 0
+evidence narrows it further: `qualify_assembly_motion` commands **0.35 rad/s**
+in place after a 2 s settle, and `studies/gate0/gate0_item1_audit.json` records
++0.8522 and -0.8307 rad over 3.948 s on all three `compact_diff` runs, so
+**0.2159 and 0.2104 rad/s achieved, 60--62% of command**. Breakaway therefore
+sits in `(0.271, 0.350]` rad/s, i.e. a bearing error in `(0.181, 0.233]` rad at
+the law's gain of 1.5. Carry that as a bracket and not as a number: the Gate 0
+runs use the fixed qualification world while the smoke run drew
+`ground_friction: 0.9146` in a generated one, and the threshold has never been
+measured in the same world twice. The run settled at **0.181 rad** -- inside the
+zone -- and sat there.
+
+**The passing gate does not cover the regime the navigator uses.** Gate 0 item 1
+qualifies assembled in-place rotation at exactly one commanded rate, 0.35 rad/s,
+which by the bracket above is at or above the knee. Site alignment commands
+`1.5 * |bearing|`, so everything it issues while the 0.15 rad translation gate
+still binds is **at most 0.225 rad/s** -- below the 0.271 rad/s already shown to
+move the body 0.000 rad in 29.5 s. The one rate the platform is qualified at is
+the one rate the alignment stage never reaches. That is why 6/6 on roadmap
+item 1 and three deadlocked alignment windows are not in contradiction, and it
+is a gap in the gate rather than a fault in the runs: no gate measures rotation
+authority below 0.35 rad/s. The 45-degree site yaw is what put it there: its
 bearing error at handover was -0.574 rad, against -0.027 rad for the direct
 site. Any site leaving a residual bearing error in that band deadlocks the same
 way, whatever its distance.

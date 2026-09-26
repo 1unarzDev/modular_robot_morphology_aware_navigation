@@ -123,9 +123,14 @@ commands `min(0.6, 1.5*|bearing|)` rad/s of in-place rotation until then, and
 the assembled skid-steer cannot break away from rest at the low end of that
 range. Two of the three 29.5 s windows held a constant 0.271 rad/s and turned
 the body 0.000 rad, wheels spinning at 0.91 of 0.99 rad/s commanded at
-0.08 N*m. Breakaway is bracketed in (0.271, 0.600] rad/s, so any site leaving a
-residual bearing error between 0.15 rad and about 0.40 rad deadlocks regardless
-of distance. Separately, `site_position_tolerance` (0.030 m) sits below the
+0.08 N*m. Committed Gate 0 evidence narrows breakaway to (0.271, 0.350] rad/s
+-- `qualify_assembly_motion` commands 0.35 rad/s from a settle and
+`studies/gate0/gate0_item1_audit.json` records 0.2159 and 0.2104 rad/s achieved,
+60--62% of command -- so any site leaving a residual bearing error between
+0.15 rad and about 0.23 rad deadlocks regardless of distance, and the gate's one
+qualified rate sits above everything site alignment can command while its
+0.15 rad translation gate binds (at most 0.225 rad/s). Different worlds, so
+treat it as a bracket, not a number. Separately, `site_position_tolerance` (0.030 m) sits below the
 localization error the controller must servo against (0.0296 m at the one
 successful alignment, up to 0.1021 m), so the 1.3 mm margin recorded earlier is
 not a physical margin. Reduced trace with digests:
