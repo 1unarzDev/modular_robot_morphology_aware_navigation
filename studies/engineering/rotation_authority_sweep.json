@@ -1,0 +1,183 @@
+{
+  "commit": "77b4c03d462c70d0d805445206fc0daa7b2f262c",
+  "contamination_note": "A first attempt was discarded. A Gazebo stack from an earlier killed run survived about seven hours and a second stack was launched alongside it, so two simulators published /clock during the 0.20 measurement. That record is quarantined as CONTAMINATED_two_simulators_rate_0.20.json and is not used. The sweep harness now aborts unless the process count is zero before each launch.",
+  "control_check": "The 0.35 run reproduces studies/gate0/gate0_item1_audit.json (+0.8522/-0.8307 rad over 3.948 s) within run-to-run variation, so the --yaw-rate parameter did not disturb the gate path.",
+  "design_kind": "engineering_rotation_authority_sweep",
+  "evidence_class": "engineering_debug_never_pilot_or_confirmatory",
+  "finding": "No commanded-rate floor exists. Every rate from 0.20 to 0.35 rad/s rotated the assembly from rest, at 58-75% of command, with no knee. This refutes the (0.271, 0.350] breakaway bracket recorded on 2026-09-25, which had inferred a threshold from one stalled run plus the Gate 0 figure. In particular 0.27 rad/s rotates here at 64% of command, while 0.271 rad/s produced 0.0000 rad over 29.5 s twice in the station-smoke run. The station-smoke stall is therefore specific to that run rather than a property of the commanded rate.",
+  "protocol": "Declared before running: sweep the commanded in-place yaw rate across the band site_alignment_command can produce, each run from the tool stage sequence (2 s settle, so from rest), one run per rate, and require zero gz sim or ros2 launch processes immediately before each launch and after each teardown. The 0.35 rate is the control: it must reproduce the committed Gate 0 item 1 figures.",
+  "purpose": "test_whether_assembled_in_place_rotation_has_a_commanded_rate_floor",
+  "runs": [
+    {
+      "commanded_yaw_rate_radps": 0.2,
+      "morphology": "compact_diff",
+      "qualification_pass": true,
+      "record": "results/debug/rotation_authority/rate_0.20.json",
+      "rep_103_signs_pass": true,
+      "sha256": "00facf4979a8cad81336cbfb52e538e256b59f9c4b5b55618d003987b7735853",
+      "stages": {
+        "negative_yaw": {
+          "achieved_radps": 0.1389,
+          "delta_yaw_rad": -0.5488,
+          "duration_s": 3.95,
+          "fraction_of_command": 0.695,
+          "translation_m": 0.0038
+        },
+        "positive_yaw": {
+          "achieved_radps": 0.1399,
+          "delta_yaw_rad": 0.5486,
+          "duration_s": 3.922,
+          "fraction_of_command": 0.699,
+          "translation_m": 0.0022
+        }
+      }
+    },
+    {
+      "commanded_yaw_rate_radps": 0.24,
+      "morphology": "compact_diff",
+      "qualification_pass": true,
+      "record": "results/debug/rotation_authority/rate_0.24.json",
+      "rep_103_signs_pass": true,
+      "sha256": "f83e2f06788772ebed15a9bb3298034c90252351f20e7c962c826b75db9935c7",
+      "stages": {
+        "negative_yaw": {
+          "achieved_radps": 0.16,
+          "delta_yaw_rad": -0.6332,
+          "duration_s": 3.958,
+          "fraction_of_command": 0.667,
+          "translation_m": 0.0027
+        },
+        "positive_yaw": {
+          "achieved_radps": 0.1612,
+          "delta_yaw_rad": 0.6335,
+          "duration_s": 3.93,
+          "fraction_of_command": 0.672,
+          "translation_m": 0.0015
+        }
+      }
+    },
+    {
+      "commanded_yaw_rate_radps": 0.27,
+      "morphology": "compact_diff",
+      "qualification_pass": true,
+      "record": "results/debug/rotation_authority/rate_0.27.json",
+      "rep_103_signs_pass": true,
+      "sha256": "7bf4d34ecce43e8d65115499e3aaa030207df9f0b9da4c53663f8b7f62dbeb61",
+      "stages": {
+        "negative_yaw": {
+          "achieved_radps": 0.174,
+          "delta_yaw_rad": -0.6842,
+          "duration_s": 3.932,
+          "fraction_of_command": 0.644,
+          "translation_m": 0.002
+        },
+        "positive_yaw": {
+          "achieved_radps": 0.178,
+          "delta_yaw_rad": 0.6959,
+          "duration_s": 3.91,
+          "fraction_of_command": 0.659,
+          "translation_m": 0.0021
+        }
+      }
+    },
+    {
+      "commanded_yaw_rate_radps": 0.29,
+      "morphology": "compact_diff",
+      "qualification_pass": true,
+      "record": "results/debug/rotation_authority/rate_0.29.json",
+      "rep_103_signs_pass": true,
+      "sha256": "c1b9aba5a8df3d374810ef36b61fa6dda7466ee82d3d3e5390f9fb0b60bce90f",
+      "stages": {
+        "negative_yaw": {
+          "achieved_radps": 0.2168,
+          "delta_yaw_rad": -0.8568,
+          "duration_s": 3.952,
+          "fraction_of_command": 0.748,
+          "translation_m": 0.0033
+        },
+        "positive_yaw": {
+          "achieved_radps": 0.2028,
+          "delta_yaw_rad": 0.7934,
+          "duration_s": 3.912,
+          "fraction_of_command": 0.699,
+          "translation_m": 0.0035
+        }
+      }
+    },
+    {
+      "commanded_yaw_rate_radps": 0.31,
+      "morphology": "compact_diff",
+      "qualification_pass": true,
+      "record": "results/debug/rotation_authority/rate_0.31.json",
+      "rep_103_signs_pass": true,
+      "sha256": "b3eb691723318355008c6ad2f6b31c22b54f910a3c0f6a0b7e11ccccf09fb1b9",
+      "stages": {
+        "negative_yaw": {
+          "achieved_radps": 0.1911,
+          "delta_yaw_rad": -0.7617,
+          "duration_s": 3.986,
+          "fraction_of_command": 0.616,
+          "translation_m": 0.0016
+        },
+        "positive_yaw": {
+          "achieved_radps": 0.1954,
+          "delta_yaw_rad": 0.7738,
+          "duration_s": 3.96,
+          "fraction_of_command": 0.63,
+          "translation_m": 0.0029
+        }
+      }
+    },
+    {
+      "commanded_yaw_rate_radps": 0.33,
+      "morphology": "compact_diff",
+      "qualification_pass": true,
+      "record": "results/debug/rotation_authority/rate_0.33.json",
+      "rep_103_signs_pass": true,
+      "sha256": "1eb2b5a3fac7b8023f3144a8ed5adf6146f284a18d2269d82c1db64a4fdf48ac",
+      "stages": {
+        "negative_yaw": {
+          "achieved_radps": 0.1993,
+          "delta_yaw_rad": -0.7919,
+          "duration_s": 3.974,
+          "fraction_of_command": 0.604,
+          "translation_m": 0.0018
+        },
+        "positive_yaw": {
+          "achieved_radps": 0.2069,
+          "delta_yaw_rad": 0.8094,
+          "duration_s": 3.912,
+          "fraction_of_command": 0.627,
+          "translation_m": 0.0033
+        }
+      }
+    },
+    {
+      "commanded_yaw_rate_radps": 0.35,
+      "morphology": "compact_diff",
+      "qualification_pass": true,
+      "record": "results/debug/rotation_authority/rate_0.35.json",
+      "rep_103_signs_pass": true,
+      "sha256": "28e719513328bb0e3cd44b83b718847f619074c10bf70d6d6cbaacf55d6dd2c6",
+      "stages": {
+        "negative_yaw": {
+          "achieved_radps": 0.2157,
+          "delta_yaw_rad": -0.8515,
+          "duration_s": 3.948,
+          "fraction_of_command": 0.616,
+          "translation_m": 0.0032
+        },
+        "positive_yaw": {
+          "achieved_radps": 0.2026,
+          "delta_yaw_rad": 0.7906,
+          "duration_s": 3.902,
+          "fraction_of_command": 0.579,
+          "translation_m": 0.0034
+        }
+      }
+    }
+  ],
+  "schema_version": 1,
+  "tool": "qualify_assembly_motion --yaw-rate R --expected-morphology compact_diff, via motion_qualification.launch.py",
+  "world": "modular_robot_sim/worlds/indoor_doorway.sdf (the fixed world Gate 0 item 1 used)"
+}

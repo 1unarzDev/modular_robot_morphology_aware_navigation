@@ -1,17 +1,23 @@
 {
-  "breakaway_bracket": {
-    "bearing_dead_zone_rad": [
-      0.15,
-      0.233
-    ],
-    "bearing_gain": 1.5,
-    "caveat": "Different worlds. The Gate 0 runs use the fixed qualification world; the smoke run drew ground_friction 0.9146 in a generated world. This is a bracket across two worlds, not a measured threshold in either.",
-    "commanded_radps_highest_with_no_motion": 0.271,
-    "commanded_radps_lowest_known_to_move": 0.35,
-    "evidence_moves": "studies/gate0/gate0_item1_audit.json compact_assembly: qualify_assembly_motion commands 0.35 rad/s after a 2 s settle and records +0.8522 and -0.8307 rad over 3.948 s on all three runs, so 0.2159 and 0.2104 rad/s achieved, 60-62% of command",
-    "evidence_no_motion": "this file, runs[sensing_feasibility_coupled].command_bursts windows 3 and 4: 0.271 rad/s held for 29.5 s each, true yaw change -0.0002 and 0.0000 rad",
-    "gate_coverage_gap": "site_alignment_command issues at most 0.225 rad/s while its 0.15 rad translation gate still binds, below the 0.271 rad/s shown to produce no motion, while qualify_assembly_motion tests only 0.35 rad/s. No gate measures assembled in-place rotation authority in the regime site alignment actually uses.",
-    "max_command_while_translation_gate_binds_radps": 0.225
+  "breakaway_bracket_retracted_2026_09_26": {
+    "retracted_content": {
+      "bearing_dead_zone_rad": [
+        0.15,
+        0.233
+      ],
+      "bearing_gain": 1.5,
+      "caveat": "Different worlds. The Gate 0 runs use the fixed qualification world; the smoke run drew ground_friction 0.9146 in a generated world. This is a bracket across two worlds, not a measured threshold in either.",
+      "commanded_radps_highest_with_no_motion": 0.271,
+      "commanded_radps_lowest_known_to_move": 0.35,
+      "evidence_moves": "studies/gate0/gate0_item1_audit.json compact_assembly: qualify_assembly_motion commands 0.35 rad/s after a 2 s settle and records +0.8522 and -0.8307 rad over 3.948 s on all three runs, so 0.2159 and 0.2104 rad/s achieved, 60-62% of command",
+      "evidence_no_motion": "this file, runs[sensing_feasibility_coupled].command_bursts windows 3 and 4: 0.271 rad/s held for 29.5 s each, true yaw change -0.0002 and 0.0000 rad",
+      "gate_coverage_gap": "site_alignment_command issues at most 0.225 rad/s while its 0.15 rad translation gate still binds, below the 0.271 rad/s shown to produce no motion, while qualify_assembly_motion tests only 0.35 rad/s. No gate measures assembled in-place rotation authority in the regime site alignment actually uses.",
+      "max_command_while_translation_gate_binds_radps": 0.225
+    },
+    "status": "REFUTED by direct measurement; do not use",
+    "superseded_by": "studies/engineering/rotation_authority_sweep.json",
+    "what_stands": "The three windows never authorized translation, the bearing error froze at 0.181 rad above the 0.15 rad gate, and effort collapsed from 0.260 N*m while turning to 0.081 N*m while stalled with suspension unchanged. The cause of the grip loss is open.",
+    "why": "The bracket inferred a commanded-rate threshold from this one stalled run plus the Gate 0 figure. A sweep of qualify_assembly_motion --yaw-rate rotates the assembly from rest at every rate from 0.20 to 0.35 rad/s at 58-75% of command in the fixed world Gate 0 used, 0.27 rad/s included. Within this run a lower command, 0.166 rad/s, also turned the body at 67% of command. Rate is not the variable."
   },
   "controller": {
     "angular_floor_in_bearing_branch": null,

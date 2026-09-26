@@ -123,14 +123,25 @@ commands `min(0.6, 1.5*|bearing|)` rad/s of in-place rotation until then, and
 the assembled skid-steer cannot break away from rest at the low end of that
 range. Two of the three 29.5 s windows held a constant 0.271 rad/s and turned
 the body 0.000 rad, wheels spinning at 0.91 of 0.99 rad/s commanded at
-0.08 N*m. Committed Gate 0 evidence narrows breakaway to (0.271, 0.350] rad/s
--- `qualify_assembly_motion` commands 0.35 rad/s from a settle and
-`studies/gate0/gate0_item1_audit.json` records 0.2159 and 0.2104 rad/s achieved,
-60--62% of command -- so any site leaving a residual bearing error between
-0.15 rad and about 0.23 rad deadlocks regardless of distance, and the gate's one
-qualified rate sits above everything site alignment can command while its
-0.15 rad translation gate binds (at most 0.225 rad/s). Different worlds, so
-treat it as a bracket, not a number. Separately, `site_position_tolerance` (0.030 m) sits below the
+0.08 N*m, against 0.260 N*m while the same run was turning successfully at a
+*lower* command of 0.166 rad/s. Suspension was unchanged, so the wheels were on
+the ground; they spin nearly free and do no work, and grip is never recovered.
+**Retracted 2026-09-26: there is no commanded-rate floor.** The 2026-09-25
+handoff inferred breakaway in (0.271, 0.350] rad/s and a bearing dead zone up to
+0.23 rad. A direct sweep (`qualify_assembly_motion --yaw-rate`, new) rotates the
+assembly from rest at every rate from 0.20 to 0.35 rad/s at 58--75% of command
+in the fixed world Gate 0 used, 0.27 rad/s included; see
+`studies/engineering/rotation_authority_sweep.json`, whose 0.35 control
+reproduces the committed Gate 0 figures. The companion claim that no gate covers
+the navigator's regime is retracted with it. The stall is specific to that run:
+candidates are the generated world's `ground_friction` 0.9146, the local surface
+at (1.992, 1.705), and state accumulated over the preceding 60 s of motion. The
+next diagnostic is the same sweep in the retained smoke `world.sdf` under that
+run's artifacts. Independent of the cause, the law turning a failed rotation into
+a hard stop -- it refuses to translate while `|bearing| > 0.15 rad`, and its
+bearing branch has no angular floor while its yaw branch has 0.15 rad/s -- is a
+robustness defect; `reconfiguration_executor` already applies
+`min_pod_angular = 0.30` to pod in-place turns (`node.py:408-417`). Separately, `site_position_tolerance` (0.030 m) sits below the
 localization error the controller must servo against (0.0296 m at the one
 successful alignment, up to 0.1021 m), so the 1.3 mm margin recorded earlier is
 not a physical margin. Reduced trace with digests:

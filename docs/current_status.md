@@ -939,45 +939,75 @@ three windows ran 29.5 s of continuous commanding against the 30 s simulated
 budget and expired, and in all three `body_linear_x` was 0.000 in **every one
 of 60 samples**: translation was never authorized once.
 
-**The assembly cannot start rotating in place from rest at the low end of that
-command range.** Window 1 broke away at 0.600 rad/s commanded, achieved 19% of
-it, turned -0.398 rad and stopped. Windows 2 and 3 then commanded a constant
-0.271 rad/s for 29.5 s each and produced **-0.0002 and 0.0000 rad** of true
-yaw change -- 59 s of continuous rotation command with the body not moving at
-all. It is not an actuator stall: pod wheels were commanded 0.99 rad/s and
-measured 0.91 rad/s at 0.08 N*m while true core yaw held at -1.571 rad. The
-assembled turn is skid-steer (pods 0/2/4 forward, 1/3/5 reverse) and twelve
-wheels scrub in place. It is not a rate limit either: while already rolling
-under Nav2, rotation-only samples at 0.10--0.19 rad/s achieved **69--88%** of
-command. What fails is breakaway from rest.
+**The body stops rotating while its wheels keep turning.** Window 1 turned
+-0.398 rad and stopped. Windows 2 and 3 then commanded a constant 0.271 rad/s
+for 29.5 s each and produced **-0.0002 and 0.0000 rad** of true yaw change --
+59 s of continuous rotation command with the body not moving at all. It is not
+an actuator stall: pod wheels were commanded 0.99 rad/s and measured 0.91 rad/s
+while true core yaw held at -1.571 rad, and suspension travel sat at 0.0020 m
+throughout, the same as when the robot was driving, so the wheels were on the
+ground. What separates the two states is **effort**: while the same run was
+turning successfully at 0.166 rad/s commanded, wheels measured 0.35 of 0.61
+rad/s commanded at **0.260 N*m** and the body turned at 0.112 rad/s, 67% of
+command. In the stalled windows wheels measured 92% of command at **0.081 N*m**.
+The wheels spin nearly free and do almost no work. Once grip is lost it is not
+recovered.
 
-So there is a dead zone. Above 0.15 rad of bearing error the law refuses to
-translate; below the breakaway threshold it cannot rotate. The smoke run alone
-brackets breakaway in `(0.271, 0.600]` rad/s commanded, and the committed Gate 0
-evidence narrows it further: `qualify_assembly_motion` commands **0.35 rad/s**
-in place after a 2 s settle, and `studies/gate0/gate0_item1_audit.json` records
-+0.8522 and -0.8307 rad over 3.948 s on all three `compact_diff` runs, so
-**0.2159 and 0.2104 rad/s achieved, 60--62% of command**. Breakaway therefore
-sits in `(0.271, 0.350]` rad/s, i.e. a bearing error in `(0.181, 0.233]` rad at
-the law's gain of 1.5. Carry that as a bracket and not as a number: the Gate 0
-runs use the fixed qualification world while the smoke run drew
-`ground_friction: 0.9146` in a generated one, and the threshold has never been
-measured in the same world twice. The run settled at **0.181 rad** -- inside the
-zone -- and sat there.
+**Retracted 2026-09-26: this is not a commanded-rate floor.** The 2026-09-25
+entry inferred a breakaway threshold bracketed in `(0.271, 0.350]` rad/s from
+this one stalled run plus the Gate 0 figure, and said the assembly could not
+start turning from rest at the low end of the range. A direct sweep refutes it.
+`qualify_assembly_motion` now takes `--yaw-rate`, and in the fixed
+`indoor_doorway` world Gate 0 item 1 used, every rate from **0.20 to 0.35 rad/s
+rotates the assembly from rest at 58--75% of command with no knee**:
 
-**The passing gate does not cover the regime the navigator uses.** Gate 0 item 1
-qualifies assembled in-place rotation at exactly one commanded rate, 0.35 rad/s,
-which by the bracket above is at or above the knee. Site alignment commands
-`1.5 * |bearing|`, so everything it issues while the 0.15 rad translation gate
-still binds is **at most 0.225 rad/s** -- below the 0.271 rad/s already shown to
-move the body 0.000 rad in 29.5 s. The one rate the platform is qualified at is
-the one rate the alignment stage never reaches. That is why 6/6 on roadmap
-item 1 and three deadlocked alignment windows are not in contradiction, and it
-is a gap in the gate rather than a fault in the runs: no gate measures rotation
-authority below 0.35 rad/s. The 45-degree site yaw is what put it there: its
-bearing error at handover was -0.574 rad, against -0.027 rad for the direct
-site. Any site leaving a residual bearing error in that band deadlocks the same
-way, whatever its distance.
+| commanded | achieved (+/-) | fraction of command |
+|---|---|---|
+| 0.20 | 0.1399 / 0.1389 | 70% / 70% |
+| 0.24 | 0.1612 / 0.1600 | 67% / 67% |
+| 0.27 | 0.1780 / 0.1740 | 66% / 64% |
+| 0.29 | 0.2028 / 0.2168 | 70% / 75% |
+| 0.31 | 0.1954 / 0.1911 | 63% / 62% |
+| 0.33 | 0.2069 / 0.1993 | 63% / 60% |
+| 0.35 | 0.2026 / 0.2157 | 58% / 62% |
+
+0.27 rad/s turns fine here while 0.271 rad/s turned the body 0.0000 rad in the
+smoke run, and within the smoke run itself a *lower* command, 0.166 rad/s,
+worked. Rate is not the variable. The full curve with digests, the declared
+protocol and the control check is at
+`studies/engineering/rotation_authority_sweep.json`; the 0.35 control reproduces
+the committed Gate 0 figures, so `--yaw-rate` did not disturb the gate path.
+Also retracted: the claim that no gate covers the regime the navigator uses. It
+rested on the same inferred threshold, and low rates are not where authority
+collapses.
+
+One measurement was discarded getting here, and the reason is the standing rule.
+A Gazebo stack from an earlier killed run survived about seven hours, a second
+stack was launched alongside it, and two simulators published `/clock` during
+the first 0.20 run. That record is quarantined, unused, and the sweep harness now
+refuses to launch unless the simulator process count is zero.
+
+**So the cause of the stall is open.** What is established is that the assembly
+lost wheel grip at that pose in that world and did not recover it at any rate
+the alignment law produces, while the same platform turns from rest across the
+whole band in the qualification world. The candidates are the generated world's
+realized `ground_friction` of 0.9146 against whatever the fixed world uses, the
+local surface or geometry at (1.992, 1.705), and state accumulated over the
+preceding 60 s of driving and turning. The next diagnostic is cheap and
+separates the first from the rest: the smoke world is retained at
+`results/debug/station_smoke/artifacts/docking_observability-01-r0-sensing_feasibility_coupled/world.sdf`,
+so the same sweep can be run in it.
+
+**The deadlock is a robustness defect regardless of why rotation failed.** The
+law refuses to translate while `|bearing| > 0.15 rad`, so a rotation that does
+not happen becomes a hard stop rather than degraded progress: `body_linear_x`
+stayed 0.000 for 88.5 s across three windows while the robot sat 0.098 m from a
+site it had already reached to within 0.12 m. The bearing branch also has no
+angular floor at all, while the final yaw branch has 0.15 rad/s, and
+`reconfiguration_executor` applies `min_pod_angular = 0.30` to pod in-place
+turns under a comment that calls it breakaway and warns against applying it
+while translating (`node.py:408-417`). That precedent is worth reading before
+choosing a repair, but on the evidence above it is not the explanation here.
 
 **The 1.3 mm margin is not a margin.** `geometry_coupled` needed no rotation at
 all: at handover its bearing error was -0.027 rad and its yaw error -0.025 rad,
