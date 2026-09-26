@@ -1263,9 +1263,10 @@ be regenerated.
   four contain no package-level tests.
 - Documentation links/stale references and `git diff --check` passed.
 - No simulator or bridge processes remained after verification.
-- 2026-09-26, at `502919a`: `python3 -m pytest -q` 209 passed in 215.40 s. No
-  autonomy or simulation source changed since the checkpoint above, so the
-  container build and `colcon test` were not re-run. After the ADR 0007
-  intervention experiment the container's built model tree was checked back to
-  the shipped `mu 1.2` / `mu2 0.08` with no `fdir1`, all six pod digests
-  matching their backups, and no simulator processes remained.
+- 2026-09-26, at `783ecd9`: `python3 -m pytest -q` 213 passed in 164.93 s. The
+  only source change since the checkpoint above adds library functions to
+  `motion_metrics` and touches no gate, so the container build and `colcon test`
+  were not re-run. Hygiene after both ADR 0007 studies: the built model tree is
+  back to the shipped `mu 1.2` / `mu2 0.08` with no `fdir1` anywhere, all six pod
+  digests match their backups, the installed worlds directory still holds only
+  the two shipped worlds, and no simulator processes remained.
