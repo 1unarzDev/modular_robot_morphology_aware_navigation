@@ -38,6 +38,35 @@ def test_articulated_pod_keeps_physical_wheels_without_competing_controller():
     assert text.count("<mu>1.2</mu><mu2>0.08</mu2>") == 2
 
 
+def test_wheel_friction_is_still_anisotropic_without_fdir1():
+    """Pin the state every recorded motion figure was collected in.
+
+    The wheels declare mu 1.2 against mu2 0.08 and no fdir1, so the friction
+    principal axes are world-fixed rather than attached to the wheel and
+    traction depends on the robot's heading in the world. Measured: rotation
+    authority is 74% of command at every heading once fdir1 is set, and exactly
+    0% at +/-90 degrees without it, with straight travel 21.2% short there
+    (studies/engineering/wheel_friction_intervention.json).
+
+    Repairing it is an author decision because it moves every signed-motion,
+    travel and reconfiguration figure on record (ADR 0007, proposed). This test
+    fails when that decision is taken, which is the point: the re-collection it
+    forces must not start as a side effect of a tuning change.
+    """
+    sim = ROOT / "src/modular_robot_sim"
+    declaring = [
+        path.relative_to(ROOT).as_posix()
+        for pattern in ("models/**/*.sdf", "models/**/*.sdf.in", "worlds/*.sdf")
+        for path in sim.glob(pattern)
+        if "fdir1" in path.read_text()
+    ]
+    assert declaring == [], (
+        f"{declaring} now declare fdir1; if ADR 0007 was adopted, invert this "
+        "test and re-collect Gate 0 item 1, the round-trip gate and the fault "
+        "matrix"
+    )
+
+
 def test_drive_diagnostics_measure_both_suspension_carriers():
     text = (
         ROOT / "src/modular_robot_gz_plugins/src/multi_pod_drive_system.cc"
