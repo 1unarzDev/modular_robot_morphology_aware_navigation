@@ -1,0 +1,420 @@
+{
+  "controller": {
+    "angular_floor_in_bearing_branch": null,
+    "bearing_gain": 1.5,
+    "linear_floor_mps": 0.03,
+    "max_angular_radps": 0.6,
+    "max_linear_mps": 0.15,
+    "site_alignment_timeout_s": 30.0,
+    "site_position_tolerance_m": 0.03,
+    "site_yaw_tolerance_rad": 0.05,
+    "source": "modular_robot_bringup.qualification.site_alignment_command",
+    "translation_bearing_deadband_rad": 0.15,
+    "window_clock": "simulated"
+  },
+  "design_kind": "engineering_alignment_diagnosis",
+  "evidence_class": "engineering_debug_never_pilot_or_confirmatory",
+  "layout": "docking_observability-01",
+  "method": "Reduced from the two gitignored station-smoke records named below. Command bursts are maximal runs of non-zero body command separated by more than 1.5 s of zeros, which for these runs are the Nav2 drive and the site-alignment windows. Body pose is localization_history, the AMCL map-frame estimate the controller servos through map->base_link TF. Truth is controller_diagnostics.pod_drive_diagnostic_samples core_world_* (evaluator-only, nearest in time). Wheel figures come from the same samples.",
+  "nav2_handover": {
+    "xy_goal_tolerance_m": 0.12,
+    "yaw_goal_tolerance_rad": 3.14159
+  },
+  "purpose": "adr0006_station_smoke_alignment_blocker_mechanism",
+  "runs": [
+    {
+      "bytes": 7582720,
+      "command_bursts": [
+        {
+          "duration_s": 15.5,
+          "end_s": 64.2,
+          "estimated_offset_from_site_m_at_end": 0.1226,
+          "final_angular_command_radps": -0.399,
+          "localization_error_m_at_end": 0.0503,
+          "max_angular_command_radps": 0.399,
+          "max_linear_command_mps": 0.35,
+          "rotation_only_samples": 17,
+          "samples": 32,
+          "samples_with_nonzero_linear_command": 15,
+          "start_s": 48.7,
+          "true_offset_from_site_m_at_end": 0.1596,
+          "true_xy_change_m": 1.2764,
+          "true_yaw_change_rad": -1.1055
+        },
+        {
+          "duration_s": 29.5,
+          "end_s": 121.2,
+          "estimated_offset_from_site_m_at_end": 0.0993,
+          "final_angular_command_radps": -0.271,
+          "localization_error_m_at_end": 0.0619,
+          "max_angular_command_radps": 0.6,
+          "max_linear_command_mps": 0.0,
+          "rotation_only_samples": 60,
+          "samples": 60,
+          "samples_with_nonzero_linear_command": 0,
+          "start_s": 91.7,
+          "true_offset_from_site_m_at_end": 0.1605,
+          "true_xy_change_m": 0.0009,
+          "true_yaw_change_rad": -0.3978
+        },
+        {
+          "duration_s": 29.5,
+          "end_s": 178.7,
+          "estimated_offset_from_site_m_at_end": 0.0993,
+          "final_angular_command_radps": -0.271,
+          "localization_error_m_at_end": 0.0619,
+          "max_angular_command_radps": 0.271,
+          "max_linear_command_mps": 0.0,
+          "rotation_only_samples": 60,
+          "samples": 60,
+          "samples_with_nonzero_linear_command": 0,
+          "start_s": 149.2,
+          "true_offset_from_site_m_at_end": 0.1605,
+          "true_xy_change_m": 0.0,
+          "true_yaw_change_rad": -0.0002
+        },
+        {
+          "duration_s": 29.5,
+          "end_s": 236.2,
+          "estimated_offset_from_site_m_at_end": 0.0993,
+          "final_angular_command_radps": -0.271,
+          "localization_error_m_at_end": 0.0619,
+          "max_angular_command_radps": 0.271,
+          "max_linear_command_mps": 0.0,
+          "rotation_only_samples": 60,
+          "samples": 60,
+          "samples_with_nonzero_linear_command": 0,
+          "start_s": 206.7,
+          "true_offset_from_site_m_at_end": 0.1605,
+          "true_xy_change_m": 0.0,
+          "true_yaw_change_rad": 0.0
+        }
+      ],
+      "localization_error_m": {
+        "max": 0.1021,
+        "mean": 0.0516,
+        "samples": 434
+      },
+      "method": "sensing_feasibility_coupled",
+      "planned_site_xy": [
+        1.95,
+        1.55
+      ],
+      "planned_site_yaws_rad": [
+        0.7854,
+        0.0,
+        -2.3562,
+        3.1416,
+        -2.3562,
+        3.1416,
+        -2.3562,
+        3.1416
+      ],
+      "planning_latency_s_total": 115.9,
+      "real_time_factor": 0.958,
+      "reconfiguration_attempts": 0,
+      "record": "results/debug/station_smoke/raw/docking_observability-01-r0-sensing_feasibility_coupled.json",
+      "records_commit": "467ae8bff6f8e9fdd3adc7010cdf1a09430cea28",
+      "recovery_actions": 3,
+      "rotation_authority": [
+        {
+          "achieved_radps": 0.1399,
+          "commanded_radps": 0.163,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.133,
+          "commanded_radps": 0.193,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.106,
+          "commanded_radps": 0.12,
+          "window_s": 2.5
+        },
+        {
+          "achieved_radps": 0.0772,
+          "commanded_radps": 0.104,
+          "window_s": 3.0
+        },
+        {
+          "achieved_radps": 0.1147,
+          "commanded_radps": 0.6,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0522,
+          "commanded_radps": 0.534,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0206,
+          "commanded_radps": 0.382,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.012,
+          "commanded_radps": 0.359,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0068,
+          "commanded_radps": 0.342,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0039,
+          "commanded_radps": 0.322,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0023,
+          "commanded_radps": 0.315,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0014,
+          "commanded_radps": 0.308,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0008,
+          "commanded_radps": 0.276,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0005,
+          "commanded_radps": 0.275,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0003,
+          "commanded_radps": 0.273,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0002,
+          "commanded_radps": 0.272,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0001,
+          "commanded_radps": 0.272,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0001,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        },
+        {
+          "achieved_radps": 0.0,
+          "commanded_radps": 0.271,
+          "window_s": 1.5
+        }
+      ],
+      "sha256": "32086868f0e830dcc8d179c64740227a2105a989802c0d815b4d046f8ee51a2e",
+      "simulated_duration_s": 217.1,
+      "terminal_status": "controller_failure"
+    },
+    {
+      "bytes": 2192468,
+      "command_bursts": [
+        {
+          "duration_s": 5.0,
+          "end_s": 32.2,
+          "estimated_offset_from_site_m_at_end": 0.1385,
+          "final_angular_command_radps": -0.003,
+          "localization_error_m_at_end": 0.022,
+          "max_angular_command_radps": 0.049,
+          "max_linear_command_mps": 0.35,
+          "rotation_only_samples": 0,
+          "samples": 11,
+          "samples_with_nonzero_linear_command": 11,
+          "start_s": 27.2,
+          "true_offset_from_site_m_at_end": 0.1283,
+          "true_xy_change_m": 1.2357,
+          "true_yaw_change_rad": 0.0245
+        },
+        {
+          "duration_s": 1.0,
+          "end_s": 55.2,
+          "estimated_offset_from_site_m_at_end": 0.0407,
+          "final_angular_command_radps": -0.012,
+          "localization_error_m_at_end": 0.0296,
+          "max_angular_command_radps": 0.04,
+          "max_linear_command_mps": 0.069,
+          "rotation_only_samples": 0,
+          "samples": 3,
+          "samples_with_nonzero_linear_command": 3,
+          "start_s": 54.2,
+          "true_offset_from_site_m_at_end": 0.0251,
+          "true_xy_change_m": 0.0524,
+          "true_yaw_change_rad": -0.0057
+        }
+      ],
+      "localization_error_m": {
+        "max": 0.0647,
+        "mean": 0.0221,
+        "samples": 124
+      },
+      "method": "geometry_coupled",
+      "planned_site_xy": [
+        2.15,
+        1.75
+      ],
+      "planned_site_yaws_rad": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "planning_latency_s_total": 44.9,
+      "real_time_factor": 0.967,
+      "reconfiguration_attempts": 1,
+      "record": "results/debug/station_smoke/raw_geom/docking_observability-01-r0-geometry_coupled.json",
+      "records_commit": "467ae8bff6f8e9fdd3adc7010cdf1a09430cea28",
+      "recovery_actions": 0,
+      "rotation_authority": [],
+      "sha256": "eeaad6403f2962dbb445661398437fec899432ece6091bb06b09a82a64a96d0b",
+      "simulated_duration_s": 62.0,
+      "terminal_status": "unsafe_topology"
+    }
+  ],
+  "schema_version": 1
+}

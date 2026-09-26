@@ -897,7 +897,7 @@ report it replaces, with all four methods agreeing in all six neutral controls.
 Against that report **0 of 24 geometry and feasibility sites changed**, which
 is the empirical confirmation that the elevated screen is optical only.
 
-### The outcome mechanism works; off-route sites are unreachable (2026-09-22)
+### The outcome mechanism works; site alignment deadlocks before it (2026-09-22, mechanism corrected 2026-09-25)
 
 First Gazebo execution of the ADR 0006 path, engineering only
 (`results/debug/station_smoke`, `design_kind: engineering_station_smoke`, never
@@ -923,20 +923,55 @@ was 2.5e-05 everywhere and `connector_visible` was always true.
 **But the sensing method cannot execute the site it chooses.**
 `sensing_feasibility_coupled` correctly avoided the shadowed site and planned
 (1.95, 1.55) at yaw 0.79, then failed alignment three times and made **zero**
-transition attempts, ending `controller_failure`. In the map frame its closest
-approach was **0.098 m** against a 0.03 m tolerance, never within 0.06 m; at
-closest it sat 2 cm off in x and 9.6 cm off in y, parked on the route line.
+transition attempts, ending `controller_failure`. Its closest estimated
+approach was **0.098 m** against a 0.03 m tolerance.
 
-Nav2 hands over inside `xy_goal_tolerance: 0.12` with `yaw_goal_tolerance:
-3.14159`, so heading is ignored entirely, and `site_alignment_command` must
-close the rest to 0.03 m and 0.05 rad within a 30 s simulated window.
+**Mechanism corrected 2026-09-25.** The first reading -- that Nav2's loose
+handover leaves a lateral offset `site_alignment_command` cannot close -- does
+not survive the records. The law does close lateral offsets, by turning to face
+the site and driving; it never got that far. A reduced trace with per-record
+digests is committed at
+`studies/engineering/adr0006_alignment_diagnosis.json`.
 
-**Site alignment is marginal even where it succeeds.** The on-route,
-axis-aligned `geometry_coupled` site was reached at **0.0287 m** against the
-0.030 m tolerance -- a margin of 1.3 mm -- while the off-route site reached
-only 0.0979 m. So this is not simply "off-route sites fail": the alignment
-stage clears its tolerance by a hair on the easy case, and any confirmatory
-campaign would be resting on that. Digests and figures are committed at
+The alignment law gates translation behind `|bearing| <= 0.15 rad` and until
+then commands `min(0.6, 1.5 * |bearing|)` rad/s of pure in-place rotation. All
+three windows ran 29.5 s of continuous commanding against the 30 s simulated
+budget and expired, and in all three `body_linear_x` was 0.000 in **every one
+of 60 samples**: translation was never authorized once.
+
+**The assembly cannot start rotating in place from rest at the low end of that
+command range.** Window 1 broke away at 0.600 rad/s commanded, achieved 19% of
+it, turned -0.398 rad and stopped. Windows 2 and 3 then commanded a constant
+0.271 rad/s for 29.5 s each and produced **-0.0002 and 0.0000 rad** of true
+yaw change -- 59 s of continuous rotation command with the body not moving at
+all. It is not an actuator stall: pod wheels were commanded 0.99 rad/s and
+measured 0.91 rad/s at 0.08 N*m while true core yaw held at -1.571 rad. The
+assembled turn is skid-steer (pods 0/2/4 forward, 1/3/5 reverse) and twelve
+wheels scrub in place. It is not a rate limit either: while already rolling
+under Nav2, rotation-only samples at 0.10--0.19 rad/s achieved **69--88%** of
+command. What fails is breakaway from rest.
+
+So there is a dead zone. Above 0.15 rad of bearing error the law refuses to
+translate; below the breakaway threshold it cannot rotate. Breakaway is
+bracketed in `(0.271, 0.600]` rad/s commanded, so in bearing terms
+`(0.181, 0.400]` rad. The run settled at **0.181 rad** -- inside the zone by
+0.031 rad -- and sat there. The 45-degree site yaw is what put it there: its
+bearing error at handover was -0.574 rad, against -0.027 rad for the direct
+site. Any site leaving a residual bearing error in that band deadlocks the same
+way, whatever its distance.
+
+**The 1.3 mm margin is not a margin.** `geometry_coupled` needed no rotation at
+all: at handover its bearing error was -0.027 rad and its yaw error -0.025 rad,
+both already inside the gates, so its alignment was a single 1.0 s translation
+burst. That is why it passed. And the tolerance it cleared sits below the
+estimator's own error -- `site_position_tolerance` is 0.030 m while
+localization error was 0.0296 m at that moment, mean 0.0221 m and max 0.0647 m
+over the run (0.0516 m and 0.1021 m on the sensing run). Truth put the core
+0.0251 m from the site. The controller must servo the AMCL estimate, since
+simulator ground truth is evaluator-only, so a 0.030 m tolerance asks for a
+placement the estimate cannot resolve. This is the same class of defect as the
+wall-clock command window: a harness tolerance measuring below its own noise
+floor. Digests and the first figures stay at
 `studies/engineering/adr0006_station_smoke.json`.
 
 **This is not caused by ADR 0006.** Every sensing-manipulated site is off-route
@@ -945,11 +980,28 @@ regions placed them *further* off: layout 1's sensing site was 5 cells
 (about 0.50 m) off the route line under the old model against 2 cells
 (about 0.20 m) now. The execution gap would have blocked the sensing contrast
 under either design, and no confirmatory layout had ever been run in Gazebo to
-expose it. It is an open blocker and needs a decision: tighten the handover
-(a Nav2 goal at the exact site pose, or a tighter goal checker for
-transition-site goals), make `site_alignment_command` able to close a lateral
-offset, or constrain the manipulation to sites the navigator can reach, which
-would weaken it.
+expose it.
+
+It is an open blocker and needs a decision, and the corrected mechanism changes
+what the options are -- they are about rotation authority and about the
+tolerance, not about lateral offsets. Do not resolve this as a side effect of a
+tuning change:
+
+- Give the bearing branch breakaway authority. It currently has no floor at all,
+  while the final yaw branch has 0.15 rad/s; note that a 0.15 rad/s floor would
+  not have helped, since 0.271 rad/s already produces nothing. Any floor has to
+  sit at the breakaway threshold.
+- Have Nav2 deliver the site heading -- a goal at the exact site pose with a
+  real `yaw_goal_tolerance` instead of 3.14159 -- so no in-place rotation is
+  needed. That is precisely the condition under which the direct site worked.
+- Raise the assembly's in-place rotation authority in the simulator, by steering
+  the pods tangentially rather than scrubbing twelve wheels.
+- Set `site_position_tolerance` above the localization error floor. That is a
+  measurement decision rather than a tuning one, and it governs what a
+  "reached the site" claim can mean at all.
+
+Constraining the manipulation to sites the navigator can already reach remains
+an option and would weaken it.
 
 Recorded consequence: the manipulation now has a direction. Declared regions
 produced scattered sensing sites (y cells 13--23 either side of the route); a

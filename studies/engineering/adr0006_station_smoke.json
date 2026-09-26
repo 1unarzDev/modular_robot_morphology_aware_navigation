@@ -2,12 +2,17 @@
   "design_kind": "engineering_station_smoke",
   "evidence_class": "engineering_debug_never_pilot_or_confirmatory",
   "findings": {
-    "off_route_sites_unreachable": "sensing_feasibility_coupled avoided the shadowed site and could not align to the one it chose. Nav2 hands over within xy_goal_tolerance 0.12 m with yaw_goal_tolerance 3.14159, and site_alignment_command must close to 0.03 m and 0.05 rad in a 30 s simulated window. Open blocker, not caused by ADR 0006: the declared regions placed sensing sites about 0.50 m off the route line against about 0.20 m now.",
-    "outcome_mechanism_present": "geometry_coupled chose the direct site, aligned, attempted the transition, and the docking gate refused it with connector_not_visible and sources=connector_camera,wheel_odometry: a well-measured pod that the station cannot see. Before ADR 0006 no site choice could do this, covariance being 2.5e-05 everywhere."
+    "outcome_mechanism_present": "geometry_coupled chose the direct site, aligned, attempted the transition, and the docking gate refused it with connector_not_visible and sources=connector_camera,wheel_odometry: a well-measured pod that the station cannot see. Before ADR 0006 no site choice could do this, covariance being 2.5e-05 everywhere.",
+    "site_alignment_deadlocks_from_rest": "sensing_feasibility_coupled avoided the shadowed site and could not align to the one it chose. Corrected 2026-09-25 from the records: site_alignment_command gates translation behind |bearing| <= 0.15 rad and commands min(0.6, 1.5*|bearing|) rad/s of in-place rotation until then, and the assembled skid-steer cannot break away from rest at the low end of that range. All three 29.5 s windows commanded rotation with body_linear_x 0.000 in every sample; windows 2 and 3 held a constant 0.271 rad/s for 29.5 s each and produced -0.0002 and 0.0000 rad of true yaw change, while pod wheels turned at 0.91 of 0.99 rad/s commanded at 0.08 N*m. Breakaway is bracketed in (0.271, 0.600] rad/s commanded. The run settled at 0.181 rad of bearing error, inside the dead zone between the 0.15 rad translation gate and breakaway. Open blocker, not caused by ADR 0006. See adr0006_alignment_diagnosis.json.",
+    "site_tolerance_below_localization_floor": "site_position_tolerance is 0.030 m while the AMCL estimate the controller servos is 0.0296 m from core truth at the moment geometry_coupled declared alignment (mean 0.0221 m, max 0.0647 m over that run; 0.0516 m and 0.1021 m over the sensing run). The 1.3 mm margin below is therefore not a physical margin: truth put the core 0.0251 m from the site. Ground truth is evaluator-only, so the tolerance asks for a placement the estimate cannot resolve.",
+    "superseded_reading_2026_09_22": "sensing_feasibility_coupled avoided the shadowed site and could not align to the one it chose. Nav2 hands over within xy_goal_tolerance 0.12 m with yaw_goal_tolerance 3.14159, and site_alignment_command must close to 0.03 m and 0.05 rad in a 30 s simulated window. Open blocker, not caused by ADR 0006: the declared regions placed sensing sites about 0.50 m off the route line against about 0.20 m now."
   },
   "layout": "docking_observability-01",
   "note": "Single trials on the layout and seeds the frozen design draws, run to exercise the ADR 0006 runtime path. Raw records are gitignored under results/debug/station_smoke/.",
   "purpose": "adr0006_station_smoke",
+  "related_summaries": [
+    "studies/engineering/adr0006_alignment_diagnosis.json"
+  ],
   "schema_version": 1,
   "trials": [
     {

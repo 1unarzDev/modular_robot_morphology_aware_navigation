@@ -113,16 +113,24 @@ sites changed. The container builds and the runtime path works: a smoke run show
 docking gate (`connector_not_visible`, `sources=connector_camera,
 wheel_odometry`), which is the outcome mechanism ADR 0006 existed to create.
 
-**Open blocker: off-route transition sites are unreachable.**
+**Open blocker: site alignment deadlocks before the transition.**
 `sensing_feasibility_coupled` avoided the shadowed site, planned one about
-0.20 m off the route line at 45 degrees, and failed `_align_to_site` three
-times with zero transition attempts; closest map-frame approach 0.098 m against
-a 0.03 m tolerance. Nav2 hands over within 0.12 m ignoring yaw entirely, and
-`site_alignment_command` cannot close a lateral offset. Alignment is marginal
-even where it works: the on-route `geometry_coupled` site was reached at
-0.0287 m against the 0.030 m tolerance, a 1.3 mm margin. Every sensing-
-manipulated site is off-route by construction, and the declared regions placed
-them further off (about 0.50 m) than ADR 0006 does, so this blocks the sensing
-contrast under either design and is not caused by ADR 0006. Decide how to close
-the handover before running confirmatory layouts. The round-trip and
-fault-matrix gates are still not re-qualified. ADR 0005 remains `proposed`.
+0.20 m off the route line at 45 degrees, and failed `_align_to_site` three times
+with zero transition attempts. The mechanism was corrected on 2026-09-25 from
+the records, and it is not the loose Nav2 handover the first write-up blamed:
+`site_alignment_command` gates translation behind `|bearing| <= 0.15 rad` and
+commands `min(0.6, 1.5*|bearing|)` rad/s of in-place rotation until then, and
+the assembled skid-steer cannot break away from rest at the low end of that
+range. Two of the three 29.5 s windows held a constant 0.271 rad/s and turned
+the body 0.000 rad, wheels spinning at 0.91 of 0.99 rad/s commanded at
+0.08 N*m. Breakaway is bracketed in (0.271, 0.600] rad/s, so any site leaving a
+residual bearing error between 0.15 rad and about 0.40 rad deadlocks regardless
+of distance. Separately, `site_position_tolerance` (0.030 m) sits below the
+localization error the controller must servo against (0.0296 m at the one
+successful alignment, up to 0.1021 m), so the 1.3 mm margin recorded earlier is
+not a physical margin. Reduced trace with digests:
+`studies/engineering/adr0006_alignment_diagnosis.json`. Both are author
+decisions, about rotation authority and about the tolerance; do not resolve
+either as a side effect of a tuning change, and see `docs/current_status.md`
+for the options. The round-trip and fault-matrix gates are still not
+re-qualified. ADR 0005 remains `proposed`.
