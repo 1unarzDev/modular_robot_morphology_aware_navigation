@@ -1396,6 +1396,13 @@ be regenerated.
   four contain no package-level tests.
 - Documentation links/stale references and `git diff --check` passed.
 - No simulator or bridge processes remained after verification.
+- 2026-09-26, at `c8187a9`, after ADR 0007, 0008 and 0009: `python3 -m pytest -q`
+  219 passed in 166.08 s; the clearance-disk invariant holds at reach 0.9900 m
+  against a 1.0 m disk; `studies/gate2/confirmatory_manipulation_check.json`
+  regenerated 9/9 separating with 0 unplanned in all four cells; Gate 0 item 1
+  re-collected 10/10. The container build was re-run for `modular_robot_sim`
+  only, which is the package the friction repair touches; the round-trip and
+  fault-matrix campaigns are re-collecting.
 - 2026-09-26, at `783ecd9`: `python3 -m pytest -q` 213 passed in 164.93 s. The
   only source change since the checkpoint above adds library functions to
   `motion_metrics` and touches no gate, so the container build and `colcon test`
