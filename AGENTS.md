@@ -44,6 +44,21 @@ platform limitation, not a tuning knob; the options are wider doorways, a
 pre-doorway re-centring maneuver, or reporting the tolerance as nominal. Do not
 raise it again without changing the scenario geometry.
 
+**The 20-run round trip is the open work.** Two attempts on the repaired model
+both failed 11 of 20, with different replicates failing each time, so it is
+marginal rather than a threshold. Measured cause: the transition itself injects
++0.011..+0.134 rad of core yaw (alignment leaves at most 0.030 in every run), the
+drive that follows amplifies it, and a 0.70 m doorway against a 0.66 m footprint
+gives 0.02 m of slack per side. `_trim_transition_yaw` now trims the core yaw to
+0.02 rad after a commit; a 5-trial probe was stopped after 3, all completing,
+including two replicates that had failed without it
+(`studies/engineering/roundtrip_yaw_trim_probe.json`, three trials and not
+evidence). **Execute the full 20 and audit it before claiming anything.** Both
+failed attempts are retained and not re-scored. When running a campaign, write the
+audit under `results/` and copy it into `studies/` afterwards: an untracked file in
+`studies/gate0/` makes the worktree dirty and `mission_batch` then refuses to run
+at all.
+
 **A harness fault was found and fixed while re-collecting.** No scratch harness
 here ever killed `parameter_bridge`, so bridges accumulated across cases while
 the same teardown deleted `/dev/shm/fastrtps_*` underneath the live ones: Gazebo

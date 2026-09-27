@@ -1,0 +1,46 @@
+{
+  "commit": "722cc42",
+  "design_kind": "engineering_interrupted_probe",
+  "evidence_class": "engineering_debug_never_pilot_or_confirmatory",
+  "next_step": "Re-run the full 20 into a fresh directory at this commit or later, audit with roundtrip_qualification audit, and commit the audit. Write the audit under results/ and copy it into studies/ afterwards: an untracked file in studies/gate0/ makes the worktree dirty and the runner then refuses the next campaign outright.",
+  "purpose": "check_whether_the_post_transition_yaw_trim_fixes_the_round_trip",
+  "runs": [
+    {
+      "minimum_clearance_m": 0.0362,
+      "reconfiguration_attempts": 2,
+      "record": "results/qualification/roundtrip_probe_yawtrim_raw/combined_constraints-00-r0-feasibility_coupled.json",
+      "replicate": "0",
+      "sha256": "b40a11513a6709e3889e74f37433e9b6d50c27197ad0779e2114069859d05ea8",
+      "simulated_duration_s": 155.91,
+      "terminal_status": "completed",
+      "yaw_at_doorway_rad": 0.0596,
+      "yaw_at_first_commit_rad": 0.007
+    },
+    {
+      "minimum_clearance_m": 0.0255,
+      "reconfiguration_attempts": 2,
+      "record": "results/qualification/roundtrip_probe_yawtrim_raw/combined_constraints-00-r1-feasibility_coupled.json",
+      "replicate": "1",
+      "sha256": "7e0e5f567b2a05d7f156abfb52386d1345d5bffe1d2384c947dd3eccbdc2644e",
+      "simulated_duration_s": 153.884,
+      "terminal_status": "completed",
+      "yaw_at_doorway_rad": 0.1054,
+      "yaw_at_first_commit_rad": 0.0473
+    },
+    {
+      "minimum_clearance_m": 0.0427,
+      "reconfiguration_attempts": 2,
+      "record": "results/qualification/roundtrip_probe_yawtrim_raw/combined_constraints-00-r2-feasibility_coupled.json",
+      "replicate": "2",
+      "sha256": "04db8e53de5f630ff3c10dcc8cf80a6e12c4625709009ecc5883d5b3b930f4cf",
+      "simulated_duration_s": 154.296,
+      "terminal_status": "completed",
+      "yaw_at_doorway_rad": 0.044,
+      "yaw_at_first_commit_rad": -0.0105
+    }
+  ],
+  "schema_version": 1,
+  "status": "INTERRUPTED at 3 of 5 trials, stopped by the operator",
+  "what_it_is_not": "Not a gate and not a qualification. It is 3 trials of the frozen 20-run round-trip design, run with --max-trials 5 and stopped before the fourth. The 20-run gate remains unqualified and the full campaign still has to be executed.",
+  "why_it_is_worth_keeping": "All three completed, and two of them are replicates that failed without the trim: r1 failed in the first re-collection attempt and r2 failed in the second. Yaw at the doorway was 0.0440--0.1054 rad, against 0.112--0.155 in every one of the 11 failures and 0.001--0.116 in the completions. That is consistent with the trim working and is three trials, not evidence that it does."
+}

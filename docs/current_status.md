@@ -867,6 +867,53 @@ adopted after the two-simulator contamination in the rotation sweep. Every
 scratch harness in this repository had the same omission; a stale bridge is now
 a caught condition rather than a silent one.
 
+### The 20-run round trip is not re-qualified; the cause is diagnosed and the fix is unverified (2026-09-27)
+
+Two re-collection attempts on the repaired model, both **11 of 20 failing**
+`controller_failure` after one transition. Both are retained. The first is
+`studies/gate0/roundtrip_20_fdir1_attempt1_failed_audit.json`; the second ran at
+`a9554c8` with the tolerance back at 0.030 m and failed the same count with
+**8 of 20 replicates flipping outcome**, which is what ruled the tolerance out.
+
+The mechanism is measured, not inferred. Per run, yaw at the end of alignment,
+yaw gained during the transition, and yaw gained driving to the doorway:
+
+| Phase | 9 completions | 11 failures |
+|---|---|---|
+| yaw at alignment end | 0.0062--0.0297 | 0.0023--0.0268 |
+| gained during the transition | -0.0571 .. +0.0264 | **+0.0105 .. +0.1339, every one positive** |
+| gained driving to the doorway | -0.0542 .. +0.0801 | +0.0135 .. +0.0900, every one positive |
+| yaw at the doorway | <= 0.057 for 8 of 9 | **0.1116 .. 0.1548** |
+
+So alignment is innocent in every run and the site tolerance is irrelevant.
+Relocating pods drag the core, and ADR 0007 changed how much: a pod driving
+across its own axis no longer gets the accidental lateral grip that world-fixed
+friction axes used to give it. The drive that follows amplifies the error rather
+than correcting it -- same-signed drift in all 11 failures, mixed sign in the
+completions -- which is a 1.76 m skid-steer being directionally unstable on 0.08
+lateral friction. The geometry leaves no room: a 0.70 m doorway against a 0.66 m
+footprint is 0.02 m of slack per side, and 0.88 m of half-length turns 0.1 rad
+into 0.09 m of nose excursion.
+
+**The fix is in and is unverified.** `_trim_transition_yaw` brings the core yaw
+back to 0.02 rad after a commit, before driving on (yaw only: the body has just
+changed shape and may already have its nose in a doorway). A 5-trial probe was
+started and **stopped by the operator after 3**, all three completing, including
+two replicates that had failed without it. That is at
+`studies/engineering/roundtrip_yaw_trim_probe.json` and is three trials, not
+evidence.
+
+**Resume by executing the full 20 into a fresh directory and auditing it.** If it
+still fails, the remaining levers are the narrow body's directional stability --
+`mu2` is 0.08 and was tuned when `fdir1` was absent, so it only ever acted at some
+headings -- and the doorway slack, which is ADR 0008's open item. Neither is a
+tuning change to make quietly.
+
+One operational trap, learned the expensive way: the audit step writes into
+`studies/gate0/`, and that untracked file makes the worktree dirty, after which
+`mission_batch` refuses the next campaign outright and writes no records. Write
+audits under `results/` and copy them into `studies/` when committing.
+
 ### The sweep margin is raised; the site tolerance cannot be (ADR 0008, 2026-09-26)
 
 `site_position_tolerance` was 0.030 m while the estimator the controller servos
