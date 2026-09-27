@@ -1,6 +1,6 @@
-# ADR 0008: Site tolerance above the estimator noise floor, with the largest sweep margin the geometry admits
+# ADR 0008: The sweep margin is raised; the site tolerance cannot be
 
-- Status: **accepted**, 2026-09-26
+- Status: **accepted**, 2026-09-26 (tolerance raise attempted, measured and withdrawn the same day)
 - Date: 2026-09-26
 
 ## Context
@@ -75,41 +75,70 @@ golden fixtures were.
 
 ## Decision
 
-**`site_position_tolerance` 0.030 -> 0.07 m, `margin_m` 0.0 -> 0.07 m,
-`swept_radius` unchanged at 1.0.**
+**`post_transition_verification.margin_m` 0.0 -> 0.07 m. `swept_radius` unchanged
+at 1.0. `site_position_tolerance` stays at 0.030 m.**
 
-The tolerance is set equal to the margin, so the sweep covers exactly the slack
-the alignment law permits. 0.08 m would be the arithmetic ceiling but puts the
-clearance-disk invariant at exact equality (reach 1.00000 against a 1.0 m disk);
-0.07 m keeps 0.01 m of headroom, which costs 0.01 m of coverage and buys back the
-property that a small future change to the maneuver cannot silently invalidate
-the wall check. Walls are a safety property and equality is not a margin.
+The tolerance raise was adopted at 0.07 m, executed, and withdrawn on the
+evidence of the campaign it was meant to enable.
 
-This departs from the 0.12 m figure the decision was framed around, and the
-reason is measurement rather than preference: at every margin large enough to
-cover a 0.12 m tolerance, the sensing contrast stops separating in the golden
-layout or the doorway plan disappears. Full coverage is not attainable by tuning
-these three numbers.
+0.07 m for the margin is the ceiling less a safety margin: reach grows one-for-one
+with the margin from 0.92 m inside a 1.0 m clearance disk, so 0.08 m would put the
+wall check at exact equality and 0.07 m keeps 0.01 m of headroom. Equality is not
+a margin. At 0.07 m the margin covers the 0.030 m tolerance plus 0.04 m of
+estimator error, which is strictly better than the 0.0 it replaces, and it moves
+no decision in the round-trip layout: that layout transitions at cells (20, 18)
+and (48, 18) at both `margin_m` 0.0 and 0.07.
 
-The tolerance is still 2.3x the old value and above the 0.0296 m estimator error
-recorded at the alignment that succeeded, so it asks for a placement the estimate
-can resolve, which is the defect this ADR exists for.
+### Why the tolerance cannot be raised
+
+The 20-run round trip was re-collected with the tolerance at 0.07 m and **failed
+11 of 20** (`studies/gate0/roundtrip_20_fdir1_attempt1_failed_audit.json`,
+retained). Every failure is the same event, and it is geometric:
+
+- All 11 jam in a 24 cm band at x 2.315--2.559, y 1.981--1.993, yaw 0.033--0.067,
+  after one transition, final morphology `narrow_tandem`/`READY`, no unrecovered
+  fault.
+- The doorway is at x 3.15 with a 0.70 m opening centred on y 1.95. The narrow
+  body is 1.76 m long, so a core at x 2.32 has its nose at x 3.20 -- inside the
+  doorway -- and its 0.66 m footprint leaves **0.02 m of slack per side**.
+- The bodies sat about 0.034 m off centre, and a 0.06 rad yaw error adds 0.053 m
+  of nose excursion over the 0.88 m half-length. Four runs recorded exactly
+  0.0000 m clearance with 1--3 contacts; the rest scraped at 0.004--0.013 m. Nav2
+  reported "Failed to make progress" 33 times.
+
+Neither ADR 0009 mechanism fired -- 0 rotation-stall aborts, 0 abandoned
+alignments -- and the margin moves no decision here, so the tolerance is what
+changed and the doorway is what it broke. A robot permitted to stand 0.07 m off
+the planned site starts the narrow leg further off centre than the doorway's slack
+allows, with about 1.1 m to correct in, and a 1.76 m skid-steer on 0.08 lateral
+friction does not correct that far.
+
+**So the original defect stands and is not a tuning problem.** The doorway demands
+a placement tighter than the estimator can resolve: 0.02 m of per-side slack
+against an estimator whose error reached 0.1021 m. Raising the tolerance to match
+the estimator makes the traversal fail; leaving it at 0.030 m means "reached the
+site" continues to assert a precision the estimate does not have. That is a
+platform limitation, recorded here rather than tuned away. The options are all
+larger than this ADR: widen the confirmatory doorways so the narrow footprint has
+real slack; add a pre-doorway re-centring maneuver that servos on something better
+than AMCL; or accept and report the tolerance as nominal rather than physical.
 
 ## Consequences
 
-**What is covered.** The sweep now covers the 0.07 m of position slack the
-alignment law permits. Four of 96 site decisions move, all
+**What is covered.** The sweep now covers the 0.030 m of position slack the
+alignment law permits plus 0.04 m of the estimator's error. Four of 96 site decisions move, all
 `sensing_feasibility_coupled` in `combined_constraints`, by one cell, and the
 regenerated `studies/gate2/confirmatory_manipulation_check.json` keeps 9 of 9
 non-neutral layouts separating on site and route in all four contrast cells with
 0 unplanned.
 
-**What is not.** The estimator's own error on top of the tolerance -- up to
-0.1021 m observed -- remains unmodelled, so a transformation can still run up to
-about 0.18 m from the checked pose in the worst case seen. Closing that needs
-roomier transition workspaces so the clearance disk can grow without erasing the
-contrast, which is a scenario-design change and must not be made as a side effect
-of tuning. It is the open item this ADR leaves.
+**What is not.** The estimator's error beyond 0.04 m -- it reached 0.1021 m --
+remains unmodelled, so a transformation can still run about 0.13 m from the
+checked pose in the worst case seen. Closing that needs a larger margin, which
+needs a larger clearance disk, which measured worse rather than better. Both open
+items -- the uncovered estimator error and the unresolvable tolerance above --
+point at the same scenario-design change: transition workspaces and doorways with
+enough slack that the geometry stops being the binding constraint.
 
 `margin_m` also inflates boxes linearly while yaw error grows with radius, so the
 0.05 rad yaw tolerance contributes about 0.048 m of arc at the farthest swept
@@ -141,4 +170,5 @@ and `site_yaw_tolerance` stays 0.05 rad.
 manifest, and `analysis.py:35` rejects a mixed campaign, so drift is caught
 within a campaign but not between a freeze and collection. Re-collect the 20-run
 round trip and the fault matrix after this, so they qualify the geometry the
-study will actually run; both are already superseded by ADR 0007.
+study will actually run; both are already superseded by ADR 0007. The first
+re-collection attempt is the failed campaign described above and is retained.

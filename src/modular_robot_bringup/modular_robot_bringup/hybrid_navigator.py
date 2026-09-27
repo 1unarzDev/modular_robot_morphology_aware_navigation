@@ -41,18 +41,19 @@ class HybridNavigator(Node):
         self.declare_parameter("terminal_position_tolerance", 0.15)
         # Transition feasibility is checked at the planned site pose; the path
         # follower stops within 0.12 m at any heading. Align before transforming.
-        # 0.07 m rather than 0.03 (ADR 0008): the controller servos the AMCL
-        # estimate, whose own error ran 0.0221--0.0647 m on one run and
-        # 0.0516--0.1021 m on another, so a 0.03 m tolerance asked for a
-        # placement the estimate cannot resolve and "reached the site" could not
-        # mean what it said. It is set equal to
-        # post_transition_verification.margin_m, which is the largest inflation
-        # the planar clearance disk admits, so the sweep covers exactly the slack
-        # the controller is permitted. The estimator's own error on top of that
-        # is not covered; closing it needs roomier transition workspaces, not a
-        # larger margin. Yaw alignment binds the site heading and is unchanged at
-        # 0.05 rad -- that, not position, is what the fault matrix needed.
-        self.declare_parameter("site_position_tolerance", 0.07)
+        # Held at 0.030 m, and ADR 0008 records why raising it is not
+        # available. The controller servos the AMCL estimate, whose own error
+        # reached 0.1021 m, so this tolerance sits below the noise floor and
+        # "reached the site" cannot mean what it says -- that defect is real and
+        # is not fixed here. Raising it to 0.07 m was measured and reverted: the
+        # 20-run round trip then failed 11 of 20, every failure jamming the
+        # 1.76 m narrow body's nose in the 0.70 m doorway, whose 0.66 m footprint
+        # leaves 0.02 m of slack per side. The doorway demands a placement
+        # tighter than the estimator can resolve, which is a platform limitation
+        # rather than a tuning choice. post_transition_verification.margin_m is
+        # 0.07 m and therefore covers this tolerance plus 0.04 m of estimator
+        # error.
+        self.declare_parameter("site_position_tolerance", 0.03)
         self.declare_parameter("site_yaw_tolerance", 0.05)
         self.declare_parameter("site_alignment_timeout_s", 30.0)
         # A rotation that produces no yaw used to burn the whole window: 88.5 s

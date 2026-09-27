@@ -31,17 +31,18 @@ figure on record was collected with world-fixed axes.
 seconds without 0.02 rad of yaw, instead of holding a dead command for the whole
 30 s window.
 
-**ADR 0008 is adopted**: `site_position_tolerance` 0.030 -> 0.07 m and
-`post_transition_verification.margin_m` 0.0 -> 0.07 m, with `swept_radius` held
-at 1.0. That is the ceiling less a safety margin: the sweep reaches 0.92 m inside
-a 1.0 m disk and `margin_m` inflates it one-for-one, so 0.08 would sit at exact
-equality and 0.07 keeps 0.01 m. Wider candidates all keep
-9/9 separation but fail the golden fixtures -- from 0.13 the golden
-`combined_constraints` layout stops separating and at 1.15 the doorway plan
-disappears -- so **full coverage of tolerance plus estimator error is not
-attainable by tuning**; about 0.10 m of estimator error stays unmodelled and
-closing it needs roomier transition workspaces, which is a scenario-design
-decision, not a tuning one.
+**ADR 0008 is adopted, and half of it was withdrawn on measurement.**
+`post_transition_verification.margin_m` 0.0 -> 0.07 m, which is the ceiling less
+0.01 m of headroom (the sweep reaches 0.92 m inside a 1.0 m disk and grows
+one-for-one). `site_position_tolerance` **stays at 0.030 m**: raising it to 0.07 m
+failed the 20-run round trip 11 of 20, every failure jamming the 1.76 m narrow
+body's nose in the 0.70 m doorway, whose 0.66 m footprint leaves 0.02 m of slack
+per side. The failed campaign is retained at
+`studies/gate0/roundtrip_20_fdir1_attempt1_failed_audit.json`. The doorway demands
+a placement tighter than the estimator can resolve, so the original defect is a
+platform limitation, not a tuning knob; the options are wider doorways, a
+pre-doorway re-centring maneuver, or reporting the tolerance as nominal. Do not
+raise it again without changing the scenario geometry.
 
 **A harness fault was found and fixed while re-collecting.** No scratch harness
 here ever killed `parameter_bridge`, so bridges accumulated across cases while

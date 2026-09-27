@@ -867,51 +867,57 @@ adopted after the two-simulator contamination in the rotation sweep. Every
 scratch harness in this repository had the same omission; a stale bridge is now
 a caught condition rather than a silent one.
 
-### The site tolerance is raised as far as the geometry allows (ADR 0008, 2026-09-26)
+### The sweep margin is raised; the site tolerance cannot be (ADR 0008, 2026-09-26)
 
 `site_position_tolerance` was 0.030 m while the estimator the controller servos
 had 0.0221--0.0647 m of error on one run and 0.0516--0.1021 m on another, and
 `post_transition_verification.margin_m` was 0.0, so the planner checked the
-maneuver at a pose the robot did not occupy. Both are changed to **0.07 m**.
+maneuver at a pose the robot did not occupy. **The margin is now 0.07 m. The
+tolerance stays at 0.030 m, because raising it was measured and it breaks the
+platform.**
 
-0.07 m is not a preference, it is the ceiling less a safety margin. `margin_m`
-inflates the swept boxes one-for-one, the `compact_to_narrow` sweep reaches
-0.9200 m, and the planar clearance disk that covers walls is 1.0 m, so 0.08 m
-would fill it to exact equality and 0.07 m keeps 0.01 m of headroom -- walls are
-a safety property and equality is not a margin. Screening
-wider candidates against the frozen design showed the contrast counts would
-accept all of them -- 9/9 separating with 0 unplanned at every margin up to 0.22
-with the disk at 1.15 -- and the golden fixtures rejected them:
+0.07 m for the margin is the ceiling less a safety margin: reach grows one-for-one
+with the margin from 0.92 m inside a 1.0 m clearance disk, so 0.08 m would put the
+wall check at exact equality. Screening wider candidates showed the contrast
+counts would accept all of them -- 9/9 separating with 0 unplanned at every margin
+up to 0.22 with the disk at 1.15 -- while the golden fixtures rejected them: from
+0.13 the golden `combined_constraints` layout stops separating, and at 1.15 the
+doorway plan fails outright because a 2.3 m clear circle does not fit a fixture
+sized for the 1.0 m sweep. At 0.22/1.15, 64 of 96 site decisions move.
+`reconfiguration_workspace` was screened separately, since the fault matrix runs
+there, and was not the binding constraint.
 
-| `margin_m` | `swept_radius` | Separating | Sites changed /96 | Golden fixtures |
-|---|---|---|---|---|
-| 0.00 | 1.00 | 9/9 | 0 | pass |
-| **0.07--0.08** | **1.00** | **9/9** | **4** | **pass** |
-| 0.13 | 1.05 | 9/9 | 4 | fail |
-| 0.22 | 1.15 | 9/9 | 64 | fail |
+**The tolerance raise was executed and withdrawn the same day.** The 20-run round
+trip was re-collected with the tolerance at 0.07 m and failed 11 of 20
+(`studies/gate0/roundtrip_20_fdir1_attempt1_failed_audit.json`, retained as a
+failed qualification). Every failure is one geometric event: all 11 jam in a 24 cm
+band at x 2.315--2.559, y 1.981--1.993, yaw 0.033--0.067, after one transition,
+final `narrow_tandem`/`READY`, no unrecovered fault. The doorway is at x 3.15 with
+a 0.70 m opening centred on y 1.95; the narrow body is 1.76 m long, so a core at
+x 2.32 has its nose in the doorway, and its 0.66 m footprint leaves **0.02 m of
+slack per side**. The bodies sat about 0.034 m off centre and a 0.06 rad yaw error
+adds 0.053 m of nose excursion over the 0.88 m half-length. Four runs recorded
+exactly 0.0000 m clearance with 1--3 contacts. Nav2 reported "Failed to make
+progress" 33 times.
 
-From 0.13 upward the golden `combined_constraints` layout stops separating, both
-methods choosing (12, 14): inflating the boxes rejects the sites the sensing
-method was pushed toward, so the contrast collapses. At 1.15 the golden doorway
-plan fails outright -- a 1.15 m disk needs a 2.3 m clear circle and the fixture
-was sized for the 1.0 m sweep -- and 64 of 96 site decisions move for every
-method. `reconfiguration_workspace` was screened separately, since the fault
-matrix runs there, and was not the binding constraint: all three real methods
-plan in all 12 layouts even at 1.15 m.
+The attribution is clean. Neither ADR 0009 mechanism fired -- 0 rotation-stall
+aborts and 0 abandoned alignments across the campaign -- and the margin moves no
+decision in this layout, which transitions at cells (20, 18) and (48, 18) at both
+`margin_m` 0.0 and 0.07. What changed is where the robot may stand when it
+transforms.
 
-**So full coverage is not attainable by tuning these three numbers.** The sweep
-covers the 0.07 m of position slack the alignment law permits; the estimator's
-own error on top of that, up to 0.1021 m observed, stays unmodelled, so a
-transformation can still run about 0.18 m from the checked pose in the worst case
-seen. Closing that needs roomier transition workspaces so the disk can grow
-without erasing the contrast. That is a scenario-design change and is the open
-item ADR 0008 leaves; it must not be made as a side effect of tuning.
+**So the original defect stands and is not a tuning problem.** The doorway demands
+a placement tighter than the estimator can resolve: 0.02 m of per-side slack
+against an estimator whose error reached 0.1021 m. Raising the tolerance to match
+the estimator breaks the traversal; leaving it at 0.030 m means "reached the site"
+asserts a precision the estimate does not have. Recorded as a platform limitation
+with options larger than a parameter -- wider confirmatory doorways, a pre-doorway
+re-centring maneuver servoing on something better than AMCL, or reporting the
+tolerance as nominal rather than physical. See ADR 0008.
 
-Raising the position tolerance does not undo what site alignment was added for:
-the fault-matrix failure it fixed was a heading error, and `site_yaw_tolerance`
-stays 0.05 rad. `studies/gate2/confirmatory_manipulation_check.json` is
-regenerated against the adopted catalog and keeps 9/9 site- and route-separating
-with 0 unplanned in all four contrast cells.
+`studies/gate2/confirmatory_manipulation_check.json` is regenerated against the
+adopted catalog and keeps 9/9 site- and route-separating with 0 unplanned in all
+four contrast cells.
 
 ### The alignment law fails fast (ADR 0009, 2026-09-26)
 

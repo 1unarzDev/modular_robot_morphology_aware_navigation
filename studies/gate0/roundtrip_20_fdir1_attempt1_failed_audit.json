@@ -1,0 +1,176 @@
+{
+  "attributed_to": "site_position_tolerance raised from 0.030 to 0.07 m. The planner's own decisions are identical at margin_m 0.0 and 0.07 for this layout (both transition at cells (20,18) and (48,18)), so the sweep margin is not the cause, and neither ADR 0009 mechanism fired: 0 rotation-stall aborts and 0 abandoned alignments in the whole campaign. What changed is where the robot is permitted to stand when it transforms, and 0.07 m exceeds the doorway's 0.02 m per-side slack.",
+  "campaign_digest": "18f7452e10c8fee9d6127fe901249027b56ca2f63f6c82cc362df96203d1258b",
+  "design_hash": "9c74a26749d466ba382caa6b4d227a033139ef24b8600a3d10ef90608a088b5e",
+  "diagnosis": "All 11 failures jam in a 24 cm band at x 2.315-2.559, y 1.981-1.993, yaw 0.033-0.067, with one reconfiguration attempt and final morphology narrow_tandem/READY. The doorway in this layout is at x 3.15 with a 0.70 m opening centred on y 1.95. The narrow body is 1.76 m long, so a core at x 2.32 puts its nose at x 3.20 -- in the doorway -- and its 0.66 m footprint leaves 0.02 m of slack per side. The bodies sat about 0.034 m off centre, and a 0.06 rad yaw error adds 0.053 m of nose excursion over the 0.88 m half-length. Four runs recorded exactly 0.0000 m clearance with 1-3 contacts; the rest scraped at 0.004-0.013 m. Nav2 reported 'Failed to make progress' 33 times across the campaign and the navigator replanned 3 times per failing run before giving up.",
+  "disposition": "Retained as a FAILED qualification and not re-scored. Collected at c8187a9 with fdir1 (ADR 0007), margin_m 0.07 and site_position_tolerance 0.07 (ADR 0008 as first adopted). 20 terminal records, 9 completed, 11 ended controller_failure after one transition.",
+  "expected_runs": 20,
+  "failures": [
+    "combined_constraints-00-r0-feasibility_coupled: terminal=controller_failure; transitions=1/failures=0; morphology_sequence=['compact_diff', 'narrow_tandem']; final=narrow_tandem/READY/fault=False; motion_qualifications=1",
+    "combined_constraints-00-r1-feasibility_coupled: terminal=controller_failure; transitions=1/failures=0; morphology_sequence=['compact_diff', 'narrow_tandem']; final=narrow_tandem/READY/fault=False; motion_qualifications=1",
+    "combined_constraints-00-r10-feasibility_coupled: terminal=controller_failure; collisions=3; transitions=1/failures=0; morphology_sequence=['compact_diff', 'narrow_tandem']; final=narrow_tandem/READY/fault=False; motion_qualifications=1",
+    "combined_constraints-00-r11-feasibility_coupled: terminal=controller_failure; collisions=2; transitions=1/failures=0; morphology_sequence=['compact_diff', 'narrow_tandem']; final=narrow_tandem/READY/fault=False; motion_qualifications=1",
+    "combined_constraints-00-r14-feasibility_coupled: terminal=controller_failure; transitions=1/failures=0; morphology_sequence=['compact_diff', 'narrow_tandem']; final=narrow_tandem/READY/fault=False; motion_qualifications=1",
+    "combined_constraints-00-r16-feasibility_coupled: terminal=controller_failure; collisions=1; transitions=1/failures=0; morphology_sequence=['compact_diff', 'narrow_tandem']; final=narrow_tandem/READY/fault=False; motion_qualifications=1",
+    "combined_constraints-00-r18-feasibility_coupled: terminal=controller_failure; transitions=1/failures=0; morphology_sequence=['compact_diff', 'narrow_tandem']; final=narrow_tandem/READY/fault=False; motion_qualifications=1",
+    "combined_constraints-00-r19-feasibility_coupled: terminal=controller_failure; transitions=1/failures=0; morphology_sequence=['compact_diff', 'narrow_tandem']; final=narrow_tandem/READY/fault=False; motion_qualifications=1",
+    "combined_constraints-00-r6-feasibility_coupled: terminal=controller_failure; transitions=1/failures=0; morphology_sequence=['compact_diff', 'narrow_tandem']; final=narrow_tandem/READY/fault=False; motion_qualifications=1",
+    "combined_constraints-00-r7-feasibility_coupled: terminal=controller_failure; transitions=1/failures=0; morphology_sequence=['compact_diff', 'narrow_tandem']; final=narrow_tandem/READY/fault=False; motion_qualifications=1",
+    "combined_constraints-00-r8-feasibility_coupled: terminal=controller_failure; collisions=2; transitions=1/failures=0; morphology_sequence=['compact_diff', 'narrow_tandem']; final=narrow_tandem/READY/fault=False; motion_qualifications=1"
+  ],
+  "motion_margins": {
+    "forward_lateral_m": {
+      "bound": 0.08,
+      "direction": "abs_max",
+      "median_margin": 0.07824694604187545,
+      "observed_max": 0.0006286730376454066,
+      "observed_median": -0.0017530539581245598,
+      "observed_min": -0.0036952433358271083,
+      "samples": 29,
+      "worst_margin": 0.0763047566641729
+    },
+    "forward_travel_m": {
+      "bound": 0.08,
+      "direction": "min",
+      "median_margin": 0.032811827033301794,
+      "observed_max": 0.11547137980301246,
+      "observed_median": 0.1128118270333018,
+      "observed_min": 0.11108548329533657,
+      "samples": 29,
+      "worst_margin": 0.03108548329533657
+    },
+    "forward_yaw_rad": {
+      "bound": 0.15,
+      "direction": "abs_max",
+      "median_margin": 0.13805043329753072,
+      "observed_max": 0.0013304560484377944,
+      "observed_median": -0.011949566702469272,
+      "observed_min": -0.024709125633532142,
+      "samples": 29,
+      "worst_margin": 0.12529087436646785
+    },
+    "negative_yaw_coupling": {
+      "bound": 0.25,
+      "direction": "max",
+      "median_margin": 0.24170459176638548,
+      "observed_max": 0.015348764011483426,
+      "observed_median": 0.008295408233614535,
+      "observed_min": 0.0030181331926724965,
+      "samples": 29,
+      "worst_margin": 0.23465123598851656
+    },
+    "negative_yaw_rad": {
+      "bound": -0.1,
+      "direction": "max",
+      "median_margin": 0.4283452159617379,
+      "observed_max": -0.28015723753910776,
+      "observed_median": -0.5283452159617379,
+      "observed_min": -0.6595220738641806,
+      "samples": 29,
+      "worst_margin": 0.18015723753910776
+    },
+    "negative_yaw_translation_m": {
+      "bound": 0.12,
+      "direction": "max",
+      "median_margin": 0.11510075278083182,
+      "observed_max": 0.008999092272129618,
+      "observed_median": 0.004899247219168184,
+      "observed_min": 0.0012297039624505342,
+      "samples": 29,
+      "worst_margin": 0.11100090772787038
+    },
+    "positive_yaw_coupling": {
+      "bound": 0.25,
+      "direction": "max",
+      "median_margin": 0.24178710312394577,
+      "observed_max": 0.017534205828506576,
+      "observed_median": 0.008212896876054225,
+      "observed_min": 0.003759698518243373,
+      "samples": 29,
+      "worst_margin": 0.23246579417149343
+    },
+    "positive_yaw_rad": {
+      "bound": 0.1,
+      "direction": "min",
+      "median_margin": 0.5415514029271413,
+      "observed_max": 0.7267765036988657,
+      "observed_median": 0.6415514029271413,
+      "observed_min": 0.2774860711807495,
+      "samples": 29,
+      "worst_margin": 0.17748607118074952
+    },
+    "positive_yaw_translation_m": {
+      "bound": 0.12,
+      "direction": "max",
+      "median_margin": 0.11514106910291538,
+      "observed_max": 0.011658983079766436,
+      "observed_median": 0.004858930897084618,
+      "observed_min": 0.0011933577866251066,
+      "samples": 29,
+      "worst_margin": 0.10834101692023355
+    },
+    "reverse_lateral_m": {
+      "bound": 0.08,
+      "direction": "abs_max",
+      "median_margin": 0.07952140297204147,
+      "observed_max": 0.0013408702456941925,
+      "observed_median": 0.00046662648885571544,
+      "observed_min": -0.0006475578846392678,
+      "samples": 29,
+      "worst_margin": 0.0786591297543058
+    },
+    "reverse_travel_m": {
+      "bound": -0.08,
+      "direction": "max",
+      "median_margin": 0.03294930545694798,
+      "observed_max": -0.11049436624871539,
+      "observed_median": -0.11294930545694798,
+      "observed_min": -0.11535314221897781,
+      "samples": 29,
+      "worst_margin": 0.03049436624871539
+    },
+    "reverse_yaw_rad": {
+      "bound": 0.15,
+      "direction": "abs_max",
+      "median_margin": 0.1499394248076359,
+      "observed_max": 0.00024678771258496157,
+      "observed_median": -4.676061677105509e-05,
+      "observed_min": -0.0009093463500767732,
+      "samples": 29,
+      "worst_margin": 0.14909065364992322
+    }
+  },
+  "observed_terminal_records": 20,
+  "passed": false,
+  "purpose": "engineering_roundtrip_qualification",
+  "real_time_factors": {
+    "maximum": 0.9727449513985128,
+    "median": 0.9694721396949562,
+    "minimum": 0.9671095401958482,
+    "samples": 20
+  },
+  "record_digests": {
+    "combined_constraints-00-r0-feasibility_coupled": "5098ce104658a3528a8e83c5f9c2b5acaee674cb3094203099732df08951d8c9",
+    "combined_constraints-00-r1-feasibility_coupled": "f710492ffd4b360da9b4b52e51541ba3516edea55e7ddc0346f22db6cabc5dd6",
+    "combined_constraints-00-r10-feasibility_coupled": "c555fe4cdfb06c5ed8e274869186d3094c90d0c9212bc23cc6a15449e5b4bd1d",
+    "combined_constraints-00-r11-feasibility_coupled": "b2d2f36ed2508fac84cda9d6caba72658aedce19fe36d815b53d036446138b3e",
+    "combined_constraints-00-r12-feasibility_coupled": "bda5d4d855e683836356990e06704ff264616214324f0e75b3ec95b262029eae",
+    "combined_constraints-00-r13-feasibility_coupled": "65f2d20f40c38d21cb956f30de31d90ed4773bd34400bee236529fc8fc1631f6",
+    "combined_constraints-00-r14-feasibility_coupled": "62fe3dae5ec72b627afe2a7790fc332977b1e168021a00d44da42d39fcba9095",
+    "combined_constraints-00-r15-feasibility_coupled": "29074b8744399eb1dd1be08dfe245c4995cd90871444c15028381b1f8c62205d",
+    "combined_constraints-00-r16-feasibility_coupled": "69f987fc39f46dca800a45c6435ec75679526da5ae5f6e8e637164498bf1b3f7",
+    "combined_constraints-00-r17-feasibility_coupled": "cde8e2bb64e370746add42937d6ebba0eeb075a923247269da8134a88a2aeee7",
+    "combined_constraints-00-r18-feasibility_coupled": "84c349cfd286999966685c44cd76593d4dd403c5984aaf39ce841888addf80dc",
+    "combined_constraints-00-r19-feasibility_coupled": "6b0ead8567b91b306f3857bfaf45879d4da34a7503905b043984eff975b0b74e",
+    "combined_constraints-00-r2-feasibility_coupled": "363f30239381f7289de8fb829478acbec879c654d7bd900dadc864463cf12a3c",
+    "combined_constraints-00-r3-feasibility_coupled": "33ea7b1ce78d1e2d6708a6e9522a07aa8f07b413e1f0ff69f270a4073009122f",
+    "combined_constraints-00-r4-feasibility_coupled": "9cdb25a8fcb55377aefec7086eb47648cd424f93c1aa262607d93fed4c1e9fbc",
+    "combined_constraints-00-r5-feasibility_coupled": "b7857cea4619cd44b59785b8229bf89cb25c8c6353e581e1b9e9d3ba67824695",
+    "combined_constraints-00-r6-feasibility_coupled": "7d812ca606abff3d31722ae8d333c241cf091b7ec0f8695b48f4b6150404377d",
+    "combined_constraints-00-r7-feasibility_coupled": "d1f6a57be340c9dcde53f3070717fa2f59c5993e5c55851c4160f562d20579ff",
+    "combined_constraints-00-r8-feasibility_coupled": "4bf9c87ca8690a72380bb218dcac7853a2f73535fa2b8a87c345c4de12452078",
+    "combined_constraints-00-r9-feasibility_coupled": "6ad6b3b58369ec7b710979c8f44b1bc82e71a27cd6289545c6d3da24910e82ec"
+  },
+  "schema_version": 2,
+  "unique_realized_disturbances": 20
+}
