@@ -21,8 +21,9 @@ from std_srvs.srv import SetBool
 from tf2_ros import Buffer, TransformException, TransformListener
 
 from .qualification import (
-    VERIFICATION_SEQUENCE, CommandWindow, PlanarPose, goal_position_reached,
-    motion_delta, qualification_pass, site_alignment_command,
+    VERIFICATION_SEQUENCE, CommandWindow, PlanarPose, RotationStallWatch,
+    goal_position_reached, motion_delta, qualification_pass,
+    site_alignment_command,
 )
 
 
@@ -43,6 +44,11 @@ class HybridNavigator(Node):
         self.declare_parameter("site_position_tolerance", 0.03)
         self.declare_parameter("site_yaw_tolerance", 0.05)
         self.declare_parameter("site_alignment_timeout_s", 30.0)
+        # A rotation that produces no yaw used to burn the whole window: 88.5 s
+        # of commanded rotation across three windows moved the body 0.000 rad
+        # while translation stayed inhibited. Replanning beats waiting.
+        self.declare_parameter("site_alignment_rotation_stall_s", 5.0)
+        self.declare_parameter("site_alignment_rotation_progress_rad", 0.02)
         qos = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL,
                          reliability=ReliabilityPolicy.RELIABLE)
         self.morphology: MorphologyState | None = None
@@ -424,6 +430,9 @@ class HybridNavigator(Node):
             float(self.get_parameter("site_alignment_timeout_s").value),
             lambda: clock.now().nanoseconds / 1e9, time.monotonic,
             float(self.get_parameter("motion_command_stall_grace_s").value))
+        watch = RotationStallWatch(
+            float(self.get_parameter("site_alignment_rotation_stall_s").value),
+            float(self.get_parameter("site_alignment_rotation_progress_rad").value))
         translating = True
         while window.keep_commanding():
             if window.stalled:
@@ -434,9 +443,9 @@ class HybridNavigator(Node):
                 await self._sleep(0.05)
                 continue
             quaternion = current.pose.orientation
+            yaw = 2.0 * atan2(quaternion.z, quaternion.w)
             linear, angular, translating, aligned = site_alignment_command(
-                PlanarPose(current.pose.position.x, current.pose.position.y,
-                           2.0 * atan2(quaternion.z, quaternion.w)),
+                PlanarPose(current.pose.position.x, current.pose.position.y, yaw),
                 site, position_tolerance, yaw_tolerance, translating)
             command = Twist()
             command.linear.x, command.angular.z = linear, angular
@@ -444,6 +453,16 @@ class HybridNavigator(Node):
             if aligned:
                 await self._sleep(0.25)
                 return True
+            # Commanded rotation that produces no rotation is a failure now
+            # rather than at the end of the window: the body cannot be servoed
+            # into place and the site should be replanned instead.
+            if watch.stalled(clock.now().nanoseconds / 1e9, yaw,
+                             linear == 0.0 and angular != 0.0):
+                self.get_logger().error(
+                    f"site alignment commanded {angular:.3f} rad/s for "
+                    f"{watch.elapsed_s:.1f} simulated seconds and the body turned "
+                    f"less than {watch.progress_rad} rad; replanning")
+                break
             await self._sleep(0.05)
         self.command_publisher.publish(Twist())
         return False

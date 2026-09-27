@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 from xml.etree.ElementTree import parse
 

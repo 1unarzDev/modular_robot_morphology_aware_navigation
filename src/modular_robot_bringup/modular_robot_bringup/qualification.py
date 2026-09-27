@@ -92,10 +92,47 @@ def _wrap(angle: float) -> float:
     return atan2(sin(angle), cos(angle))
 
 
+class RotationStallWatch:
+    """Detect a commanded in-place rotation that is not rotating the body.
+
+    Site alignment refuses to translate while the bearing error exceeds
+    0.15 rad, so a rotation that produces no yaw becomes a hard stop rather
+    than degraded progress: 88.5 s of commanded rotation across three windows
+    once moved the body 0.000 rad while ``body_linear_x`` stayed 0.000 in every
+    recorded sample. The cause there was world-fixed friction axes (ADR 0007),
+    but the law should fail fast whatever the cause, because replanning the site
+    can succeed where waiting out the window cannot.
+
+    Feed simulated time. ``progress_rad`` of yaw re-arms the watch, so this
+    reports "no progress for ``stall_s``" rather than "not finished yet".
+    """
+
+    def __init__(self, stall_s: float, progress_rad: float) -> None:
+        self.stall_s = stall_s
+        self.progress_rad = progress_rad
+        self.started_s: float | None = None
+        self.started_yaw = 0.0
+        self.elapsed_s = 0.0
+
+    def stalled(self, now_s: float, yaw: float, rotating: bool) -> bool:
+        if not rotating:
+            self.started_s, self.elapsed_s = None, 0.0
+            return False
+        if self.started_s is None:
+            self.started_s, self.started_yaw, self.elapsed_s = now_s, yaw, 0.0
+            return False
+        self.elapsed_s = now_s - self.started_s
+        if abs(_wrap(yaw - self.started_yaw)) >= self.progress_rad:
+            self.started_s, self.started_yaw, self.elapsed_s = now_s, yaw, 0.0
+            return False
+        return self.elapsed_s >= self.stall_s
+
+
 def site_alignment_command(
     current: PlanarPose, site: PlanarPose, position_tolerance: float,
     yaw_tolerance: float, translating: bool,
     max_linear: float = 0.15, max_angular: float = 0.6,
+    min_bearing_angular: float = 0.30,
 ) -> tuple[float, float, bool, bool]:
     """Differential command bringing the assembly onto a planned transition site.
 
@@ -106,6 +143,16 @@ def site_alignment_command(
     or reverse, whichever faces the site), then turn in place to the planned
     yaw. ``translating`` carries hysteresis so a small drift while turning
     does not restart translation until it doubles the tolerance.
+
+    ``min_bearing_angular`` floors the pure in-place turn that precedes
+    translation, matching ``min_pod_angular`` in ``reconfiguration_executor``.
+    That branch had no floor at all while the final yaw branch had 0.15 rad/s,
+    so an arbitrarily small commanded rate could be asked to break the assembly
+    away from rest. The floor applies only where the command is a pure turn:
+    once translation is authorized, flooring the turn would steer a moving body
+    (the executor's comment warns against exactly that), and the final yaw
+    branch keeps its lower floor because it trims inside the tolerance rather
+    than breaking away.
     """
     dx, dy = site.x - current.x, site.y - current.y
     distance = hypot(dx, dy)
@@ -116,7 +163,8 @@ def site_alignment_command(
             bearing, direction = _wrap(bearing - 3.141592653589793), -1.0
         angular = max(-max_angular, min(max_angular, 1.5 * bearing))
         if abs(bearing) > 0.15:
-            return 0.0, angular, True, False
+            floored = max(min_bearing_angular, min(max_angular, abs(angular)))
+            return 0.0, floored if bearing > 0 else -floored, True, False
         return direction * min(max_linear, max(0.03, 0.8 * distance)), angular, True, False
     yaw_error = _wrap(site.yaw - current.yaw)
     if abs(yaw_error) <= yaw_tolerance:
