@@ -1,0 +1,588 @@
+{
+  "adr": "0007, adopted: fdir1 1 0 0 on both wheel collisions of articulated_pod",
+  "commit": "b359903f4ce978d4fded05c96f7870457d69d9ba",
+  "compact_assembly": [
+    {
+      "commanded_yaw_rate_radps": 0.35,
+      "morphology": "compact_diff",
+      "purpose": "engineering_qualification",
+      "qualification_pass": true,
+      "rep_103_signs_pass": true,
+      "run": "compact_assembly_1",
+      "sample_count": 390,
+      "schema_version": 1,
+      "stages": {
+        "negative_yaw": {
+          "body_forward_displacement_m": -0.005674347982739484,
+          "body_lateral_displacement_m": -0.000450963392340012,
+          "delta_x": -0.002417032672862751,
+          "delta_y": -0.005153595450630988,
+          "delta_yaw": -1.0247594873121673,
+          "duration_s": 3.9480000000000004,
+          "peak_absolute_pod_commands": {
+            "pod_0": 0.06999999999999999,
+            "pod_1": 0.06999999999999999,
+            "pod_2": 0.06999999999999999,
+            "pod_3": 0.06999999999999999,
+            "pod_4": 0.06999999999999999,
+            "pod_5": 0.06999999999999999
+          },
+          "translation_m": 0.005692239718287562
+        },
+        "positive_yaw": {
+          "body_forward_displacement_m": 0.003337785525908842,
+          "body_lateral_displacement_m": 0.004100156581345937,
+          "delta_x": 0.0033377855255363187,
+          "delta_y": 0.004100156581649195,
+          "delta_yaw": 1.0254494657923658,
+          "duration_s": 3.9560000000000004,
+          "peak_absolute_pod_commands": {
+            "pod_0": 0.06999999999999999,
+            "pod_1": 0.06999999999999999,
+            "pod_2": 0.06999999999999999,
+            "pod_3": 0.06999999999999999,
+            "pod_4": 0.06999999999999999,
+            "pod_5": 0.06999999999999999
+          },
+          "translation_m": 0.005286974201612957
+        },
+        "straight": {
+          "body_forward_displacement_m": 0.7381443634438826,
+          "body_lateral_displacement_m": 3.314964201529748e-05,
+          "delta_x": 0.7381440500017791,
+          "delta_y": 0.0006810505447751858,
+          "delta_yaw": 4.54682159387711e-05,
+          "duration_s": 3.9480000000000004,
+          "peak_absolute_pod_commands": {
+            "pod_0": 0.2,
+            "pod_1": 0.2,
+            "pod_2": 0.2,
+            "pod_3": 0.2,
+            "pod_4": 0.2,
+            "pod_5": 0.2
+          },
+          "translation_m": 0.7381443641882484
+        }
+      },
+      "straight_motion_pass": true,
+      "yaw_translation_pass": true
+    },
+    {
+      "commanded_yaw_rate_radps": 0.35,
+      "morphology": "compact_diff",
+      "purpose": "engineering_qualification",
+      "qualification_pass": true,
+      "rep_103_signs_pass": true,
+      "run": "compact_assembly_2",
+      "sample_count": 390,
+      "schema_version": 1,
+      "stages": {
+        "negative_yaw": {
+          "body_forward_displacement_m": -0.005674347982739484,
+          "body_lateral_displacement_m": -0.000450963392340012,
+          "delta_x": -0.002417032672862751,
+          "delta_y": -0.005153595450630988,
+          "delta_yaw": -1.0247594873121673,
+          "duration_s": 3.9480000000000004,
+          "peak_absolute_pod_commands": {
+            "pod_0": 0.06999999999999999,
+            "pod_1": 0.06999999999999999,
+            "pod_2": 0.06999999999999999,
+            "pod_3": 0.06999999999999999,
+            "pod_4": 0.06999999999999999,
+            "pod_5": 0.06999999999999999
+          },
+          "translation_m": 0.005692239718287562
+        },
+        "positive_yaw": {
+          "body_forward_displacement_m": 0.003337785525908842,
+          "body_lateral_displacement_m": 0.004100156581345937,
+          "delta_x": 0.0033377855255363187,
+          "delta_y": 0.004100156581649195,
+          "delta_yaw": 1.0254494657923658,
+          "duration_s": 3.9560000000000004,
+          "peak_absolute_pod_commands": {
+            "pod_0": 0.06999999999999999,
+            "pod_1": 0.06999999999999999,
+            "pod_2": 0.06999999999999999,
+            "pod_3": 0.06999999999999999,
+            "pod_4": 0.06999999999999999,
+            "pod_5": 0.06999999999999999
+          },
+          "translation_m": 0.005286974201612957
+        },
+        "straight": {
+          "body_forward_displacement_m": 0.7381443634438826,
+          "body_lateral_displacement_m": 3.314964201529748e-05,
+          "delta_x": 0.7381440500017791,
+          "delta_y": 0.0006810505447751858,
+          "delta_yaw": 4.54682159387711e-05,
+          "duration_s": 3.9480000000000004,
+          "peak_absolute_pod_commands": {
+            "pod_0": 0.2,
+            "pod_1": 0.2,
+            "pod_2": 0.2,
+            "pod_3": 0.2,
+            "pod_4": 0.2,
+            "pod_5": 0.2
+          },
+          "translation_m": 0.7381443641882484
+        }
+      },
+      "straight_motion_pass": true,
+      "yaw_translation_pass": true
+    },
+    {
+      "commanded_yaw_rate_radps": 0.35,
+      "morphology": "compact_diff",
+      "purpose": "engineering_qualification",
+      "qualification_pass": true,
+      "rep_103_signs_pass": true,
+      "run": "compact_assembly_3",
+      "sample_count": 390,
+      "schema_version": 1,
+      "stages": {
+        "negative_yaw": {
+          "body_forward_displacement_m": -0.005674347982739484,
+          "body_lateral_displacement_m": -0.000450963392340012,
+          "delta_x": -0.002417032672862751,
+          "delta_y": -0.005153595450630988,
+          "delta_yaw": -1.0247594873121673,
+          "duration_s": 3.9480000000000004,
+          "peak_absolute_pod_commands": {
+            "pod_0": 0.06999999999999999,
+            "pod_1": 0.06999999999999999,
+            "pod_2": 0.06999999999999999,
+            "pod_3": 0.06999999999999999,
+            "pod_4": 0.06999999999999999,
+            "pod_5": 0.06999999999999999
+          },
+          "translation_m": 0.005692239718287562
+        },
+        "positive_yaw": {
+          "body_forward_displacement_m": 0.003337785525908842,
+          "body_lateral_displacement_m": 0.004100156581345937,
+          "delta_x": 0.0033377855255363187,
+          "delta_y": 0.004100156581649195,
+          "delta_yaw": 1.0254494657923658,
+          "duration_s": 3.9560000000000004,
+          "peak_absolute_pod_commands": {
+            "pod_0": 0.06999999999999999,
+            "pod_1": 0.06999999999999999,
+            "pod_2": 0.06999999999999999,
+            "pod_3": 0.06999999999999999,
+            "pod_4": 0.06999999999999999,
+            "pod_5": 0.06999999999999999
+          },
+          "translation_m": 0.005286974201612957
+        },
+        "straight": {
+          "body_forward_displacement_m": 0.7381443634438826,
+          "body_lateral_displacement_m": 3.314964201529748e-05,
+          "delta_x": 0.7381440500017791,
+          "delta_y": 0.0006810505447751858,
+          "delta_yaw": 4.54682159387711e-05,
+          "duration_s": 3.9480000000000004,
+          "peak_absolute_pod_commands": {
+            "pod_0": 0.2,
+            "pod_1": 0.2,
+            "pod_2": 0.2,
+            "pod_3": 0.2,
+            "pod_4": 0.2,
+            "pod_5": 0.2
+          },
+          "translation_m": 0.7381443641882484
+        }
+      },
+      "straight_motion_pass": true,
+      "yaw_translation_pass": true
+    }
+  ],
+  "declared_protocol": "studies/gate0/gate0_item1_fdir1_declaration.json",
+  "detached_pod": [
+    {
+      "passed": true,
+      "purpose": "engineering_detached_pod_qualification",
+      "run": "detached_pod_1",
+      "schema_version": 1,
+      "stages": {
+        "forward": {
+          "forward_m": 0.680310501572979,
+          "lateral_m": -0.0009057466303735539,
+          "sample_count": 30,
+          "translation_m": 0.6803111045157477,
+          "wheel_tracking_mae_radps": 0.3040973057000001,
+          "yaw_rad": -0.003099716491
+        },
+        "negative_yaw": {
+          "forward_m": -1.4001507247563065e-07,
+          "lateral_m": 8.745209639141444e-08,
+          "sample_count": 30,
+          "translation_m": 1.6508206953999984e-07,
+          "wheel_tracking_mae_radps": 0.11060840178333331,
+          "yaw_rad": -1.1835612394700001
+        },
+        "positive_yaw": {
+          "forward_m": -0.00028283460796225555,
+          "lateral_m": -1.124060819365792e-05,
+          "sample_count": 30,
+          "translation_m": 0.00028305788583561154,
+          "wheel_tracking_mae_radps": 0.10873352148999998,
+          "yaw_rad": 1.18965944537044
+        },
+        "reverse": {
+          "forward_m": -0.6804763586583893,
+          "lateral_m": 0.0007607158585865906,
+          "sample_count": 30,
+          "translation_m": 0.6804767838667226,
+          "wheel_tracking_mae_radps": 0.30731331700000014,
+          "yaw_rad": -0.0019608932118000003
+        }
+      }
+    },
+    {
+      "passed": true,
+      "purpose": "engineering_detached_pod_qualification",
+      "run": "detached_pod_2",
+      "schema_version": 1,
+      "stages": {
+        "forward": {
+          "forward_m": 0.6762113875640241,
+          "lateral_m": -0.0008574109387517364,
+          "sample_count": 30,
+          "translation_m": 0.6762119311464274,
+          "wheel_tracking_mae_radps": 0.3063850333666668,
+          "yaw_rad": -0.0029976518029999994
+        },
+        "negative_yaw": {
+          "forward_m": -1.367644321684712e-07,
+          "lateral_m": 8.323303759197681e-08,
+          "sample_count": 30,
+          "translation_m": 1.6010074469892943e-07,
+          "wheel_tracking_mae_radps": 0.11063795808833331,
+          "yaw_rad": -1.1758985119899998
+        },
+        "positive_yaw": {
+          "forward_m": -0.00043471940533927476,
+          "lateral_m": -2.642360102595045e-05,
+          "sample_count": 30,
+          "translation_m": 0.00043552171940066466,
+          "wheel_tracking_mae_radps": 0.10776000187166665,
+          "yaw_rad": 1.186748202369827
+        },
+        "reverse": {
+          "forward_m": -0.6760631547889013,
+          "lateral_m": 0.0009625123516649203,
+          "sample_count": 30,
+          "translation_m": 0.676063839953853,
+          "wheel_tracking_mae_radps": 0.3095408106500001,
+          "yaw_rad": -0.0032229429930000003
+        }
+      }
+    },
+    {
+      "passed": true,
+      "purpose": "engineering_detached_pod_qualification",
+      "run": "detached_pod_3",
+      "schema_version": 1,
+      "stages": {
+        "forward": {
+          "forward_m": 0.6716162757636157,
+          "lateral_m": -0.0007828557611855805,
+          "sample_count": 30,
+          "translation_m": 0.6716167320233556,
+          "wheel_tracking_mae_radps": 0.3476306588500001,
+          "yaw_rad": -0.003000107907000001
+        },
+        "negative_yaw": {
+          "forward_m": -1.3642832955851032e-07,
+          "lateral_m": 8.232535983790487e-08,
+          "sample_count": 30,
+          "translation_m": 1.593428817944687e-07,
+          "wheel_tracking_mae_radps": 0.11086624972166664,
+          "yaw_rad": -1.1679204423
+        },
+        "positive_yaw": {
+          "forward_m": -0.000389927400239867,
+          "lateral_m": -1.982336897499929e-05,
+          "sample_count": 30,
+          "translation_m": 0.00039043097138334246,
+          "wheel_tracking_mae_radps": 0.10839114830833331,
+          "yaw_rad": 1.1780569333702278
+        },
+        "reverse": {
+          "forward_m": -0.6716579792938168,
+          "lateral_m": 0.0008704095664684502,
+          "sample_count": 30,
+          "translation_m": 0.6716585432806363,
+          "wheel_tracking_mae_radps": 0.35136071941666674,
+          "yaw_rad": -0.0031324190619999998
+        }
+      }
+    }
+  ],
+  "heading_varied": {
+    "compact_assembly": [
+      {
+        "commanded_yaw_rate_radps": 0.35,
+        "morphology": "compact_diff",
+        "purpose": "engineering_qualification",
+        "qualification_pass": true,
+        "rep_103_signs_pass": true,
+        "run": "compact_assembly_yaw_plus90",
+        "sample_count": 391,
+        "schema_version": 1,
+        "stages": {
+          "negative_yaw": {
+            "body_forward_displacement_m": -0.005626995943840314,
+            "body_lateral_displacement_m": -0.0005293048434621634,
+            "delta_x": 0.005151231845409443,
+            "delta_y": -0.0023255230474341637,
+            "delta_yaw": -1.030016111358427,
+            "duration_s": 3.998000000000001,
+            "peak_absolute_pod_commands": {
+              "pod_0": 0.06999999999999999,
+              "pod_1": 0.06999999999999999,
+              "pod_2": 0.06999999999999999,
+              "pod_3": 0.06999999999999999,
+              "pod_4": 0.06999999999999999,
+              "pod_5": 0.06999999999999999
+            },
+            "translation_m": 0.005651835716765647
+          },
+          "positive_yaw": {
+            "body_forward_displacement_m": 0.0033841329957947884,
+            "body_lateral_displacement_m": 0.004176496642920204,
+            "delta_x": -0.004176496642919414,
+            "delta_y": 0.0033841329957957633,
+            "delta_yaw": 1.0201828179562333,
+            "duration_s": 3.9480000000000004,
+            "peak_absolute_pod_commands": {
+              "pod_0": 0.06999999999999999,
+              "pod_1": 0.06999999999999999,
+              "pod_2": 0.06999999999999999,
+              "pod_3": 0.06999999999999999,
+              "pod_4": 0.06999999999999999,
+              "pod_5": 0.06999999999999999
+            },
+            "translation_m": 0.0053754516407043176
+          },
+          "straight": {
+            "body_forward_displacement_m": 0.7414464299968125,
+            "body_lateral_displacement_m": 3.138462908791769e-05,
+            "delta_x": -0.0006839399105293964,
+            "delta_y": 0.7414461152141887,
+            "delta_yaw": 4.272804496152638e-05,
+            "duration_s": 3.9480000000000004,
+            "peak_absolute_pod_commands": {
+              "pod_0": 0.2,
+              "pod_1": 0.2,
+              "pod_2": 0.2,
+              "pod_3": 0.2,
+              "pod_4": 0.2,
+              "pod_5": 0.2
+            },
+            "translation_m": 0.7414464306610513
+          }
+        },
+        "straight_motion_pass": true,
+        "yaw_translation_pass": true
+      },
+      {
+        "commanded_yaw_rate_radps": 0.35,
+        "morphology": "compact_diff",
+        "purpose": "engineering_qualification",
+        "qualification_pass": true,
+        "rep_103_signs_pass": true,
+        "run": "compact_assembly_yaw_minus90",
+        "sample_count": 391,
+        "schema_version": 1,
+        "stages": {
+          "negative_yaw": {
+            "body_forward_displacement_m": -0.005626995919481479,
+            "body_lateral_displacement_m": -0.0005293048534489343,
+            "delta_x": -0.005151231829763403,
+            "delta_y": 0.0023255230254242143,
+            "delta_yaw": -1.0300161113651547,
+            "duration_s": 3.998000000000001,
+            "peak_absolute_pod_commands": {
+              "pod_0": 0.06999999999999999,
+              "pod_1": 0.06999999999999999,
+              "pod_2": 0.06999999999999999,
+              "pod_3": 0.06999999999999999,
+              "pod_4": 0.06999999999999999,
+              "pod_5": 0.06999999999999999
+            },
+            "translation_m": 0.005651835693449148
+          },
+          "positive_yaw": {
+            "body_forward_displacement_m": 0.00338413294802315,
+            "body_lateral_displacement_m": 0.004176496592664242,
+            "delta_x": 0.004176496592663392,
+            "delta_y": -0.003384132948024199,
+            "delta_yaw": 1.020182818209304,
+            "duration_s": 3.9480000000000004,
+            "peak_absolute_pod_commands": {
+              "pod_0": 0.06999999999999999,
+              "pod_1": 0.06999999999999999,
+              "pod_2": 0.06999999999999999,
+              "pod_3": 0.06999999999999999,
+              "pod_4": 0.06999999999999999,
+              "pod_5": 0.06999999999999999
+            },
+            "translation_m": 0.00537545157158279
+          },
+          "straight": {
+            "body_forward_displacement_m": 0.7414464299960996,
+            "body_lateral_displacement_m": 3.138463931038845e-05,
+            "delta_x": 0.0006839401231348852,
+            "delta_y": -0.7414461152132801,
+            "delta_yaw": 4.272805888994035e-05,
+            "duration_s": 3.9480000000000004,
+            "peak_absolute_pod_commands": {
+              "pod_0": 0.2,
+              "pod_1": 0.2,
+              "pod_2": 0.2,
+              "pod_3": 0.2,
+              "pod_4": 0.2,
+              "pod_5": 0.2
+            },
+            "translation_m": 0.7414464306603388
+          }
+        },
+        "straight_motion_pass": true,
+        "yaw_translation_pass": true
+      },
+      {
+        "commanded_yaw_rate_radps": 0.35,
+        "morphology": "compact_diff",
+        "purpose": "engineering_qualification",
+        "qualification_pass": true,
+        "rep_103_signs_pass": true,
+        "run": "compact_assembly_yaw_plus45",
+        "sample_count": 391,
+        "schema_version": 1,
+        "stages": {
+          "negative_yaw": {
+            "body_forward_displacement_m": -0.005838923557121544,
+            "body_lateral_displacement_m": -0.00042298764492071893,
+            "delta_x": 0.001947867336154041,
+            "delta_y": -0.005520666598736845,
+            "delta_yaw": -1.0291275296775784,
+            "duration_s": 3.998000000000001,
+            "peak_absolute_pod_commands": {
+              "pod_0": 0.06999999999999999,
+              "pod_1": 0.06999999999999999,
+              "pod_2": 0.06999999999999999,
+              "pod_3": 0.06999999999999999,
+              "pod_4": 0.06999999999999999,
+              "pod_5": 0.06999999999999999
+            },
+            "translation_m": 0.005854224701330185
+          },
+          "positive_yaw": {
+            "body_forward_displacement_m": 0.003552594964013974,
+            "body_lateral_displacement_m": 0.0042416327926009245,
+            "delta_x": -0.00048722332108652733,
+            "delta_y": 0.005511351300814926,
+            "delta_yaw": 1.0196220911546208,
+            "duration_s": 3.9480000000000004,
+            "peak_absolute_pod_commands": {
+              "pod_0": 0.06999999999999999,
+              "pod_1": 0.06999999999999999,
+              "pod_2": 0.06999999999999999,
+              "pod_3": 0.06999999999999999,
+              "pod_4": 0.06999999999999999,
+              "pod_5": 0.06999999999999999
+            },
+            "translation_m": 0.005532845536033422
+          },
+          "straight": {
+            "body_forward_displacement_m": 0.742919483203633,
+            "body_lateral_displacement_m": 0.00016093452818838339,
+            "delta_x": 0.5246852147285075,
+            "delta_y": 0.5259608444254908,
+            "delta_yaw": 0.00021773513289502502,
+            "duration_s": 3.9480000000000004,
+            "peak_absolute_pod_commands": {
+              "pod_0": 0.2,
+              "pod_1": 0.2,
+              "pod_2": 0.2,
+              "pod_3": 0.2,
+              "pod_4": 0.2,
+              "pod_5": 0.2
+            },
+            "translation_m": 0.7429195006348099
+          }
+        },
+        "straight_motion_pass": true,
+        "yaw_translation_pass": true
+      }
+    ],
+    "detached_pod": [
+      {
+        "passed": true,
+        "purpose": "engineering_detached_pod_qualification",
+        "run": "detached_pod_yaw_plus90",
+        "schema_version": 1,
+        "stages": {
+          "forward": {
+            "forward_m": 0.6813143351059411,
+            "lateral_m": -0.0007589895057544538,
+            "sample_count": 30,
+            "translation_m": 0.6813147578659371,
+            "wheel_tracking_mae_radps": 0.31365053471666676,
+            "yaw_rad": -0.002952716000000022
+          },
+          "negative_yaw": {
+            "forward_m": -1.3824950296115097e-07,
+            "lateral_m": 8.712260372782584e-08,
+            "sample_count": 30,
+            "translation_m": 1.6341136175101493e-07,
+            "wheel_tracking_mae_radps": 0.11061513687166664,
+            "yaw_rad": -1.185929328
+          },
+          "positive_yaw": {
+            "forward_m": -0.00037655050578575,
+            "lateral_m": -2.490068480906324e-05,
+            "sample_count": 30,
+            "translation_m": 0.0003773729289594902,
+            "wheel_tracking_mae_radps": 0.10798427636166666,
+            "yaw_rad": 1.1962790809999997
+          },
+          "reverse": {
+            "forward_m": -0.681255567959092,
+            "lateral_m": 0.0009063686656018907,
+            "sample_count": 30,
+            "translation_m": 0.6812561708927289,
+            "wheel_tracking_mae_radps": 0.30443078555000014,
+            "yaw_rad": -0.0031613919999999847
+          }
+        }
+      }
+    ],
+    "why": "The gate has only ever measured one heading, which is what let a heading-dependent defect through. These cases must pass the same built-in criteria."
+  },
+  "passed": true,
+  "purpose": "gate0_item1_engineering_qualification_not_study_evidence",
+  "quarantined_first_attempt": {
+    "directory": "results/qualification/gate0_item1_fdir1_attempt1_harness_fault",
+    "disposition": "Every record from that attempt is quarantined and unused, including the detached-pod records that did complete. The harness now kills parameter_bridge and counts it in the pre-run cleanliness guard, which is the same class of fix as the simulator-count guard added after the two-simulator contamination in the rotation sweep.",
+    "fault": "The run harness never killed parameter_bridge, so a bridge outlived every case and they accumulated, while the same teardown deleted /dev/shm/fastrtps_* underneath the live ones. Gazebo stayed healthy and published /clock and odometry while no ROS participant could discover anything, and the first assembly case timed out waiting for readiness. Four bridges were alive at 323, 298, 274 and 26 seconds when it was caught."
+  },
+  "record_digests": {
+    "compact_assembly_1.json": "fbed5823fdc1e9fa13b15a086d577be9e5a5b5c2db75f8f6b3cb927a29162cfd",
+    "compact_assembly_2.json": "fbed5823fdc1e9fa13b15a086d577be9e5a5b5c2db75f8f6b3cb927a29162cfd",
+    "compact_assembly_3.json": "fbed5823fdc1e9fa13b15a086d577be9e5a5b5c2db75f8f6b3cb927a29162cfd",
+    "compact_assembly_yaw_minus90.json": "97b5d8dcbdc7d3d5112d5186b4808191fddb46b70960c5de0782fa5ff337dbd2",
+    "compact_assembly_yaw_plus45.json": "036b75b5bbbbd6853806f750d63256c4e7463751252e3e50189edd90f0ab028f",
+    "compact_assembly_yaw_plus90.json": "82e4908cf05b2bd64f658afbdfb494c05921bff62b211b29ca5e4a1830502be6",
+    "detached_pod_1.json": "1dbfd71a7a9f0cc092f849e08d2003cff1d2225738f70b4656b35b56db55a61a",
+    "detached_pod_2.json": "576184915943f35dfe079ca5f532bf2a9fcdefdc8a26f1993c2d375167de4c4c",
+    "detached_pod_3.json": "7297b45d0d1e87fe85c7fd578a2a461ae967cdefdca42622a81d1b6ddb4b3ec2",
+    "detached_pod_yaw_plus90.json": "5b08e4e6816ab1c2060e4a35f7980f686fc897d170d5a0a401dcefcfbfed3764"
+  },
+  "schema_version": 1,
+  "supersedes": "studies/gate0/gate0_item1_audit.json, collected at bc40fb6 on the model with world-fixed friction axes; it stays on record and is not re-scored",
+  "transport_note": "FASTDDS_BUILTIN_TRANSPORTS=SHM, as the superseded audit used; transport only"
+}
