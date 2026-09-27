@@ -46,10 +46,15 @@ objective:
 # leaves behind. `modular_robot_bringup.qualification.VERIFICATION_SEQUENCE`
 # executes this declaration; a test binds the two.
 post_transition_verification:
-  # Inflation applied to module collision boxes while sweeping this maneuver.
-  # Execution tolerance (yaw cross-coupling, controller error) is not yet
-  # modeled; 0.0 sweeps exactly the commanded nominal motion.
-  margin_m: 0.0
+  # Inflation applied to module collision boxes while sweeping this maneuver,
+  # covering where the robot actually transforms rather than where the site was
+  # planned (ADR 0008). The sweep reaches 0.92 m and grows one-for-one with this
+  # margin, inside a 1.0 m planar clearance disk that is what covers walls, so
+  # 0.08 would sit at exactly zero headroom and 0.07 keeps 0.01 m. Raising the
+  # disk instead costs the sensing contrast in the golden combined_constraints
+  # layout. It covers site_position_tolerance exactly and leaves the estimator's
+  # own error uncovered; see the ADR.
+  margin_m: 0.07
   stages:
     - {name: positive_yaw, linear: 0.0, angular: 0.25, duration: 1.5}
     - {name: negative_yaw, linear: 0.0, angular: -0.25, duration: 1.5}
@@ -175,7 +180,10 @@ transitions:
     energy: 220.0
     failure_probability: 0.045
     # Conservative staging clearance leaves the assembled long body room to
-    # align before its nose enters a doorway.
+    # align before its nose enters a doorway. Held at 1.0 under ADR 0008: the
+    # verification sweep reaches 0.92 m and margin_m inflates it to 1.00, which
+    # exactly fills the disk, and growing the disk to admit more margin measured
+    # worse rather than better.
     swept_radius: 1.0
     moved_pods: [pod_0, pod_2, pod_1, pod_3, pod_4, pod_5]
     pod_waypoints:

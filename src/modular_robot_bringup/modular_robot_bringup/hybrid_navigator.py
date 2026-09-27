@@ -41,7 +41,18 @@ class HybridNavigator(Node):
         self.declare_parameter("terminal_position_tolerance", 0.15)
         # Transition feasibility is checked at the planned site pose; the path
         # follower stops within 0.12 m at any heading. Align before transforming.
-        self.declare_parameter("site_position_tolerance", 0.03)
+        # 0.07 m rather than 0.03 (ADR 0008): the controller servos the AMCL
+        # estimate, whose own error ran 0.0221--0.0647 m on one run and
+        # 0.0516--0.1021 m on another, so a 0.03 m tolerance asked for a
+        # placement the estimate cannot resolve and "reached the site" could not
+        # mean what it said. It is set equal to
+        # post_transition_verification.margin_m, which is the largest inflation
+        # the planar clearance disk admits, so the sweep covers exactly the slack
+        # the controller is permitted. The estimator's own error on top of that
+        # is not covered; closing it needs roomier transition workspaces, not a
+        # larger margin. Yaw alignment binds the site heading and is unchanged at
+        # 0.05 rad -- that, not position, is what the fault matrix needed.
+        self.declare_parameter("site_position_tolerance", 0.07)
         self.declare_parameter("site_yaw_tolerance", 0.05)
         self.declare_parameter("site_alignment_timeout_s", 30.0)
         # A rotation that produces no yaw used to burn the whole window: 88.5 s

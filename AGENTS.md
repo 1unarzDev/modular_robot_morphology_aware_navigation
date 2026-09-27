@@ -31,6 +31,18 @@ figure on record was collected with world-fixed axes.
 seconds without 0.02 rad of yaw, instead of holding a dead command for the whole
 30 s window.
 
+**ADR 0008 is adopted**: `site_position_tolerance` 0.030 -> 0.07 m and
+`post_transition_verification.margin_m` 0.0 -> 0.07 m, with `swept_radius` held
+at 1.0. That is the ceiling less a safety margin: the sweep reaches 0.92 m inside
+a 1.0 m disk and `margin_m` inflates it one-for-one, so 0.08 would sit at exact
+equality and 0.07 keeps 0.01 m. Wider candidates all keep
+9/9 separation but fail the golden fixtures -- from 0.13 the golden
+`combined_constraints` layout stops separating and at 1.15 the doorway plan
+disappears -- so **full coverage of tolerance plus estimator error is not
+attainable by tuning**; about 0.10 m of estimator error stays unmodelled and
+closing it needs roomier transition workspaces, which is a scenario-design
+decision, not a tuning one.
+
 **A harness fault was found and fixed while re-collecting.** No scratch harness
 here ever killed `parameter_bridge`, so bridges accumulated across cases while
 the same teardown deleted `/dev/shm/fastrtps_*` underneath the live ones: Gazebo

@@ -867,6 +867,52 @@ adopted after the two-simulator contamination in the rotation sweep. Every
 scratch harness in this repository had the same omission; a stale bridge is now
 a caught condition rather than a silent one.
 
+### The site tolerance is raised as far as the geometry allows (ADR 0008, 2026-09-26)
+
+`site_position_tolerance` was 0.030 m while the estimator the controller servos
+had 0.0221--0.0647 m of error on one run and 0.0516--0.1021 m on another, and
+`post_transition_verification.margin_m` was 0.0, so the planner checked the
+maneuver at a pose the robot did not occupy. Both are changed to **0.07 m**.
+
+0.07 m is not a preference, it is the ceiling less a safety margin. `margin_m`
+inflates the swept boxes one-for-one, the `compact_to_narrow` sweep reaches
+0.9200 m, and the planar clearance disk that covers walls is 1.0 m, so 0.08 m
+would fill it to exact equality and 0.07 m keeps 0.01 m of headroom -- walls are
+a safety property and equality is not a margin. Screening
+wider candidates against the frozen design showed the contrast counts would
+accept all of them -- 9/9 separating with 0 unplanned at every margin up to 0.22
+with the disk at 1.15 -- and the golden fixtures rejected them:
+
+| `margin_m` | `swept_radius` | Separating | Sites changed /96 | Golden fixtures |
+|---|---|---|---|---|
+| 0.00 | 1.00 | 9/9 | 0 | pass |
+| **0.07--0.08** | **1.00** | **9/9** | **4** | **pass** |
+| 0.13 | 1.05 | 9/9 | 4 | fail |
+| 0.22 | 1.15 | 9/9 | 64 | fail |
+
+From 0.13 upward the golden `combined_constraints` layout stops separating, both
+methods choosing (12, 14): inflating the boxes rejects the sites the sensing
+method was pushed toward, so the contrast collapses. At 1.15 the golden doorway
+plan fails outright -- a 1.15 m disk needs a 2.3 m clear circle and the fixture
+was sized for the 1.0 m sweep -- and 64 of 96 site decisions move for every
+method. `reconfiguration_workspace` was screened separately, since the fault
+matrix runs there, and was not the binding constraint: all three real methods
+plan in all 12 layouts even at 1.15 m.
+
+**So full coverage is not attainable by tuning these three numbers.** The sweep
+covers the 0.07 m of position slack the alignment law permits; the estimator's
+own error on top of that, up to 0.1021 m observed, stays unmodelled, so a
+transformation can still run about 0.18 m from the checked pose in the worst case
+seen. Closing that needs roomier transition workspaces so the disk can grow
+without erasing the contrast. That is a scenario-design change and is the open
+item ADR 0008 leaves; it must not be made as a side effect of tuning.
+
+Raising the position tolerance does not undo what site alignment was added for:
+the fault-matrix failure it fixed was a heading error, and `site_yaw_tolerance`
+stays 0.05 rad. `studies/gate2/confirmatory_manipulation_check.json` is
+regenerated against the adopted catalog and keeps 9/9 site- and route-separating
+with 0 unplanned in all four contrast cells.
+
 ### The alignment law fails fast (ADR 0009, 2026-09-26)
 
 Adopted with ADR 0007 rather than as a consequence of it. `site_alignment_command`

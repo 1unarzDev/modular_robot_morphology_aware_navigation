@@ -149,7 +149,14 @@ def test_feasibility_policy_rejects_a_site_only_the_verification_maneuver_reache
                                           environment=(post,))
     assert geometry(transition, state)
     assert not feasibility(transition, state)
-    assert feasibility.decisions[-1].reasons == ("pod_0:post_transition_collision",)
+    reasons = feasibility.decisions[-1].reasons
+    # Every reason attributes the rejection to the maneuver rather than to
+    # relocation, and pod_0 -- the pod observed in contact in that mission -- is
+    # among them. The count is not pinned: margin_m inflates every module box by
+    # 0.22 m (ADR 0008), so neighbouring pods reach the post as well.
+    assert reasons
+    assert all(reason.endswith(":post_transition_collision") for reason in reasons)
+    assert "pod_0:post_transition_collision" in reasons
     # Relocation alone clears the post; only the maneuver that follows does not.
     relocation_only = CoupledTransitionPolicy(
         "feasibility_coupled",
