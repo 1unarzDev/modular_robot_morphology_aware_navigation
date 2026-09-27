@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "purpose": "gate0_item1_re_collection_after_adr_0007",
+  "status": "declared_before_execution",
+  "supersedes": "studies/gate0/gate0_item1_audit.json, which was collected on the unrepaired model at bc40fb6 and stays on record rather than being re-scored",
+  "why": "ADR 0007 attaches the wheel friction axes to the wheel, so every motion figure the platform has recorded moves. Gate 0 item 1 is the cheapest of the three affected artifacts and is re-collected first.",
+  "protocol": {
+    "declared_before_running": true,
+    "unchanged_from_the_superseded_audit": "Three repeats each of qualify_detached_pod (self_mobile_pod_qualification world) and qualify_assembly_motion --expected-morphology compact_diff (motion_qualification.launch.py, indoor_doorway), all six to pass the tools' built-in criteria.",
+    "added": "The gate has only ever measured one heading, which is what let a heading-dependent defect through. Four heading-varied cases are added and must pass the same built-in criteria: the assembly at imposed yaw +90, -90 and +45 degrees, and the detached pod at +90. +/-90 is where authority measured exactly zero before the repair.",
+    "pose_imposition": "gz set_pose at the world's own spawn position, settled before the declared stage sequence; the spawn-heading repeats are not teleported at all.",
+    "rate": "the tools' defaults, so the gate is the gate: 0.35 rad/s for the assembly and the detached tool's own 0.6 rad/s",
+    "hygiene": "one simulator only; each case aborts unless the simulator process count is zero beforehand, and tears down afterwards",
+    "transport": "FASTDDS_BUILTIN_TRANSPORTS=SHM, as the superseded audit used; transport only"
+  },
+  "pass_criteria": "All ten runs pass their tool's built-in criteria. A heading-varied case failing would mean the repair is incomplete, not that the gate should be relaxed.",
+  "predictions_declared_before_running": {
+    "expected": "All ten pass, and the heading-varied cases return figures close to the spawn-heading ones, because the intervention measured rotation at 74% of command and straight travel at 0.7336 m at +/-90 with fdir1 set.",
+    "what_would_be_a_finding": "Any heading-varied case failing, or figures at +/-90 differing from the spawn heading by more than the run-to-run spread of the three repeats."
+  }
+}
