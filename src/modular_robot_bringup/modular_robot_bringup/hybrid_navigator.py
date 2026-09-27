@@ -22,7 +22,7 @@ from tf2_ros import Buffer, TransformException, TransformListener
 
 from .qualification import (
     VERIFICATION_SEQUENCE, CommandWindow, PlanarPose, RotationStallWatch,
-    goal_position_reached, motion_delta, qualification_pass,
+    goal_position_reached, motion_delta, qualification_pass, shortest_angle,
     site_alignment_command,
 )
 
@@ -61,6 +61,15 @@ class HybridNavigator(Node):
         # while translation stayed inhibited. Replanning beats waiting.
         self.declare_parameter("site_alignment_rotation_stall_s", 5.0)
         self.declare_parameter("site_alignment_rotation_progress_rad", 0.02)
+        # Relocating pods drag the core. Measured over a 20-run campaign, a
+        # transition injected +0.011..+0.134 rad of core yaw while the alignment
+        # before it had left at most 0.030 rad, and the drive that follows
+        # amplifies whatever it starts with rather than correcting it. A 1.76 m
+        # narrow body entering a 0.70 m doorway on a 0.66 m footprint has 0.02 m
+        # of slack per side, so 0.1 rad -- 0.09 m of nose excursion -- cannot
+        # pass. Trim the yaw the transition leaves before driving on.
+        self.declare_parameter("post_transition_yaw_tolerance", 0.02)
+        self.declare_parameter("post_transition_yaw_timeout_s", 15.0)
         qos = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL,
                          reliability=ReliabilityPolicy.RELIABLE)
         self.morphology: MorphologyState | None = None
@@ -229,6 +238,8 @@ class HybridNavigator(Node):
                             result, selected_plans, planning_latency, expanded_states)
                         goal_handle.abort()
                         return result
+                    if success:
+                        await self._trim_transition_yaw(segment.execution_pose)
                     replan_requested = bool(success)
                 else:
                     success = await self._follow(segment)
@@ -477,6 +488,55 @@ class HybridNavigator(Node):
                 break
             await self._sleep(0.05)
         self.command_publisher.publish(Twist())
+        return False
+
+    async def _trim_transition_yaw(self, execution_pose: PoseStamped) -> bool:
+        """Remove the core yaw a committed reconfiguration leaves behind.
+
+        Yaw only: the body has just changed shape and may be a long one with its
+        nose already in a doorway, so translating it here would be unsafe, and
+        reaching a position is the follower's job on the next segment. Failure is
+        logged rather than propagated, because a replan follows either way.
+        """
+        tolerance = float(self.get_parameter("post_transition_yaw_tolerance").value)
+        orientation = execution_pose.pose.orientation
+        target = 2.0 * atan2(orientation.z, orientation.w)
+        clock = self.get_clock()
+        window = CommandWindow(
+            float(self.get_parameter("post_transition_yaw_timeout_s").value),
+            lambda: clock.now().nanoseconds / 1e9, time.monotonic,
+            float(self.get_parameter("motion_command_stall_grace_s").value))
+        watch = RotationStallWatch(
+            float(self.get_parameter("site_alignment_rotation_stall_s").value),
+            float(self.get_parameter("site_alignment_rotation_progress_rad").value))
+        while window.keep_commanding():
+            if window.stalled:
+                self.get_logger().error("simulated clock stalled trimming transition yaw")
+                break
+            current = self._current_pose()
+            if current is None:
+                await self._sleep(0.05)
+                continue
+            quaternion = current.pose.orientation
+            yaw = 2.0 * atan2(quaternion.z, quaternion.w)
+            error = shortest_angle(target - yaw)
+            if abs(error) <= tolerance:
+                self.command_publisher.publish(Twist())
+                return True
+            magnitude = min(0.6, max(0.15, 1.5 * abs(error)))
+            command = Twist()
+            command.angular.z = magnitude if error > 0 else -magnitude
+            self.command_publisher.publish(command)
+            if watch.stalled(clock.now().nanoseconds / 1e9, yaw, True):
+                self.get_logger().error(
+                    f"post-transition yaw trim commanded {command.angular.z:.3f} rad/s "
+                    f"for {watch.elapsed_s:.1f} simulated seconds without turning the "
+                    "body; driving on untrimmed")
+                break
+            await self._sleep(0.05)
+        self.command_publisher.publish(Twist())
+        self.get_logger().warning(
+            "post-transition yaw not trimmed within tolerance; driving on")
         return False
 
     async def _execute_transition(self, segment):

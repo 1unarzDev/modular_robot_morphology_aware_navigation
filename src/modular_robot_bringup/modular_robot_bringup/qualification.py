@@ -88,6 +88,11 @@ def qualification_pass(stages: dict[str, dict[str, float]]) -> bool:
     )
 
 
+def shortest_angle(angle: float) -> float:
+    """Wrap to (-pi, pi], exported so callers share one convention."""
+    return _wrap(angle)
+
+
 def _wrap(angle: float) -> float:
     return atan2(sin(angle), cos(angle))
 

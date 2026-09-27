@@ -91,3 +91,12 @@ def test_rotation_stall_watch_rearms_on_progress_and_on_translation():
     assert not watch.stalled(200.0, 1.2, False)
     assert watch.started_s is None
     assert not watch.stalled(201.0, 1.2, True)
+
+
+def test_shortest_angle_wraps_to_the_nearer_direction():
+    from math import pi
+
+    from modular_robot_bringup.qualification import shortest_angle
+    assert abs(shortest_angle(3 * pi / 2) + pi / 2) < 1e-9
+    assert abs(shortest_angle(-3 * pi / 2) - pi / 2) < 1e-9
+    assert abs(shortest_angle(0.02) - 0.02) < 1e-12
