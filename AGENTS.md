@@ -1,49 +1,48 @@
-# Repository handoff
-
-Read [README.md](README.md), [docs/current_status.md](docs/current_status.md),
-and [docs/research/conference_roadmap.md](docs/research/conference_roadmap.md)
-before changing the platform or collecting data.
-
-## Non-negotiable study rules
-
-- Confirmatory morphologies are `compact_diff` and `narrow_tandem` only.
-- Compare `route_first_adaptation`, `geometry_coupled`,
-  `feasibility_coupled`, and `sensing_feasibility_coupled` through the same
-  execution and sensing stack.
-- Simulator ground truth is evaluator-only. Do not use it for localization,
-  planning, docking, or recovery.
-- Any partial or inconsistent topology must enter `RECOVERY_REQUIRED`; keep
-  assembled drive inhibited until observed topology is reconciled.
-- `results/debug` contains engineering runs. It is never pilot or confirmatory
-  evidence.
-- Do not collect pilot data until the platform and measurement gates in the
-  roadmap pass. Confirmatory evidence is currently 0/432.
-- Do not claim the first morphology-aware navigation stack or first autonomous
-  ROS reconfiguration system. Cite Pankert et al. (2022), not Gawel, for the
-  simultaneous navigation/reconfiguration MPC work. Treat announced 2026
-  workshop talks as unpublished.
-
-## Working conventions
-
-- Keep the canonical morphology and transition geometry in
-  `src/modular_robot_description/config/morphologies.yaml`.
-- Put ROS interfaces in `modular_robot_msgs`, pure planning logic in
-  `morphology_planner`, topology ownership in `morphology_manager`, physical
-  transition execution in `reconfiguration_executor`, simulation mechanics in
-  `modular_robot_sim`/`modular_robot_gz_plugins`, integration in
-  `modular_robot_bringup`, and experiment logic in `modular_robot_benchmarks`.
-- Update `docs/current_status.md` when an evidence gate changes. Record durable
-  architectural choices as an ADR; rely on git history for chronological work
-  logs.
-- Preserve failed runs and structured failure reasons. Never change exclusions,
-  scenarios, or sample size in response to confirmatory outcomes.
-- Run `python3 -m pytest -q`, the container build, and `git diff --check` before
-  committing a platform milestone. Kill leftover Gazebo/ROS processes after
-  runtime tests.
-
 ## Current resumption point
 
-Gate 0 is satisfied (2026-09-21): every roadmap item has a committed audit in
+**ADR 0007 is adopted (2026-09-26): the wheel friction axes are attached to the
+wheel.** `fdir1 1 0 0` on both wheel collisions of `articulated_pod`, with the
+declared `mu 1.2` / `mu2 0.08` unchanged. Without it the friction principal axes
+were world-fixed, so traction depended on the robot's heading: rotation
+authority ran 73% of command near 0 and 180 degrees, 45% by 45 degrees and
+**0% at +/-90**, and straight travel lost 21% at 90 degrees entirely in the
+acceleration ramp. The measurements are
+`studies/engineering/wheel_friction_intervention.json` (confirmed by
+intervention, protocol declared first) and
+`studies/engineering/heading_traction_curve.json` (the full curve, heading-local
+rather than from stage totals). A general test now fails any collision declaring
+`mu != mu2` without `fdir1`, and the unloaded `drive_pod` model -- which the
+first diagnosis wrongly blamed -- is deleted.
+
+**This un-satisfies Gate 0, by repair rather than regression.** Every motion
+figure on record was collected with world-fixed axes.
+
+- Item 1 is **re-collected, 10/10** at `b359903`
+  (`studies/gate0/gate0_item1_fdir1_audit.json`), and now includes four
+  heading-varied cases: assembly rotation 1.0196--1.0254 rad and straight travel
+  0.7381--0.7429 m across 0, 45, +90 and -90 degrees, against 0.8522 rad /
+  0.7397 m and 0.0000 rad / 0.5830 m before.
+- The 20-run round-trip audit and the 42/42 fault matrix are **superseded and
+  not re-scored**; both need re-collecting, in that order. They would have
+  needed it for the ADR 0006 work anyway.
+
+**ADR 0009 is adopted**: site alignment floors its pure in-place turn at
+0.30 rad/s (never while translating) and abandons alignment after 5 simulated
+seconds without 0.02 rad of yaw, instead of holding a dead command for the whole
+30 s window.
+
+**A harness fault was found and fixed while re-collecting.** No scratch harness
+here ever killed `parameter_bridge`, so bridges accumulated across cases while
+the same teardown deleted `/dev/shm/fastrtps_*` underneath the live ones: Gazebo
+publishes `/clock` normally while no ROS participant can discover anything, and
+a tool times out at readiness. Kill bridges and count them in the cleanliness
+guard. The first item-1 attempt is quarantined whole for this reason.
+
+Earlier context, kept because the reasoning still matters. Its "Gate 0 is
+satisfied" claim and its round-trip and fault-matrix statements describe the
+pre-repair model and are superseded by the entry above:
+
+Gate 0 was satisfied on 2026-09-21: every roadmap item had a committed audit in
 `studies/gate0/`. The older records
 behind every previous Gate 0 claim are absent from this machine -- `results/`
 is gitignored and no archive exists -- so the gate's required artifact cannot
@@ -66,8 +65,8 @@ is why the lost campaigns could not have supplied a margin. `morphology
 qualify_roundtrip_batch audit` now reports `motion_margins` and
 `real_time_factors`, so the replacement campaign yields the margin directly.
 
-The 20-run round-trip gate passes, Gate 2's manipulation check is closed, and
-the multi-layout fault matrix passes 42/42 on its third execution
+The 20-run round-trip gate passed, Gate 2's manipulation check is closed, and
+the multi-layout fault matrix passed 42/42 on its third execution
 (`studies/gate0/fault_matrix_campaign_r3_audit.json`). Getting there adopted
 ADR 0004 (raised obstacles constrain driving; the shelf moved off the route),
 and fixed pod_4's final alignment, executor waits on the wall clock, the

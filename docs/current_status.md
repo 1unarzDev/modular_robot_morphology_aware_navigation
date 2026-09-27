@@ -586,7 +586,7 @@ site to the checked one, as ADR 0003 did for the post-transition maneuver.
 The frozen design is then executed a third time, in full, into
 `fault_matrix_campaign_r3_raw`.
 
-### Third execution: the fault matrix passes, 42/42
+### Third execution: the fault matrix passes, 42/42 (superseded by ADR 0007)
 
 Re-executed unchanged at `bc40fb6` (site alignment) from a clean tree into
 `results/qualification/fault_matrix_campaign_r3_raw`, after a debug check of
@@ -659,7 +659,12 @@ Two things must change before the pilot, and the second is a decision:
    provably lost rather than merely absent. Commit the audit summary for every
    campaign from here on.
 
-## The 20-run round-trip gate passes
+## The 20-run round-trip gate passes (superseded by ADR 0007)
+
+Read this section as history. It was collected with world-fixed friction axes,
+so its travel figures hold only near the spawn heading; see "Gate 0 after
+ADR 0007". It is not re-scored.
+
 
 `results/qualification/roundtrip_20_postfix_raw` is the first Gate 0 round-trip
 campaign to pass. All 20 frozen runs produced terminal records, all 20
@@ -711,7 +716,14 @@ is not comparable to figures that cannot be re-audited.
 
 ## Resume here
 
-Items 1--4 are closed and Gate 0 is satisfied.
+**Gate 0 is no longer satisfied, and the reason is a repair rather than a
+regression (2026-09-26).** ADR 0007 attaches the wheel friction axes to the
+wheel. Every motion figure the platform had recorded was collected with
+world-fixed axes, so the two campaign-scale Gate 0 artifacts -- the 20-run
+round-trip audit and the 42/42 fault matrix -- describe a model that no longer
+exists. They are **superseded, not re-scored**, and both need re-collecting.
+Item 1 has been re-collected already (10/10, below). The items numbered 1--4
+here record what was closed *before* the repair and are kept for that history.
 
 1. **Closed.** `check_planner_manipulation` has been run over
    `studies/confirmatory/design.json`; the report is committed at
@@ -765,7 +777,8 @@ Items 1--4 are closed and Gate 0 is satisfied.
    `pod_4` alignment fix, simulated-clock executor waits, fired-injection
    evidence, and site alignment. The first two executions (13/42, 38/42) stay
    on record.
-4. **Closed: Gate 0 item 1 re-collected.** Declared before running: three
+4. **Superseded by ADR 0007 and re-collected; see the section below.** This
+   entry describes the pre-repair collection. Declared before running: three
    repeats each of `qualify_detached_pod` (world
    `self_mobile_pod_qualification.sdf`) and `qualify_assembly_motion
    --expected-morphology compact_diff`, all six to pass the tools' built-in
@@ -780,9 +793,25 @@ Items 1--4 are closed and Gate 0 is satisfied.
    runs used `FASTDDS_BUILTIN_TRANSPORTS=SHM` because WSL mirrored networking
    had begun filtering inter-process UDP; that changes transport only.
 
-**Gate 0 is satisfied**: every roadmap item now has a committed,
-machine-readable audit (`studies/gate0/`: `gate0_item1_audit.json`,
-`roundtrip_20_postfix_audit.json`, `fault_matrix_campaign_r3_audit.json`).
+### Gate 0 after ADR 0007
+
+| Item | Artifact | State |
+|---|---|---|
+| 1, signed motion | `gate0_item1_fdir1_audit.json` | **passes on the repaired model**, 10/10 |
+| 2--3, 20-run round trip | `roundtrip_20_postfix_audit.json` | superseded, re-collection pending |
+| 4, fault matrix | `fault_matrix_campaign_r3_audit.json` | superseded, re-collection pending |
+
+The superseded audits stay committed and are not re-scored: they are the record
+of what the platform did with world-fixed friction axes, and their campaign
+digests still identify the record sets they were computed on. Re-collect in the
+roadmap's order -- the 20-run round trip, then the fault matrix -- and note that
+both also run through the ADR 0009 alignment law and would have needed
+re-qualification for the ADR 0006 work regardless.
+
+Do not read the superseded figures as a baseline for the new ones. The repair
+moves them in the favourable direction at every heading (item 1's assembly
+rotation went from 0.8522 to 1.0254 rad at the spawn heading), so a re-collected
+campaign is not comparable to the old one trial by trial.
 
 Then proceed to the disjoint pilot without spending more submission time on
 repeated 20-run startup certification. If throughput is still limiting, measure
@@ -793,6 +822,64 @@ After mechanics pass, implement location-dependent perceived 3D obstacles and
 observability, complete evaluator outcome/provenance streams, run a disjoint
 pilot, freeze the operational effect threshold and conservative power grid, and
 only then freeze and execute the confirmatory schedule.
+
+### Gate 0 item 1 re-collected on the repaired model, 10/10 (2026-09-26)
+
+Declared at `b359903` before running
+(`studies/gate0/gate0_item1_fdir1_declaration.json`), collected at that commit,
+audited with per-record digests at `studies/gate0/gate0_item1_fdir1_audit.json`.
+The six declared runs are unchanged from the superseded audit; four
+heading-varied cases are added, because a gate that measures one heading is what
+let a heading-dependent defect through.
+
+| Case | Rotation (+/-) | Travel |
+|---|---|---|
+| assembly, spawn heading, 3 repeats | +1.0254 / -1.0248 rad | 0.7381 m |
+| assembly, imposed +90 | +1.0202 / -1.0300 rad | 0.7414 m |
+| assembly, imposed -90 | +1.0202 / -1.0300 rad | 0.7414 m |
+| assembly, imposed +45 | +1.0196 / -1.0291 rad | 0.7429 m |
+| detached pod, spawn heading, 3 repeats | +1.1781..+1.1897 / -1.1679..-1.1836 rad | 0.6716..0.6805 m |
+| detached pod, imposed +90 | +1.1963 / -1.1859 rad | 0.6813 m |
+
+All ten pass their tools' built-in criteria. Heading invariance is now inside the
+gate rather than an engineering note: assembly rotation spans 1.0196--1.0254 rad
+and straight travel 0.7381--0.7429 m across 0, 45, +90 and -90 degrees, a 0.6%
+and 0.7% spread. The same gate measured 0.8522 rad and 0.7397 m at the spawn
+heading and **0.0000 rad and 0.5830 m at +/-90** before the repair, and the
+detached pod was 17--21% short in travel at +/-90.
+
+Rotation improved 20% at the favourable heading too. That is expected rather
+than surprising: with world-fixed axes the primary coefficient aligned with
+rolling only at the instant the body faced 0 or 180 degrees and degraded as the
+stage turned it away, while `fdir1` holds the alignment throughout.
+
+The first attempt at this collection is quarantined whole, in
+`results/qualification/gate0_item1_fdir1_attempt1_harness_fault`, including the
+detached-pod records that did complete. **The harness never killed
+`parameter_bridge`**, so a bridge outlived every case and they accumulated --
+four alive at 323, 298, 274 and 26 seconds when it was caught -- while the same
+teardown deleted `/dev/shm/fastrtps_*` underneath the live ones. Gazebo stayed
+healthy and published `/clock` and per-pod odometry while no ROS participant
+could discover anything, and the first assembly case timed out waiting for
+readiness. The harness now kills bridges and counts them in the pre-run
+cleanliness guard, which is the same class of fix as the simulator-count guard
+adopted after the two-simulator contamination in the rotation sweep. Every
+scratch harness in this repository had the same omission; a stale bridge is now
+a caught condition rather than a silent one.
+
+### The alignment law fails fast (ADR 0009, 2026-09-26)
+
+Adopted with ADR 0007 rather than as a consequence of it. `site_alignment_command`
+floors its pure in-place turn at 0.30 rad/s, matching `min_pod_angular` in
+`reconfiguration_executor`; the floor is not applied once translation is
+authorized, because flooring a turn while translating steers a moving body, and
+the final yaw branch keeps its 0.15 rad/s floor because it trims inside the
+tolerance. `RotationStallWatch` reports a commanded in-place rotation that has
+not produced 0.02 rad of yaw in 5.0 simulated seconds, with progress re-arming
+it, and the navigator then replans instead of holding the command for the rest
+of the 30 s window -- the recorded failure held it for 88.5 s across three
+windows while the body turned 0.000 rad. Neither would have rescued that run:
+0.271 rad/s already produced nothing. They are for the next cause.
 
 ### The observability manipulation has no physical cause (2026-09-22)
 
