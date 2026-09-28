@@ -59,6 +59,27 @@ audit under `results/` and copy it into `studies/` afterwards: an untracked file
 `studies/gate0/` makes the worktree dirty and `mission_batch` then refuses to run
 at all.
 
+**A third attempt ran on 2026-09-27 and was stopped by a harness fault at run 10,
+rather than by an outcome. The blocker is now the harness, not the robot.**
+Replicates r0--r8 all completed -- two transitions each, zero collisions, 18 of 18
+motion qualifications passed including pod rigidity -- and then r9 wedged its
+mission observer and sat there for 6 h 15 m. The trial's 600 s wall watchdog is
+evaluated *after* `executor.spin_once()` in the same loop body, and spin_once never
+returned, so the backstop is unreachable: the break condition was continuously true
+for 22,152 s while the line below it never ran (`mission_trial.py:571-577`; the
+executor's timeout timer is STEADY_TIME, so this is not a simulated-clock bug).
+Gazebo, the bridge and the Nav2 nodes stayed healthy and reached simulated
+20,099.642 s while the observer's clock stayed frozen at 163.512 s. The set is
+retained whole and **unscored** at
+`studies/gate0/roundtrip_20_yawtrim_partial_quarantined_audit.json`; the fault, with
+the py-spy locals and the digests, is
+`studies/engineering/roundtrip_watchdog_unreachable.json`. **Fix the watchdog first,
+with a regression test that wedges the spin, then execute a fresh full 20 at one
+commit.** A wedged observer must record as `infrastructure_failure`, which
+`mission_batch` already retries, and never as a robot outcome. Nine of nine
+completing is consistent with `_trim_transition_yaw` working and is not the
+twenty-run gate; do not report it as a result.
+
 **A harness fault was found and fixed while re-collecting.** No scratch harness
 here ever killed `parameter_bridge`, so bridges accumulated across cases while
 the same teardown deleted `/dev/shm/fastrtps_*` underneath the live ones: Gazebo

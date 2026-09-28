@@ -725,6 +725,12 @@ exists. They are **superseded, not re-scored**, and both need re-collecting.
 Item 1 has been re-collected already (10/10, below). The items numbered 1--4
 here record what was closed *before* the repair and are kept for that history.
 
+**The immediate blocker is the harness, not the robot (2026-09-28).** The third
+round-trip re-collection was stopped at run 10 of 20 by a per-trial wall watchdog
+that cannot fire; nine of nine completed before it. Fix the watchdog with a
+regression test, then run a fresh full 20 at one commit. See "The third
+re-collection was stopped by an unreachable watchdog" below.
+
 1. **Closed.** `check_planner_manipulation` has been run over
    `studies/confirmatory/design.json`; the report is committed at
    `studies/gate2/confirmatory_manipulation_check.json` (regenerated under
@@ -866,6 +872,56 @@ cleanliness guard, which is the same class of fix as the simulator-count guard
 adopted after the two-simulator contamination in the rotation sweep. Every
 scratch harness in this repository had the same omission; a stale bridge is now
 a caught condition rather than a silent one.
+
+### The third re-collection was stopped by an unreachable watchdog, at run 10 of 20 (2026-09-28)
+
+The 20-run round trip is still not re-qualified, and the reason this time is the
+harness rather than the robot.
+
+The campaign ran at `db96646` with `fdir1` (ADR 0007), `margin_m` 0.07,
+`site_position_tolerance` 0.030 and `_trim_transition_yaw` active, into a fresh
+directory, after the host suite passed 220 tests and with zero simulator or bridge
+processes alive at preflight. Replicates r0--r8 all completed: two reconfiguration
+attempts each, zero collisions, 18 of 18 motion qualifications passed including pod
+rigidity, unique realized disturbances, simulated durations 153.8--159.2 s, and
+real-time factors 0.617--0.975. Then r9 wedged and the campaign stalled for
+6 h 15 m until it was killed.
+
+**The per-trial wall watchdog cannot fire.** `mission_trial.py:571-577` evaluates
+the 600 s backstop *after* `executor.spin_once(timeout_sec=0.1)` in the same loop
+body, so it only runs if spin_once returns. It did not. Two py-spy samples put the
+runner inside `Executor.wait_for_ready_callbacks` (`rclpy/executors.py:877`, and
+704/749 in the generator) with `yielded_work` true, burning 8.1% of a core -- it was
+spinning, not blocked on a lock. The frame's locals give `wall_start` 2197.78 and
+`wall_watchdog_s` 600, and `time.monotonic()` measured in the same container was
+24,949.58, so the break condition on the next line had been true for 22,152 s.
+This is not the simulated clock: the 0.1 s timeout timer spin_once builds is created
+on the executor's own clock, which rclpy sets to `ClockType.STEADY_TIME`
+(`rclpy/executors.py:210`).
+
+What wedged is the mission observer alone. Gazebo, the parameter bridge and the
+Nav2 nodes stayed healthy and advanced simulated time to 20,099.642 s while the
+observer's clock stayed frozen at 163.512 s, so the observer lost `/clock` while
+everything else kept it -- the same family as the discovery failures already on
+record. Why it lost `/clock`, with `FASTDDS_BUILTIN_TRANSPORTS=SHM` set and
+`/dev/shm/fastrtps_*` cleared beforehand, is **not** established; r9 had reached
+its goal and passed both post-transition motion qualifications moments earlier, so
+it wedged at or just after mission completion. What turns a wedged trial into a
+lost campaign is the watchdog placement, and that is the defect to fix.
+
+The attempt is retained whole and **not scored**, on the precedent that a harness
+fault quarantines its campaign:
+`studies/gate0/roundtrip_20_yawtrim_partial_quarantined_audit.json`, campaign digest
+`c5af67ea...`, with all nine record digests. The fault record, with the py-spy
+locals and the evidence digests, is
+`studies/engineering/roundtrip_watchdog_unreachable.json`.
+
+Nine of nine completing, where both prior 20-run attempts failed 11 of 20, is
+consistent with `_trim_transition_yaw` working. It is nine runs of a twenty-run
+gate and is not a result. **Resume by fixing the watchdog, with a regression test
+that wedges the spin, then executing a fresh full 20 at one commit.** A wedged
+observer has to record as `infrastructure_failure`, which `mission_batch` already
+retries while the launch process is alive, and never as a robot outcome.
 
 ### The 20-run round trip is not re-qualified; the cause is diagnosed and the fix is unverified (2026-09-27)
 

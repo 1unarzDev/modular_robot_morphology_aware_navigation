@@ -1,0 +1,155 @@
+{
+  "campaign_digest": "c5af67ea3aac660d4cf0770eb7eb1210a120b1ee2350690c0d1a4f4e68cfd8bd",
+  "design_hash": "9c74a26749d466ba382caa6b4d227a033139ef24b8600a3d10ef90608a088b5e",
+  "disposition": "QUARANTINED PARTIAL ATTEMPT. Not a qualification and not scored. Collected at db96646 with fdir1 (ADR 0007), margin_m 0.07, site_position_tolerance 0.030, and _trim_transition_yaw active. The campaign was stopped by a harness fault on the tenth run, not by an outcome: replicate r9 wedged its mission observer and the trial's 600 s wall watchdog could not fire. The nine terminal records here were collected before that run and each was torn down cleanly, but the attempt is retained whole and unscored, on the precedent that a harness fault quarantines its campaign. The single listed failure is the set being short of the frozen 20; no per-record check failed.",
+  "expected_runs": 20,
+  "failures": [
+    "terminal record set does not exactly match frozen design"
+  ],
+  "harness_fault": "studies/engineering/roundtrip_watchdog_unreachable.json",
+  "motion_margins": {
+    "forward_lateral_m": {
+      "bound": 0.08,
+      "direction": "abs_max",
+      "median_margin": 0.0785909386021724,
+      "observed_max": 0.0006558226297223666,
+      "observed_median": -0.0013315308208207486,
+      "observed_min": -0.004114798467858312,
+      "samples": 18,
+      "worst_margin": 0.07588520153214169
+    },
+    "forward_travel_m": {
+      "bound": 0.08,
+      "direction": "min",
+      "median_margin": 0.03282557485862213,
+      "observed_max": 0.11497207727149618,
+      "observed_median": 0.11282557485862213,
+      "observed_min": 0.11107235817800541,
+      "samples": 18,
+      "worst_margin": 0.03107235817800541
+    },
+    "forward_yaw_rad": {
+      "bound": 0.15,
+      "direction": "abs_max",
+      "median_margin": 0.1434681716096857,
+      "observed_max": 0.001170783147008466,
+      "observed_median": -0.0065318283903143095,
+      "observed_min": -0.030248957100677376,
+      "samples": 18,
+      "worst_margin": 0.11975104289932262
+    },
+    "negative_yaw_coupling": {
+      "bound": 0.25,
+      "direction": "max",
+      "median_margin": 0.24328585416035794,
+      "observed_max": 0.011457466171600775,
+      "observed_median": 0.006714145839642054,
+      "observed_min": 0.002476430243512576,
+      "samples": 18,
+      "worst_margin": 0.23854253382839924
+    },
+    "negative_yaw_rad": {
+      "bound": -0.1,
+      "direction": "max",
+      "median_margin": 0.29317951931626296,
+      "observed_max": -0.27049980036342686,
+      "observed_median": -0.393179519316263,
+      "observed_min": -0.6599916222320529,
+      "samples": 18,
+      "worst_margin": 0.17049980036342685
+    },
+    "negative_yaw_translation_m": {
+      "bound": 0.12,
+      "direction": "max",
+      "median_margin": 0.11764263251394548,
+      "observed_max": 0.005842815685557519,
+      "observed_median": 0.002357367486054509,
+      "observed_min": 0.0013732933363202365,
+      "samples": 18,
+      "worst_margin": 0.11415718431444248
+    },
+    "positive_yaw_coupling": {
+      "bound": 0.25,
+      "direction": "max",
+      "median_margin": 0.23989876471516583,
+      "observed_max": 0.012718648664158987,
+      "observed_median": 0.010101235284834174,
+      "observed_min": 0.003574795030194113,
+      "samples": 18,
+      "worst_margin": 0.23728135133584102
+    },
+    "positive_yaw_rad": {
+      "bound": 0.1,
+      "direction": "min",
+      "median_margin": 0.3462472942508375,
+      "observed_max": 0.7272362545696422,
+      "observed_median": 0.4462472942508375,
+      "observed_min": 0.26392228942085605,
+      "samples": 18,
+      "worst_margin": 0.16392228942085604
+    },
+    "positive_yaw_translation_m": {
+      "bound": 0.12,
+      "direction": "max",
+      "median_margin": 0.11538627081617647,
+      "observed_max": 0.00835259987083092,
+      "observed_median": 0.004613729183823512,
+      "observed_min": 0.0010054008684906917,
+      "samples": 18,
+      "worst_margin": 0.11164740012916907
+    },
+    "reverse_lateral_m": {
+      "bound": 0.08,
+      "direction": "abs_max",
+      "median_margin": 0.07968099835550707,
+      "observed_max": 0.0009291923918359982,
+      "observed_median": 0.00013042874875808218,
+      "observed_min": -0.0007010727939804576,
+      "samples": 18,
+      "worst_margin": 0.079070807608164
+    },
+    "reverse_travel_m": {
+      "bound": -0.08,
+      "direction": "max",
+      "median_margin": 0.03289400265645797,
+      "observed_max": -0.11267282851991872,
+      "observed_median": -0.11289400265645796,
+      "observed_min": -0.11687682587234417,
+      "samples": 18,
+      "worst_margin": 0.03267282851991872
+    },
+    "reverse_yaw_rad": {
+      "bound": 0.15,
+      "direction": "abs_max",
+      "median_margin": 0.1499126705473422,
+      "observed_max": 0.00047473952428647714,
+      "observed_median": 1.0047231797552514e-05,
+      "observed_min": -0.0005750340083053099,
+      "samples": 18,
+      "worst_margin": 0.1494249659916947
+    }
+  },
+  "observed_on_the_nine": "All nine completed with terminal_status completed, two reconfiguration attempts each, zero collisions, 18 of 18 motion qualifications passed including pod rigidity, and unique realized disturbances. Simulated durations 153.8-159.2 s. This is consistent with _trim_transition_yaw working, where both prior 20-run attempts failed 11 of 20, and it is nine runs of a twenty-run gate rather than evidence that it does. The gate remains unqualified.",
+  "observed_terminal_records": 9,
+  "passed": false,
+  "purpose": "engineering_roundtrip_qualification",
+  "real_time_factors": {
+    "maximum": 0.9751658554470771,
+    "median": 0.9665336645727534,
+    "minimum": 0.6171135192841578,
+    "samples": 9
+  },
+  "record_digests": {
+    "combined_constraints-00-r0-feasibility_coupled": "43dc80df51cf08798a9fc704b4d6eddf180b831213d66d7ab76f9619e2b4d644",
+    "combined_constraints-00-r1-feasibility_coupled": "c80b7d8c5836b40b4668e9f44289c499e5ad1347998a9ff10dbb2336afabbb21",
+    "combined_constraints-00-r2-feasibility_coupled": "a94bc607be2e0f27e445bb664bd810a228e722b995facda14522793e6fb44954",
+    "combined_constraints-00-r3-feasibility_coupled": "022b59282a0fc0189bcf1d2728fad0a6bec487045dcdde05360e581d92cc1133",
+    "combined_constraints-00-r4-feasibility_coupled": "86f078715bcbceda3881c1e556ff0df72150345a87bfec694b7599e59402a538",
+    "combined_constraints-00-r5-feasibility_coupled": "6e8ae9628f5a1e849764cb659c00a5f09e53867843deef780ade09cf3d48c4da",
+    "combined_constraints-00-r6-feasibility_coupled": "2ac46dbf466743122aeacd2ea618e197ee649ce57ca8ea9a11adef91291e11c3",
+    "combined_constraints-00-r7-feasibility_coupled": "37f8c8af51aa08c245136ad754d4951e5b36f2fe8a310c34760fdcf4b77071ed",
+    "combined_constraints-00-r8-feasibility_coupled": "eb6e11969499af43f6e4b69bd770ca48cd08db9f09c17a9981d4330e90879516"
+  },
+  "schema_version": 2,
+  "unique_realized_disturbances": 9
+}

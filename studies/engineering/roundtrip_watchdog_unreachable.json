@@ -1,0 +1,48 @@
+{
+  "campaign_affected": "studies/gate0/roundtrip_20_yawtrim_partial_quarantined_audit.json",
+  "commit": "db96646",
+  "design_kind": "engineering_harness_fault",
+  "evidence_class": "engineering_debug_never_pilot_or_confirmatory",
+  "fault": "modular_robot_benchmarks/mission_trial.py:571-577 evaluates the trial's wall backstop after executor.spin_once(timeout_sec=0.1) in the same loop body, so the backstop only fires if spin_once returns. It does not always return. Replicate r9 of the round trip sat inside a single spin_once call for 6 h 15 m while the break condition on the line below it was continuously true. A campaign in this state stalls forever: no terminal record is written, no infrastructure_attempts.jsonl entry is appended, and mission_batch never reaches the next trial.",
+  "fix_owed": "The backstop has to be reachable without spin_once cooperating. It must also not score a wedged observer as a robot outcome: mission_batch already retries terminal_status infrastructure_failure when the launch process is still alive (retryable_infrastructure_failure), which is the correct disposition for this. Any fix needs a regression test that wedges the spin and asserts the trial aborts.",
+  "interpretation": "The runner was spinning, not deadlocked on a lock it would never get: it consumed 8.1% of a core throughout. Gazebo, the parameter bridge and the Nav2 nodes all stayed healthy and advanced simulated time to 20099.642 s while the mission observer's own clock stayed frozen at 163.512 s, so the observer lost /clock while everything else kept it. That is the same family as the discovery failures already on record here. What makes it cost a campaign rather than a trial is the watchdog placement, which is the defect this record is about.",
+  "measurements": {
+    "break_condition_true_for_s": 22151.8,
+    "deadline_s": 300,
+    "gazebo_cpu_time": "08:53:06",
+    "gazebo_sim_time_still_advancing_at_s": 20099.642,
+    "mission_batch_elapsed": "06:47:24",
+    "monotonic_measured_in_container_s": 24949.583341644,
+    "observer_sim_start_s": 11.264,
+    "observer_sim_time_frozen_at_s": 163.512,
+    "observer_simulated_s": 152.248,
+    "parameter_bridges_alive": 1,
+    "r9_launch_elapsed": "06:15:52",
+    "runner_cpu_fraction": 0.081,
+    "runner_cpu_ticks_per_20_s": 162,
+    "runner_pid": 65,
+    "wall_start_monotonic_s": 2197.78453343,
+    "wall_watchdog_s": 600
+  },
+  "not_yet_root_caused": "Why the observer stopped receiving /clock at simulated 163.5 s, with FASTDDS_BUILTIN_TRANSPORTS=SHM set and /dev/shm/fastrtps_* cleared before the campaign, is not established. r9's mission had reached its goal and passed both post-transition motion qualifications moments earlier, so the observer wedged at or just after mission completion.",
+  "observed": "2026-09-27/28, during the third 20-run round-trip re-collection attempt",
+  "purpose": "per_trial_wall_watchdog_cannot_fire_when_the_mission_observer_wedges",
+  "raw_evidence": {
+    "campaign_digest": "c5af67ea3aac660d4cf0770eb7eb1210a120b1ee2350690c0d1a4f4e68cfd8bd",
+    "note": "results/ is gitignored and the retention mechanism is the open ADR 0005 decision, so these paths are in the WSL clone at /home/checker/morphology_ws and are not archived. The digests identify them while they last.",
+    "partial_record_set": "results/qualification/roundtrip_20_yawtrim_raw (9 records, 47 MB)",
+    "process_table": "results/qualification/yawtrim_hang_diag/process_table.txt",
+    "pyspy_dump_locals": {
+      "path": "results/qualification/yawtrim_hang_diag/pyspy_dump_locals.txt",
+      "sha256": "7b65be14d5cd31c70de97ca793f26180704cb2a70f4a4e4a15d7e2a66fb1c1e5"
+    },
+    "r9_launch_log": {
+      "path": "results/qualification/yawtrim_hang_diag/r9_launch.log",
+      "sha256": "4577e82d1495416849f815cba5fefc1134bc0cb530ab53d179de0912f24aa919"
+    }
+  },
+  "schema_version": 1,
+  "status": "DIAGNOSED, NOT FIXED. The fix is owed and no code change has been made.",
+  "teardown": "The wedged runner, the simulator, the bridge and four surviving Nav2 nodes were killed and confirmed gone; /dev/shm/fastrtps_* was cleared and the container is stopped. The nine records are intact on disk.",
+  "why_it_is_not_a_simulated_clock_bug": "The 0.1 s timeout timer spin_once builds is created on the executor's own clock, which rclpy sets to ClockType.STEADY_TIME (rclpy/executors.py:210), not on the node's sim clock. The wedge is inside spin_once itself, in the while True retry loop of Executor.wait_for_ready_callbacks (rclpy/executors.py:877 and 704/749), sampled twice with yielded_work True and timeout_nsec 100000000."
+}
