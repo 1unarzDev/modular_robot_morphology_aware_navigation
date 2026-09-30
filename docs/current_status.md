@@ -928,8 +928,16 @@ retries while the launch process is alive, and never as a robot outcome.
 Two re-collection attempts on the repaired model, both **11 of 20 failing**
 `controller_failure` after one transition. Both are retained. The first is
 `studies/gate0/roundtrip_20_fdir1_attempt1_failed_audit.json`; the second ran at
-`a9554c8` with the tolerance back at 0.030 m and failed the same count with
-**8 of 20 replicates flipping outcome**, which is what ruled the tolerance out.
+`a9554c8` with the tolerance back at 0.030 m and is
+`studies/gate0/roundtrip_20_fdir1_attempt2_failed_audit.json`. It failed the same
+count with **8 of 20 replicates flipping outcome**, which is what ruled the
+tolerance out: `r6 r7 r8 r10 r11 r14 r19` fail in both, `r0 r1 r16 r18` recover at
+0.030 m, and `r2 r3 r12 r13` newly fail there. The attempt-2 summary was missing
+from the repository until 2026-09-30 and was recovered by re-auditing its
+surviving raw records; the output is byte-identical to the original run and no
+outcome was re-scored. Its records are still only in the WSL clone's gitignored
+`results/`, so the retention decision ADR 0005 carries applies to it as much as to
+the confirmatory set.
 
 The mechanism is measured, not inferred. Per run, yaw at the end of alignment,
 yaw gained during the transition, and yaw gained driving to the doorway:
