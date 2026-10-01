@@ -804,7 +804,7 @@ re-collection was stopped by an unreachable watchdog" below.
 | Item | Artifact | State |
 |---|---|---|
 | 1, signed motion | `gate0_item1_fdir1_audit.json` | **passes on the repaired model**, 10/10 |
-| 2--3, 20-run round trip | `roundtrip_20_postfix_audit.json` | superseded, re-collection pending |
+| 2--3, 20-run round trip | `roundtrip_20_watchdogfix_audit.json` | **re-collected whole, 19 of 20; the gate is not passed** |
 | 4, fault matrix | `fault_matrix_campaign_r3_audit.json` | superseded, re-collection pending |
 
 The superseded audits stay committed and are not re-scored: they are the record
@@ -872,6 +872,75 @@ cleanliness guard, which is the same class of fix as the simulator-count guard
 adopted after the two-simulator contamination in the rotation sweep. Every
 scratch harness in this repository had the same omission; a stale bridge is now
 a caught condition rather than a silent one.
+
+### The round trip completes for the first time since ADR 0007, 19 of 20; the gate is not passed (2026-09-30)
+
+The campaign ran to completion at `0e71dd3` on a clean worktree: **20 of 20
+terminal records**, the design unchanged, `campaign_digest`
+`38d8fbd17289208aee07ebe27e890c45df5c1c86bcf10b45a9fab501f2862972`. The audit is
+`studies/gate0/roundtrip_20_watchdogfix_audit.json` and it is the first campaign
+retained under ADR 0005.
+
+**The watchdog fix is confirmed by the campaign terminating at all.** The
+previous attempt stalled at run 10 and sat there for 6 h 15 m; this one wrote
+twenty records and stopped. No trial recorded `infrastructure_failure`, so no
+wedge occurred to exercise the retry path live -- that path is covered by the
+regression test that wedges a spin, not by this campaign.
+
+**The doorway failure mode is gone.** Both earlier attempts failed 11 of 20 with
+every failure the same event: one transition committed, morphology reaching
+`narrow_tandem`, then the nose jammed in the 0.70 m doorway at x 2.315--2.559.
+This campaign has **zero** such failures. Where the failed campaign logged Nav2
+"Failed to make progress" 33 times, the one failure here logs it not at all. That
+is `_trim_transition_yaw` working on the mechanism that was measured, and it is
+the first evidence that it does; the three-trial probe was not.
+
+Every signed-motion gate passes with margin, over 38 qualifications from the 19
+completions:
+
+| Gate | Worst margin | Median margin |
+|---|---|---|
+| `forward_travel_m` | +0.03133 | +0.03285 |
+| `reverse_travel_m` | +0.03235 | +0.03290 |
+| `forward_lateral_m` | +0.07531 | +0.07873 |
+| `reverse_lateral_m` | +0.07903 | +0.07963 |
+| `forward_yaw_rad` | +0.11859 | +0.14339 |
+| `reverse_yaw_rad` | +0.14920 | +0.14985 |
+| `positive_yaw_rad` | +0.16191 | +0.34254 |
+| `negative_yaw_rad` | +0.16445 | +0.28735 |
+
+Real-time factor held 0.9598--0.9796, median 0.9751, across all 20 -- against
+0.5165--0.9711 on attempt 2 -- so this campaign met a far more uniform host than
+the one that produced the 11/20 split, and all 20 realized disturbances are
+unique.
+
+**The gate still fails, on one run, and that run is a different failure that is
+not diagnosed.** `combined_constraints-00-r17-feasibility_coupled` ends
+`controller_failure` with "execution failed after replanning limit": four
+reconfiguration attempts, four failures, `observed_transition_outcomes`
+`[0, 0, 0, 0]`, `motion_qualifications` 0. What makes it unlike anything on
+record here:
+
+- The morphology never changed. `morphology_sequence` is `['compact_diff']`,
+  `execution_state_history` holds a single `READY` entry at t=0, and
+  `pod_alignment_history` holds one entry at t=0, so **no pod ever moved**.
+- The robot was at the site. Final odometry is x 2.1526, y 1.9684,
+  yaw -0.0257 against a planned site of (2.15, 1.95, 0.0): 2.6 mm in x, 18.4 mm
+  in y, 0.026 rad of yaw, all inside `site_position_tolerance` 0.030 m and
+  `site_yaw_tolerance` 0.05 rad.
+- Nothing was marginal. Localization error is 6.9e-05 m, collisions 0, minimum
+  clearance 0.237 m, `unrecovered_fault` false.
+- `planning_latency_s` is **89.06 s of 107.33 simulated**, with 4
+  `recovery_actions`, and `hybrid_navigator` logged "execution failed;
+  replanning attempt" 1 through 4 and stopped. No `NoPathError`, no Nav2
+  progress failure, no contact.
+
+So the robot arrived within tolerance at a site its own planner had marked
+feasible, with good localization and room to spare, and the transition never
+started. **This is neither the doorway nor the tolerance**, and it is not the
+heading-traction defect, which moved motion rather than preventing a commit.
+Root cause is owed before the gate is re-run; 19 of 20 is not the gate and must
+not be reported as one.
 
 ### The third re-collection was stopped by an unreachable watchdog, at run 10 of 20 (2026-09-28)
 

@@ -1,5 +1,36 @@
 ## Current resumption point
 
+**The 20-run round trip now runs to completion and fails one of twenty
+(2026-09-30).** At `0e71dd3`: 20 of 20 terminal records, 19 completed, audit
+`studies/gate0/roundtrip_20_watchdogfix_audit.json`, campaign digest
+`38d8fbd1...`. Every signed-motion gate passes with margin over the 38
+qualifications, and real-time factor held 0.9598--0.9796 across all twenty.
+**19 of 20 is not the gate; do not report it as a pass.**
+
+Two things are settled by it. The unreachable watchdog is **fixed** -- the
+campaign terminated instead of stalling as the previous attempt did for 6 h 15 m
+-- and `_trim_transition_yaw` is **confirmed** against the mechanism it was
+written for: zero of twenty jammed the doorway, where both earlier attempts put
+11 of 20 there. The yaw-trim probe of three trials was not evidence; this is.
+
+**The one failure is a new mode and is not diagnosed.** `r17` ends
+`controller_failure` after four reconfiguration attempts that all returned
+outcome 0, with the morphology never leaving `compact_diff` and **no pod ever
+moving**. It was at the site within tolerance (2.6 mm x, 18.4 mm y, 0.026 rad)
+with 6.9e-05 m of localization error, zero collisions and 0.237 m of clearance,
+and spent 89 of 107 simulated seconds in planning latency. Not the doorway, not
+the tolerance, not heading traction. **Root cause that before re-running the
+gate**, and do not tune anything in response to it first.
+
+**ADR 0005 is accepted as A (2026-09-30, author decision).** Campaigns that back
+a claim are retained as verified `.tar.xz` archives beside their audits;
+`retain_campaign_records` archives and restore-verifies in one step. The
+confirmatory set is no longer blocked on retention.
+
+**The fault matrix is still owed**, after the round trip, in the roadmap's order.
+
+Earlier state, still accurate except where the entry above supersedes it:
+
 **ADR 0007 is adopted (2026-09-26): the wheel friction axes are attached to the
 wheel.** `fdir1 1 0 0` on both wheel collisions of `articulated_pod`, with the
 declared `mu 1.2` / `mu2 0.08` unchanged. Without it the friction principal axes
@@ -73,9 +104,9 @@ Gazebo, the bridge and the Nav2 nodes stayed healthy and reached simulated
 retained whole and **unscored** at
 `studies/gate0/roundtrip_20_yawtrim_partial_quarantined_audit.json`; the fault, with
 the py-spy locals and the digests, is
-`studies/engineering/roundtrip_watchdog_unreachable.json`. **Fix the watchdog first,
-with a regression test that wedges the spin, then execute a fresh full 20 at one
-commit.** A wedged observer must record as `infrastructure_failure`, which
+`studies/engineering/roundtrip_watchdog_unreachable.json`. **Both are done**: the
+fix and its wedging regression test are at `0e71dd3` and the fresh 20 ran at that
+commit. A wedged observer must record as `infrastructure_failure`, which
 `mission_batch` already retries, and never as a robot outcome. Nine of nine
 completing is consistent with `_trim_transition_yaw` working and is not the
 twenty-run gate; do not report it as a result.
@@ -228,5 +259,5 @@ not a physical margin. Reduced trace with digests:
 `studies/engineering/adr0006_alignment_diagnosis.json`. Both are author
 decisions, about rotation authority (ADR 0007) and about the tolerance; do not
 resolve either as a side effect of a tuning change, and see
-`docs/current_status.md` for the options. The round-trip and fault-matrix gates are still not
-re-qualified. ADR 0005 remains `proposed`.
+`docs/current_status.md` for the options. The fault matrix is still not
+re-qualified. ADR 0005 is now accepted as A; see the entry at the top.

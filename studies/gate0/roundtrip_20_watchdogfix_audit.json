@@ -1,0 +1,163 @@
+{
+  "campaign_digest": "38d8fbd17289208aee07ebe27e890c45df5c1c86bcf10b45a9fab501f2862972",
+  "design_hash": "9c74a26749d466ba382caa6b4d227a033139ef24b8600a3d10ef90608a088b5e",
+  "expected_runs": 20,
+  "failures": [
+    "combined_constraints-00-r17-feasibility_coupled: terminal=controller_failure; transitions=4/failures=4; morphology_sequence=['compact_diff']; motion_qualifications=0"
+  ],
+  "motion_margins": {
+    "forward_lateral_m": {
+      "bound": 0.08,
+      "direction": "abs_max",
+      "median_margin": 0.07873111231640298,
+      "observed_max": 0.0009912829327028772,
+      "observed_median": -0.001205021377667878,
+      "observed_min": -0.00468955325280644,
+      "samples": 38,
+      "worst_margin": 0.07531044674719356
+    },
+    "forward_travel_m": {
+      "bound": 0.08,
+      "direction": "min",
+      "median_margin": 0.03285411146054518,
+      "observed_max": 0.11526957337315338,
+      "observed_median": 0.11285411146054518,
+      "observed_min": 0.11133133279579147,
+      "samples": 38,
+      "worst_margin": 0.031331332795791464
+    },
+    "forward_yaw_rad": {
+      "bound": 0.15,
+      "direction": "abs_max",
+      "median_margin": 0.14339209021571497,
+      "observed_max": 0.0011699071964679196,
+      "observed_median": -0.006607909784285045,
+      "observed_min": -0.031407333335000065,
+      "samples": 38,
+      "worst_margin": 0.11859266666499993
+    },
+    "negative_yaw_coupling": {
+      "bound": 0.25,
+      "direction": "max",
+      "median_margin": 0.24384109713144447,
+      "observed_max": 0.012371920511360756,
+      "observed_median": 0.006158902868555518,
+      "observed_min": 0.001655707813687177,
+      "samples": 38,
+      "worst_margin": 0.23762807948863923
+    },
+    "negative_yaw_rad": {
+      "bound": -0.1,
+      "direction": "max",
+      "median_margin": 0.2873544772412954,
+      "observed_max": -0.2644519113315159,
+      "observed_median": -0.3873544772412954,
+      "observed_min": -0.669202772000425,
+      "samples": 38,
+      "worst_margin": 0.1644519113315159
+    },
+    "negative_yaw_translation_m": {
+      "bound": 0.12,
+      "direction": "max",
+      "median_margin": 0.11766726684178579,
+      "observed_max": 0.006454066704262831,
+      "observed_median": 0.002332733158214204,
+      "observed_min": 0.0009757471656027476,
+      "samples": 38,
+      "worst_margin": 0.11354593329573716
+    },
+    "positive_yaw_coupling": {
+      "bound": 0.25,
+      "direction": "max",
+      "median_margin": 0.24022132008984126,
+      "observed_max": 0.014068548470326448,
+      "observed_median": 0.009778679910158749,
+      "observed_min": 0.0036221597138161093,
+      "samples": 38,
+      "worst_margin": 0.23593145152967354
+    },
+    "positive_yaw_rad": {
+      "bound": 0.1,
+      "direction": "min",
+      "median_margin": 0.3425388624759801,
+      "observed_max": 0.7292894191638676,
+      "observed_median": 0.44253886247598007,
+      "observed_min": 0.261909475887319,
+      "samples": 38,
+      "worst_margin": 0.161909475887319
+    },
+    "positive_yaw_translation_m": {
+      "bound": 0.12,
+      "direction": "max",
+      "median_margin": 0.11566467671329897,
+      "observed_max": 0.010043921161913877,
+      "observed_median": 0.004335323286701022,
+      "observed_min": 0.0010271056450564698,
+      "samples": 38,
+      "worst_margin": 0.10995607883808611
+    },
+    "reverse_lateral_m": {
+      "bound": 0.08,
+      "direction": "abs_max",
+      "median_margin": 0.07963382243873116,
+      "observed_max": 0.0008780935413425831,
+      "observed_median": 0.0001429069102865867,
+      "observed_min": -0.0009679785827587054,
+      "samples": 38,
+      "worst_margin": 0.07903202141724129
+    },
+    "reverse_travel_m": {
+      "bound": -0.08,
+      "direction": "max",
+      "median_margin": 0.03289611024265509,
+      "observed_max": -0.11234678285303408,
+      "observed_median": -0.11289611024265508,
+      "observed_min": -0.115377192666827,
+      "samples": 38,
+      "worst_margin": 0.03234678285303408
+    },
+    "reverse_yaw_rad": {
+      "bound": 0.15,
+      "direction": "abs_max",
+      "median_margin": 0.14984711774014176,
+      "observed_max": 0.0008038171054239457,
+      "observed_median": -2.939022839709357e-05,
+      "observed_min": -0.000754210449475469,
+      "samples": 38,
+      "worst_margin": 0.14919618289457603
+    }
+  },
+  "observed_terminal_records": 20,
+  "passed": false,
+  "purpose": "engineering_roundtrip_qualification",
+  "real_time_factors": {
+    "maximum": 0.9796426217762758,
+    "median": 0.9751072301577313,
+    "minimum": 0.9598205113468193,
+    "samples": 20
+  },
+  "record_digests": {
+    "combined_constraints-00-r0-feasibility_coupled": "938a943e2956904c581d835ec145b73517732307a67985cd599f1214425f8433",
+    "combined_constraints-00-r1-feasibility_coupled": "30e159465ddf5f34b778052f7cfa210d061b300968d43077956524974230bc49",
+    "combined_constraints-00-r10-feasibility_coupled": "df36bdaa049f85774668e8a38f325607d48442a48268f609b5247d4f792e9072",
+    "combined_constraints-00-r11-feasibility_coupled": "cd390f2ab835cd428d4cb7fc3884b87d5dd2e916298e2577ff96ff43f8d9de23",
+    "combined_constraints-00-r12-feasibility_coupled": "7620ceebcac3b84ec128dd91e1df705a2898e236bf8d450f46f9e56d8579f2dc",
+    "combined_constraints-00-r13-feasibility_coupled": "c2a2ebf6fdae8d7de5106ce0e97edb3ac1aa900623b56ba69e32d70d75f17116",
+    "combined_constraints-00-r14-feasibility_coupled": "926b04081bb2eb61c1e937dae56945adf59270905fbdc8a1018f4fb26f36169a",
+    "combined_constraints-00-r15-feasibility_coupled": "0bddb2562db2f636dc74639426448f6d3b019dd727a100576b91cb045f45ba2e",
+    "combined_constraints-00-r16-feasibility_coupled": "5f22ad8fdd667d30212fb61d8eab3db3732445a8702baaba6ed8933dd01d2447",
+    "combined_constraints-00-r17-feasibility_coupled": "c4a7419731e6e444cc3e3985a7bb916b8f413d90a7307868416ed9bd38ea26b2",
+    "combined_constraints-00-r18-feasibility_coupled": "b5a45c94c8add2794c13c65235af971bdbad29b188fee8105b4e6b0df946e53a",
+    "combined_constraints-00-r19-feasibility_coupled": "6128ee1c17f785afebb3e434a8801148bdedb6da12c1a4aa6336dffec2861b0d",
+    "combined_constraints-00-r2-feasibility_coupled": "2b132b01fd224e5ab825ff3e5d48b8e54080aa595104a2a4679e521280fee4d8",
+    "combined_constraints-00-r3-feasibility_coupled": "c2d10be3e3abcdc85a514277d639421f33643c00fa0341f8b768f6d8b12c64aa",
+    "combined_constraints-00-r4-feasibility_coupled": "346484dcbe0eca41a3995ec814f18cf898d85cfcdeacd3c3e6e09be9d3ffcf8a",
+    "combined_constraints-00-r5-feasibility_coupled": "55b97a911d74291cd67ab3d15f5b5ab0642e1276c2cd223975793d09d4efc537",
+    "combined_constraints-00-r6-feasibility_coupled": "e3d503df8ead660d5076aed1e5c5241f02a41e2d75827d2af0b57d616d0d1936",
+    "combined_constraints-00-r7-feasibility_coupled": "cab3af59fce2a3704cc1070544ae7cb50861c0279894af17d37444f609de4292",
+    "combined_constraints-00-r8-feasibility_coupled": "a2e6b736683d557b0ba149798061e36e3907429e113e7a70133f17c2809207ac",
+    "combined_constraints-00-r9-feasibility_coupled": "f7d2e1d33defbdd5fdd9dab0cc19b6cd394f832753b2e377c7548e34a3e11bb5"
+  },
+  "schema_version": 2,
+  "unique_realized_disturbances": 20
+}
