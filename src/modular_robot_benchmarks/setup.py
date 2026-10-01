@@ -27,6 +27,7 @@ setup(
             "qualify_detached_pod = modular_robot_benchmarks.detached_pod_qualification:main",
             "qualify_roundtrip_batch = modular_robot_benchmarks.roundtrip_qualification:main",
             "check_planner_manipulation = modular_robot_benchmarks.manipulation_check:main",
+            "retain_campaign_records = modular_robot_benchmarks.record_archive:main",
         ]
     },
     test_suite="unittest.TestSuite",
