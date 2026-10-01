@@ -25,6 +25,26 @@ teardown clears segments no live process holds open. See
 is owed a fresh 20 at the fix commit**; the previous campaign stands as
 collected and is not re-scored.
 
+**Resume here.** That fresh 20 was started at `0531a0f` and stopped by an
+operator shutdown after one trial, so it is **not a result and not a failure**:
+`results/qualification/roundtrip_20_shmfix_raw` holds one terminal record,
+`combined_constraints-00-r0-feasibility_coupled`, completed at 157.12 s
+simulated. `mission_batch` resumes an interrupted batch and skips terminal
+records, so either re-run the same command to finish the remaining 19 -- valid
+only while HEAD is still `0531a0f`, since a campaign must run at one commit --
+or delete that directory and start the twenty over. Do not score the partial
+set, and do not audit it.
+
+What the completed 20 will and will not show: it tests whether the gate passes
+with the transport path fixed, but it cannot confirm the transport fix, which
+needs a recurrence to exercise. A clean 20 with no retries leaves that fix
+covered by `tests/test_dds_transport_failures.py` only. Say so either way.
+
+After the round trip passes, the 42-case fault matrix is owed, in the roadmap's
+order. ADR 0010 is proposed and is an author decision: whether to report
+`site_position_tolerance` as nominal rather than physical. Nothing in the
+repository is waiting on code for it.
+
 **ADR 0005 is accepted as A (2026-09-30, author decision).** Campaigns that back
 a claim are retained as verified `.tar.xz` archives beside their audits;
 `retain_campaign_records` archives and restore-verifies in one step. The
