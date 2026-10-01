@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import re
 import signal
 import subprocess
 import sys
@@ -63,6 +64,82 @@ def configuration_hash(paths: list[Path], parameters: dict) -> str:
         digest.update(b"\0")
     digest.update(json.dumps(parameters, sort_keys=True, separators=(",", ":")).encode())
     return digest.hexdigest()
+
+
+TRANSPORT_FAILURE_PATTERN = re.compile(
+    "open_and_lock_file failed"
+    "|Failed init_port (?P<port>fastrtps_[A-Za-z0-9_]+)"
+    "|RTPS_TRANSPORT_SHM.*Error")
+
+
+def transport_initialization_failures(launch_log_path: Path) -> set[str]:
+    """Shared-memory ports a participant in this trial could not open.
+
+    A participant that cannot open its port is deaf and mute for the whole
+    trial, so every outcome downstream of it describes the transport and not
+    the robot. In the 2026-09-30 round trip exactly one trial of twenty hit
+    this -- nine Nav2 nodes all failing to open `fastrtps_port18186` -- and it
+    recorded as `controller_failure`, a robot outcome, on a run where the robot
+    reached its site inside tolerance and never moved a pod.
+
+    The evidence is in the launch log the runner already captures, so this needs
+    no new instrumentation.
+    """
+    path = Path(launch_log_path)
+    if not path.is_file():
+        return set()
+    matched = list(TRANSPORT_FAILURE_PATTERN.finditer(
+        path.read_text(encoding="utf-8", errors="replace")))
+    ports = {match.group("port") for match in matched if match.group("port")}
+    if matched and not ports:
+        # The transport failed without naming its port; still not the robot.
+        return {"unnamed_port"}
+    return ports
+
+
+def unused_dds_segments(directory: Path = Path("/dev/shm")) -> list[Path]:
+    """Fast-DDS segments no live process holds open.
+
+    A stale segment poisons the next stack that wants its port, which is what
+    cost the 2026-09-30 round trip a trial. Deleting segments blindly is the
+    opposite fault and has already happened here: a teardown removed
+    `/dev/shm/fastrtps_*` underneath live participants, and Gazebo then
+    published `/clock` while no participant could discover anything.
+
+    Holding both of those open at once is why this reads `/proc/*/fd` rather
+    than matching process names: a segment nobody has open cannot, by
+    construction, be underneath a live participant.
+    """
+    directory = Path(directory)
+    segments = sorted(directory.glob("fastrtps_*"))
+    if not segments:
+        return []
+    held = set()
+    for descriptors in Path("/proc").glob("[0-9]*/fd"):
+        try:
+            entries = list(descriptors.iterdir())
+        except OSError:
+            continue
+        for descriptor in entries:
+            try:
+                target = os.readlink(descriptor)
+            except OSError:
+                continue
+            if "fastrtps_" in target:
+                held.add(target)
+    return [segment for segment in segments if str(segment) not in held]
+
+
+def clear_unused_dds_segments(directory: Path = Path("/dev/shm")) -> list[str]:
+    """Remove the segments nobody holds open. Returns what was cleared."""
+    cleared = []
+    for segment in unused_dds_segments(directory):
+        try:
+            segment.unlink()
+        except OSError:
+            continue
+        cleared.append(segment.name)
+    return cleared
 
 
 def retryable_infrastructure_failure(status: str, launch_returncode: int | None) -> bool:
@@ -267,7 +344,18 @@ def run_batch(
                 teardown_start = time.monotonic()
                 _stop_process(process)
                 launch_log.close()
+                # Only segments no live process holds open, so this cannot
+                # repeat the teardown that deleted them under live participants.
+                cleared_segments = clear_unused_dds_segments()
                 teardown_wall_s = time.monotonic() - teardown_start
+            # A participant that could not open its port was deaf and mute for
+            # the whole trial, so what it produced is not a robot outcome.
+            failed_ports = transport_initialization_failures(launch_log_path)
+            if failed_ports and not observation.completed:
+                observation.terminal_status = "infrastructure_failure"
+                observation.message += (
+                    "; DDS transport initialization failed on "
+                    + ", ".join(sorted(failed_ports)))
             # Evaluator-only contact inference from module poses against the
             # generated world; a completed mission with contact is a collision.
             clearance = clearance_metrics(
@@ -285,6 +373,8 @@ def run_batch(
                 "phase_timing": {**observation.phase_timing,
                                  "teardown_wall_s": teardown_wall_s},
                 "launch_log": str(launch_log_path),
+                "transport_failed_ports": sorted(failed_ports),
+                "stale_dds_segments_cleared": len(cleared_segments),
             }
             infrastructure_attempts.append(attempt_record)
             with attempt_ledger_path.open("a", encoding="utf-8") as ledger:

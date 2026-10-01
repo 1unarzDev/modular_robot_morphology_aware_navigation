@@ -937,10 +937,37 @@ record here:
 
 So the robot arrived within tolerance at a site its own planner had marked
 feasible, with good localization and room to spare, and the transition never
-started. **This is neither the doorway nor the tolerance**, and it is not the
-heading-traction defect, which moved motion rather than preventing a commit.
-Root cause is owed before the gate is re-run; 19 of 20 is not the gate and must
-not be reported as one.
+started.
+
+**Root-caused 2026-10-01: r17 is a DDS transport failure recorded as a robot
+outcome, and it is not a robot result at all.** It is the only trial of twenty
+whose transport failed, and it failed nine times -- `bt_navigator`,
+`collision_monitor`, `controller_server`, `hybrid_navigator`, `opennav_docking`,
+`planner_server`, `route_server`, `smoother_server` and `velocity_smoother` each
+failing to open **the same** shared-memory port, `fastrtps_port18186`. All
+nineteen other trials log zero such errors. Participants that cannot open a port
+cannot discover each other, so the reconfiguration request never reached the
+executor, every attempt returned outcome 0, and the planner exhausted its
+replanning limit on a near-constant 25.3 s cycle -- a timeout, not a physical
+event. `/dev/shm` is 16 GB and was not full, so this is the stale-segment family
+already on record here, not exhaustion.
+
+That makes r17 the **same defect class as the wall watchdog**: infrastructure
+scored as a robot outcome. `mission_batch` now detects it from the launch log it
+already captures and records `infrastructure_failure`, which it already retries
+while the launch process is alive, and per-trial teardown clears Fast-DDS
+segments that no live process holds open -- read from `/proc/*/fd`, never by
+process name, because deleting segments underneath live participants is the
+opposite fault and has already cost a campaign here. Verified against the
+campaign: 1 of 20 flagged, the correct port, no false positives on the 19.
+Numbers and digests: `studies/engineering/roundtrip_transport_failure_misclassified.json`.
+
+**The record is not rewritten.** It is immutable and its digest is committed, so
+the campaign stands as collected with the misclassification recorded rather than
+corrected in place. Under correct classification the campaign would have retried
+r17 instead of scoring it, so **19 of 20 is not the gate's verdict on the robot**
+-- but it is also not a pass, and must not be reported as one. The gate is owed a
+fresh 20 at the fix commit.
 
 ### The third re-collection was stopped by an unreachable watchdog, at run 10 of 20 (2026-09-28)
 

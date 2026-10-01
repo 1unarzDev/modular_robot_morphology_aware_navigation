@@ -13,14 +13,17 @@ campaign terminated instead of stalling as the previous attempt did for 6 h 15 m
 written for: zero of twenty jammed the doorway, where both earlier attempts put
 11 of 20 there. The yaw-trim probe of three trials was not evidence; this is.
 
-**The one failure is a new mode and is not diagnosed.** `r17` ends
-`controller_failure` after four reconfiguration attempts that all returned
-outcome 0, with the morphology never leaving `compact_diff` and **no pod ever
-moving**. It was at the site within tolerance (2.6 mm x, 18.4 mm y, 0.026 rad)
-with 6.9e-05 m of localization error, zero collisions and 0.237 m of clearance,
-and spent 89 of 107 simulated seconds in planning latency. Not the doorway, not
-the tolerance, not heading traction. **Root cause that before re-running the
-gate**, and do not tune anything in response to it first.
+**The one failure was a DDS transport failure recorded as a robot outcome, and
+is now fixed (2026-10-01).** `r17` is the only trial of twenty whose transport
+failed: nine Nav2 nodes each failed to open the same shared-memory port,
+`fastrtps_port18186`, while all nineteen others logged none. The robot was at
+the site within tolerance with 0.237 m of clearance and never moved a pod,
+because the reconfiguration request never reached the executor. `mission_batch`
+now records that as `infrastructure_failure` and retries it, and per-trial
+teardown clears segments no live process holds open. See
+`studies/engineering/roundtrip_transport_failure_misclassified.json`. **The gate
+is owed a fresh 20 at the fix commit**; the previous campaign stands as
+collected and is not re-scored.
 
 **ADR 0005 is accepted as A (2026-09-30, author decision).** Campaigns that back
 a claim are retained as verified `.tar.xz` archives beside their audits;

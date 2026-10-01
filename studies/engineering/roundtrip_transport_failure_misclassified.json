@@ -1,0 +1,93 @@
+{
+  "campaign_affected": "studies/gate0/roundtrip_20_watchdogfix_audit.json",
+  "commit_observed": "0e71dd3",
+  "design_kind": "engineering_harness_fault",
+  "evidence_class": "engineering_debug_never_pilot_or_confirmatory",
+  "exclusive_correlation": {
+    "all_nine_on_one_port": "fastrtps_port18186",
+    "nodes_affected": [
+      "bt_navigator",
+      "collision_monitor",
+      "controller_server",
+      "hybrid_navigator",
+      "opennav_docking",
+      "planner_server",
+      "route_server",
+      "smoother_server",
+      "velocity_smoother"
+    ],
+    "shm_errors_in_every_other_trial": 0,
+    "shm_errors_in_r17": 9,
+    "trials_with_transport_errors": 1,
+    "trials_without": 19
+  },
+  "fault": "The one failing trial of twenty is the only trial whose DDS transport failed. Nine Nav2 nodes each failed to open the same shared-memory port, fastrtps_port18186, so the participants could not discover each other; the reconfiguration request never reached the executor, every transition attempt returned outcome 0, and the planner exhausted its replanning limit. mission_batch scored that controller_failure, which is a robot outcome, on a run where the robot reached its site inside tolerance and never moved a pod.",
+  "fix": {
+    "classification": "mission_batch.transport_initialization_failures scans the launch log the runner already captures; an unfinished trial whose participants could not open a port records infrastructure_failure, which retryable_infrastructure_failure already retries while the launch process is alive. Verified against the real campaign: it flags 1 of 20 trials, with the correct port, and none of the 19 healthy ones.",
+    "not_retroactive": "The r17 record is immutable and its digest is committed, so it is not rewritten. The campaign stands as collected, with the misclassification recorded here and in docs/current_status.md.",
+    "prevention": "Per-trial teardown now clears Fast-DDS segments that no live process holds open, read from /proc/*/fd rather than by matching process names. Deleting segments blindly is the opposite fault and has already happened here, so a segment nobody has open cannot by construction be underneath a live participant."
+  },
+  "interpretation": "Not exhaustion and not the robot. /dev/shm is 16 GB and was not full, the robot drove to its site and stopped there within both tolerances with 0.237 m of clearance and 6.6e-05 m of localization error, and nothing mechanical was marginal. A single port file was left in a state the next stack could not open, which is the stale-segment failure family already on record here, and the near-constant 25.3 s replanning cycle is a timeout rather than a physical event. This is the same defect class as the wall watchdog fixed at 0e71dd3: infrastructure recorded as a robot result.",
+  "measurements": {
+    "collision_count": 0,
+    "controller_reached_goal_at": 1790817482.1564155,
+    "dev_shm_exhaustion_ruled_out": true,
+    "dev_shm_size": "16G",
+    "execution_state_history_entries": 1,
+    "final_pose_xy_yaw": [
+      2.15263155368324,
+      1.9683609717118453,
+      -0.02574455641905262
+    ],
+    "first_replanning_failure_at": 1790817487.5957966,
+    "localization_error_m_first_sample": 6.630150063903218e-05,
+    "minimum_clearance_m": 0.23703342286318727,
+    "morphology_sequence": [
+      "compact_diff"
+    ],
+    "observed_transition_outcomes": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "planned_site_xy_yaw": [
+      2.1500000320374966,
+      1.9500000290572643,
+      0.0
+    ],
+    "planning_latency_s": 89.06057722400055,
+    "pod_alignment_history_entries": 1,
+    "pods_moved": 0,
+    "reconfiguration_attempts": 4,
+    "reconfiguration_failures": 4,
+    "replanning_failure_cycle_s": [
+      25.282,
+      25.216,
+      25.536
+    ],
+    "seconds_from_goal_to_first_failure": 5.439,
+    "simulated_duration_s": 107.332,
+    "site_position_error_m": {
+      "x": 0.0026,
+      "y": 0.0184
+    },
+    "site_position_tolerance_m": 0.03,
+    "site_yaw_error_rad": 0.0257,
+    "site_yaw_tolerance_rad": 0.05,
+    "terminal_status_correct": "infrastructure_failure",
+    "terminal_status_recorded": "controller_failure",
+    "trial": "combined_constraints-00-r17-feasibility_coupled",
+    "unrecovered_fault": false
+  },
+  "not_yet_root_caused": "Why fastrtps_port18186 specifically was left unopenable after 17 clean trials is not established. The campaign cleared /dev/shm once before starting with zero participants alive, so the poisoned segment was produced during the run, by a teardown that killed a participant before it released its port. The per-trial clearing removes the inherited state regardless of which teardown produced it, and the classification means a recurrence costs a retry rather than a gate.",
+  "observed": "2026-09-30/10-01, the fourth 20-run round-trip re-collection",
+  "purpose": "a_dds_transport_failure_recorded_as_a_robot_outcome",
+  "raw_evidence": {
+    "campaign_digest": "38d8fbd17289208aee07ebe27e890c45df5c1c86bcf10b45a9fab501f2862972",
+    "launch_log": "results/qualification/roundtrip_20_watchdogfix_art/combined_constraints-00-r17-feasibility_coupled/launch.log",
+    "note": "results/ is gitignored; under ADR 0005 the campaign itself is retained at studies/gate0/records/roundtrip_20_watchdogfix_raw.tar.xz and verified against its audit, so this trial's record survives."
+  },
+  "schema_version": 1,
+  "status": "DIAGNOSED AND FIXED; the gate is owed a fresh 20 at the fix commit."
+}
