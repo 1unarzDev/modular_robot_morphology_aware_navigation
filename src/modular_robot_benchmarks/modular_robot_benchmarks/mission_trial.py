@@ -29,6 +29,7 @@ from tf2_ros import Buffer, TransformException, TransformListener
 from .evaluator_metrics import transition_calibration_pairs
 from .mission_batch import classify_terminal
 from .rigidity import POSE_FIELDS, qualify_pod_rigidity
+from .spin_pump import ExecutorPump
 
 
 @dataclass
@@ -71,8 +72,8 @@ class MissionObservation:
 
 
 class MissionObserver(Node):
-    def __init__(self) -> None:
-        super().__init__("morphology_mission_observer")
+    def __init__(self, context=None) -> None:
+        super().__init__("morphology_mission_observer", context=context)
         qos = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL,
                          reliability=ReliabilityPolicy.RELIABLE)
         self.client = ActionClient(self, NavigateHybrid, "navigate_hybrid")
@@ -442,14 +443,12 @@ class MissionObserver(Node):
         }
 
 
-def _spin_for(executor, duration_s: float) -> None:
-    deadline = time.monotonic() + duration_s
-    while time.monotonic() < deadline:
-        executor.spin_once(timeout_sec=min(0.05, max(0.0, deadline - time.monotonic())))
+def _remaining(wall_start: float, wall_watchdog_s: float) -> float:
+    return max(0.0, wall_watchdog_s - (time.monotonic() - wall_start))
 
 
 def probe_recovery_inhibition(
-    node: MissionObserver, executor, duration_s: float = 2.0,
+    node: MissionObserver, pump: ExecutorPump, duration_s: float = 2.0,
 ) -> dict:
     """Command assembled motion after a failed transition, then reconcile.
 
@@ -466,7 +465,7 @@ def probe_recovery_inhibition(
     probe["connections_before"] = sorted(
         f"{connection.parent_port}>{connection.child_module}"
         for connection in state.topology.connections)
-    _spin_for(executor, 0.5)
+    pump.sleep(0.5)
     before = dict(node.latest_core_pose) if node.latest_core_pose else None
     node.probe_max_pod_command = 0.0
     node.probe_active = True
@@ -475,9 +474,9 @@ def probe_recovery_inhibition(
     deadline = time.monotonic() + duration_s
     while time.monotonic() < deadline:
         node.probe_command_publisher.publish(command)
-        _spin_for(executor, 0.05)
+        pump.sleep(0.05)
     node.probe_command_publisher.publish(Twist())
-    _spin_for(executor, 0.5)
+    pump.sleep(0.5)
     node.probe_active = False
     after = dict(node.latest_core_pose) if node.latest_core_pose else None
     probe.update({
@@ -494,10 +493,7 @@ def probe_recovery_inhibition(
     reconcile = {"success": False, "message": "reconcile service unavailable"}
     if node.reconcile_client.wait_for_service(timeout_sec=2.0):
         future = node.reconcile_client.call_async(ReconcileTopology.Request())
-        deadline = time.monotonic() + 5.0
-        while not future.done() and time.monotonic() < deadline:
-            executor.spin_once(timeout_sec=0.1)
-        if future.done():
+        if pump.wait_until(future.done, 5.0):
             response = future.result()
             reconcile = {
                 "success": bool(response.success), "message": response.message,
@@ -531,10 +527,16 @@ def execute_mission(
     wall_watchdog_s: float,
     recovery_probe: bool = False,
 ) -> MissionObservation:
-    rclpy.init()
-    node = MissionObserver()
-    executor = SingleThreadedExecutor()
+    # One context per trial: a wedged spin is abandoned rather than torn down,
+    # and the next trial must be able to initialize without inheriting it.
+    context = rclpy.Context()
+    rclpy.init(context=context)
+    node = MissionObserver(context=context)
+    executor = SingleThreadedExecutor(context=context)
     executor.add_node(node)
+    # Spinning happens on the pump's thread so every deadline below is tested on
+    # a thread the executor cannot wedge. See spin_pump.ExecutorPump.
+    pump = ExecutorPump(executor).start()
     wall_start = time.monotonic()
     sim_start = None
     timed_out = False
@@ -542,17 +544,13 @@ def execute_mission(
     success = False
     attempts = 0
     try:
-        while time.monotonic() - wall_start < min(60.0, wall_watchdog_s):
-            executor.spin_once(timeout_sec=0.1)
-            if node.navigation_ready():
-                node.ready_wall_time = time.monotonic()
-                break
-        else:
+        if not pump.wait_until(node.navigation_ready, min(60.0, wall_watchdog_s)):
             readiness = node.navigation_readiness()
             return _observation(node, "infrastructure_failure", False,
                                 "stack readiness timeout: "
                                 + json.dumps(readiness, sort_keys=True),
                                 0.0, wall_start, 0)
+        node.ready_wall_time = time.monotonic()
         sim_start = node.sim_time
         goal = NavigateHybrid.Goal()
         goal.goal = PoseStamped()
@@ -561,20 +559,31 @@ def execute_mission(
         goal.goal.pose.orientation.w = 1.0
         goal.planner_method = method
         sent = node.client.send_goal_async(goal)
-        while not sent.done() and time.monotonic() - wall_start < wall_watchdog_s:
-            executor.spin_once(timeout_sec=0.1)
-        handle = sent.result() if sent.done() else None
+        if not pump.wait_until(sent.done, _remaining(wall_start, wall_watchdog_s)):
+            # The watchdog, not the robot: never scored as a rejected goal.
+            return _watchdog_observation(node, pump, wall_watchdog_s, wall_start,
+                                        0.0, "before the goal was accepted")
+        handle = sent.result()
         if handle is None or not handle.accepted:
             return _observation(node, "controller_failure", False,
                                 "NavigateHybrid goal rejected", 0.0, wall_start, 0)
         result_future = handle.get_result_async()
-        while not result_future.done():
-            executor.spin_once(timeout_sec=0.1)
-            simulated = (node.sim_time or sim_start) - sim_start
-            if simulated >= deadline_s or time.monotonic() - wall_start >= wall_watchdog_s:
-                timed_out = True
-                handle.cancel_goal_async()
-                break
+
+        def _settled() -> bool:
+            """Done, or out of simulated time. The wall clock is the backstop only."""
+            return (result_future.done()
+                    or (node.sim_time or sim_start) - sim_start >= deadline_s)
+
+        reached = pump.wait_until(
+            _settled, _remaining(wall_start, wall_watchdog_s))
+        if not result_future.done():
+            handle.cancel_goal_async()
+            if not reached:
+                return _watchdog_observation(
+                    node, pump, wall_watchdog_s, wall_start,
+                    max(0.0, (node.sim_time or sim_start) - sim_start),
+                    "with the mission unfinished")
+            timed_out = True        # the mission deadline, on the simulated clock
         if not timed_out:
             wrapped = result_future.result()
             success = bool(wrapped.result.success)
@@ -583,20 +592,45 @@ def execute_mission(
             navigation_result = wrapped.result
         else:
             navigation_result = None
-            message = "mission deadline or wall watchdog exceeded"
+            message = "mission deadline exceeded on the simulated clock"
         simulated = max(0.0, (node.sim_time or sim_start) - sim_start)
+        # Quiesce callbacks before snapshotting: with the pump spinning, the
+        # record would otherwise take its shape from whatever arrived mid-build.
+        quiet = pump.stop()
         observation = _observation(
             node, classify_terminal(success, message, timed_out), success,
             message, simulated, wall_start, attempts, navigation_result)
         # Capture the terminal record first: reconciliation changes the state.
-        if recovery_probe and not success:
-            observation.recovery_probe = probe_recovery_inhibition(node, executor)
+        if quiet and recovery_probe and not success:
+            pump = ExecutorPump(executor).start()
+            observation.recovery_probe = probe_recovery_inhibition(node, pump)
         return observation
     finally:
-        executor.remove_node(node)
-        node.destroy_node()
-        if rclpy.ok():
-            rclpy.shutdown()
+        if pump.stop():
+            executor.remove_node(node)
+            node.destroy_node()
+            if context.ok():
+                rclpy.shutdown(context=context)
+        # Otherwise the spin is wedged inside rclpy. Tearing the context down
+        # underneath it would block or crash the runner, and the campaign is
+        # worth more than the handles: the pump is a daemon thread, it dies
+        # with the process, and the next trial builds its own context.
+
+
+def _watchdog_observation(node, pump, wall_watchdog_s: float, wall_start: float,
+                         simulated: float, where: str):
+    """Record an expired wall backstop as infrastructure, never as a robot outcome.
+
+    The wall clock acts only as a stall backstop here, so its expiry says the
+    observer stopped making progress, not that the robot failed. mission_batch
+    retries terminal_status infrastructure_failure while the launch process is
+    alive, which is the correct disposition for a wedged observer.
+    """
+    return _observation(
+        node, "infrastructure_failure", False,
+        f"wall watchdog {wall_watchdog_s:.0f} s exceeded {where}: observer "
+        f"spins={pump.spins}, observer simulated {simulated:.3f} s",
+        simulated, wall_start, 0)
 
 
 def _observation(node, status, completed, message, simulated, wall_start, attempts,
