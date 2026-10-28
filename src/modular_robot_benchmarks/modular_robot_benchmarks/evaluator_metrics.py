@@ -37,6 +37,16 @@ def localization_errors(
     AMCL initial pose in one coordinate frame, so map and Gazebo world coincide.
     Estimates without truth inside the tolerance are omitted, not imputed.
     """
+    return [error for _, error in localization_error_track(
+        localization_history, diagnostic_samples, tolerance_s)]
+
+
+def localization_error_track(
+    localization_history: Iterable[Mapping[str, Any]],
+    diagnostic_samples: Iterable[Mapping[str, Any]],
+    tolerance_s: float = LOCALIZATION_SYNC_TOLERANCE_S,
+) -> list[tuple[float, float]]:
+    """`localization_errors` with the estimate time kept: (time_s, error_m)."""
     track = core_truth_track(diagnostic_samples)
     times = [entry[0] for entry in track]
     errors = []
@@ -49,9 +59,80 @@ def localization_errors(
         nearest = min(candidates, key=lambda entry: abs(entry[0] - time_s))
         if abs(nearest[0] - time_s) > tolerance_s:
             continue
-        errors.append(hypot(float(estimate["x"]) - nearest[1],
-                            float(estimate["y"]) - nearest[2]))
+        errors.append((time_s, hypot(float(estimate["x"]) - nearest[1],
+                                     float(estimate["y"]) - nearest[2])))
     return errors
+
+
+# Localization loss is defined against evaluator truth, not by the autonomy's
+# own report (decision 2026-10-28): an estimate that has silently diverged is
+# lost whether or not the navigator says so. The threshold is about three times
+# the worst error AMCL has shown while working normally (0.1021 m, ADR 0008), so
+# ordinary imprecision never counts; three consecutive 2 Hz samples (1 s) keep a
+# single bad match from counting either.
+LOCALIZATION_LOSS_ERROR_M = 0.30
+LOCALIZATION_LOSS_MIN_SAMPLES = 3
+
+
+def localization_loss_episodes(
+    error_track: Sequence[tuple[float, float]],
+    threshold_m: float = LOCALIZATION_LOSS_ERROR_M,
+    min_samples: int = LOCALIZATION_LOSS_MIN_SAMPLES,
+) -> list[dict[str, Any]]:
+    """Runs of at least `min_samples` consecutive errors above the threshold.
+
+    `ongoing` marks an episode that lasts to the last synchronized sample, i.e.
+    the estimate was still lost when the trial ended.
+    """
+    episodes: list[dict[str, Any]] = []
+    run: list[tuple[float, float]] = []
+    for index, (time_s, error) in enumerate(list(error_track) + [(None, None)]):
+        if error is not None and error > threshold_m:
+            run.append((time_s, error))
+            continue
+        if len(run) >= min_samples:
+            episodes.append({
+                "onset_s": run[0][0], "end_s": run[-1][0],
+                "peak_error_m": max(value for _, value in run),
+                "samples": len(run), "ongoing": index == len(error_track),
+            })
+        run = []
+    return episodes
+
+
+def site_placement_errors(
+    planned_sites: Sequence[Mapping[str, Any]],
+    execution_state_history: Iterable[Mapping[str, Any]],
+    diagnostic_samples: Iterable[Mapping[str, Any]],
+    tolerance_s: float = LOCALIZATION_SYNC_TOLERANCE_S,
+) -> list[dict[str, Any]]:
+    """True distance of the core from each planned site when its transition began.
+
+    ADR 0010: `site_position_tolerance` is a control target asserted against the
+    autonomy's estimate, not an achieved placement, so the placement actually
+    achieved is measured here from evaluator truth. The k-th entry into
+    TRANSITIONING is matched to the k-th planned site; a site whose transition
+    never began, or that has no truth within the tolerance, is omitted.
+    """
+    track = core_truth_track(diagnostic_samples)
+    times = [entry[0] for entry in track]
+    starts = [float(entry["time_s"]) for entry in execution_state_history
+              if entry.get("state") == "TRANSITIONING"]
+    placements = []
+    for site, time_s in zip(planned_sites, starts):
+        index = bisect_left(times, time_s)
+        candidates = [track[i] for i in (index - 1, index) if 0 <= i < len(track)]
+        if not candidates:
+            continue
+        nearest = min(candidates, key=lambda entry: abs(entry[0] - time_s))
+        if abs(nearest[0] - time_s) > tolerance_s:
+            continue
+        placements.append({
+            "transition_id": str(site.get("transition_id", "")), "time_s": time_s,
+            "true_distance_m": hypot(nearest[1] - float(site["x"]),
+                                     nearest[2] - float(site["y"])),
+        })
+    return placements
 
 
 # ---------------------------------------------------------------------------

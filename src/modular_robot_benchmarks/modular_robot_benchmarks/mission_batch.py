@@ -17,7 +17,9 @@ from typing import Any
 from .confirmatory_scenarios import make_confirmatory_scenario
 from .design import FAULT_MATRIX_DESIGN_KIND, StudyDesign, fault_case_for_run
 from .evaluator_metrics import (
-    clearance_metrics, localization_errors, module_pose_samples, world_obstacle_boxes,
+    clearance_metrics, localization_error_track, localization_errors,
+    localization_loss_episodes, module_pose_samples, site_placement_errors,
+    world_obstacle_boxes,
 )
 from .records import TrialManifest, TrialRecord, TrialStore
 from .sdf_export import export_confirmatory_sdf, export_occupancy_map
@@ -47,6 +49,51 @@ def classify_terminal(success: bool, message: str, timed_out: bool) -> str:
     if "cancel" in lowered:
         return "cancelled"
     return "controller_failure"
+
+
+# Statuses that describe what the robot did, and so can be re-attributed by
+# evaluator evidence. Infrastructure, crashes and planning failures never moved
+# the robot for a reason of its own and keep their status.
+ROBOT_OUTCOME_STATUSES = frozenset({
+    "completed", "timeout", "controller_failure", "docking_failure",
+    "unsafe_topology", "motion_qualification_failure", "localization_lost",
+})
+
+
+def evaluator_outcome(
+    status: str, completed: bool,
+    contact_events: list[dict[str, Any]], loss_episodes: list[dict[str, Any]],
+) -> tuple[str, bool, str]:
+    """Terminal status after evaluator-only contact and localization evidence.
+
+    A completed mission with contact is a collision. A completed mission whose
+    estimate was still lost at the end asserted completion against a diverged
+    estimate, so it is localization loss; when both apply, whichever began first
+    names the outcome. A failed robot outcome becomes localization loss when a
+    loss episode began before any contact, because the loss is then the earliest
+    cause; a failed mission with contact keeps its status, as it always has.
+    Returns (status, completed, note); the note is empty when nothing changed.
+    """
+    if status not in ROBOT_OUTCOME_STATUSES:
+        return status, completed, ""
+    first_contact = min((float(event["time_s"]) for event in contact_events),
+                        default=None)
+    if completed:
+        lost = [episode for episode in loss_episodes if episode["ongoing"]]
+        loss_onset = float(lost[0]["onset_s"]) if lost else None
+        if first_contact is not None and (loss_onset is None or first_contact <= loss_onset):
+            return "collision", False, "evaluator detected obstacle contact"
+        if loss_onset is not None:
+            return ("localization_lost", False,
+                    f"evaluator: estimate lost from {loss_onset:.1f} s to the end")
+        return status, completed, ""
+    if not loss_episodes or status == "localization_lost":
+        return status, completed, ""
+    loss_onset = float(loss_episodes[0]["onset_s"])
+    if first_contact is not None and first_contact <= loss_onset:
+        return status, completed, ""
+    return ("localization_lost", False,
+            f"evaluator: estimate lost from {loss_onset:.1f} s, before the {status}")
 
 
 def failure_injection_for(design: StudyDesign, spec) -> str:
@@ -399,13 +446,28 @@ def run_batch(
                     "; DDS transport initialization failed on "
                     + ", ".join(sorted(failed_ports)))
             # Evaluator-only contact inference from module poses against the
-            # generated world; a completed mission with contact is a collision.
+            # generated world, and localization loss against core truth; see
+            # `evaluator_outcome` for how each re-attributes the status.
             clearance = clearance_metrics(
                 module_pose_samples(observation.controller_diagnostics), obstacle_boxes)
             observation.controller_diagnostics["evaluator_clearance"] = clearance
-            if clearance["collision_count"] and observation.completed:
-                observation.terminal_status, observation.completed = "collision", False
-                observation.message += "; evaluator detected obstacle contact"
+            loss_episodes = localization_loss_episodes(localization_error_track(
+                observation.localization_history,
+                observation.controller_diagnostics.get("pod_drive_diagnostic_samples", [])))
+            observation.controller_diagnostics["evaluator_localization_loss"] = loss_episodes
+            # ADR 0010: the site tolerance is nominal; record what was achieved.
+            observation.controller_diagnostics["evaluator_site_placement"] = (
+                site_placement_errors(
+                    observation.planned_transition_sites,
+                    observation.execution_state_history,
+                    observation.controller_diagnostics.get(
+                        "pod_drive_diagnostic_samples", [])))
+            status, completed, note = evaluator_outcome(
+                observation.terminal_status, observation.completed,
+                clearance["contact_events"], loss_episodes)
+            if note:
+                observation.terminal_status, observation.completed = status, completed
+                observation.message += f"; {note}"
             attempt_record = {
                 "attempt": attempt_index + 1,
                 "terminal_status": observation.terminal_status,

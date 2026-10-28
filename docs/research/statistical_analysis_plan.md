@@ -36,6 +36,37 @@ is deadline-penalized time: failed trials receive 300 s. Successful-run time is
 descriptive. Mechanical work remains separate from time so the paper does not
 hide a completion/work tradeoff in one scalar objective.
 
+### Outcome definitions (frozen before pilot data)
+
+Each terminal record carries exactly one status. These definitions were fixed
+while confirmatory and pilot evidence were both 0 and must not change in
+response to an outcome.
+
+- **Planning failure** (author decision, 2026-10-27). A method that cannot
+  produce a plan -- for example `route_first_adaptation`'s `NoPathError` when a
+  fixed spatial route cannot be adapted with feasible transitions -- scores as a
+  mission failure with the 300 s deadline time. It is a property of the method,
+  so it is never excluded and never retried.
+- **Collision.** Contact is inferred by the evaluator from module poses against
+  the generated world geometry (clearance at or below 0 m, debounced per module
+  over 0.5 s). A mission that otherwise completed but made contact is a
+  collision, not a completion.
+- **Localization loss** (decided 2026-10-28). Defined against evaluator truth,
+  not by the autonomy's own report: an episode is at least three consecutive
+  2 Hz samples (1 s) whose planar estimate error exceeds 0.30 m, about three
+  times the worst error AMCL has shown while working normally (0.102 m). A
+  failed robot outcome (timeout, controller, docking, topology or motion
+  qualification failure) whose first loss episode began before any contact is
+  recorded as localization loss, the earliest cause. A completed mission is
+  recorded as localization loss only if an episode was still in progress at the
+  end, because its completion was then asserted against a diverged estimate;
+  when such a mission also made contact, whichever began first names it. A
+  navigator failure message naming localization or a transform also records
+  loss. Infrastructure failures, process crashes and planning failures are
+  never re-attributed.
+- **Timeout**: the 300 s simulated deadline elapsed with no other terminal
+  status.
+
 The primary estimand is the layout-balanced average effect over the generated
 layout population in each declared family scope. Each layout receives equal
 weight after averaging its three paired disturbance replicates. This prevents
@@ -152,13 +183,16 @@ the full robot geometry at synchronized evaluator timestamps. Localization RMSE
 compares the autonomy pose with evaluator-only truth after time alignment. No
 ground-truth stream may feed planning, control, recovery, or readiness.
 
-The smallest effect of interest is intentionally not filled in before the
-disjoint pilot. The pilot decision record must set it from operational value
-(for example, the minimum absolute completion gain that justifies added
-planning and reconfiguration complexity), record the rationale, and then run
-power across a conservative range of nuisance assumptions. It must not define
-the threshold by rounding or otherwise adapting to the observed treatment
-effect.
+The smallest effect of interest is **0.18 absolute completion probability**
+for both primary contrasts (decided 2026-10-28, before any pilot data, which is
+stricter than the pilot-record timing this plan originally allowed). Rationale
+from operational value: the method adds transition-feasibility and sensing
+models to every planning query and commits the robot to reconfiguration it
+would otherwise skip; a gain smaller than roughly one additional completed
+mission in six does not justify that complexity. The threshold is fixed and
+the pilot may not revise it; the pilot only supplies nuisance parameters for
+the power grid below, and the number of layouts is whatever that grid then
+requires (an illustrative preview implies 60--96 rather than 36).
 
 The pilot decision record must freeze a nuisance-assumption grid rather than a
 single optimistic power input. At minimum it spans the pilot-compatible control

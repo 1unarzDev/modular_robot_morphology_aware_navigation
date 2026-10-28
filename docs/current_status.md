@@ -728,13 +728,15 @@ Open before the pilot:
   trials under host load (four occurrences in 78). It is recorded as
   infrastructure and retried with no simulated time elapsed, so no outcome is
   hidden, but it is not root-caused.
-- **Author decisions** (proposed 2026-10-27, not yet taken): the smallest effect
-  of interest, with 0.18 absolute completion gain proposed and an illustrative
-  power preview implying 60--96 layouts rather than 36; ADR 0010 option A
-  together with a per-trial measurement of true distance from the planned site,
-  added to the frozen design; and placing the ADR 0006 station in the sensing
-  scenarios, re-running Gate 2 and re-freezing the design while confirmatory
-  evidence is 0.
+- **Decisions taken 2026-10-28** under the author's standing delegation of
+  pre-data design decisions (proposed 2026-10-27; revisit only before pilot
+  data exists): the smallest effect of interest is **0.18** absolute completion
+  probability, written into the analysis plan, with the layout count left to
+  the frozen power grid (preview 60--96); **localization loss is defined against
+  evaluator truth** (see the Gate 1 section); ADR 0010 is **accepted as A** with
+  a per-trial measurement of true distance from the planned site; and the
+  ADR 0006 station is to be placed in the sensing scenarios, Gate 2 re-run and
+  the design re-frozen while confirmatory evidence is 0.
 - **Taken by the author, 2026-10-27, to be written into the analysis plan with
   the threshold:** a planning failure (for example `route_first_adaptation`'s
   `NoPathError`) scores as a mission failure with the 300 s deadline time, is
@@ -953,6 +955,17 @@ records as some other failure. Whether loss is defined by the autonomy's own
 report or by evaluator error against truth is an outcome definition the
 confirmatory failure-cause analysis would use, so it should be settled before
 pilot data.
+
+**Settled 2026-10-28: by evaluator truth.** A loss episode is at least three
+consecutive 2 Hz samples whose planar estimate error exceeds 0.30 m (about three
+times AMCL's worst normal error, 0.102 m). `mission_batch.evaluator_outcome`
+re-attributes a failed robot outcome to `localization_lost` when its first
+episode began before any contact, and a completed mission only when an episode
+was still in progress at the end; infrastructure, crash and planning statuses
+are never touched, and the existing collision rule is unchanged. Episodes are
+stored in `controller_diagnostics.evaluator_localization_loss`. The full
+definitions are in the analysis plan, "Outcome definitions". Records collected
+before this change are not re-scored.
 
 ### The fault matrix passes on the repaired model, 42 of 42; Gate 0 is satisfied (2026-10-27)
 

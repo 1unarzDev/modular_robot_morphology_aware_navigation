@@ -125,7 +125,8 @@ def test_batch_records_evaluator_contact_and_reclassifies_completed_collisions()
     loop = batch.split("teardown_wall_s = time.monotonic() - teardown_start", 1)[1]
     loop = loop.split("attempt_record = {", 1)[0]
     assert "clearance_metrics(" in loop
-    assert 'observation.terminal_status, observation.completed = "collision", False' in loop
+    assert "localization_loss_episodes(" in loop
+    assert 'evaluator_outcome(' in loop
     assert 'collision_count=clearance["collision_count"]' in batch
     assert 'minimum_clearance_m=clearance["minimum_clearance_m"]' in batch
 
@@ -251,3 +252,44 @@ def test_clearance_metrics_retain_the_module_and_time_of_each_contact():
         ("pod_0", 0.1), ("pod_1", 0.2), ("pod_0", 3.0)]
     assert all(e["clearance_m"] == 0.0 for e in metrics["contact_events"])
     assert clearance_metrics([module("pod_0", 0.0, 0.5)], wall)["contact_events"] == []
+
+
+def test_localization_loss_needs_three_consecutive_samples_above_threshold():
+    from modular_robot_benchmarks.evaluator_metrics import localization_loss_episodes
+
+    track = [(0.0, 0.05), (0.5, 0.4), (1.0, 0.5), (1.5, 0.1),       # two: not loss
+             (2.0, 0.31), (2.5, 0.9), (3.0, 0.35), (3.5, 0.29),     # three: loss
+             (4.0, 0.30), (4.5, 0.6), (5.0, 0.7), (5.5, 0.8)]       # ongoing at end
+    episodes = localization_loss_episodes(track)
+    assert [(e["onset_s"], e["end_s"], e["samples"], e["ongoing"]) for e in episodes] == [
+        (2.0, 3.0, 3, False), (4.5, 5.5, 3, True)]
+    assert episodes[0]["peak_error_m"] == pytest.approx(0.9)
+    assert localization_loss_episodes([]) == []
+
+
+def test_localization_error_track_keeps_estimate_times():
+    from modular_robot_benchmarks.evaluator_metrics import localization_error_track
+
+    truth = [_diagnostic(1.0, 0.0, 0.0), _diagnostic(2.0, 1.0, 0.0)]
+    estimates = [{"time_s": 1.05, "x": 0.03, "y": 0.04},
+                 {"time_s": 2.0, "x": 1.0, "y": 0.5}]
+    track = localization_error_track(estimates, truth)
+    assert [t for t, _ in track] == [1.05, 2.0]
+    assert [e for _, e in track] == pytest.approx([0.05, 0.5])
+
+
+def test_site_placement_measures_truth_at_each_transition_start():
+    from modular_robot_benchmarks.evaluator_metrics import site_placement_errors
+
+    truth = [_diagnostic(10.0, 1.03, 2.04), _diagnostic(50.0, 5.0, 5.0)]
+    sites = [{"transition_id": "compact_to_narrow", "x": 1.0, "y": 2.0, "yaw": 0.0},
+             {"transition_id": "narrow_to_compact", "x": 5.0, "y": 5.0, "yaw": 0.0},
+             {"transition_id": "never_started", "x": 9.0, "y": 9.0, "yaw": 0.0}]
+    history = [{"time_s": 0.0, "state": "READY"},
+               {"time_s": 10.1, "state": "TRANSITIONING"},
+               {"time_s": 20.0, "state": "READY"},
+               {"time_s": 70.0, "state": "TRANSITIONING"}]   # no truth near 70 s
+    placements = site_placement_errors(sites, history, truth)
+    assert [p["transition_id"] for p in placements] == ["compact_to_narrow"]
+    assert placements[0]["true_distance_m"] == pytest.approx(0.05)
+    assert placements[0]["time_s"] == 10.1

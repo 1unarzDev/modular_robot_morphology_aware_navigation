@@ -1,6 +1,7 @@
 # ADR 0010: The doorway slack and the nominal site tolerance
 
-- Status: **proposed** (awaiting author decision)
+- Status: **accepted as A** (2026-10-28, under the author's delegation of
+  pre-data design decisions)
 - Date: 2026-09-30
 
 ## Context
@@ -59,7 +60,7 @@ that follows succeeds. That is a reporting problem now, not a traversal problem.
   site, clearance was 0.237 m -- so this ADR is not on its critical path. But a
   decision taken before that cause is known could be revised by it.
 
-## Decision (proposed)
+## Decision
 
 Adopt A, and record B as contra-indicated by the 2026-09-30 campaign rather than
 merely unchosen, so it is not revisited as an option without new evidence. C stays
@@ -82,3 +83,19 @@ binding constraint is a scenario-design change, not a tuning change.
 
 The round-trip gate is not passed, and this ADR does not pass it. `r17` is owed a
 root cause first.
+
+## Decision record (2026-10-28)
+
+Accepted as A, with B recorded as contra-indicated and C held in reserve, as
+proposed. Option D's condition has since been met: `r17` was root-caused as a
+DDS transport failure, not a placement event, and the 20-run round trip passed
+20 of 20 on the repaired model (`studies/gate0/roundtrip_20_isolated_audit.json`).
+
+A is paired with a measurement so that the nominal tolerance never stands in
+for an achieved placement: every terminal record now carries
+`controller_diagnostics.evaluator_site_placement`, the evaluator-truth distance
+of the core from each planned site at the moment its transition began
+(`evaluator_metrics.site_placement_errors`). The paper reports that
+distribution beside the 0.030 m control target, and states that placement error
+beyond 0.04 m (the 0.07 m verification margin less the 0.03 m tolerance) is
+unmodelled.
