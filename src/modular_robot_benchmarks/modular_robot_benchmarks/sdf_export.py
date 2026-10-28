@@ -80,8 +80,14 @@ def export_sdf(family: str, seed: int, output: Path) -> None:
 def export_confirmatory_sdf(
     family: str, layout_index: int, world_seed: int,
     output: Path, catalog_path: Path, friction_seed: int | None = None,
+    unperceived_obstacles: tuple[tuple[str, tuple, tuple], ...] = (),
 ) -> tuple[Path, Path]:
-    """Write a complete Gazebo world plus its immutable scenario manifest."""
+    """Write a complete Gazebo world plus its immutable scenario manifest.
+
+    `unperceived_obstacles` are (name, center, size) boxes written to the world
+    only. They are a Gate 1 stimulus: the scenario manifest, which the planner
+    reads as its prior, and the occupancy map never mention them.
+    """
     scenario = make_confirmatory_scenario(family, layout_index, world_seed)
     disturbance = physical_disturbance(friction_seed)
     catalog = load_catalog(catalog_path).supported_experiment_subset()
@@ -135,6 +141,8 @@ def export_confirmatory_sdf(
                     (scenario.grid.resolution, scenario.grid.resolution, 1.0))
     for box in scenario.transition_obstacles:
         _box_model(world, box.name, box.center, box.size)
+    for name, center, size in unperceived_obstacles:
+        _box_model(world, name, center, size)
 
     start_x, start_y = scenario.grid.cell_center(*scenario.start)
     _include(world, "model://modular_robot", "core", (

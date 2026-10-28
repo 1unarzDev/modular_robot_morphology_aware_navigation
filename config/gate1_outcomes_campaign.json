@@ -1,0 +1,138 @@
+{
+  "design": {
+    "design_kind": "engineering_gate1_outcomes",
+    "families": [
+      "combined_constraints"
+    ],
+    "layouts_per_family": 1,
+    "master_seed": 20261028,
+    "methods": [
+      "feasibility_coupled"
+    ],
+    "replicates": 10,
+    "schema_version": 1,
+    "trials": [
+      {
+        "family": "combined_constraints",
+        "fault_seed": 5635626240445804126,
+        "friction_seed": 17985697802473194147,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 0,
+        "replicate": 0,
+        "sensing_seed": 14123617797367282988,
+        "trial_id": "engineering_gate1_outcomes-combined_constraints-00-r00-success",
+        "world_seed": 10250990876719794540
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 6223612649332008757,
+        "friction_seed": 2841636800238572259,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 0,
+        "replicate": 1,
+        "sensing_seed": 6422429178591357096,
+        "trial_id": "engineering_gate1_outcomes-combined_constraints-00-r01-timeout",
+        "world_seed": 10250990876719794540
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 3249560504912726460,
+        "friction_seed": 10266489907171624649,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 0,
+        "replicate": 2,
+        "sensing_seed": 1864111139276061990,
+        "trial_id": "engineering_gate1_outcomes-combined_constraints-00-r02-localization_loss",
+        "world_seed": 10250990876719794540
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 18443963756396361264,
+        "friction_seed": 3697684467920790909,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 0,
+        "replicate": 3,
+        "sensing_seed": 6719145305992301747,
+        "trial_id": "engineering_gate1_outcomes-combined_constraints-00-r03-collision",
+        "world_seed": 10250990876719794540
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 9422869677606697352,
+        "friction_seed": 3927533865250040031,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 0,
+        "replicate": 4,
+        "sensing_seed": 8808095076892393678,
+        "trial_id": "engineering_gate1_outcomes-combined_constraints-00-r04-docking_failure",
+        "world_seed": 10250990876719794540
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 13267046941148089751,
+        "friction_seed": 1981501645447209959,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 0,
+        "replicate": 5,
+        "sensing_seed": 9580309664222448664,
+        "trial_id": "engineering_gate1_outcomes-combined_constraints-00-r05-success",
+        "world_seed": 10250990876719794540
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 16468641603293324028,
+        "friction_seed": 16567001292120724419,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 0,
+        "replicate": 6,
+        "sensing_seed": 9870086269448868508,
+        "trial_id": "engineering_gate1_outcomes-combined_constraints-00-r06-timeout",
+        "world_seed": 10250990876719794540
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 8814324717684355163,
+        "friction_seed": 15765812094998594477,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 0,
+        "replicate": 7,
+        "sensing_seed": 12943721740151758400,
+        "trial_id": "engineering_gate1_outcomes-combined_constraints-00-r07-localization_loss",
+        "world_seed": 10250990876719794540
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 17231179783293724932,
+        "friction_seed": 10705984105726539787,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 0,
+        "replicate": 8,
+        "sensing_seed": 1064280971834235019,
+        "trial_id": "engineering_gate1_outcomes-combined_constraints-00-r08-collision",
+        "world_seed": 10250990876719794540
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 13295425766123648105,
+        "friction_seed": 10703764550819178179,
+        "layout_id": "combined_constraints-00",
+        "method": "feasibility_coupled",
+        "method_order": 0,
+        "replicate": 9,
+        "sensing_seed": 1435116638777011292,
+        "trial_id": "engineering_gate1_outcomes-combined_constraints-00-r09-docking_failure",
+        "world_seed": 10250990876719794540
+      }
+    ]
+  },
+  "design_hash": "268b64d7be3e0a9c5b3a192c59d905d1c090e572358288946d4e9447b8887a61"
+}

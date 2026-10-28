@@ -15,7 +15,10 @@ import time
 from typing import Any
 
 from .confirmatory_scenarios import make_confirmatory_scenario
-from .design import FAULT_MATRIX_DESIGN_KIND, StudyDesign, fault_case_for_run
+from .design import (
+    FAULT_MATRIX_DESIGN_KIND, GATE1_OUTCOMES_DESIGN_KIND, OutcomeCase, StudyDesign,
+    fault_case_for_run, outcome_case_for_run,
+)
 from .evaluator_metrics import (
     clearance_metrics, localization_error_track, localization_errors,
     localization_loss_episodes, module_pose_samples, site_placement_errors,
@@ -97,6 +100,28 @@ def failure_injection_for(design: StudyDesign, spec) -> str:
     if design.design_kind != FAULT_MATRIX_DESIGN_KIND:
         return ""
     return fault_case_for_run(spec.replicate).injection
+
+
+def outcome_case_for(design: StudyDesign, spec) -> OutcomeCase | None:
+    """Declared Gate 1 outcome stimulus for a trial; None outside that campaign."""
+    if design.design_kind != GATE1_OUTCOMES_DESIGN_KIND:
+        return None
+    return outcome_case_for_run(spec.replicate)
+
+
+def unperceived_obstacles(case: OutcomeCase | None, start_x: float, start_y: float,
+                          ) -> tuple[tuple[str, tuple, tuple], ...]:
+    """The case's world-only box, ahead of the nominal start along heading 0.
+
+    Every route starts in heading bin 0 (east), and in the neutral layouts the
+    Gate 1 campaign uses the first leg runs straight east from the start.
+    """
+    if case is None or case.unperceived_obstacle_ahead_m is None:
+        return ()
+    size = case.unperceived_obstacle_size
+    return (("gate1_unperceived_obstacle",
+             (start_x + case.unperceived_obstacle_ahead_m, start_y, size[2] / 2.0),
+             size),)
 
 
 def configuration_hash(paths: list[Path], parameters: dict) -> str:
@@ -329,19 +354,25 @@ def run_batch(
             spec.family, layout_index, spec.world_seed)
         trial_artifacts = artifact_root / spec.trial_id
         trial_artifacts.mkdir(parents=True, exist_ok=True)
+        outcome_case = outcome_case_for(design, spec)
+        nominal_start_x, nominal_start_y = scenario.grid.cell_center(*scenario.start)
+        stimulus_boxes = unperceived_obstacles(
+            outcome_case, nominal_start_x, nominal_start_y)
         world_path, scenario_manifest = export_confirmatory_sdf(
             spec.family, layout_index, spec.world_seed,
-            trial_artifacts / "world.sdf", catalog_path, spec.friction_seed)
+            trial_artifacts / "world.sdf", catalog_path, spec.friction_seed,
+            stimulus_boxes)
         map_yaml, map_image = export_occupancy_map(
             scenario.grid, trial_artifacts / "map.yaml")
         disturbance = json.loads(
             scenario_manifest.read_text(encoding="utf-8"))["physical_disturbance"]
-        nominal_start_x, nominal_start_y = scenario.grid.cell_center(*scenario.start)
         start_x = nominal_start_x + disturbance["initial_dx_m"]
         start_y = nominal_start_y + disturbance["initial_dy_m"]
         start_yaw = disturbance["initial_yaw_rad"]
+        amcl_offset = ((outcome_case.amcl_initial_offset if outcome_case else None)
+                       or (0.0, 0.0, 0.0))
         parameters = {
-            "deadline_s": 300.0,
+            "deadline_s": outcome_case.deadline_s if outcome_case else 300.0,
             "wall_watchdog_s": wall_watchdog_s,
             "method": spec.method,
             "energy_measure": "10_newton_per_pod_absolute_speed_integral_proxy",
@@ -353,7 +384,13 @@ def run_batch(
             "physical_disturbance": disturbance,
             "max_infrastructure_retries": max_infrastructure_retries,
         }
-        failure_injection = failure_injection_for(design, spec)
+        failure_injection = (failure_injection_for(design, spec)
+                             or (outcome_case.failure_injection if outcome_case else ""))
+        if outcome_case is not None:
+            parameters["gate1_outcome_case"] = asdict(outcome_case)
+            parameters["gate1_unperceived_obstacles"] = [
+                {"name": name, "center": list(center), "size": list(size)}
+                for name, center, size in stimulus_boxes]
         if failure_injection:
             parameters["failure_injection"] = failure_injection
             parameters["recovery_probe"] = True
@@ -381,7 +418,9 @@ def run_batch(
             },
             parameters,
         )
-        obstacle_boxes = world_obstacle_boxes(scenario)
+        # The evaluator sees the whole world, stimulus included.
+        obstacle_boxes = world_obstacle_boxes(scenario) + [
+            (tuple(center), tuple(size)) for _, center, size in stimulus_boxes]
         setup_wall_s = time.monotonic() - setup_start
         infrastructure_attempts = []
         attempt_ledger_path = trial_artifacts / "infrastructure_attempts.jsonl"
@@ -394,8 +433,11 @@ def run_batch(
             process = subprocess.Popen(
                 ["ros2", "launch", "modular_robot_bringup", "demo.launch.py",
                  f"world:={world_path.resolve()}", f"map:={map_yaml.resolve()}",
-                 f"initial_x:={start_x}", f"initial_y:={start_y}",
-                 f"initial_yaw:={start_yaw}",
+                 # AMCL's prior only; the robot spawns at the true start. A
+                 # Gate 1 localization case offsets it (a kidnapped robot).
+                 f"initial_x:={start_x + amcl_offset[0]}",
+                 f"initial_y:={start_y + amcl_offset[1]}",
+                 f"initial_yaw:={start_yaw + amcl_offset[2]}",
                  # Static 3D transition obstacles as a known prior map, like
                  # the occupancy map; no live simulator state is exposed.
                  f"transition_environment:={scenario_manifest.resolve()}",
@@ -412,7 +454,7 @@ def run_batch(
             try:
                 goal = scenario.grid.cell_center(*scenario.goal)
                 observation = execute_mission_isolated(
-                    goal, spec.method, 300.0, wall_watchdog_s,
+                    goal, spec.method, parameters["deadline_s"], wall_watchdog_s,
                     recovery_probe=bool(failure_injection))
                 launch_returncode = process.poll()
                 if launch_returncode is not None and not observation.completed:

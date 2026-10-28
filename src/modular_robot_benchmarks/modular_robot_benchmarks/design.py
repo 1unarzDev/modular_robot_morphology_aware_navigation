@@ -263,3 +263,79 @@ def generate_fault_matrix_design(
     """
     return generate_fault_matrix_campaign(
         family, (layout_index,), method, 1, master_seed)
+
+
+GATE1_OUTCOMES_DESIGN_KIND = "engineering_gate1_outcomes"
+
+
+@dataclass(frozen=True)
+class OutcomeCase:
+    """One controlled Gate 1 outcome and the declared stimulus that produces it.
+
+    Every stimulus acts on the world or on the autonomy's priors, never on the
+    evaluator: the record is scored by exactly the rules a confirmatory trial
+    is, so a case that does not produce its class says so.
+    """
+
+    name: str
+    expected_status: str
+    deadline_s: float = 300.0
+    # (dx, dy, dyaw) added to the true start for AMCL's initial pose only; the
+    # robot still spawns at the true start, as for a kidnapped robot.
+    amcl_initial_offset: tuple[float, float, float] | None = None
+    # A static box placed this far ahead of the start along its heading, in the
+    # simulated world only: absent from the occupancy map and the transition
+    # priors, and below the lidar plane, so nothing the autonomy reads shows it.
+    unperceived_obstacle_ahead_m: float | None = None
+    unperceived_obstacle_size: tuple[float, float, float] = (0.30, 0.30, 0.10)
+    failure_injection: str = ""
+
+
+GATE1_OUTCOME_CASES = (
+    OutcomeCase("success", "completed"),
+    # The first leg alone normally takes about 6 s simulated, the transition
+    # well over 20 s more, so 20 s cannot be met.
+    OutcomeCase("timeout", "timeout", deadline_s=20.0),
+    # 0.6 m off and a quarter turn: well beyond AMCL's initial yaw spread, so the
+    # estimate cannot converge on truth before the robot has moved on it.
+    OutcomeCase("localization_loss", "localization_lost",
+                amcl_initial_offset=(0.0, 0.6, 1.5708)),
+    OutcomeCase("collision", "collision", unperceived_obstacle_ahead_m=1.0),
+    OutcomeCase("docking_failure", "unsafe_topology", failure_injection="latch:pod_0"),
+)
+
+
+def outcome_case_for_run(run: int) -> OutcomeCase:
+    """Map a Gate 1 run index onto its case, cycling as the fault matrix does."""
+    return GATE1_OUTCOME_CASES[run % len(GATE1_OUTCOME_CASES)]
+
+
+def generate_gate1_outcome_campaign(
+    family: str,
+    layout_index: int,
+    method: str,
+    realizations: int = 2,
+    master_seed: int = 20261028,
+) -> StudyDesign:
+    """Every declared Gate 1 outcome case, `realizations` times, on one layout."""
+    design_kind = GATE1_OUTCOMES_DESIGN_KIND
+    if family not in CONFIRMATORY_FAMILIES:
+        raise ValueError(f"unknown confirmatory family: {family}")
+    if method not in METHODS:
+        raise ValueError(f"unknown method: {method}")
+    if not 0 <= layout_index < 12:
+        raise ValueError("layout index must be in [0, 12)")
+    if realizations < 1:
+        raise ValueError("a Gate 1 campaign needs at least one realization")
+    runs = len(GATE1_OUTCOME_CASES) * realizations
+    layout_id = f"{family}-{layout_index:02d}"
+    world_seed = _seed(master_seed, design_kind, family, layout_index, "world")
+    trials = tuple(TrialSpec(
+        trial_id=f"{design_kind}-{layout_id}-r{run:02d}-{outcome_case_for_run(run).name}",
+        family=family, layout_id=layout_id, replicate=run, method=method,
+        method_order=0, world_seed=world_seed,
+        sensing_seed=_seed(master_seed, design_kind, family, layout_index, run, "sensing"),
+        friction_seed=_seed(master_seed, design_kind, family, layout_index, run, "friction"),
+        fault_seed=_seed(master_seed, design_kind, family, layout_index, run, "fault"),
+    ) for run in range(runs))
+    return StudyDesign(1, design_kind, 1, runs, master_seed, (method,), (family,), trials)

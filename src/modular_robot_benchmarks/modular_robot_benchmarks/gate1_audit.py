@@ -88,8 +88,18 @@ def mission_problems(record: TrialRecord) -> list[str]:
 def audit_record(record: TrialRecord) -> dict[str, Any]:
     has_mission = float(record.simulated_duration_s) >= MINIMUM_AUDITED_DURATION_S
     problems = provenance_problems(record) + (mission_problems(record) if has_mission else [])
-    return {"trial_id": record.spec.trial_id, "terminal_status": record.terminal_status,
-            "has_mission": has_mission, "problems": problems}
+    row = {"trial_id": record.spec.trial_id, "terminal_status": record.terminal_status,
+           "has_mission": has_mission, "problems": problems}
+    # A controlled record declares the class its stimulus was meant to produce.
+    # A mismatch is reported, never a problem: the record is scored by the same
+    # rules as any trial, and a stimulus that missed is a fact about it.
+    case = record.manifest.parameters.get("gate1_outcome_case")
+    if case:
+        row["outcome_case"] = case["name"]
+        row["expected_status"] = case["expected_status"]
+        row["stimulus_produced_expected_class"] = (
+            record.terminal_status == case["expected_status"])
+    return row
 
 
 def audit_records(records: Iterable[TrialRecord]) -> dict[str, Any]:
@@ -111,6 +121,11 @@ def audit_records(records: Iterable[TrialRecord]) -> dict[str, Any]:
         "clean_records_per_required_class": coverage,
         "required_classes_missing": sorted(
             name for name, count in coverage.items() if count == 0),
+        "controlled_cases": {
+            row["trial_id"]: {"case": row["outcome_case"],
+                              "expected": row["expected_status"],
+                              "observed": row["terminal_status"]}
+            for row in rows if "outcome_case" in row},
         "gate_passed": bool(rows) and len(clean) == len(rows) and all(coverage.values()),
         "per_record": rows,
     }

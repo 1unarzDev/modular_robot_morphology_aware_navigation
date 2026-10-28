@@ -15,8 +15,8 @@ from typing import Any
 
 from .design import (
     FAULT_MATRIX, FAULT_MATRIX_DESIGN_KIND, FaultCase, StudyDesign,
-    fault_case_for_run,
-    generate_fault_matrix_campaign,
+    GATE1_OUTCOMES_DESIGN_KIND, fault_case_for_run,
+    generate_fault_matrix_campaign, generate_gate1_outcome_campaign,
 )
 from .records import TrialRecord, TrialStore
 
@@ -152,6 +152,15 @@ def _parser() -> argparse.ArgumentParser:
         "--realizations", type=int, default=1,
         help="independent fault_seed realizations of every declared case")
     freeze.add_argument("--master-seed", type=int, default=20260912)
+    gate1 = commands.add_parser(
+        "freeze-gate1-outcomes",
+        help=f"write an immutable {GATE1_OUTCOMES_DESIGN_KIND} design")
+    gate1.add_argument("--output", type=Path, required=True)
+    gate1.add_argument("--family", required=True)
+    gate1.add_argument("--layout-index", type=int, required=True)
+    gate1.add_argument("--method", required=True)
+    gate1.add_argument("--realizations", type=int, default=2)
+    gate1.add_argument("--master-seed", type=int, default=20261028)
     summary = commands.add_parser("fault-matrix", help="summarize fault-matrix records")
     summary.add_argument("--design", type=Path, required=True)
     summary.add_argument("--raw", type=Path, required=True)
@@ -161,10 +170,15 @@ def _parser() -> argparse.ArgumentParser:
 
 def main() -> None:
     args = _parser().parse_args()
-    if args.command == "freeze-fault-matrix":
-        design = generate_fault_matrix_campaign(
-            args.family, tuple(args.layout_index), args.method,
-            args.realizations, args.master_seed)
+    if args.command in ("freeze-fault-matrix", "freeze-gate1-outcomes"):
+        if args.command == "freeze-fault-matrix":
+            design = generate_fault_matrix_campaign(
+                args.family, tuple(args.layout_index), args.method,
+                args.realizations, args.master_seed)
+        else:
+            design = generate_gate1_outcome_campaign(
+                args.family, args.layout_index, args.method,
+                args.realizations, args.master_seed)
         design.write_frozen(args.output)
         result = {"path": str(args.output), "design_hash": design.design_hash,
                   "expected_trials": design.expected_trials,
