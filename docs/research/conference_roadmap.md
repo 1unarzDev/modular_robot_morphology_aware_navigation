@@ -22,15 +22,18 @@ claims out of the paper; the literature review defines the prior-art boundary.
 
 Required artifact: machine-readable qualification summary with signed yaw,
 straight/reverse travel, cross-coupling, docking errors, observed topology, and
-failure-matrix results. Current state: **not satisfied, by repair rather than
-regression (2026-09-26)**. ADR 0007 attached the wheel friction axes to the
-wheel, so every figure collected before it describes a model with world-fixed
-axes. Item 1 is re-collected and passes 10/10 on the repaired model
-(`studies/gate0/gate0_item1_fdir1_audit.json`), now including heading-varied
-cases. The 20-run round trip (`roundtrip_20_postfix_audit.json`) and the 42/42
-fault matrix (`fault_matrix_campaign_r3_audit.json`) are **superseded and not
-re-scored**; both are being re-collected on the repaired model, in that order.
-It was satisfied on 2026-09-21 on the pre-repair model. Earlier history: The records behind every previous Gate 0 claim are gone --
+failure-matrix results. Current state: **satisfied on the repaired model
+(2026-10-27)**. Every item has a committed audit with retained,
+restore-verified records collected after ADR 0007 attached the wheel friction
+axes to the wheel: item 1 passes 10/10
+(`studies/gate0/gate0_item1_fdir1_audit.json`, including heading-varied cases);
+items 2 and 3 pass 20/20 (`studies/gate0/roundtrip_20_isolated_audit.json`,
+worst signed-motion margin +0.0301 m forward travel); item 4 passes 42/42 across
+three layouts (`studies/gate0/fault_matrix_campaign_r4_audit.json`). The
+pre-repair round trip and fault matrix (`roundtrip_20_postfix_audit.json`,
+`fault_matrix_campaign_r3_audit.json`) stay superseded and are not re-scored.
+It was first satisfied on 2026-09-21 on the pre-repair model, and was
+un-satisfied by ADR 0007 on 2026-09-26. Earlier history: The records behind every previous Gate 0 claim are gone --
 `results/` is gitignored and no archive exists -- so the required artifact
 cannot be produced from them and none of their figures can be audited. They
 would have needed re-collection regardless: every signed-motion measurement in

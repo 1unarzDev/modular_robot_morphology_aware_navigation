@@ -716,8 +716,32 @@ is not comparable to figures that cannot be re-audited.
 
 ## Resume here
 
-**Gate 0 is no longer satisfied, and the reason is a repair rather than a
-regression (2026-09-26).** ADR 0007 attaches the wheel friction axes to the
+**Gate 0 is satisfied again, on the repaired model (2026-10-27).** Item 1 passes
+10/10, the round trip 20/20 and the fault matrix 42/42, each with a committed
+audit and retained, restore-verified records; see the two 2026-10-27 sections
+below. The paragraphs that follow, down to "Gate 0 after ADR 0007", record how it
+was lost and re-collected.
+
+Open before the pilot:
+
+- **Engineering:** the simulation clock freezes at mission start in about 3--5% of
+  trials under host load (four occurrences in 78). It is recorded as
+  infrastructure and retried with no simulated time elapsed, so no outcome is
+  hidden, but it is not root-caused.
+- **Author decisions** (proposed 2026-10-27, not yet taken): the smallest effect
+  of interest, with 0.18 absolute completion gain proposed and an illustrative
+  power preview implying 60--96 layouts rather than 36; ADR 0010 option A
+  together with a per-trial measurement of true distance from the planned site,
+  added to the frozen design; and placing the ADR 0006 station in the sensing
+  scenarios, re-running Gate 2 and re-freezing the design while confirmatory
+  evidence is 0.
+- **Taken by the author, 2026-10-27, to be written into the analysis plan with
+  the threshold:** a planning failure (for example `route_first_adaptation`'s
+  `NoPathError`) scores as a mission failure with the 300 s deadline time, is
+  never excluded and never retried.
+
+**Gate 0 was lost on 2026-09-26, and the reason was a repair rather than a
+regression.** ADR 0007 attaches the wheel friction axes to the
 wheel. Every motion figure the platform had recorded was collected with
 world-fixed axes, so the two campaign-scale Gate 0 artifacts -- the 20-run
 round-trip audit and the 42/42 fault matrix -- describe a model that no longer
@@ -872,6 +896,36 @@ cleanliness guard, which is the same class of fix as the simulator-count guard
 adopted after the two-simulator contamination in the rotation sweep. Every
 scratch harness in this repository had the same omission; a stale bridge is now
 a caught condition rather than a silent one.
+
+### The fault matrix passes on the repaired model, 42 of 42; Gate 0 is satisfied (2026-10-27)
+
+Re-executed unchanged at `d3c2052` from a clean worktree (design hash
+`de7a62328ff425bc42097cd8db5bf5ffb509c7695f398828e3c1a72ad9d9d489`, the design
+the pre-repair third execution ran). Audit
+`studies/gate0/fault_matrix_campaign_r4_audit.json`: `gate_passed` true, 14/14
+in each of `reconfiguration_workspace-00`, `-03` and `-07`, `cases_not_exercised`
+0 in every layout, every declared case in every layout, two `fault_seed`
+realizations per case, distinct fault seeds, no unexpected records. All seven
+fault types -- detach, relocation, latch, stale observation, cancellation, commit
+and partial topology -- were exercised six times. Every case ended
+`unsafe_topology` with its injection recorded as fired, drive inhibited under the
+post-terminal stimulus, `RECOVERY_REQUIRED`, and reconciliation matching the
+observed topology. Campaign digest
+`8b5d59c717831bee9c2a015be6ca4f211b04e96a28433cdcaca50cbac4c1e5d2`; records
+retained at `studies/gate0/records/fault_matrix_campaign_r4_raw.tar.xz`,
+restore-verified (42 records, 0 unaudited files).
+
+Three cases needed one retry each, all before any simulated time elapsed:
+`reconfiguration_workspace-00-r07` (Nav2 lifecycle activation timeout at
+readiness) and `-03-r02`, `-03-r04` (the frozen simulation clock: 600 s wall,
+0.000 s simulated, after the goal was accepted). Zero transport errors in all 42.
+A capture of simulator thread state was armed from case 21 onward and did not
+fire.
+
+With item 1 (`gate0_item1_fdir1_audit.json`, 10/10) and the round trip
+(`roundtrip_20_isolated_audit.json`, 20/20), every Gate 0 item has a post-ADR-0007
+audit, so **Gate 0 is satisfied on the repaired model**. This is engineering
+qualification, not pilot or confirmatory evidence.
 
 ### The 20-run round-trip gate passes on the repaired model, 20 of 20 (2026-10-27)
 

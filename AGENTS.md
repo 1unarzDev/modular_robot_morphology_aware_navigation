@@ -1,5 +1,25 @@
 ## Current resumption point
 
+**Gate 0 is satisfied on the repaired model (2026-10-27).** The 42-case fault
+matrix passed 42/42 at `d3c2052`, re-executed unchanged (design hash
+`de7a6232...`): 14/14 in each of `reconfiguration_workspace-00`, `-03` and `-07`,
+all seven fault types twice per layout, every injection fired, no failed checks,
+distinct fault seeds. Audit `studies/gate0/fault_matrix_campaign_r4_audit.json`,
+campaign digest `8b5d59c7...`, records retained and restore-verified at
+`studies/gate0/records/fault_matrix_campaign_r4_raw.tar.xz`. With item 1 (10/10)
+and the round trip (20/20), every Gate 0 item now has a post-ADR-0007 audit.
+Three cases needed one pre-mission retry each (0 s simulated): one readiness
+timeout and two frozen clocks.
+
+**Resume here.** Engineering first: root-cause the frozen simulation clock
+(below) before the pilot, since it now recurs at about 3--5% of trials under host
+load; `results/qualification/freeze_capture.sh` in the WSL clone captures
+simulator thread state when it happens, and it did not recur after being armed.
+Then the post-Gate 0 roadmap, which is blocked on three author decisions listed
+in `docs/current_status.md`: the smallest effect of interest (0.18 proposed, with
+a power preview implying 60--96 layouts), ADR 0010 with a per-trial placement
+measurement, and placing the ADR 0006 station and re-freezing the design.
+
 **The 20-run round-trip gate passes on the repaired model, 20 of 20
 (2026-10-27).** Collected at `54883d6` with the design unchanged (hash
 `9c74a267...`), audit `studies/gate0/roundtrip_20_isolated_audit.json`, campaign
