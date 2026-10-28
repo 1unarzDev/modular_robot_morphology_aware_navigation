@@ -245,6 +245,24 @@ def clear_unused_dds_segments(directory: Path = Path("/dev/shm")) -> list[str]:
     return cleared
 
 
+def mission_clock_discontinuity(diagnostics: dict[str, Any]) -> str:
+    """Why the simulated clock invalidates this mission, or "" if it does not.
+
+    A jump in /clock during the mission means ROS stopped hearing from the
+    simulator while it kept stepping (gz-transport forgot its publishers), so
+    the robot ran uncommanded and the deadline was spent with nobody driving.
+    Whatever followed is the transport's outcome, not the robot's.
+    """
+    jumps = [jump for jump in diagnostics.get("clock_discontinuities", [])
+             if jump.get("during_mission")]
+    if not jumps:
+        return ""
+    worst = max(jumps, key=lambda jump: jump["jump_s"])
+    return (f"simulated clock jumped {worst['jump_s']:.1f} s at "
+            f"{worst['from_s']:.1f} s during the mission ({len(jumps)} jump(s)); "
+            "the bridge lost the simulator's publishers")
+
+
 def retryable_infrastructure_failure(status: str, launch_returncode: int | None) -> bool:
     """Only pre-mission infrastructure failures may receive bounded retries."""
     return status == "infrastructure_failure" and launch_returncode is None
@@ -484,6 +502,11 @@ def run_batch(
                     "; DDS transport initialization failed on "
                     + ", ".join(sorted(failed_ports)))
             # Evaluator-only contact inference from module poses against the
+            clock_fault = mission_clock_discontinuity(observation.controller_diagnostics)
+            if clock_fault and observation.terminal_status != "infrastructure_failure":
+                observation.terminal_status = "infrastructure_failure"
+                observation.completed = False
+                observation.message += f"; {clock_fault}"
             # generated world, and localization loss against core truth; see
             # `evaluator_outcome` for how each re-attributes the status.
             clearance = clearance_metrics(

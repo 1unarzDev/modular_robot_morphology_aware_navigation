@@ -33,6 +33,11 @@ from .rigidity import POSE_FIELDS, qualify_pod_rigidity
 from .spin_pump import ExecutorPump
 
 
+# The bridge publishes /clock many times per simulated second; consecutive
+# samples further apart than this mean the clock stopped reaching ROS while the
+# simulator kept stepping.
+CLOCK_DISCONTINUITY_S = 2.0
+
 @dataclass
 class MissionObservation:
     terminal_status: str
@@ -118,6 +123,15 @@ class MissionObserver(Node):
         self.probe_command_publisher = self.create_publisher(Twist, "/cmd_vel", 10)
         self.reconcile_client = self.create_client(ReconcileTopology, "reconcile_topology")
         self._previous_clock: float | None = None
+        self._previous_clock_wall: float | None = None
+        # Simulated-clock jumps, i.e. /clock silent while the simulator ran on.
+        # gz-transport drops every publisher of a process whose discovery
+        # heartbeats go silent for 3 s and relearns them only when some node
+        # subscribes afresh, so under host load the bridge can stop receiving
+        # from Gazebo and resume much later in one jump (2026-10-28). Anything
+        # the robot did across a jump was uncommanded.
+        self.clock_discontinuities: list[dict] = []
+        self.mission_started = False
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
         self.create_subscription(
@@ -178,6 +192,17 @@ class MissionObserver(Node):
 
     def _on_clock(self, message: Clock) -> None:
         current = message.clock.sec + message.clock.nanosec * 1e-9
+        wall_now = time.monotonic()
+        if (self._previous_clock is not None
+                and current - self._previous_clock > CLOCK_DISCONTINUITY_S):
+            self.clock_discontinuities.append({
+                "from_s": self._previous_clock, "to_s": current,
+                "jump_s": current - self._previous_clock,
+                "wall_gap_s": (wall_now - self._previous_clock_wall
+                               if self._previous_clock_wall is not None else None),
+                "during_mission": self.mission_started,
+            })
+        self._previous_clock_wall = wall_now
         if self._previous_clock is not None and current >= self._previous_clock:
             # Nominal 10 N rolling-force proxy per pod. The manifest labels this
             # explicitly; it is not battery or motor-electrical energy.
@@ -553,6 +578,7 @@ def execute_mission(
                                 0.0, wall_start, 0)
         node.ready_wall_time = time.monotonic()
         sim_start = node.sim_time
+        node.mission_started = True
         goal = NavigateHybrid.Goal()
         goal.goal = PoseStamped()
         goal.goal.header.frame_id = "map"
@@ -754,6 +780,8 @@ def _observation(node, status, completed, message, simulated, wall_start, attemp
         observed_transition_outcomes=outcomes,
         transition_edge_decisions=edge_decisions,
         recovery_actions=(int(navigation_result.recovery_actions) if navigation_result else 0),
-        controller_diagnostics=node.controller_diagnostic(),
+        controller_diagnostics={
+            **node.controller_diagnostic(),
+            "clock_discontinuities": list(node.clock_discontinuities)},
         fired_injections=list(node.fired_injections),
     )

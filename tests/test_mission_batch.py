@@ -100,3 +100,32 @@ def test_infrastructure_and_planning_statuses_are_never_reattributed():
     for status in ("infrastructure_failure", "process_crash", "planning_failure"):
         assert evaluator_outcome(status, False, [{"time_s": 1.0}], [_loss(0.5, True)]) == (
             status, False, "")
+
+
+def test_a_clock_jump_during_the_mission_invalidates_it():
+    from modular_robot_benchmarks.mission_batch import (
+        evaluator_outcome, mission_clock_discontinuity)
+
+    before = {"from_s": 2.0, "to_s": 40.0, "jump_s": 38.0, "wall_gap_s": 70.0,
+              "during_mission": False}
+    during = {"from_s": 60.0, "to_s": 180.0, "jump_s": 120.0, "wall_gap_s": 230.0,
+              "during_mission": True}
+    assert mission_clock_discontinuity({}) == ""
+    assert mission_clock_discontinuity({"clock_discontinuities": [before]}) == ""
+    reason = mission_clock_discontinuity({"clock_discontinuities": [before, during]})
+    assert "jumped 120.0 s" in reason
+    # And once infrastructure, evaluator evidence never re-attributes it.
+    assert evaluator_outcome("infrastructure_failure", False, [{"time_s": 70.0}], []) == (
+        "infrastructure_failure", False, "")
+
+
+def test_the_batch_checks_the_clock_before_scoring_the_robot():
+    from pathlib import Path
+
+    batch = (Path(__file__).resolve().parents[1] / "src/modular_robot_benchmarks/"
+             "modular_robot_benchmarks/mission_batch.py").read_text(encoding="utf-8")
+    loop = batch.split("teardown_wall_s = time.monotonic() - teardown_start", 1)[1]
+    assert loop.index("mission_clock_discontinuity(") < loop.index("evaluator_outcome(")
+    trial = (Path(__file__).resolve().parents[1] / "src/modular_robot_benchmarks/"
+             "modular_robot_benchmarks/mission_trial.py").read_text(encoding="utf-8")
+    assert '"clock_discontinuities": list(node.clock_discontinuities)' in trial
