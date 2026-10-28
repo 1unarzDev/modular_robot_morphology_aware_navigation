@@ -1,5 +1,14 @@
 ## Current resumption point
 
+**Gate 1 is in progress (2026-10-27).** `gate1_audit` exists and passes every
+telemetry check on the 62 Gate 0 records; records now also carry the container
+image and stack process deaths. **Every campaign from here must pass the image
+in:** `docker exec -e MORPHOLOGY_CONTAINER_IMAGE=$(docker inspect -f
+'{{.Image}}' morphology_navigation_dev) ...`, or `gate1_audit` flags the record.
+Owed: controlled collision, localization-loss and timeout records, plus an
+author decision on how localization loss is defined (see
+`docs/current_status.md`, "Gate 1").
+
 **Gate 0 is satisfied on the repaired model (2026-10-27).** The 42-case fault
 matrix passed 42/42 at `d3c2052`, re-executed unchanged (design hash
 `de7a6232...`): 14/14 in each of `reconfiguration_workspace-00`, `-03` and `-07`,

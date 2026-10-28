@@ -12,6 +12,7 @@ import signal
 import subprocess
 import sys
 import time
+from typing import Any
 
 from .confirmatory_scenarios import make_confirmatory_scenario
 from .design import FAULT_MATRIX_DESIGN_KIND, StudyDesign, fault_case_for_run
@@ -95,6 +96,26 @@ def transport_initialization_failures(launch_log_path: Path) -> set[str]:
         # The transport failed without naming its port; still not the robot.
         return {"unnamed_port"}
     return ports
+
+
+PROCESS_DEATH_PATTERN = re.compile(
+    r"\[ERROR\] \[(?P<process>[^\]]+)\]: process has died \[pid \d+, exit code (?P<code>-?\d+)")
+
+
+def stack_process_deaths(launch_log_path: Path) -> list[dict[str, Any]]:
+    """Stack processes the launch log reports dead, read before teardown starts.
+
+    Teardown kills every process, so deaths are only informative when read
+    before it: anything this finds then died while the trial was running, which
+    is process health the record otherwise cannot show while the launch itself
+    stays alive.
+    """
+    path = Path(launch_log_path)
+    if not path.is_file():
+        return []
+    return [{"process": match.group("process"), "exit_code": int(match.group("code"))}
+            for match in PROCESS_DEATH_PATTERN.finditer(
+                path.read_text(encoding="utf-8", errors="replace"))]
 
 
 def unused_dds_segments(directory: Path = Path("/dev/shm")) -> list[Path]:
@@ -309,6 +330,11 @@ def run_batch(
                 "python": platform.python_version(),
                 "platform": platform.platform(),
                 "ros_distro": os.environ.get("ROS_DISTRO", "unknown"),
+                # A container cannot read its own image digest; the run script
+                # supplies it from `docker inspect`, and the Gate 1 audit flags
+                # records where it did not.
+                "container_image": os.environ.get(
+                    "MORPHOLOGY_CONTAINER_IMAGE", "unknown"),
             },
             parameters,
         )
@@ -355,6 +381,8 @@ def run_batch(
                     "infrastructure_failure", False, f"runner exception: {exc}",
                     0.0, 0.0)
             finally:
+                # Read before teardown, which kills every process it reaches.
+                premature_deaths = stack_process_deaths(launch_log_path)
                 teardown_start = time.monotonic()
                 _stop_process(process)
                 launch_log.close()
@@ -389,6 +417,7 @@ def run_batch(
                 "launch_log": str(launch_log_path),
                 "transport_failed_ports": sorted(failed_ports),
                 "stale_dds_segments_cleared": len(cleared_segments),
+                "stack_process_deaths": premature_deaths,
             }
             infrastructure_attempts.append(attempt_record)
             with attempt_ledger_path.open("a", encoding="utf-8") as ledger:

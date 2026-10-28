@@ -897,6 +897,38 @@ adopted after the two-simulator contamination in the rotation sweep. Every
 scratch harness in this repository had the same omission; a stale bridge is now
 a caught condition rather than a silent one.
 
+### Gate 1: the coverage audit exists; controlled outcome records are owed (2026-10-27)
+
+`gate1_audit` checks every Gate 1 field record by record: `telemetry_audit`'s
+localization and truth streams, computed evaluator clearance, covariance trace,
+mechanical work, one observed outcome per transition prediction, process health,
+and a clean source revision with configuration, design and container hashes. It
+reports which of the five required outcome classes (success, collision,
+localization loss, docking failure, timeout) the clean records cover.
+
+Two fields were missing from every record, so `mission_batch` now records them:
+`software_versions.container_image`, which a container cannot read for itself and
+the run script supplies from `docker inspect` as `MORPHOLOGY_CONTAINER_IMAGE`, and
+`stack_process_deaths`, the stack processes the launch log reports dead, read
+before teardown kills them so that anything found died during the trial.
+
+Over the 62 retained Gate 0 records
+(`studies/gate1/coverage_audit_gate0_records.json`, campaign digests matching
+both Gate 0 audits) every telemetry and measurement check passes; all 62 lack
+only the two new fields. Those records cover success (20) and fail-closed
+docking failure (42).
+
+Owed for the Gate 1 artifact: controlled collision, localization-loss and timeout
+records, and success and docking-failure records carrying the new fields. Timeout
+needs only a declared short deadline. Collision and localization loss need an
+evaluator stimulus, and localization loss also needs a definition: today
+`localization_lost` is assigned only when the navigator's failure message names
+localization or a transform, so a robot whose estimate has silently diverged
+records as some other failure. Whether loss is defined by the autonomy's own
+report or by evaluator error against truth is an outcome definition the
+confirmatory failure-cause analysis would use, so it should be settled before
+pilot data.
+
 ### The fault matrix passes on the repaired model, 42 of 42; Gate 0 is satisfied (2026-10-27)
 
 Re-executed unchanged at `d3c2052` from a clean worktree (design hash

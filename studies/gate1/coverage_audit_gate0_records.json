@@ -1,0 +1,593 @@
+{
+  "campaign_digests": {
+    "results/qualification/fault_matrix_campaign_r4_raw": "8b5d59c717831bee9c2a015be6ca4f211b04e96a28433cdcaca50cbac4c1e5d2",
+    "results/qualification/roundtrip_20_isolated_raw": "8dba20d142a6f179a3b3bb10955d7cd28b3d2d9ad9394681a9d70e239f42740b"
+  },
+  "clean_records_per_required_class": {
+    "collision": 0,
+    "docking_failure": 0,
+    "localization_loss": 0,
+    "success": 0,
+    "timeout": 0
+  },
+  "gate_passed": false,
+  "per_record": [
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-00-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-00-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-00-r10-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-00-r11-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-00-r12-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-00-r13-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-00-r14-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-00-r15-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-00-r16-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-00-r17-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-00-r18-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-00-r19-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-00-r2-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-00-r3-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-00-r4-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-00-r5-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-00-r6-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-00-r7-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-00-r8-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-00-r9-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r00"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r01"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r02"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r03"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r04"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r05"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r06"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r07"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r08"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r09"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r10"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r11"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r12"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-00-r13"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r00"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r01"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r02"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r03"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r04"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r05"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r06"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r07"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r08"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r09"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r10"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r11"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r12"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-03-r13"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r00"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r01"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r02"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r03"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r04"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r05"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r06"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r07"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r08"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r09"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r10"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r11"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r12"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "container image not recorded",
+        "process health not recorded"
+      ],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_fault_matrix-reconfiguration_workspace-07-r13"
+    }
+  ],
+  "problem_counts": {
+    "container image not recorded": 62,
+    "process health not recorded": 62
+  },
+  "purpose": "gate1_measured_outcome_coverage",
+  "records": 62,
+  "records_without_problems": 0,
+  "required_classes_missing": [
+    "collision",
+    "docking_failure",
+    "localization_loss",
+    "success",
+    "timeout"
+  ],
+  "schema_version": 1,
+  "terminal_statuses": {
+    "completed": 20,
+    "unsafe_topology": 42
+  }
+}

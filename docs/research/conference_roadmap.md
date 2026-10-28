@@ -116,6 +116,18 @@ docking-failure, and timeout records plus an audit that rejects missing or
 misaligned telemetry. Ground truth consumption by autonomy must be mechanically
 audited and rejected.
 
+Current state (2026-10-27): **not satisfied.** The audit exists
+(`gate1_audit`): it applies `telemetry_audit` with every other Gate 1 field --
+clearance, covariance, mechanical work, prediction/outcome pairing, process
+health, and source/configuration/design/container provenance -- and reports
+which outcome classes a record set covers. Run over the 62 retained Gate 0
+records (`studies/gate1/coverage_audit_gate0_records.json`) every telemetry and
+measurement check passes, and every record lacks exactly the two fields added
+with it (container image, stack process deaths). Missing: controlled collision,
+localization-loss and timeout records, and success and docking-failure records
+collected with the new fields. Ground-truth consumption by autonomy is already
+rejected by a static test.
+
 ## Gate 2: planner manipulation checks
 
 Bind location-dependent 3D obstacles, visibility, and localization covariance
