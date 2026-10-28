@@ -15,8 +15,11 @@ and disturbance realizations:
    reconfiguration clearance.
 3. `feasibility_coupled`: add connector approach and full transition-trajectory
    feasibility.
-4. `sensing_feasibility_coupled`: additionally model visibility, estimate
-   covariance, and transition failure probability.
+4. `sensing_feasibility_coupled`: additionally reject transition sites where a
+   moved pod's connector is predicted not visible or its estimate covariance
+   exceeds the docking gate. (Corrected 2026-10-28 to match the code: the
+   transition failure probability is a per-transition catalog constant that
+   every method uses alike; sensing acts as a hard gate, not as a risk model.)
 
 Only `compact_diff` and `narrow_tandem` enter confirmatory experiments.
 
@@ -173,7 +176,10 @@ site from `sensing_feasibility_coupled`. These checks establish that the
 ablations changed the intended decision mechanism; they do not replace the
 mission-completion estimand and receive no significance tests.
 
-For mechanism evidence, report transition prediction coverage as well as
+Because the logged pre-action probability is the catalog constant for each
+transition (see the method list), calibration measures how well that constant
+matches the observed rate; it is descriptive and says nothing about the sensing
+gate. For mechanism evidence, report transition prediction coverage as well as
 calibration: the number of attempted transitions with a logged probability,
 the Brier score by method, reliability bins with counts, and every structured
 rejection reason. Calibration is uninterpretable unless the executor logs both

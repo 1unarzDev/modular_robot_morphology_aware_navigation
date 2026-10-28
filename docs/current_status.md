@@ -735,8 +735,10 @@ Open before the pilot:
   the frozen power grid (preview 60--96); **localization loss is defined against
   evaluator truth** (see the Gate 1 section); ADR 0010 is **accepted as A** with
   a per-trial measurement of true distance from the planned site; and the
-  ADR 0006 station is to be placed in the sensing scenarios, Gate 2 re-run and
-  the design re-frozen while confirmatory evidence is 0.
+  design is to be re-frozen while confirmatory evidence is 0. The ADR 0006
+  station is already in every confirmatory layout (since `467ae8b`); what the
+  re-freeze needs is the Gate 2 report regenerated on the ADR 0011 generator 2
+  design and the layout count from the pilot's power grid.
 - **Taken by the author, 2026-10-27, to be written into the analysis plan with
   the threshold:** a planning failure (for example `route_first_adaptation`'s
   `NoPathError`) scores as a mission failure with the 300 s deadline time, is
