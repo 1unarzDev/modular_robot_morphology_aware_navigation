@@ -901,7 +901,49 @@ adopted after the two-simulator contamination in the rotation sweep. Every
 scratch harness in this repository had the same omission; a stale bridge is now
 a caught condition rather than a silent one.
 
-### The frozen simulation clock is a busy Gazebo main thread, not a deadlock (2026-10-27, unfinished)
+### The frozen clock is the bridge losing Gazebo's publishers, not the simulator (2026-10-28)
+
+**Root-caused; supersedes the "leading suspect" below.** Three further
+reproductions under the same extra load (engineering debug only, scratch
+batches `results/qualification/freeze_repro{2,3,4}_*` in the WSL clone, never
+scored) froze 3 of 13 trials and settled it:
+
+- Symbolized stacks (gdb with `set sysroot /proc/<pid>/root`) put the Gazebo
+  main thread inside `Physics::Update -> WorldForwardStep`, which gz-sim only
+  calls while unpaused, and the render thread on the gpu_lidar, not the RGB-D
+  camera. `parameter_bridge` was idle and healthy, waiting with nothing
+  arriving.
+- Probes run inside the study container, validated first on a healthy trial,
+  read Gazebo during a freeze: 48 topics live, sim time 140.16 s then 166.87 s
+  38 s later (real-time factor 0.51). The simulator never stopped.
+- That frozen trial **recovered in the same second** the probe's
+  `gz topic -e -t /clock` subscribed (gz system time 1793230171.718; the
+  bridge's first-ever "Passing message from ROS Twist" at .715), then saw a
+  ~120 s clock jump with the robot uncommanded, logged "Failed to make
+  progress", replanned and reached its goal.
+
+Mechanism, from the installed gz-transport 13 source (`Discovery.hh:690-735`):
+a process whose discovery heartbeats are silent for more than 3000 ms has all
+its publishers deleted and its subscribers disconnected; later heartbeats
+restore the process but not its topics, which are relearned only when some
+node sends a fresh SUBSCRIBE. Under host load the bridge's heartbeats from
+Gazebo lapse, and the bridge stops receiving everything Gazebo publishes until
+something subscribes anew -- normally never, hence the 600 s watchdog records.
+
+**Consequence fixed at `e5a0401`:** a freeze that recovers mid-mission would
+have been scored as a robot outcome with its deadline spent by the transport.
+The observer now records every `/clock` jump above 2 s simulated, and
+`mission_batch` makes a mission containing one `infrastructure_failure`
+before any evaluator re-attribution. **No Gate 0 result is affected:** the
+2 Hz odometry and localization samples, taken on `/clock` callbacks, never gap
+by more than 0.53 s in any of the 62 retained records behind the 20/20 round
+trip and the 42/42 fault matrix, so neither set holds a hidden jump.
+
+Prevention under test: `GZ_IP=127.0.0.1` (discovery on loopback rather than the
+WSL mirrored interfaces), 14 trials under the same load
+(`freeze_repro5_*`).
+
+#### Earlier reading, 2026-10-27: a busy Gazebo main thread, not a deadlock
 
 A first lock-order hypothesis was refuted from source: `MultiPodDriveSystem`
 publishes under its own mutex and its `cmd_vel` callback takes the same mutex, but
