@@ -957,14 +957,18 @@ confirmatory failure-cause analysis would use, so it should be settled before
 pilot data.
 
 **Settled 2026-10-28: by evaluator truth.** A loss episode is at least three
-consecutive 2 Hz samples whose planar estimate error exceeds 0.30 m (about three
-times AMCL's worst normal error, 0.102 m). `mission_batch.evaluator_outcome`
-re-attributes a failed robot outcome to `localization_lost` when its first
-episode began before any contact, and a completed mission only when an episode
-was still in progress at the end; infrastructure, crash and planning statuses
-are never touched, and the existing collision rule is unchanged. Episodes are
-stored in `controller_diagnostics.evaluator_localization_loss`. The full
-definitions are in the analysis plan, "Outcome definitions". Records collected
+consecutive 2 Hz samples whose planar estimate error exceeds 0.30 m; the worst
+normal AMCL error over 124 retained Gate 0 records (two fault-matrix and two
+round-trip campaigns) is 0.126 m.
+`mission_batch.evaluator_outcome` names a completed mission or failed robot
+outcome by its earliest evaluator-observed cause, contact or loss, so a failed
+mission with contact is now a collision rather than keeping its status; a
+completed mission counts only a loss episode still in progress at the end.
+Infrastructure, crash and planning statuses are never touched. None of those
+records has a contact or a loss episode, so nothing on record
+would change. Episodes are stored in
+`controller_diagnostics.evaluator_localization_loss`; the full definitions are
+in the analysis plan, "Outcome definitions". Records collected
 before this change are not re-scored.
 
 ### The fault matrix passes on the repaired model, 42 of 42; Gate 0 is satisfied (2026-10-27)

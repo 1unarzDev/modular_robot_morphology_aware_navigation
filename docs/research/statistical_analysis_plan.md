@@ -47,23 +47,25 @@ response to an outcome.
   fixed spatial route cannot be adapted with feasible transitions -- scores as a
   mission failure with the 300 s deadline time. It is a property of the method,
   so it is never excluded and never retried.
-- **Collision.** Contact is inferred by the evaluator from module poses against
-  the generated world geometry (clearance at or below 0 m, debounced per module
-  over 0.5 s). A mission that otherwise completed but made contact is a
-  collision, not a completion.
+- **Collision** (rule extended 2026-10-28). Contact is inferred by the
+  evaluator from module poses against the generated world geometry (clearance
+  at or below 0 m, debounced per module over 0.5 s).
 - **Localization loss** (decided 2026-10-28). Defined against evaluator truth,
   not by the autonomy's own report: an episode is at least three consecutive
-  2 Hz samples (1 s) whose planar estimate error exceeds 0.30 m, about three
-  times the worst error AMCL has shown while working normally (0.102 m). A
+  2 Hz samples (1 s) whose planar estimate error exceeds 0.30 m. Over 124
+  retained Gate 0 records (the r3 and r4 fault matrices and the watchdog-fix
+  and isolated round trips) the worst error AMCL showed while working normally was
+  0.126 m, so the threshold sits about 2.4 times above it. A navigator failure
+  message naming localization or a transform also records loss.
+- **Earliest cause names a robot outcome.** For a completed mission and for any
   failed robot outcome (timeout, controller, docking, topology or motion
-  qualification failure) whose first loss episode began before any contact is
-  recorded as localization loss, the earliest cause. A completed mission is
-  recorded as localization loss only if an episode was still in progress at the
-  end, because its completion was then asserted against a diverged estimate;
-  when such a mission also made contact, whichever began first names it. A
-  navigator failure message naming localization or a transform also records
-  loss. Infrastructure failures, process crashes and planning failures are
-  never re-attributed.
+  qualification failure), the earlier of the first contact and the first loss
+  episode names the status: collision or localization loss. One exception: a
+  completed mission counts only a loss episode still in progress at the end,
+  since a recovered estimate did not invalidate the completion while a diverged
+  one asserted it against the wrong pose. Infrastructure failures, process
+  crashes and planning failures are never re-attributed. None of those 124
+  records has any contact or any loss episode, so the rule changes none of them.
 - **Timeout**: the 300 s simulated deadline elapsed with no other terminal
   status.
 

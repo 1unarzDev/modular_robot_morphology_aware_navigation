@@ -54,9 +54,11 @@ def test_evaluator_contact_on_a_completed_mission_is_a_collision():
     assert evaluator_outcome("completed", True, [{"time_s": 4.0}], [])[:2] == (
         "collision", False)
     assert evaluator_outcome("completed", True, [], []) == ("completed", True, "")
-    # A failed mission with contact keeps its status, as before.
-    assert evaluator_outcome("controller_failure", False, [{"time_s": 4.0}], [])[:2] == (
-        "controller_failure", False)
+    # Contact names a failed robot outcome too: it is the earliest cause.
+    status, completed, note = evaluator_outcome(
+        "controller_failure", False, [{"time_s": 4.0}], [])
+    assert (status, completed) == ("collision", False)
+    assert "before the controller_failure" in note
 
 
 def test_completed_mission_still_lost_at_the_end_is_localization_loss():
@@ -84,8 +86,12 @@ def test_loss_before_any_contact_names_a_failed_robot_outcome():
         "controller_failure", False, [{"time_s": 25.0}], [_loss(20.0)])[0] == (
         "localization_lost")
     assert evaluator_outcome(
-        "controller_failure", False, [{"time_s": 15.0}], [_loss(20.0)])[0] == (
-        "controller_failure")
+        "controller_failure", False, [{"time_s": 15.0}], [_loss(20.0)])[0] == "collision"
+    # A failed mission counts a recovered episode; a completed one does not.
+    assert evaluator_outcome("docking_failure", False, [], [_loss(5.0)])[0] == (
+        "localization_lost")
+    assert evaluator_outcome("docking_failure", False, [], []) == (
+        "docking_failure", False, "")
 
 
 def test_infrastructure_and_planning_statuses_are_never_reattributed():

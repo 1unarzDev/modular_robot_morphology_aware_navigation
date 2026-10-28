@@ -66,34 +66,30 @@ def evaluator_outcome(
 ) -> tuple[str, bool, str]:
     """Terminal status after evaluator-only contact and localization evidence.
 
-    A completed mission with contact is a collision. A completed mission whose
-    estimate was still lost at the end asserted completion against a diverged
-    estimate, so it is localization loss; when both apply, whichever began first
-    names the outcome. A failed robot outcome becomes localization loss when a
-    loss episode began before any contact, because the loss is then the earliest
-    cause; a failed mission with contact keeps its status, as it always has.
+    The earliest evaluator-observed cause names the outcome. Any contact is a
+    collision and any loss episode is localization loss, whichever began first,
+    with one exception: a completed mission counts only a loss episode still in
+    progress at the end, because a recovered estimate did not invalidate the
+    completion while a diverged one asserted it against the wrong pose.
     Returns (status, completed, note); the note is empty when nothing changed.
     """
     if status not in ROBOT_OUTCOME_STATUSES:
         return status, completed, ""
     first_contact = min((float(event["time_s"]) for event in contact_events),
                         default=None)
-    if completed:
-        lost = [episode for episode in loss_episodes if episode["ongoing"]]
-        loss_onset = float(lost[0]["onset_s"]) if lost else None
-        if first_contact is not None and (loss_onset is None or first_contact <= loss_onset):
-            return "collision", False, "evaluator detected obstacle contact"
-        if loss_onset is not None:
-            return ("localization_lost", False,
-                    f"evaluator: estimate lost from {loss_onset:.1f} s to the end")
-        return status, completed, ""
-    if not loss_episodes or status == "localization_lost":
-        return status, completed, ""
-    loss_onset = float(loss_episodes[0]["onset_s"])
-    if first_contact is not None and first_contact <= loss_onset:
-        return status, completed, ""
-    return ("localization_lost", False,
-            f"evaluator: estimate lost from {loss_onset:.1f} s, before the {status}")
+    counted = [episode for episode in loss_episodes
+               if episode["ongoing"] or not completed]
+    loss_onset = float(counted[0]["onset_s"]) if counted else None
+    if first_contact is not None and (loss_onset is None or first_contact <= loss_onset):
+        return ("collision", False, "evaluator detected obstacle contact"
+                + ("" if completed else f" at {first_contact:.1f} s, before the {status}"))
+    if loss_onset is not None:
+        if status == "localization_lost":
+            return status, completed, ""
+        return ("localization_lost", False,
+                f"evaluator: estimate lost from {loss_onset:.1f} s"
+                + (" to the end" if completed else f", before the {status}"))
+    return status, completed, ""
 
 
 def failure_injection_for(design: StudyDesign, spec) -> str:
