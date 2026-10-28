@@ -1,0 +1,43 @@
+{
+  "campaign_affected": "results/qualification/roundtrip_20_mapsfix_raw (stopped at 16 of 20; not a result, not scored, not audited)",
+  "commit_observed": "5b00fc9",
+  "design_kind": "engineering_harness_fault",
+  "evidence_class": "engineering_debug_never_pilot_or_confirmatory",
+  "fault": "Trial r16 reached its goal and then never terminated. The observer's spin thread (ExecutorPump, added at 0e71dd3) was inside EventHandler.is_ready, where rclpy finalized an action client: rcl_action_client_fini -> rmw_dds_common remove_client_graph -> __rmw_publish -> RTPSWriter::send_nts, blocked in pthread_mutex_lock. That native call does not release the GIL, so the main thread, waiting in ExecutorPump.wait_until, sat in pthread_cond_timedwait for the GIL and could not test its deadline. The 600 s wall backstop was 489 s overdue (monotonic 6187.6 against a deadline of 5698.0) while the trial's simulation ran on past 530 s of a 300 s simulated deadline. This is the same failure class as roundtrip_watchdog_unreachable.json: the 0e71dd3 fix moved spinning off the waiting thread, which bounds a wedge in Python but not one that holds the GIL.",
+  "fix": {
+    "isolation": "mission_batch runs every trial's observer through mission_trial.execute_mission_isolated, which calls execute_mission in a spawned child process (isolated_call.run_isolated). The parent holds no ROS participant, waits on a pipe, and kills the child once wall_watchdog_s + 120 s is overdue, recording infrastructure_failure, which is already retryable. Every in-process backstop is kept inside the child.",
+    "side_effect": "Each trial now gets a fresh DDS participant, so no participant persists across trials to carry state from one stack into the next.",
+    "regression_tests": "tests/test_isolated_call.py holds the GIL through ctypes.PyDLL, which reproduces the wedge; tests/test_spin_pump.py's wedge sleeps in Python, which releases the GIL and could not. One test measures the in-process backstop arriving late by the GIL hold; another shows the isolated call killing a child wedged in a GIL-holding native call at its limit.",
+    "end_to_end_smoke": "One round-trip trial through the isolated observer, uncommitted tree, --allow-dirty, results/qualification/smoke_isolated_raw: completed, 0 collisions, 155.93 s simulated, both motion qualifications recorded, no transport errors, no surviving processes. Engineering smoke only."
+  },
+  "infrastructure_retries_in_the_stopped_set": {
+    "r14_attempt_1": "stack readiness timeout before the mission: a Nav2 lifecycle change_state response timed out and controller_active stayed false; 0 s simulated. The retry completed at real-time factor 0.49, below the 0.54-0.98 span over which motion was verified invariant to real-time factor.",
+    "r15_attempt_1": "600 s wall watchdog with the observer's simulated clock at 0.000 s: the observer never received /clock; the backstop fired, which is the 0e71dd3 fix working. The retry completed at real-time factor 0.97.",
+    "host_load_at_the_time": "load average 7-9.5 on 8 cores; non-study applications were consuming host CPU on Windows. Recorded as context, not as a measured cause."
+  },
+  "per_trial": {
+    "r0": {"attempts": ["completed"], "sha256": "b709a7872f05ee75b3e95dca4874b323d44ff4bcff4791a55cb33f9a32ccbb9a", "transport_failed_ports": 0},
+    "r1": {"attempts": ["completed"], "sha256": "a1e0ca36784d9683881bba7eb0f5900273b96de9f0b37cc4424b946e66a6e9c5", "transport_failed_ports": 0},
+    "r2": {"attempts": ["completed"], "sha256": "437d8d01da26c9a5c07846097b1eb5c466803433244ef6054d9957ba0dd1c14c", "transport_failed_ports": 0},
+    "r3": {"attempts": ["completed"], "sha256": "e205164c22963b4885d3c23dd10c85a28741e8ca74b45d14bcf09d322a393635", "transport_failed_ports": 0},
+    "r4": {"attempts": ["completed"], "sha256": "75127a1dd32590df3d7dd4eede78ed99390e1ce26ea9af3e62ffbe75583a091b", "transport_failed_ports": 0},
+    "r5": {"attempts": ["completed"], "sha256": "ab410f17e1c4bdb48f10235a43c938d132c4b8f1040681d41d421dc405811d38", "transport_failed_ports": 0},
+    "r6": {"attempts": ["completed"], "sha256": "d582bc31c7b045744fb1d468938ca1cf20d9efef926f3f9d1f0d591806a95e1d", "transport_failed_ports": 0},
+    "r7": {"attempts": ["completed"], "sha256": "dc08cc188e29ddb1ef16c51131f4eab5287b67ab2a28a1d96bc1fb6354373b0f", "transport_failed_ports": 0},
+    "r8": {"attempts": ["completed"], "sha256": "c7fac82cb7e07fe2b348e86f8c748bc145b3794abd0f6a4f86ea1e24f32b9635", "transport_failed_ports": 0},
+    "r9": {"attempts": ["completed"], "sha256": "ff76d6f085da5bcec933bf9a58b81e8ebf93d4b4f5702a9840457675e326b87e", "transport_failed_ports": 0},
+    "r10": {"attempts": ["completed"], "sha256": "ec4e3bcd3aa6b23fd31370f69a76819cc3913431d1744536221c58c28cad7da5", "transport_failed_ports": 0},
+    "r11": {"attempts": ["completed"], "sha256": "daeb659bfcd0e522866fcc807943905208f874e67e5bfde51891f122f00ba1a6", "transport_failed_ports": 0},
+    "r12": {"attempts": ["completed"], "sha256": "2835d64f318ad471d8f142e35828552c91a58eeb8acac4516398a705e83f9671", "transport_failed_ports": 0},
+    "r13": {"attempts": ["completed"], "sha256": "733033ba4cfe94f909b3b4799482ff38ab5bfcd8bbf4ef3b0d592e41b79fbe88", "transport_failed_ports": 0},
+    "r14": {"attempts": ["infrastructure_failure", "completed"], "sha256": "281c6bada05b988b770523d37d3717ccefa12705f14ce5680caa30893e771a2b", "transport_failed_ports": 0},
+    "r15": {"attempts": ["infrastructure_failure", "completed"], "sha256": "2e52e43e8236805f304498b0c6ef52e8e2036ec71275735acdc51961756dd959", "transport_failed_ports": 0},
+    "r16": {"attempts": [], "note": "wedged; killed by operator; no terminal record"}
+  },
+  "transport_fix_confirmed": "0 Failed init_port lines in all 16 terminal trials at 5b00fc9, against 0, 44, 44, 88, 132 in r0-r4 at 0531a0f. Confirms the maps-aware cleanup (roundtrip_shm_cleanup_cleared_live_segments.json).",
+  "stack_dumps_sha256": {
+    "roundtrip_20_mapsfix_r16_pyspy.txt": "fc6d16394966f56ce2eb91e2418c901b79e4d35dd271a7946a1c1d7feaf7694f",
+    "roundtrip_20_mapsfix_r16_pyspy_native.txt": "d941e63ac17f62a83d93d2c93ef9612f7b4650a5a74cbf39053934329c3faae4"
+  },
+  "observed_date": "2026-10-27"
+}

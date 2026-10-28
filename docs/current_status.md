@@ -873,6 +873,37 @@ adopted after the two-simulator contamination in the rotation sweep. Every
 scratch harness in this repository had the same omission; a stale bridge is now
 a caught condition rather than a silent one.
 
+### A GIL-holding wedge defeated the in-process backstop; the observer now runs in its own process (2026-10-27)
+
+The fresh 20 at `5b00fc9` **confirmed the maps-aware cleanup**: zero transport
+errors in all 16 terminal trials, against 44--132 per trial at `0531a0f`. It was
+stopped at 16 of 20 because r16 reached its goal and never terminated, and the set
+is **not a result and is not scored or audited**. Native stacks show the observer's
+spin thread inside `EventHandler.is_ready`, where rclpy was finalizing an action
+client (`rcl_action_client_fini` -> `__rmw_publish`), blocked on a Fast-DDS writer
+mutex. That call does not release the GIL, so the main thread could not run its
+deadline test: the 600 s backstop was 489 s overdue while the simulation ran past
+530 s of a 300 s deadline. The `0e71dd3` pump moved spinning off the waiting
+thread, which bounds a wedge in Python; no in-process backstop can bound one that
+holds the GIL.
+
+`mission_batch` now runs every trial's observer in a spawned child process. The
+parent holds no ROS participant, waits on a pipe, and kills the child after the
+watchdog plus 120 s, recording `infrastructure_failure`. Every in-process backstop
+stays inside the child, and each trial now gets a fresh DDS participant. The
+regression tests reproduce the wedge with a `ctypes.PyDLL` call, which keeps the
+GIL held; the earlier wedge test slept in Python and so could not see it. One
+round-trip trial ran end to end through the isolated observer as engineering smoke
+and completed with a full record. Digests:
+`studies/engineering/roundtrip_observer_gil_wedge.json`.
+
+r14 and r15 each needed one pre-mission infrastructure retry: a Nav2 lifecycle
+activation timeout, and an observer that never received `/clock` (the backstop
+fired as designed). Both happened under 7--9.5 load average on 8 cores from
+non-study host applications, and r14's retry ran at real-time factor 0.49, below
+the 0.54--0.98 span over which motion was verified invariant. Run campaigns on an
+otherwise idle host.
+
 ### The transport fix cleared live segments; the fresh 20 was stopped at 5 and is owed again (2026-10-27)
 
 The interrupted run at `0531a0f` was resumed and **stopped deliberately at 5 of

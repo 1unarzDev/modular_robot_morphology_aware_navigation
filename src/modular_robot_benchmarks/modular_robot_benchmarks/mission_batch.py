@@ -246,7 +246,7 @@ def run_batch(
 ) -> dict:
     # Import ROS only in an installed/runtime environment; pure design and
     # manifest helpers remain host-testable.
-    from .mission_trial import MissionObservation, execute_mission
+    from .mission_trial import MissionObservation, execute_mission_isolated
 
     design = StudyDesign.read_frozen(design_path)
     store = TrialStore(raw_root)
@@ -342,7 +342,7 @@ def run_batch(
             )
             try:
                 goal = scenario.grid.cell_center(*scenario.goal)
-                observation = execute_mission(
+                observation = execute_mission_isolated(
                     goal, spec.method, 300.0, wall_watchdog_s,
                     recovery_probe=bool(failure_injection))
                 launch_returncode = process.poll()

@@ -27,6 +27,7 @@ from std_msgs.msg import String
 from tf2_ros import Buffer, TransformException, TransformListener
 
 from .evaluator_metrics import transition_calibration_pairs
+from .isolated_call import run_isolated
 from .mission_batch import classify_terminal
 from .rigidity import POSE_FIELDS, qualify_pod_rigidity
 from .spin_pump import ExecutorPump
@@ -615,6 +616,39 @@ def execute_mission(
         # underneath it would block or crash the runner, and the campaign is
         # worth more than the handles: the pump is a daemon thread, it dies
         # with the process, and the next trial builds its own context.
+
+
+OBSERVER_PROCESS_GRACE_S = 120.0
+
+
+def execute_mission_isolated(
+    goal_xy: tuple[float, float], method: str, deadline_s: float,
+    wall_watchdog_s: float,
+    recovery_probe: bool = False,
+) -> MissionObservation:
+    """``execute_mission`` in its own process, so a GIL-holding wedge stays bounded.
+
+    The child keeps every in-process backstop. The parent adds one it cannot
+    defeat: the watchdog plus a grace for the recovery probe and the record
+    snapshot, after which the child is killed and the attempt is recorded as
+    infrastructure, never as a robot outcome. See ``isolated_call``.
+    """
+    limit_s = wall_watchdog_s + OBSERVER_PROCESS_GRACE_S
+    outcome = run_isolated(
+        execute_mission, (goal_xy, method, deadline_s, wall_watchdog_s),
+        {"recovery_probe": recovery_probe}, limit_s=limit_s)
+    if outcome.status == "returned":
+        return outcome.value
+    if outcome.status == "raised":
+        # Same disposition as an exception raised in-process: the runner's
+        # handler records it as infrastructure_failure.
+        raise RuntimeError("observer process raised: " + outcome.error.strip())
+    if outcome.status == "killed":
+        detail = (f"observer process exceeded the hard wall limit "
+                  f"{limit_s:.0f} s and was killed")
+    else:
+        detail = f"observer process exited {outcome.exitcode} without a result"
+    return MissionObservation("infrastructure_failure", False, detail, 0.0, outcome.wall_s)
 
 
 def _watchdog_observation(node, pump, wall_watchdog_s: float, wall_start: float,

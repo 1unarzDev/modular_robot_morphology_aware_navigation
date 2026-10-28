@@ -1,5 +1,21 @@
 ## Current resumption point
 
+**The observer now runs in its own process; the fresh 20 is owed again
+(2026-10-27).** The 20 at `5b00fc9` confirmed the maps-aware cleanup -- zero
+transport errors in all 16 terminal trials -- and was then stopped at 16 when r16
+reached its goal and never terminated. The spin thread blocked in a native rclpy
+call that holds the GIL (`rcl_action_client_fini` from inside `is_ready`), so the
+in-process 600 s backstop, which needs the GIL, stood 489 s overdue: the
+`0e71dd3` pump bounds a wedge in Python, not one holding the GIL.
+`mission_batch` now runs each trial's observer in a spawned child that the parent
+kills after the watchdog plus 120 s, recording `infrastructure_failure`. The 16
+are **not a result, not scored, not audited**; r14 and r15 each needed one
+legitimate pre-mission infrastructure retry under heavy host load. See
+`studies/engineering/roundtrip_observer_gil_wedge.json`. **Resume here: a fresh
+20 at the isolation commit into a new raw directory**, with nothing else running
+on the host. The entries below are superseded where they name a commit to
+resume at.
+
 **The 0531a0f transport fix itself broke the transport; it is repaired and the
 fresh 20 is owed again (2026-10-27).** The interrupted run was resumed at
 `0531a0f` and stopped deliberately at 5 of 20 (all five completed, none retried;
