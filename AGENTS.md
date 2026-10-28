@@ -1,5 +1,25 @@
 ## Current resumption point
 
+**The 0531a0f transport fix itself broke the transport; it is repaired and the
+fresh 20 is owed again (2026-10-27).** The interrupted run was resumed at
+`0531a0f` and stopped deliberately at 5 of 20 (all five completed, none retried;
+**not a result, not scored, not audited**). Its per-trial cleanup judged
+segments unused from `/proc/*/fd` alone, but Fast-DDS maps a port and closes the
+descriptor, so the runner's own live ports were unlinked after every trial and
+each later stack failed to open them: 0, 44, 44, 88, 132 `Failed init_port`
+lines in r0--r4, against 0 in 19 of 20 trials at `0e71dd3`. Because an unfinished
+trial with any transport error is reclassified and retried, a genuine robot
+failure would have been re-run, so the set could not back the gate. The cleanup
+now also reads `/proc/*/maps`, with a regression test that fails without it.
+See `studies/engineering/roundtrip_shm_cleanup_cleared_live_segments.json`.
+**Resume here: a fresh 20 at the fix commit into a new raw directory**; the
+`roundtrip_20_shmfix_raw` set stays as collected. In that 20, count
+`transport_failed_ports` per trial: it should be empty almost everywhere, and a
+trial that is both unfinished and transport-flagged must be read by hand before
+its retry is accepted.
+
+The entry below is superseded where it says to resume `roundtrip_20_shmfix_raw`.
+
 **The 20-run round trip now runs to completion and fails one of twenty
 (2026-09-30).** At `0e71dd3`: 20 of 20 terminal records, 19 completed, audit
 `studies/gate0/roundtrip_20_watchdogfix_audit.json`, campaign digest

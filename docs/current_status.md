@@ -873,6 +873,39 @@ adopted after the two-simulator contamination in the rotation sweep. Every
 scratch harness in this repository had the same omission; a stale bridge is now
 a caught condition rather than a silent one.
 
+### The transport fix cleared live segments; the fresh 20 was stopped at 5 and is owed again (2026-10-27)
+
+The interrupted run at `0531a0f` was resumed and **stopped deliberately at 5 of
+20**. All five completed with zero collisions and no retries; the set is **not a
+result and is not scored or audited**. The cleanup `0531a0f` added judged a
+Fast-DDS segment unused when no process held a *descriptor* to it, but Fast-DDS
+maps a port and closes its descriptor. Segments the runner's own participant
+still mapped were therefore unlinked after every trial, and each later stack
+failed to open them: 0, 44, 44, 88, 132 `Failed init_port` lines in r0--r4,
+where 19 of 20 trials at `0e71dd3` logged none. The repair made the transport
+fault it was written to remove.
+
+That alone would not have changed a completed trial. It was stopped because
+`mission_batch` reclassifies any *unfinished* trial whose launch log holds a
+transport error as `infrastructure_failure` and retries it, so with errors in
+every trial a genuine robot failure would have been relabelled and re-run. The
+cleanup now also reads `/proc/*/maps`, and a regression test that maps a segment
+through libc and closes the descriptor fails on `0531a0f` and passes with the
+fix. Digests and measurements:
+`studies/engineering/roundtrip_shm_cleanup_cleared_live_segments.json`.
+
+The reclassification rule itself is unchanged. It is sound only while transport
+errors are rare, which is what the next campaign must show; an unfinished,
+transport-flagged trial is to be read by hand before its retry is accepted.
+
+An exploratory read of the 19 completed records at `0e71dd3` (not evidence; one
+layout, one method) measured the true core position against the planned site at
+the start of each transition: 0.013--0.031 m at the compact-to-narrow site and
+0.042--0.081 m at the narrow-to-compact site, 3 of 19 beyond the 0.07 m
+`margin_m`, while the estimate reported 0.006--0.037 m at those same moments. All
+38 transitions completed without contact. This bears on ADR 0010: the nominal
+0.030 m understates achieved placement after a transition by up to about 2.7x.
+
 ### The round trip completes for the first time since ADR 0007, 19 of 20; the gate is not passed (2026-09-30)
 
 The campaign ran to completion at `0e71dd3` on a clean worktree: **20 of 20

@@ -1,0 +1,47 @@
+{
+  "campaign_affected": "results/qualification/roundtrip_20_shmfix_raw (stopped at 5 of 20; not a result, not scored, not audited)",
+  "commit_observed": "0531a0f",
+  "design_kind": "engineering_harness_fault",
+  "evidence_class": "engineering_debug_never_pilot_or_confirmatory",
+  "fault": "The per-trial teardown added at 0531a0f clears Fast-DDS segments that no live process holds open, judged from /proc/*/fd only. Fast-DDS maps a port segment and closes its descriptor, so segments still mapped by the mission_batch runner's own participant, which lives across trials, were judged unused and unlinked after every trial. Each later stack then failed to open those ports. This is the fault the cleanup's docstring says it cannot commit.",
+  "fix": {
+    "cleanup": "unused_dds_segments also treats any segment named in a live process's /proc/*/maps, including mappings of already-unlinked files, as held.",
+    "regression_test": "tests/test_dds_transport_failures.py::test_a_segment_a_live_process_maps_is_never_cleared maps a segment through libc and closes its only descriptor, as Fast-DDS does; it fails on 0531a0f and passes with the fix. Python's mmap module was not usable for this because it keeps a duplicate descriptor open, which the descriptor-only check already sees."
+  },
+  "measurements": {
+    "failed_init_port_lines_per_trial_launch_log": {
+      "r0": 0,
+      "r1": 44,
+      "r2": 44,
+      "r3": 88,
+      "r4": 132,
+      "r5_stopped_mid_trial": 176
+    },
+    "previous_campaign_0e71dd3_for_comparison": "19 of 20 trials logged 0; r17 logged 9",
+    "runner_mappings_of_unlinked_segments_at_stop": [
+      "fastrtps_port7000",
+      "fastrtps_port7001",
+      "fastrtps_port7002",
+      "fastrtps_port18150",
+      "fastrtps_port18160",
+      "fastrtps_port18161",
+      "fastrtps_port18162",
+      "fastrtps_port18163",
+      "fastrtps_port18164",
+      "fastrtps_port18165"
+    ],
+    "sole_holder_of_fastrtps_port7000": "the mission_batch runner process",
+    "terminal_records_before_stop": 5,
+    "terminal_status_of_those_records": "completed, 0 collisions, attempt 1, no retries"
+  },
+  "why_stopped_rather_than_finished": "mission_batch reclassifies an unfinished trial with any transport error in its launch log as infrastructure_failure and retries it. With transport errors in every trial after the first, any genuine robot failure in the set would have been relabelled and re-run, biasing the gate toward passing. None of the five had triggered that, but a twenty-run gate at 0531a0f would not have been trustworthy.",
+  "digests_sha256": {
+    "combined_constraints-00-r0-feasibility_coupled.json": "aa4b802dfc2025d4f9ca4ba123b57875037dcd53d96a46172443545e8ef1302a",
+    "combined_constraints-00-r1-feasibility_coupled.json": "6b396709c3582355e2c2d632719512a9ab8a8dc2539b540cacb0549fa723268f",
+    "combined_constraints-00-r2-feasibility_coupled.json": "ea7db74cb99fd5c168ea630dbd969d4c7643911f35abad94ad4257e9dd33029f",
+    "combined_constraints-00-r3-feasibility_coupled.json": "08eaa4a5e9a12fa2480c50b516fff9b1f167a96f7ef851434f856854776af4a0",
+    "combined_constraints-00-r4-feasibility_coupled.json": "ebefcb8dc35c4085bd143ea5a2c8e7fa3323eac0774a6c66c2747a0767818d15",
+    "roundtrip_20_shmfix_shm_snapshot.txt": "7d4f63667fec135cc7acd732fee5421ba46708e97cfe1c97580ac81b7a2e5d1b"
+  },
+  "observed_date": "2026-10-27"
+}

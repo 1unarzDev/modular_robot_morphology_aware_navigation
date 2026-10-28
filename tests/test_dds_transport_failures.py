@@ -6,6 +6,9 @@ a robot outcome -- and the robot had in fact reached its site inside tolerance
 and never moved a pod.
 """
 
+import ctypes
+import mmap
+import os
 from pathlib import Path
 
 from modular_robot_benchmarks.mission_batch import (
@@ -78,6 +81,33 @@ def test_a_segment_a_live_process_holds_open_is_never_cleared(tmp_path):
     assert cleared == ["fastrtps_port19999"]
     assert held.exists()
     assert not free.exists()
+
+
+def test_a_segment_a_live_process_maps_is_never_cleared(tmp_path):
+    # Fast-DDS maps a port segment and closes its descriptor. A descriptor-only
+    # check deleted the runner's own live ports after every trial of the
+    # 2026-10-27 round trip, and each later stack failed to open them.
+    # Python's mmap keeps a duplicate descriptor open, which would hide the
+    # fault, so map through libc and close the only descriptor, as Fast-DDS does.
+    libc = ctypes.CDLL(None, use_errno=True)
+    libc.mmap.restype = ctypes.c_void_p
+    libc.mmap.argtypes = [ctypes.c_void_p, ctypes.c_size_t, ctypes.c_int,
+                          ctypes.c_int, ctypes.c_int, ctypes.c_long]
+    libc.munmap.argtypes = [ctypes.c_void_p, ctypes.c_size_t]
+    mapped = tmp_path / "fastrtps_port7000"
+    mapped.write_bytes(b"\0" * mmap.PAGESIZE)
+    descriptor = os.open(mapped, os.O_RDWR)
+    address = libc.mmap(None, mmap.PAGESIZE, mmap.PROT_READ, mmap.MAP_SHARED,
+                        descriptor, 0)
+    os.close(descriptor)
+    assert address not in (None, ctypes.c_void_p(-1).value)
+    try:
+        assert unused_dds_segments(tmp_path) == []
+        assert clear_unused_dds_segments(tmp_path) == []
+        assert mapped.exists()
+    finally:
+        libc.munmap(address, mmap.PAGESIZE)
+    assert clear_unused_dds_segments(tmp_path) == ["fastrtps_port7000"]
 
 
 def test_a_directory_without_segments_is_a_no_op(tmp_path):

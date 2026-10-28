@@ -106,9 +106,14 @@ def unused_dds_segments(directory: Path = Path("/dev/shm")) -> list[Path]:
     `/dev/shm/fastrtps_*` underneath live participants, and Gazebo then
     published `/clock` while no participant could discover anything.
 
-    Holding both of those open at once is why this reads `/proc/*/fd` rather
-    than matching process names: a segment nobody has open cannot, by
+    Holding both of those open at once is why this reads `/proc` rather than
+    matching process names: a segment nobody has open or mapped cannot, by
     construction, be underneath a live participant.
+
+    Mappings count as well as descriptors. Fast-DDS maps a port segment and
+    closes its descriptor, so a descriptor-only check cleared the runner's own
+    live ports after every trial of the 2026-10-27 round trip, and each later
+    stack failed to open them: 0, 44, 44, 88, 132 transport errors in r0--r4.
     """
     directory = Path(directory)
     segments = sorted(directory.glob("fastrtps_*"))
@@ -127,6 +132,15 @@ def unused_dds_segments(directory: Path = Path("/dev/shm")) -> list[Path]:
                 continue
             if "fastrtps_" in target:
                 held.add(target)
+    for maps in Path("/proc").glob("[0-9]*/maps"):
+        try:
+            lines = maps.read_text(encoding="utf-8", errors="replace").splitlines()
+        except OSError:
+            continue
+        for line in lines:
+            fields = line.split(maxsplit=5)
+            if len(fields) == 6 and "fastrtps_" in fields[5]:
+                held.add(fields[5].removesuffix(" (deleted)"))
     return [segment for segment in segments if str(segment) not in held]
 
 
