@@ -873,6 +873,57 @@ adopted after the two-simulator contamination in the rotation sweep. Every
 scratch harness in this repository had the same omission; a stale bridge is now
 a caught condition rather than a silent one.
 
+### The 20-run round-trip gate passes on the repaired model, 20 of 20 (2026-10-27)
+
+Collected at `54883d6` from a clean worktree with the design unchanged (hash
+`9c74a26749d466ba382caa6b4d227a033139ef24b8600a3d10ef90608a088b5e`, the same as
+every round-trip attempt since ADR 0007). Audit
+`studies/gate0/roundtrip_20_isolated_audit.json`, `passed` true, 20 of 20
+terminal records, 20 unique realized disturbances, campaign digest
+`8dba20d142a6f179a3b3bb10955d7cd28b3d2d9ad9394681a9d70e239f42740b`. The records
+are retained under ADR 0005 at
+`studies/gate0/records/roundtrip_20_isolated_raw.tar.xz`, restore-verified
+against the audit (20 records, 0 unaudited files).
+
+Every trial made both transitions with zero reconfiguration failures, passed both
+post-transition motion qualifications including pod rigidity (40 of 40), ended
+`READY` in `compact_diff` with no unrecovered fault, had zero evaluator
+collisions (minimum clearance 0.015--0.051 m), and finished in 154--159 s of a
+300 s simulated deadline. Zero transport errors in all twenty.
+
+| Gate | Bound | Worst margin | Median margin |
+|---|---|---|---|
+| forward travel | >= 0.080 m | +0.0301 m | +0.0329 m |
+| reverse travel | <= -0.080 m | +0.0324 m | +0.0330 m |
+| positive yaw | >= 0.100 rad | +0.1672 rad | +0.3405 rad |
+| negative yaw | <= -0.100 rad | +0.1665 rad | +0.2894 rad |
+| yaw coupling (+ / -) | <= 0.25 | +0.2296 / +0.2348 | +0.2400 / +0.2423 |
+| yaw translation (+ / -) | <= 0.12 m | +0.1060 / +0.1107 m | +0.1155 / +0.1176 m |
+| lateral (fwd / rev) | <= 0.08 m | +0.0756 / +0.0788 m | +0.0790 / +0.0797 m |
+| heading during travel (fwd / rev) | <= 0.15 rad | +0.1205 / +0.1490 rad | +0.1450 / +0.1499 rad |
+
+Travel still binds hardest, as before the repair (+0.0313 m worst at `0e71dd3`).
+
+Real-time factor was 0.488--0.974 (median 0.963). r7--r9 ran at 0.75, 0.50 and
+0.49 under host load, and their travel (0.1135--0.1150 m) and yaw
+(0.651--0.678 rad) sit inside the range of the trials near 0.97, which extends the
+evidence that motion is invariant to real-time factor from 0.54 down to about
+0.49.
+
+One trial needed one retry. r10's first attempt hit the 600 s wall watchdog with
+the observer's simulated clock at 0.000 s after the goal was accepted; the
+controller never finished a first leg that took 6 s in the retry. No simulated
+time elapsed, so no robot behaviour was re-run. The same frozen-clock failure hit
+r15 of the stopped `5b00fc9` set; both happened under 7--9.5 load average from
+non-study host applications. It is an open harness item, not root-caused.
+
+What this does and does not establish: it re-qualifies Gate 0 items 2 and 3 on
+the repaired model, and it is the first round trip collected with the observer
+in its own process and the maps-aware DDS cleanup. It cannot confirm the
+transport-failure reclassification of `0531a0f`, which needs a recurrence to
+exercise, and none occurred. Next is the 42-case fault matrix. This is
+engineering qualification, not pilot or confirmatory evidence.
+
 ### A GIL-holding wedge defeated the in-process backstop; the observer now runs in its own process (2026-10-27)
 
 The fresh 20 at `5b00fc9` **confirmed the maps-aware cleanup**: zero transport

@@ -1,0 +1,161 @@
+{
+  "campaign_digest": "8dba20d142a6f179a3b3bb10955d7cd28b3d2d9ad9394681a9d70e239f42740b",
+  "design_hash": "9c74a26749d466ba382caa6b4d227a033139ef24b8600a3d10ef90608a088b5e",
+  "expected_runs": 20,
+  "failures": [],
+  "motion_margins": {
+    "forward_lateral_m": {
+      "bound": 0.08,
+      "direction": "abs_max",
+      "median_margin": 0.07896167309214842,
+      "observed_max": 0.0007779255513740447,
+      "observed_median": -0.0008732793245438526,
+      "observed_min": -0.004409208843405321,
+      "samples": 40,
+      "worst_margin": 0.07559079115659469
+    },
+    "forward_travel_m": {
+      "bound": 0.08,
+      "direction": "min",
+      "median_margin": 0.032889171525878,
+      "observed_max": 0.11587336084161229,
+      "observed_median": 0.112889171525878,
+      "observed_min": 0.1100955002113454,
+      "samples": 40,
+      "worst_margin": 0.030095500211345397
+    },
+    "forward_yaw_rad": {
+      "bound": 0.15,
+      "direction": "abs_max",
+      "median_margin": 0.14499366956756754,
+      "observed_max": 0.0014812894454918051,
+      "observed_median": -0.004605008322442106,
+      "observed_min": -0.029480080409793996,
+      "samples": 40,
+      "worst_margin": 0.120519919590206
+    },
+    "negative_yaw_coupling": {
+      "bound": 0.25,
+      "direction": "max",
+      "median_margin": 0.24233013491040917,
+      "observed_max": 0.015189859866561644,
+      "observed_median": 0.007669865089590845,
+      "observed_min": 0.0008443696365668584,
+      "samples": 40,
+      "worst_margin": 0.23481014013343834
+    },
+    "negative_yaw_rad": {
+      "bound": -0.1,
+      "direction": "max",
+      "median_margin": 0.2893962416267371,
+      "observed_max": -0.26652486764811023,
+      "observed_median": -0.3893962416267371,
+      "observed_min": -0.671038545718109,
+      "samples": 40,
+      "worst_margin": 0.16652486764811023
+    },
+    "negative_yaw_translation_m": {
+      "bound": 0.12,
+      "direction": "max",
+      "median_margin": 0.11757691593537253,
+      "observed_max": 0.009260292743804584,
+      "observed_median": 0.002423084064627461,
+      "observed_min": 0.000550362101198166,
+      "samples": 40,
+      "worst_margin": 0.11073970725619542
+    },
+    "positive_yaw_coupling": {
+      "bound": 0.25,
+      "direction": "max",
+      "median_margin": 0.2400102974818947,
+      "observed_max": 0.020444939941614854,
+      "observed_median": 0.009989702518105308,
+      "observed_min": 0.0034679042524073376,
+      "samples": 40,
+      "worst_margin": 0.22955506005838514
+    },
+    "positive_yaw_rad": {
+      "bound": 0.1,
+      "direction": "min",
+      "median_margin": 0.3405032589643702,
+      "observed_max": 0.7216761806594796,
+      "observed_median": 0.4405032589643702,
+      "observed_min": 0.26723221385560536,
+      "samples": 40,
+      "worst_margin": 0.16723221385560536
+    },
+    "positive_yaw_translation_m": {
+      "bound": 0.12,
+      "direction": "max",
+      "median_margin": 0.11554834805044074,
+      "observed_max": 0.014034323981519341,
+      "observed_median": 0.004451651949559256,
+      "observed_min": 0.0009725898011695735,
+      "samples": 40,
+      "worst_margin": 0.10596567601848066
+    },
+    "reverse_lateral_m": {
+      "bound": 0.08,
+      "direction": "abs_max",
+      "median_margin": 0.0796553306912604,
+      "observed_max": 0.0011656614790178932,
+      "observed_median": 0.00011619791896582768,
+      "observed_min": -0.0006610680548665967,
+      "samples": 40,
+      "worst_margin": 0.07883433852098211
+    },
+    "reverse_travel_m": {
+      "bound": -0.08,
+      "direction": "max",
+      "median_margin": 0.03298609161991177,
+      "observed_max": -0.11244914813861621,
+      "observed_median": -0.11298609161991177,
+      "observed_min": -0.11745633709526321,
+      "samples": 40,
+      "worst_margin": 0.03244914813861621
+    },
+    "reverse_yaw_rad": {
+      "bound": 0.15,
+      "direction": "abs_max",
+      "median_margin": 0.14991999248830812,
+      "observed_max": 0.000499627232842314,
+      "observed_median": -3.198045320307666e-05,
+      "observed_min": -0.0009968339377393852,
+      "samples": 40,
+      "worst_margin": 0.1490031660622606
+    }
+  },
+  "observed_terminal_records": 20,
+  "passed": true,
+  "purpose": "engineering_roundtrip_qualification",
+  "real_time_factors": {
+    "maximum": 0.9737910258854228,
+    "median": 0.9631779522707864,
+    "minimum": 0.48786378395712676,
+    "samples": 20
+  },
+  "record_digests": {
+    "combined_constraints-00-r0-feasibility_coupled": "054a51edcee7421ea0706fb3429cb3e77ef3026ab398e563045b36ed15f6bb75",
+    "combined_constraints-00-r1-feasibility_coupled": "aeea739b8b83b87d66ecd2b28a8865dccab3feb62e07371bdcaffc055083f8fd",
+    "combined_constraints-00-r10-feasibility_coupled": "02b54f23327a09fb2e50b0d332a157e3dbf3b597e776d7eb03e9bbff9e501b02",
+    "combined_constraints-00-r11-feasibility_coupled": "4ec1105c28766098df3bb27b78a3a9523078d6ef46071476593f13a290dc810b",
+    "combined_constraints-00-r12-feasibility_coupled": "939fe3ae8eeb0245882afeb820c63d1b4ad74cd18b4a375bc2668728794dee62",
+    "combined_constraints-00-r13-feasibility_coupled": "1c47960ad1759dfa6b5b4732c651634a023eb0e1117bf02a87b2c815a958f2c0",
+    "combined_constraints-00-r14-feasibility_coupled": "7d2a271afcabf13cd2f247a431655ff122e29bcd82343e78f392c6841381f5eb",
+    "combined_constraints-00-r15-feasibility_coupled": "55cf2d678eaaf47ff5b23bf5ca5c6fbe8a29e6ff69874384c47234fe1d0444e8",
+    "combined_constraints-00-r16-feasibility_coupled": "05f7d886c9868362308e007a58a776b4dda099a504af4ef223cd120529085f98",
+    "combined_constraints-00-r17-feasibility_coupled": "28d985731a4130906552116081cc04e482016edd6bc3c5fccc691e698d3b6200",
+    "combined_constraints-00-r18-feasibility_coupled": "9cab0e127aaea6c5e8a375c032af9d1570ac97e2628f22c05c4597d7c1551954",
+    "combined_constraints-00-r19-feasibility_coupled": "474e34e0f8b1d372f15d861c4a09fa15c0e4fff2473356b936ddcd390e00f454",
+    "combined_constraints-00-r2-feasibility_coupled": "c59fc03af87af0a86c13fab21a185f06478cd7db93923fb19817e48d24d463b7",
+    "combined_constraints-00-r3-feasibility_coupled": "e03c0addbed9e210f1f435867c4ab19e7cf58075ca48a668b2d7df20e7ff0da8",
+    "combined_constraints-00-r4-feasibility_coupled": "2b5ca6da819cb80421d8e851a3eb8b6f3a6c1a24e700b26955717f1b96b5714c",
+    "combined_constraints-00-r5-feasibility_coupled": "2b36a05ef366a136f913fa523d66e7bc0c6a46f733800f30b4e829fa622aece5",
+    "combined_constraints-00-r6-feasibility_coupled": "37e2b798f154e310984f1e8d652e7cd35f96966313c0a4e5bc7a096201c62f52",
+    "combined_constraints-00-r7-feasibility_coupled": "e9ed4fca077b9856c1fa961f53a2b68c528cb0602b12a1c379b228c1ff69a4f2",
+    "combined_constraints-00-r8-feasibility_coupled": "d434d92c594ab5335f1a512f767916c2367cb236557e6e3f13747ae7a0f29cf2",
+    "combined_constraints-00-r9-feasibility_coupled": "1f5142e51b2d91068e76da0ebad161938f2f128dcb582a704bbfc1e7ff679e4a"
+  },
+  "schema_version": 2,
+  "unique_realized_disturbances": 20
+}

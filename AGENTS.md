@@ -1,5 +1,28 @@
 ## Current resumption point
 
+**The 20-run round-trip gate passes on the repaired model, 20 of 20
+(2026-10-27).** Collected at `54883d6` with the design unchanged (hash
+`9c74a267...`), audit `studies/gate0/roundtrip_20_isolated_audit.json`, campaign
+digest `8dba20d1...`, records retained and restore-verified at
+`studies/gate0/records/roundtrip_20_isolated_raw.tar.xz`. Every trial made both
+transitions with zero failures, passed both motion qualifications including pod
+rigidity, and ended `READY` with zero collisions. Worst signed-motion margin is
++0.0301 m forward travel. One trial (r10) needed one retry, and its failed attempt
+elapsed 0.000 s simulated, so no robot behaviour was re-run. Zero transport
+errors in all twenty.
+
+**Resume here: the 42-case fault matrix**, re-executed unchanged, at one commit,
+on an otherwise idle host. Then Gate 1/2 follow-ons and the author decisions
+listed in `docs/current_status.md`.
+
+**Open harness item: the simulation clock can freeze at mission start.** Twice
+(r15 at `5b00fc9`, r10 at `54883d6`) the observer measured 0.000 s simulated over
+the 600 s watchdog after the goal was accepted, and the controller never reached
+a first leg that normally takes about 6 s. Both were under 7--9.5 load average
+from non-study host applications. It is handled correctly -- recorded as
+infrastructure, retried, no robot outcome hidden -- but costs 10 minutes each and
+is not root-caused.
+
 **The observer now runs in its own process; the fresh 20 is owed again
 (2026-10-27).** The 20 at `5b00fc9` confirmed the maps-aware cleanup -- zero
 transport errors in all 16 terminal trials -- and was then stopped at 16 when r16
