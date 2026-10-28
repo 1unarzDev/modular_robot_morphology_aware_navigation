@@ -897,6 +897,31 @@ adopted after the two-simulator contamination in the rotation sweep. Every
 scratch harness in this repository had the same omission; a stale bridge is now
 a caught condition rather than a silent one.
 
+### The frozen simulation clock is a busy Gazebo main thread, not a deadlock (2026-10-27, unfinished)
+
+A first lock-order hypothesis was refuted from source: `MultiPodDriveSystem`
+publishes under its own mutex and its `cmd_vel` callback takes the same mutex, but
+gz-transport 13.5.0 never runs a subscriber callback while holding its internal
+mutex, so no inversion is possible there.
+
+The freeze was then reproduced on purpose (engineering debug only, scratch batch
+`results/qualification/freeze_repro_*`, never scored): four busy loops in the WSL
+VM, load average 15--23, froze the first trial. A capture taken 127 s after the
+unanswered first goal, from a gdb sidecar container sharing the study container's
+PID namespace (the study container itself was not modified), shows the Gazebo
+server's main thread **running at 100% CPU** with all eight Mesa `llvmpipe`
+software-rendering threads active and the remaining threads idle on futexes. So
+the simulation is busy, not blocked. gdb could not resolve symbols from the
+sidecar; next time attach with `set sysroot /proc/<pid>/root` to get the frames.
+Capture digest `ef1744ce...` (WSL clone, `results/qualification/freeze_repro_captures/`).
+
+Leading suspect, not yet tested: the RGB-D camera, which renders in software on
+every trial with no consumer (noted above as retained for planned perceived 3D
+obstacles). Under CPU contention a software-rendered sensor update can starve or
+stall the step. Next: symbolized stacks, then a controlled comparison with the
+camera's update rate reduced or the camera removed, as an engineering
+measurement before any change.
+
 ### Gate 1: the coverage audit exists; controlled outcome records are owed (2026-10-27)
 
 `gate1_audit` checks every Gate 1 field record by record: `telemetry_audit`'s
