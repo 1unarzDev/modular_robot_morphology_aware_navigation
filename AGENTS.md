@@ -9,11 +9,14 @@ and every robot outcome named by its earliest evaluator cause (analysis plan,
 measurement; ADR 0011 widens the layout population (generator 2, design kinds
 `pilot_v2` / `confirmatory_v2`), because generator 1 allows only 81 near-identical
 layouts per family and the frozen 36 already hold 2 duplicates.
-**Gate 1 is satisfied (2026-10-30):** 10 of 10 controlled records, every class
-covered twice, retained at `studies/gate1/`. **Resume here: the Gate 3 pilot**,
-frozen at `studies/pilot/design.json` (`pilot_v2`, 144 trials, hash
-`880af322...`, seeds disjoint from the confirmatory master 20260911), run with
-`results/qualification/run_pilot.sh <commit>` in the WSL clone. **The frozen clock is root-caused and
+**Gate 1 is satisfied (2026-10-30).** **The generator-2 pilot ran (144/144) and
+showed the study could not detect an effect**: the treatment could not drive
+the narrow body from its off-line observable sites to the doorway. Fixes and
+ADR 0012/0013 followed (see `docs/current_status.md`, "measurement-validation
+pilot"). **Resume here:** the generator-3 treatment round trip
+(`config/roundtrip_v3_design.json`), then the `pilot_v3` run
+(`studies/pilot_v3/design.json`) with `results/qualification/start_campaign.sh
+<commit> <script>` in the WSL clone, then Gate 0 re-collected on generator 3. **The frozen clock is root-caused and
 prevented** (2026-10-29): gz-transport dropped Gazebo's publishers from the
 bridge after 3 s of discovery silence; `GZ_IP=127.0.0.1` in
 `simulation.launch.py` took it from 3 of 13 loaded trials to 0 of 14, and a

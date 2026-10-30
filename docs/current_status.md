@@ -976,6 +976,42 @@ stall the step. Next: symbolized stacks, then a controlled comparison with the
 camera's update rate reduced or the camera removed, as an engineering
 measurement before any change.
 
+### The generator-2 pilot became a measurement-validation pilot (2026-10-30)
+
+It ran to completion -- 144 of 144 at `6409b15` in 4 h, every record clean on
+the Gate 1 audit, 2 pre-mission retries -- archived and restore-verified
+(18.5 MB). Read for measurement validation, it showed the study could not
+detect an effect as built: in manipulated layouts every method failed nearly
+always, the treatment included (0/8, 0/8, 2/8 by family), while the coupled
+methods mostly completed neutral layouts. The controls failing is the
+manipulation (docking refused at shadowed sites); the treatment failing was
+not: it transformed successfully at its observable site off the door line and
+then could not drive the narrow body to the doorway. That path had never been
+qualified -- Gate 0's round trip used a neutral, on-line site.
+
+Defects found and fixed from its records, all method-agnostic: a planning
+failure labelled `docking_failure` (`6283df1`); a controller blind to the
+raised shelf (ADR 0012, keepout mask, verified loading in both costmaps); a
+snapped start reported in collision and transformations spending the replan
+budget (`1c1a8c0`); analysis rejecting every real campaign for differing
+per-trial configuration hashes (`6ff427a`); and a power model that a design
+with near-deterministic strata drives to its bound (stratified model,
+`7e24508`). With all of them fixed the generator-2 treatment round trip still
+collided 6 of 6 (`results/qualification/roundtrip_v2_raw`, stopped): an exact
+narrow-body S-turn 3.5 cm from the shelf, cut by pure pursuit. ADR 0013 makes
+transitions executable -- a 0.10 m turning margin in the shared motion model
+and layout generator 3 with start rooms long enough to turn in -- and a new
+pilot on generator 3 supplies the nuisance parameters.
+
+**Running (2026-10-30):** the generator-3 treatment round trip
+(`config/roundtrip_v3_design.json`, hash `fa867641...`, at `44683a7`), and the
+`pilot_v3` design (hash `3369f2e4...`, 144 trials, master seed 20261103,
+disjoint from both earlier designs and the confirmatory master) with its
+manipulation check. Owed before the confirmatory freeze: the round trip and
+the fault matrix re-collected on generator 3 (generator 1's manipulated
+fault-matrix layouts no longer plan), the `pilot_v3` run, its nuisance read,
+and the layout count.
+
 ### The Gate 3 pilot is frozen (2026-10-30)
 
 `studies/pilot/design.json`: kind `pilot_v2` (layout generator 2, ADR 0011),
