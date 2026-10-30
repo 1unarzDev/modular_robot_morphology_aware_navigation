@@ -21,7 +21,7 @@ placement-robust station prediction (`43255f7`), 4x finer localization map
 **Resume here (2026-10-31):** read the generator-3 treatment round trip left
 running overnight at `971affb` -- `results/run_roundtrip_v3e.launch.log` and
 `results/qualification/roundtrip_v3e_raw` / `roundtrip_v3e_audit.json` in the
-WSL clone (trial 1 completed). If it passes, run `pilot_v3`
+WSL clone (7 of 7 completed when the session ended; it runs to 20 unattended). If it passes, run `pilot_v3`
 (`studies/pilot_v3/design.json`, planner check committed) with
 `results/qualification/start_campaign.sh <commit> run_pilot` after pointing
 run_pilot.sh at the pilot_v3 design; then `pilot_nuisance --power`, Gate 0 on

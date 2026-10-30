@@ -1012,7 +1012,7 @@ the station's view (placement-robust prediction); and RPP's rotate-to-heading
 ratcheted the narrow body into a 1.4 rad/s spin on its own odometry
 over-report. With all but the last fixed, 5 of 7 trials completed (placement
 0.4--2.4 cm), both failures being that spin. The run with every fix
-(`roundtrip_v3e`, at `971affb`) was left running; its first trial completed.
+(`roundtrip_v3e`, at `971affb`) was left running unattended: at the last check **7 of 7 completed** (all of layout 01 and three of layout 02, the 45-degree layout whose spin it fixes), placement 0.3--1.8 cm, mean localization error 2.0--2.5 cm. Not a result until all 20 are audited.
 
 **Running (2026-10-30):** the generator-3 treatment round trip
 (`config/roundtrip_v3_design.json`, hash `fa867641...`, at `44683a7`), and the
