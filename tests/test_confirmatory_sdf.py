@@ -100,3 +100,22 @@ def test_the_batch_serves_the_keepout_mask_and_both_costmaps_apply_it():
     launch = (root / "src/modular_robot_bringup/launch/demo.launch.py").read_text(encoding="utf-8")
     assert '"mask_topic": "/keepout_filter_mask"' in launch
     assert '"topic_name": "/keepout_filter_mask"' in launch
+
+
+def test_an_upsampled_map_coarsens_back_to_the_planning_grid_exactly(tmp_path):
+    from morphology_planner.grid import OccupancyGrid
+
+    scenario = make_confirmatory_scenario("combined_constraints", 1, 8196733574266853195)
+    grid = scenario.grid
+    yaml_path, image_path = export_occupancy_map(grid, tmp_path / "map.yaml", upsample=4)
+    header, pixels = image_path.read_bytes().split(b"255\n", 1)
+    width, height = grid.width * 4, grid.height * 4
+    assert header.split()[1:3] == [str(width).encode(), str(height).encode()]
+    assert "resolution: 0.025" in yaml_path.read_text(encoding="utf-8")
+    fine = OccupancyGrid(width, height, 0.025, data=[
+        100 if pixels[(height - 1 - y) * width + x] == 0 else 0
+        for y in range(height) for x in range(width)])
+    coarse = fine.coarsen(0.1)
+    assert coarse.width == grid.width and coarse.height == grid.height
+    assert all((coarse.value(x, y) >= 100) == (grid.value(x, y) >= 100)
+               for y in range(grid.height) for x in range(grid.width))

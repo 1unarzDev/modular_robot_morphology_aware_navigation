@@ -109,6 +109,10 @@ def failure_injection_for(design: StudyDesign, spec) -> str:
     return fault_case_for_run(spec.replicate).injection
 
 
+# The localization map is exported 4x finer than the planning grid (0.025 m);
+# see `export_occupancy_map`. The planner coarsens it back exactly.
+MAP_UPSAMPLE = 4
+
 # Trial-independent parameters; the rest (seeds, disturbance, a Gate 1 case's
 # stimulus) legitimately vary between trials of one campaign.
 STACK_PARAMETERS = ("deadline_s", "wall_watchdog_s", "energy_measure",
@@ -395,7 +399,7 @@ def run_batch(
             trial_artifacts / "world.sdf", catalog_path, spec.friction_seed,
             stimulus_boxes, generator)
         map_yaml, map_image = export_occupancy_map(
-            scenario.grid, trial_artifacts / "map.yaml")
+            scenario.grid, trial_artifacts / "map.yaml", MAP_UPSAMPLE)
         keepout_yaml, keepout_image = export_keepout_mask(
             scenario.grid, scenario.transition_obstacles, trial_artifacts / "keepout.yaml")
         disturbance = json.loads(

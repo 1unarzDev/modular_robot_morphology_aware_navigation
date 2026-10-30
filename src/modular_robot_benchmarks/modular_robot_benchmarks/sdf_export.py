@@ -28,20 +28,30 @@ def physical_disturbance(seed: int | None) -> dict[str, float]:
     }
 
 
-def export_occupancy_map(grid, output_yaml: Path) -> tuple[Path, Path]:
-    """Export a deterministic Nav2 map; image rows use map-server y ordering."""
+def export_occupancy_map(grid, output_yaml: Path, upsample: int = 1) -> tuple[Path, Path]:
+    """Export a deterministic Nav2 map; image rows use map-server y ordering.
+
+    `upsample` splits every cell into upsample x upsample identical pixels. The
+    walls are those exact cells, so nothing is approximated, and the planner's
+    conservative coarsening recovers the original grid. AMCL's likelihood field
+    measures distance to occupied cell centres while the lidar hits wall faces,
+    so finer cells put the faces where they are (2026-10-30).
+    """
     output_yaml.parent.mkdir(parents=True, exist_ok=True)
     image_path = output_yaml.with_suffix(".pgm")
     pixels = bytearray()
     for y in reversed(range(grid.height)):
+        row = bytearray()
         for x in range(grid.width):
             value = grid.value(x, y)
-            pixels.append(0 if value >= OCCUPIED else (205 if value < 0 else 254))
+            row.extend([0 if value >= OCCUPIED else (205 if value < 0 else 254)] * upsample)
+        pixels.extend(bytes(row) * upsample)
     image_path.write_bytes(
-        f"P5\n{grid.width} {grid.height}\n255\n".encode("ascii") + pixels)
+        f"P5\n{grid.width * upsample} {grid.height * upsample}\n255\n".encode("ascii")
+        + pixels)
     output_yaml.write_text(
         f"image: {image_path.name}\n"
-        f"mode: trinary\nresolution: {grid.resolution}\n"
+        f"mode: trinary\nresolution: {grid.resolution / upsample}\n"
         f"origin: [{grid.origin_x}, {grid.origin_y}, 0.0]\n"
         "negate: 0\noccupied_thresh: 0.65\nfree_thresh: 0.196\n",
         encoding="utf-8",
