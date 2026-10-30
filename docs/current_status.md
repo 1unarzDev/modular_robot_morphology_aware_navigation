@@ -976,7 +976,38 @@ stall the step. Next: symbolized stacks, then a controlled comparison with the
 camera's update rate reduced or the camera removed, as an engineering
 measurement before any change.
 
-### Gate 1: the coverage audit exists; controlled outcome records are owed (2026-10-27)
+### Gate 1 is satisfied: 10 of 10 controlled records, every class covered twice (2026-10-30)
+
+The frozen campaign `config/gate1_outcomes_campaign.json` (design hash
+`268b64d7...`, five declared stimuli twice each on neutral
+`combined_constraints-00`, `feasibility_coupled`) ran at `27504df` with the
+container image recorded (`sha256:2edb457d...`). Audit
+`studies/gate1/gate1_outcomes_audit.json`: **10 of 10 records without a
+problem, every required class covered by 2 clean records, `gate_passed`
+true**, campaign digest `f58e7dc9...`; records retained and restore-verified
+at `studies/gate1/records/gate1_outcomes_raw.tar.xz`. Every trial ran on its
+first attempt, and every stimulus produced its declared class:
+
+| Case | Stimulus | Observed (both realizations) |
+|---|---|---|
+| success | none | `completed`, 137.7 / 135.6 s |
+| timeout | 20 s deadline | `timeout`, 20.0 / 20.0 s |
+| localization loss | AMCL prior 0.6 m and a quarter turn off | `localization_lost`, 54.9 / 51.6 s |
+| collision | unperceived 0.10 m box 1.0 m ahead | `collision`, 120.9 / 119.0 s |
+| docking failure | `latch:pod_0` | `unsafe_topology`, 23.9 / 23.0 s |
+
+The localization case is the one that tests a definition rather than a
+mechanism. The navigator itself reported only "execution failed after
+replanning limit", a `controller_failure`; evaluator truth shows the estimate
+0.6 m off from 0.5 s and never recovering (peak 0.70 m) with no contact, so
+the earliest-cause rule names it `localization_lost`. Under the old
+message-only rule it would have been recorded as a controller failure.
+
+The audit initially could not be retained: it carried no per-record digests,
+so `retain_campaign_records` refused to verify it. Fixed at `997de80` and the
+audit regenerated over the same records.
+
+### Gate 1: the coverage audit exists; controlled outcome records are owed (2026-10-27, superseded above)
 
 `gate1_audit` checks every Gate 1 field record by record: `telemetry_audit`'s
 localization and truth streams, computed evaluator clearance, covariance trace,

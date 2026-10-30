@@ -1,0 +1,182 @@
+{
+  "campaign_digests": {
+    "results/qualification/gate1_outcomes_raw": "f58e7dc9ce4139a295887bbf465cdee88bf58f039bb768424248bbec04fae1f1"
+  },
+  "clean_records_per_required_class": {
+    "collision": 2,
+    "docking_failure": 2,
+    "localization_loss": 2,
+    "success": 2,
+    "timeout": 2
+  },
+  "controlled_cases": {
+    "engineering_gate1_outcomes-combined_constraints-00-r00-success": {
+      "case": "success",
+      "expected": "completed",
+      "observed": "completed"
+    },
+    "engineering_gate1_outcomes-combined_constraints-00-r01-timeout": {
+      "case": "timeout",
+      "expected": "timeout",
+      "observed": "timeout"
+    },
+    "engineering_gate1_outcomes-combined_constraints-00-r02-localization_loss": {
+      "case": "localization_loss",
+      "expected": "localization_lost",
+      "observed": "localization_lost"
+    },
+    "engineering_gate1_outcomes-combined_constraints-00-r03-collision": {
+      "case": "collision",
+      "expected": "collision",
+      "observed": "collision"
+    },
+    "engineering_gate1_outcomes-combined_constraints-00-r04-docking_failure": {
+      "case": "docking_failure",
+      "expected": "unsafe_topology",
+      "observed": "unsafe_topology"
+    },
+    "engineering_gate1_outcomes-combined_constraints-00-r05-success": {
+      "case": "success",
+      "expected": "completed",
+      "observed": "completed"
+    },
+    "engineering_gate1_outcomes-combined_constraints-00-r06-timeout": {
+      "case": "timeout",
+      "expected": "timeout",
+      "observed": "timeout"
+    },
+    "engineering_gate1_outcomes-combined_constraints-00-r07-localization_loss": {
+      "case": "localization_loss",
+      "expected": "localization_lost",
+      "observed": "localization_lost"
+    },
+    "engineering_gate1_outcomes-combined_constraints-00-r08-collision": {
+      "case": "collision",
+      "expected": "collision",
+      "observed": "collision"
+    },
+    "engineering_gate1_outcomes-combined_constraints-00-r09-docking_failure": {
+      "case": "docking_failure",
+      "expected": "unsafe_topology",
+      "observed": "unsafe_topology"
+    }
+  },
+  "gate_passed": true,
+  "per_record": [
+    {
+      "expected_status": "completed",
+      "has_mission": true,
+      "outcome_case": "success",
+      "problems": [],
+      "stimulus_produced_expected_class": true,
+      "terminal_status": "completed",
+      "trial_id": "engineering_gate1_outcomes-combined_constraints-00-r00-success"
+    },
+    {
+      "expected_status": "timeout",
+      "has_mission": true,
+      "outcome_case": "timeout",
+      "problems": [],
+      "stimulus_produced_expected_class": true,
+      "terminal_status": "timeout",
+      "trial_id": "engineering_gate1_outcomes-combined_constraints-00-r01-timeout"
+    },
+    {
+      "expected_status": "localization_lost",
+      "has_mission": true,
+      "outcome_case": "localization_loss",
+      "problems": [],
+      "stimulus_produced_expected_class": true,
+      "terminal_status": "localization_lost",
+      "trial_id": "engineering_gate1_outcomes-combined_constraints-00-r02-localization_loss"
+    },
+    {
+      "expected_status": "collision",
+      "has_mission": true,
+      "outcome_case": "collision",
+      "problems": [],
+      "stimulus_produced_expected_class": true,
+      "terminal_status": "collision",
+      "trial_id": "engineering_gate1_outcomes-combined_constraints-00-r03-collision"
+    },
+    {
+      "expected_status": "unsafe_topology",
+      "has_mission": true,
+      "outcome_case": "docking_failure",
+      "problems": [],
+      "stimulus_produced_expected_class": true,
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_gate1_outcomes-combined_constraints-00-r04-docking_failure"
+    },
+    {
+      "expected_status": "completed",
+      "has_mission": true,
+      "outcome_case": "success",
+      "problems": [],
+      "stimulus_produced_expected_class": true,
+      "terminal_status": "completed",
+      "trial_id": "engineering_gate1_outcomes-combined_constraints-00-r05-success"
+    },
+    {
+      "expected_status": "timeout",
+      "has_mission": true,
+      "outcome_case": "timeout",
+      "problems": [],
+      "stimulus_produced_expected_class": true,
+      "terminal_status": "timeout",
+      "trial_id": "engineering_gate1_outcomes-combined_constraints-00-r06-timeout"
+    },
+    {
+      "expected_status": "localization_lost",
+      "has_mission": true,
+      "outcome_case": "localization_loss",
+      "problems": [],
+      "stimulus_produced_expected_class": true,
+      "terminal_status": "localization_lost",
+      "trial_id": "engineering_gate1_outcomes-combined_constraints-00-r07-localization_loss"
+    },
+    {
+      "expected_status": "collision",
+      "has_mission": true,
+      "outcome_case": "collision",
+      "problems": [],
+      "stimulus_produced_expected_class": true,
+      "terminal_status": "collision",
+      "trial_id": "engineering_gate1_outcomes-combined_constraints-00-r08-collision"
+    },
+    {
+      "expected_status": "unsafe_topology",
+      "has_mission": true,
+      "outcome_case": "docking_failure",
+      "problems": [],
+      "stimulus_produced_expected_class": true,
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_gate1_outcomes-combined_constraints-00-r09-docking_failure"
+    }
+  ],
+  "problem_counts": {},
+  "purpose": "gate1_measured_outcome_coverage",
+  "record_digests": {
+    "engineering_gate1_outcomes-combined_constraints-00-r00-success": "cd47ea0cafcd2e809c89b01bf11b6a8609e165ca5894d21dd7cf51f2df03b16f",
+    "engineering_gate1_outcomes-combined_constraints-00-r01-timeout": "ebac892f3a99ba12def09c29c0233aab80d5216ca7de59778f4688bbd2767e9b",
+    "engineering_gate1_outcomes-combined_constraints-00-r02-localization_loss": "e42eb5b27984470f7b9219ea0bf96c73ddb5d3da2ac21fd54290927c515a0926",
+    "engineering_gate1_outcomes-combined_constraints-00-r03-collision": "5203363a0e4214af089a3cb14c3676ec70c76a39b5dee0f54a9cae1677ed1eaa",
+    "engineering_gate1_outcomes-combined_constraints-00-r04-docking_failure": "a63bc57818835d9870be149ec82b99a812600a343daff029435d3c6e4095adf7",
+    "engineering_gate1_outcomes-combined_constraints-00-r05-success": "a8cb75efde3a5febcffd96fca43e7e7042312caebba56e3051d647818904060f",
+    "engineering_gate1_outcomes-combined_constraints-00-r06-timeout": "7b92ee6e650980921a7bbead3c039449f0442eae80037bb7b23157884d811386",
+    "engineering_gate1_outcomes-combined_constraints-00-r07-localization_loss": "955eece46ffa8934f14e70c4a6c6f4449189ee660880b482b04a789a38a2c2cd",
+    "engineering_gate1_outcomes-combined_constraints-00-r08-collision": "02dc1bc8ef479896cb9ba7f8ef5f19ac7e3bc3909a974ae879903fda8eeffcfc",
+    "engineering_gate1_outcomes-combined_constraints-00-r09-docking_failure": "ad611ae03df7e5a0bb0ca402c2733f342a36e0ed7f869e0ee3d960d78bac5b05"
+  },
+  "records": 10,
+  "records_without_problems": 10,
+  "required_classes_missing": [],
+  "schema_version": 1,
+  "terminal_statuses": {
+    "collision": 2,
+    "completed": 2,
+    "localization_lost": 2,
+    "timeout": 2,
+    "unsafe_topology": 2
+  }
+}

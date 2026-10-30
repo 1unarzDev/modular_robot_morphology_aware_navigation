@@ -116,7 +116,12 @@ docking-failure, and timeout records plus an audit that rejects missing or
 misaligned telemetry. Ground truth consumption by autonomy must be mechanically
 audited and rejected.
 
-Current state (2026-10-27): **not satisfied.** The audit exists
+Current state (2026-10-30): **satisfied.** The controlled-outcome campaign
+produced 10 of 10 clean records covering every required class twice
+(`studies/gate1/gate1_outcomes_audit.json`, records retained and
+restore-verified); see `docs/current_status.md`.
+
+Earlier state (2026-10-27): not satisfied. The audit exists
 (`gate1_audit`): it applies `telemetry_audit` with every other Gate 1 field --
 clearance, covariance, mechanical work, prediction/outcome pairing, process
 health, and source/configuration/design/container provenance -- and reports
