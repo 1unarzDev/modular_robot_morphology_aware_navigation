@@ -24,7 +24,8 @@ running overnight at `971affb` -- `results/run_roundtrip_v3e.launch.log` and
 WSL clone. **It was interrupted by a shutdown** with 7 or more of 20 terminal
 records, all completed. Resume it at the same commit -- mission_batch skips
 terminal records, so the campaign stays one commit -- from Windows with
-`Start-Process wsl.exe -ArgumentList '-e bash -lc "/home/checker/morphology_ws/results/qualification/start_campaign.sh 971affb run_roundtrip_v3e"' -WindowStyle Hidden`.
+(resume_campaign.sh is start_campaign.sh without the fetch, so it cannot
+move the clone off the run commit) `Start-Process wsl.exe -ArgumentList '-e bash -lc "/home/checker/morphology_ws/results/qualification/resume_campaign.sh 971affb run_roundtrip_v3e"' -WindowStyle Hidden`.
 The WSL clone must still be at `971affb` (`git -C /home/checker/morphology_ws
 log -1`); do not fast-forward it until this run is audited. If it passes, run `pilot_v3`
 (`studies/pilot_v3/design.json`, planner check committed) with
