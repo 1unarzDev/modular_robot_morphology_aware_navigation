@@ -109,6 +109,12 @@ def failure_injection_for(design: StudyDesign, spec) -> str:
     return fault_case_for_run(spec.replicate).injection
 
 
+# Trial-independent parameters; the rest (seeds, disturbance, a Gate 1 case's
+# stimulus) legitimately vary between trials of one campaign.
+STACK_PARAMETERS = ("deadline_s", "wall_watchdog_s", "energy_measure",
+                    "sequential_execution", "max_infrastructure_retries")
+
+
 def outcome_case_for(design: StudyDesign, spec) -> OutcomeCase | None:
     """Declared Gate 1 outcome stimulus for a trial; None outside that campaign."""
     if design.design_kind != GATE1_OUTCOMES_DESIGN_KIND:
@@ -422,11 +428,20 @@ def run_batch(
         if failure_injection:
             parameters["failure_injection"] = failure_injection
             parameters["recovery_probe"] = True
-        config_paths = [
+        stack_paths = [
             catalog_path,
             root / "src/modular_robot_bringup/config/nav2.yaml",
             root / "src/modular_robot_bringup/config/slam.yaml",
             root / "src/modular_robot_bringup/config/localization.yaml",
+        ]
+        # What every trial of a campaign must share; analysis rejects a set
+        # that mixes it. The per-trial configuration hash below adds the
+        # trial's own world, map, mask and seeds, so it always differs.
+        parameters["stack_configuration_hash"] = configuration_hash(
+            stack_paths, {key: parameters[key] for key in STACK_PARAMETERS
+                          if key in parameters})
+        config_paths = [
+            *stack_paths,
             world_path,
             scenario_manifest,
             map_yaml,

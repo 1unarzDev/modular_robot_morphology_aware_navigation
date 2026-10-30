@@ -260,3 +260,31 @@ def test_the_wide_design_kinds_select_generator_two():
     assert layout_generator_for("pilot_v2") == layout_generator_for("confirmatory_v2") == 2
     assert layout_generator_for("confirmatory") == 1
     assert layout_generator_for("engineering_gate1_outcomes") == 1
+
+
+def test_trials_share_a_stack_configuration_but_not_their_world_specific_hash():
+    """Each trial hashes its own world and seeds; only the shared stack must match."""
+    design = generate_design(2, 1, 20260911)
+    records = _records(design)
+    stamped = [replace(record, manifest=replace(
+        record.manifest, configuration_hash=f"trial-{index}",
+        parameters={"stack_configuration_hash": "stack"}))
+        for index, record in enumerate(records)]
+    validate_records(stamped, design)
+    mixed = list(stamped)
+    mixed[0] = replace(mixed[0], manifest=replace(
+        mixed[0].manifest, parameters={"stack_configuration_hash": "other"}))
+    with pytest.raises(ValueError, match="stack configuration"):
+        validate_records(mixed, design)
+
+
+def test_the_batch_records_a_stack_hash_over_shared_inputs_only():
+    from pathlib import Path
+
+    batch = (Path(__file__).resolve().parents[1] / "src/modular_robot_benchmarks/"
+             "modular_robot_benchmarks/mission_batch.py").read_text(encoding="utf-8")
+    stack = batch.split("stack_paths = [", 1)[1].split("]", 1)[0]
+    assert "world_path" not in stack and "map_yaml" not in stack and "keepout" not in stack
+    assert 'parameters["stack_configuration_hash"]' in batch
+    shared = batch.split("STACK_PARAMETERS = (", 1)[1].split(")", 1)[0]
+    assert "seed" not in shared and "disturbance" not in shared

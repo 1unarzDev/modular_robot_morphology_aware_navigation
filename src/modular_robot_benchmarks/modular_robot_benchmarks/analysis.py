@@ -32,11 +32,17 @@ def validate_records(records: list[TrialRecord], design: StudyDesign) -> None:
     extra = sorted(set(by_id) - set(expected))
     if missing or extra:
         raise ValueError(f"incomplete design: {len(missing)} missing, {len(extra)} unexpected")
-    manifest_keys = {(r.manifest.commit, r.manifest.configuration_hash, r.manifest.design_hash)
+    # One commit, one design and one shared stack configuration. Each record's
+    # configuration_hash also covers its own world, map and seeds, so it
+    # differs between trials by construction; records written before the
+    # stack hash existed fall back to it, which only a uniform set can pass.
+    manifest_keys = {(r.manifest.commit, r.manifest.design_hash,
+                      r.manifest.parameters.get("stack_configuration_hash",
+                                                r.manifest.configuration_hash))
                      for r in records}
     if len(manifest_keys) != 1:
-        raise ValueError("manifest commit/configuration/design hashes differ across trials")
-    if next(iter(manifest_keys))[2] != design.design_hash:
+        raise ValueError("manifest commit/stack configuration/design hashes differ across trials")
+    if next(iter(manifest_keys))[1] != design.design_hash:
         raise ValueError("record design hash does not match frozen design")
     for record in records:
         if record.spec != expected[record.spec.trial_id]:
