@@ -976,6 +976,45 @@ stall the step. Next: symbolized stacks, then a controlled comparison with the
 camera's update rate reduced or the camera removed, as an engineering
 measurement before any change.
 
+### The Gate 3 pilot is frozen (2026-10-30)
+
+`studies/pilot/design.json`: kind `pilot_v2` (layout generator 2, ADR 0011),
+6 layouts per family x 2 replicates x 4 methods = **144 trials**, master seed
+20261029, design hash `880af322987e...`. Sized for nuisance estimation, not
+for an effect: two replicates are the minimum that identifies the paired-noise
+fraction, and six layouts per family give a first layout-logit spread. It
+shares no world, sensing, friction or fault seed with the superseded
+confirmatory design or with a provisional 40-layout x 3-replicate
+`confirmatory_v2` at the confirmatory master seed 20260911, which is now
+declared (`study freeze-design --disjoint-from` enforces it at freeze).
+
+Its planner manipulation check is committed before any pilot trial
+(`studies/pilot/manipulation_check.json`, all three families):
+
+| Contrast | Family | site separates | unplanned |
+|---|---|---|---|
+| sensing vs geometry | `reconfiguration_workspace` | 4/4 | 0 |
+| sensing vs geometry | `docking_observability` | 3/4 (route 4/4) | 0 |
+| sensing vs geometry | `combined_constraints` | 3/4 | 1 |
+| sensing vs feasibility | `docking_observability` | 3/4 (route 4/4) | 0 |
+| sensing vs feasibility | `combined_constraints` | 3/4 | 1 |
+
+The coupled methods agree in all four neutral layouts of the sensing
+families. The one unplanned layout is one where `sensing_feasibility_coupled`
+itself finds no observable feasible site; it scores as that method's mission
+failure, which biases against the treatment, and is kept rather than screened
+out, since excluding layouts where the treatment cannot plan would select the
+population in its favour.
+
+`route_first_adaptation` plans in 0 of 12 sensing-family layouts here.
+Measured on the ADR 0011 screening sample before deciding whether that is a
+straw man (scratch, nothing changed): routing it over the robot's own Nav2
+inflation (0.45 m, scaling 4.0) still plans 1 of 12, and even a generous
+1.0 m inflation plans only 4 of 12. The failure is the sequential design --
+freezing a route before asking where a transition fits -- not an omitted
+clearance cost, so the baseline stays as defined and the paper reports its
+planning-failure rate explicitly.
+
 ### Gate 1 is satisfied: 10 of 10 controlled records, every class covered twice (2026-10-30)
 
 The frozen campaign `config/gate1_outcomes_campaign.json` (design hash
