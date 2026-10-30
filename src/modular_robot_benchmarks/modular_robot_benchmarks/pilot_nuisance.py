@@ -271,9 +271,6 @@ def main() -> None:
         indent=2, sort_keys=True))
 
 
-if __name__ == "__main__":
-    main()
-
 
 # ---------------------------------------------------------------------------
 # Stratified estimation (added 2026-10-30 after the pilot's harness-health
@@ -390,3 +387,7 @@ def estimate_scope_stratified(records: list[TrialRecord], treatment: str, contro
         # Runtime and measurement validation only; never an input to the grid.
         "pilot_manipulated_treatment_rate_not_used_for_power": rate_t,
     }
+
+
+if __name__ == "__main__":
+    main()
