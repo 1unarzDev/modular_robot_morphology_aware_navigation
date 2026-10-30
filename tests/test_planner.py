@@ -219,3 +219,34 @@ def test_polygon_rectangle_test_is_unchanged_by_its_bounding_box_rejection():
         size = rng.choice((0.1, 0.3))
         rect = (left, bottom, left + size, bottom + size)
         assert polygon_intersects_rectangle(polygon, *rect) == reference(polygon, *rect)
+
+
+def test_a_start_snapped_into_collision_is_repaired_to_the_nearest_free_state():
+    """Pilot: a 1.76 m body at ~0.45 rad snaps to the 45-degree bin beside a wall."""
+    import pytest
+
+    from morphology_planner import HybridState, load_catalog, make_method_planner
+    from morphology_planner.grid import OCCUPIED, OccupancyGrid
+    from morphology_planner.planner import NoPathError
+
+    catalog = load_catalog("src/modular_robot_description/config/morphologies.yaml"
+                           ).supported_experiment_subset()
+    grid = OccupancyGrid(60, 35, 0.1)
+    for x in range(60):
+        grid.set_value(x, 0, OCCUPIED)
+        grid.set_value(x, 34, OCCUPIED)
+    for y in range(35):
+        grid.set_value(0, y, OCCUPIED)
+        grid.set_value(59, y, OCCUPIED)
+    planner = make_method_planner("geometry_coupled", catalog, grid, heading_bins=8).planner
+    snapped = HybridState(30, 29, 1, "narrow_tandem")   # 45 deg: nose into the top wall
+    assert not planner._state_is_free(snapped)
+    repaired = planner.repaired_start(snapped)
+    assert planner._state_is_free(repaired)
+    assert abs(repaired.x - 30) <= 2 and abs(repaired.y - 29) <= 2
+    free = HybridState(30, 17, 0, "narrow_tandem")
+    assert planner.repaired_start(free) == free
+    walled_in = OccupancyGrid(5, 5, 0.1, data=[OCCUPIED] * 25)
+    trapped = make_method_planner("geometry_coupled", catalog, walled_in, heading_bins=8).planner
+    with pytest.raises(NoPathError, match="start state is in collision"):
+        trapped.repaired_start(HybridState(2, 2, 0, "narrow_tandem"))

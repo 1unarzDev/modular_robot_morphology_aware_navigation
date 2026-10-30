@@ -56,8 +56,7 @@ class RouteFirstAdaptationPlanner:
              epsilon: float = 1.0) -> HybridPlan:
         if start.morphology not in self.catalog.morphologies:
             raise ValueError(f"unknown start morphology: {start.morphology}")
-        if not self.hybrid._state_is_free(start):
-            raise NoPathError("start state is in collision")
+        start = self.hybrid.repaired_start(start)
         route, spatial_expanded = self._spatial_route(
             SpatialState(start.x, start.y, start.heading), goal_xy, epsilon)
         return self._adapt(route, start.morphology, epsilon, spatial_expanded)

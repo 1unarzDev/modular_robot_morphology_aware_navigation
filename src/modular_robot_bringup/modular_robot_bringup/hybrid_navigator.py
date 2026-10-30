@@ -27,6 +27,10 @@ from .qualification import (
 )
 
 
+# Replans a mission may make that are not recoveries: one per committed
+# transformation, plus revision changes. Generous; it is a loop guard only.
+MAX_PLANNED_REPLANS = 8
+
 class HybridNavigator(Node):
     def __init__(self) -> None:
         super().__init__("hybrid_navigator")
@@ -120,7 +124,15 @@ class HybridNavigator(Node):
         expanded_states = 0
         selected_plans = []
         execution_failures = 0
-        for attempt in range(int(self.get_parameter("max_replans").value) + 1):
+        max_replans = int(self.get_parameter("max_replans").value)
+        # Only execution failures spend the replan budget. A replan after a
+        # committed transformation is the plan continuing, and a round trip
+        # makes two of them; counting those left one recovery for a whole
+        # mission (pilot, 2026-10-30). The iteration cap only stops a
+        # revision-change loop from spinning.
+        for _ in range(max_replans + 1 + MAX_PLANNED_REPLANS):
+            if execution_failures > max_replans:
+                break
             if self.morphology is None:
                 result.message = "no morphology state received"
                 goal_handle.abort()
@@ -276,7 +288,8 @@ class HybridNavigator(Node):
                         result, selected_plans, planning_latency, expanded_states)
                     goal_handle.succeed()
                     return result
-            self.get_logger().warning(f"execution failed; replanning attempt {attempt + 1}")
+            self.get_logger().warning(
+                f"execution failed; replanning attempt {execution_failures + 1}")
             execution_failures += 1
             result.recovery_actions = execution_failures
         result.message = "execution failed after replanning limit"

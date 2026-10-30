@@ -126,8 +126,7 @@ class MorphologyAStar:
             raise ValueError(f"unknown start morphology: {start.morphology}")
         if epsilon < 1.0:
             raise ValueError("epsilon must be at least one")
-        if not self._state_is_free(start):
-            raise NoPathError("start state is in collision")
+        start = self.repaired_start(start)
 
         serial = count()
         open_heap: list[tuple[float, int, HybridState]] = []
@@ -202,6 +201,38 @@ class MorphologyAStar:
             )
             cost += self.catalog.objective.lambda_risk * self.catalog.objective.unknown_space_risk * unknown_fraction
             yield target, HybridSegment("traverse", state, target, cost)
+
+    # The robot's real pose is snapped to a cell centre and one of the heading
+    # bins; for the 1.76 m narrow body a real yaw of ~0.45 rad rounds to the
+    # 45-degree bin, whose footprint can overlap a wall the robot is clear of.
+    # The pilot recorded missions ending "start state is in collision" right
+    # after a transformation for exactly this reason (2026-10-30).
+    START_REPAIR_RADIUS_CELLS = 2
+
+    def repaired_start(self, start: HybridState) -> HybridState:
+        """The snapped start, or the nearest free lattice state to it.
+
+        Searches positions within START_REPAIR_RADIUS_CELLS and the start's
+        heading bin then its two neighbours, nearest first. The path follower
+        joins the plan from the true pose, so a repair of a few centimetres
+        and one bin is absorbed by execution rather than refusing to plan.
+        """
+        if self._state_is_free(start):
+            return start
+        radius = self.START_REPAIR_RADIUS_CELLS
+        candidates = sorted(
+            ((dx, dy, dheading) for dx in range(-radius, radius + 1)
+             for dy in range(-radius, radius + 1) for dheading in (0, 1, -1)
+             if hypot(dx, dy) <= radius),
+            key=lambda value: (hypot(value[0], value[1]) + abs(value[2]),
+                               value[2] != 0, value))
+        for dx, dy, dheading in candidates:
+            candidate = HybridState(start.x + dx, start.y + dy,
+                                    (start.heading + dheading) % self.heading_bins,
+                                    start.morphology)
+            if self._state_is_free(candidate):
+                return candidate
+        raise NoPathError("start state is in collision")
 
     def _state_is_free(self, state: HybridState) -> bool:
         cached = self._state_collision_cache.get(state)

@@ -27,3 +27,16 @@ def test_polling_node_blocking_waits_are_bounded() -> None:
         for line in text.splitlines():
             if "wait_for_service(" in line or "wait_for_server(" in line:
                 assert "timeout_sec=" in line
+
+
+def test_only_execution_failures_spend_the_replan_budget():
+    """Pilot: two committed transformations used to spend two of four tries."""
+    from pathlib import Path
+
+    source = (Path(__file__).resolve().parents[1] / "src/modular_robot_bringup/"
+              "modular_robot_bringup/hybrid_navigator.py").read_text(encoding="utf-8")
+    loop = source.split("async def _execute(self, goal_handle):", 1)[1].split(
+        "def _unsafe_state_message", 1)[0]
+    assert "for _ in range(max_replans + 1 + MAX_PLANNED_REPLANS):" in loop
+    assert "if execution_failures > max_replans:" in loop
+    assert "for attempt in range" not in loop
