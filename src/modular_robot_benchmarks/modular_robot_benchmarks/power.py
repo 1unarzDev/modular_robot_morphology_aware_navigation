@@ -160,3 +160,116 @@ def write_power(result: dict, path: str | Path) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return path
+
+
+# Every fourth layout of a design is a neutral control (`layout_index % 4 == 0`).
+NEUTRAL_EVERY = 4
+# Logits of exactly 0 or 1 are undefined; a stratum rate the pilot measured as
+# 0/n is simulated just inside the open interval.
+RATE_FLOOR = 0.005
+
+
+@dataclass(frozen=True)
+class StratifiedPowerAssumptions:
+    """The design's own structure: neutral controls carry no contrast.
+
+    Neutral layouts give both methods one completion rate, so their true
+    difference is zero; the whole average effect must then come from the
+    manipulated layouts, whose effect is `average_effect` scaled by the
+    manipulated share. Layouts in each stratum share a Gaussian logit shift.
+    """
+    layout_count: int
+    replicates: int
+    neutral_rate: float
+    manipulated_control_rate: float
+    average_effect: float
+    layout_logit_sd: float
+    paired_noise_fraction: float
+    alpha: float = 0.025
+
+    @property
+    def neutral_layouts(self) -> int:
+        return (self.layout_count + NEUTRAL_EVERY - 1) // NEUTRAL_EVERY
+
+    @property
+    def manipulated_effect(self) -> float:
+        manipulated = self.layout_count - self.neutral_layouts
+        return self.average_effect * self.layout_count / manipulated
+
+    def validate(self) -> None:
+        if self.layout_count < 4 or self.replicates < 1:
+            raise ValueError("power analysis requires at least four layouts and one replicate")
+        if self.manipulated_control_rate + self.manipulated_effect >= 1:
+            raise ValueError("the manipulated stratum cannot carry the average effect")
+        if self.layout_logit_sd < 0 or not 0 <= self.paired_noise_fraction <= 1:
+            raise ValueError("invalid variance or pairing assumption")
+
+
+def estimate_stratified_power(assumptions: StratifiedPowerAssumptions,
+                              simulations: int = 2000, randomization_draws: int = 1999,
+                              seed: int = 20261030) -> dict:
+    """Power of the planned layout sign-flip test under the stratified model."""
+    assumptions.validate()
+    rng = Random(seed)
+    clip = lambda value: min(1 - RATE_FLOOR, max(RATE_FLOOR, value))
+    neutral = _logit(clip(assumptions.neutral_rate))
+    control = _logit(clip(assumptions.manipulated_control_rate))
+    treatment = _logit(clip(assumptions.manipulated_control_rate
+                            + assumptions.manipulated_effect))
+    rejected, means = 0, []
+    for _ in range(simulations):
+        effects = []
+        for layout in range(assumptions.layout_count):
+            shift = rng.gauss(0, assumptions.layout_logit_sd)
+            if layout % NEUTRAL_EVERY == 0:
+                p_control = p_treatment = _logistic(neutral + shift)
+            else:
+                p_control = _logistic(control + shift)
+                p_treatment = _logistic(treatment + shift)
+            differences = []
+            for _ in range(assumptions.replicates):
+                control_draw = rng.random()
+                treatment_draw = (control_draw if rng.random() < assumptions.paired_noise_fraction
+                                  else rng.random())
+                differences.append(float(treatment_draw < p_treatment)
+                                   - float(control_draw < p_control))
+            effects.append(fmean(differences))
+        means.append(fmean(effects))
+        rejected += _sign_flip_p(effects, randomization_draws, rng) <= assumptions.alpha
+    probability = rejected / simulations
+    return {
+        "assumptions": {**asdict(assumptions),
+                        "manipulated_effect": assumptions.manipulated_effect},
+        "estimated_power": probability,
+        "monte_carlo_power_ci95": list(_wilson_interval(rejected, simulations)),
+        "simulated_mean_effect": fmean(means),
+        "simulations": simulations,
+        "seed": seed,
+    }
+
+
+def estimate_stratified_power_grid(
+    layout_count: int, replicates: int, neutral_rates: list[float],
+    manipulated_control_rates: list[float], average_effect: float,
+    layout_logit_sds: list[float], paired_noise_fractions: list[float],
+    alpha: float = 0.025, target_power: float = 0.8, simulations: int = 2000,
+    randomization_draws: int = 1999, seed: int = 20261030,
+) -> dict:
+    cells = []
+    for index, (neutral, control, layout_sd, pairing) in enumerate(product(
+            neutral_rates, manipulated_control_rates, layout_logit_sds,
+            paired_noise_fractions)):
+        cells.append(estimate_stratified_power(StratifiedPowerAssumptions(
+            layout_count, replicates, neutral, control, average_effect, layout_sd,
+            pairing, alpha), simulations, randomization_draws, seed + index * 100003))
+    worst = min(cells, key=lambda value: value["monte_carlo_power_ci95"][0])
+    return {
+        "purpose": "prospective_stratified_nuisance_grid",
+        "smallest_effect_of_interest_absolute": average_effect,
+        "target_power": target_power,
+        "cells": cells,
+        "minimum_power_ci95_lower_bound": worst["monte_carlo_power_ci95"][0],
+        "worst_case_assumptions": worst["assumptions"],
+        "design_meets_target_in_every_cell": all(
+            cell["monte_carlo_power_ci95"][0] >= target_power for cell in cells),
+    }

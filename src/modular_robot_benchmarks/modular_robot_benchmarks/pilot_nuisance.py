@@ -36,7 +36,7 @@ import numpy as np
 
 from .design import SENSING_FAMILIES, StudyDesign
 from .hierarchical import _fit, _logistic
-from .power import _wilson_interval, estimate_power_grid
+from .power import _wilson_interval, estimate_power_grid, estimate_stratified_power_grid
 from .records import TrialRecord, TrialStore
 
 
@@ -231,24 +231,162 @@ def main() -> None:
         "runtime": runtime_summary(records),
         "scopes": {name: estimate_scope(records, treatment, control, families)
                    for name, treatment, control, families in DECLARED_SCOPES},
+        # Governs the layout count: the design's two strata, see the section
+        # comment above estimate_scope_stratified.
+        "stratified_scopes": {
+            name: estimate_scope_stratified(records, treatment, control, families)
+            for name, treatment, control, families in DECLARED_SCOPES},
     }
     if arguments.power:
         # All-family scope over three families; sensing scope over two. The
         # confirmatory design draws equal layouts per family, so a total of 3n
         # layouts gives the sensing scope 2n.
-        for name, scope in summary["scopes"].items():
-            totals = list(range(36, 121, 12))
+        totals = list(range(36, 121, 12))
+        for name, scope in summary["stratified_scopes"].items():
             counts = totals if name == "all_families" else [2 * total // 3 for total in totals]
-            scope["power"] = required_layouts(
-                scope["grid"], counts, 3, arguments.simulations,
-                arguments.randomization_draws, 20261030)
+            tried = []
+            for layouts in counts:
+                grid = scope["grid"]
+                result = estimate_stratified_power_grid(
+                    layouts, 3, grid["neutral_rates"], grid["manipulated_control_rates"],
+                    SMALLEST_EFFECT_OF_INTEREST, grid["layout_logit_sds"],
+                    grid["paired_noise_fractions"], simulations=arguments.simulations,
+                    randomization_draws=arguments.randomization_draws, seed=20261030)
+                tried.append({"layouts": layouts,
+                              "all_cells_pass": result["design_meets_target_in_every_cell"],
+                              "minimum_power_ci95_lower_bound":
+                                  result["minimum_power_ci95_lower_bound"],
+                              "worst_case_assumptions": result["worst_case_assumptions"]})
+                if result["design_meets_target_in_every_cell"]:
+                    break
+            scope["power"] = {"required_layouts": next(
+                (row["layouts"] for row in tried if row["all_cells_pass"]), None),
+                "tried": tried}
     arguments.output.parent.mkdir(parents=True, exist_ok=True)
     arguments.output.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n",
                                 encoding="utf-8")
-    print(json.dumps({name: {key: scope[key] for key in (
-        "control_probability_at_average_layout", "layout_logit_sd", "grid")}
-        for name, scope in summary["scopes"].items()}, indent=2, sort_keys=True))
+    print(json.dumps({name: {key: scope.get(key) for key in (
+        "neutral_rate", "manipulated_control_rate", "within_stratum_layout_sd",
+        "grid", "power")} for name, scope in summary["stratified_scopes"].items()},
+        indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":
     main()
+
+
+# ---------------------------------------------------------------------------
+# Stratified estimation (added 2026-10-30 after the pilot's harness-health
+# read, before its nuisance was used). The design has two strata by
+# construction -- neutral controls, where no method has a reason to differ, and
+# manipulated layouts -- and completion turned out near-deterministic within
+# them, which drives a single Gaussian layout intercept to its bound (fitted
+# SD 20 on the pilot). The stratified model is the design's own structure; it
+# never reads the pilot's effect estimate.
+# ---------------------------------------------------------------------------
+
+def _neutral(record: TrialRecord) -> bool:
+    return int(record.spec.layout_id.rsplit("-", 1)[1]) % 4 == 0
+
+
+def within_stratum_layout_sd(groups: list[tuple[float, list[tuple[int, int]]]],
+                             quadrature_points: int = QUADRATURE_POINTS) -> dict:
+    """Moment estimate of a within-stratum Gaussian logit layout SD.
+
+    `groups` holds (stratum rate, [(replicate-a outcome, replicate-b outcome)
+    per layout]) for each stratum-method group. Two replicates of one layout
+    and method share only the layout shift, so their agreement rises with the
+    SD; the SD whose predicted agreement best matches the observed one, over
+    groups whose rate is strictly inside (0, 1), is returned. Groups at 0 or 1
+    carry no information about spread and are excluded.
+    """
+    from math import log as _log
+    nodes, weights = np.polynomial.hermite.hermgauss(quadrature_points)
+    informative = [(rate, pairs) for rate, pairs in groups if 0 < rate < 1 and pairs]
+    if not informative:
+        return {"estimate": 0.0, "identified": False, "informative_groups": 0}
+
+    def predicted(sd: float, rate: float) -> float:
+        base = _log(rate / (1 - rate))
+        return sum(float(w) / sqrt(pi) * (
+            _logistic(base + sqrt(2) * sd * float(n)) ** 2
+            + (1 - _logistic(base + sqrt(2) * sd * float(n))) ** 2)
+            for n, w in zip(nodes, weights))
+
+    observed = [(rate, fmean(float(a == b) for a, b in pairs), len(pairs))
+                for rate, pairs in informative]
+    candidates = [step / 20 for step in range(0, 101)]          # 0.00 .. 5.00
+    best = min(candidates, key=lambda sd: sum(
+        weight * (agree - predicted(sd, rate)) ** 2 for rate, agree, weight in observed))
+    return {"estimate": best, "identified": True,
+            "informative_groups": len(informative)}
+
+
+def estimate_scope_stratified(records: list[TrialRecord], treatment: str, control: str,
+                              families) -> dict:
+    selected = [record for record in _scoped(records, families)
+                if record.spec.method in (treatment, control)]
+    neutral = [record for record in selected if _neutral(record)]
+    manipulated = [record for record in selected if not _neutral(record)]
+    neutral_successes = sum(record.completed for record in neutral)
+    control_manipulated = [record for record in manipulated if record.spec.method == control]
+    control_successes = sum(record.completed for record in control_manipulated)
+
+    groups = []
+    for stratum in (neutral, manipulated):
+        for method in (treatment, control):
+            by_layout: dict[str, list[int]] = defaultdict(list)
+            for record in stratum:
+                if record.spec.method == method:
+                    by_layout[record.spec.layout_id].append(int(record.completed))
+            outcomes = [value for values in by_layout.values() for value in values]
+            if not outcomes:
+                continue
+            pairs = [(values[0], values[1]) for values in by_layout.values() if len(values) >= 2]
+            groups.append((fmean(outcomes), pairs))
+    sd = within_stratum_layout_sd(groups)
+
+    blocks: dict[tuple[str, int], dict[str, int]] = defaultdict(dict)
+    for record in manipulated:
+        blocks[(record.spec.layout_id, record.spec.replicate)][record.spec.method] = int(
+            record.completed)
+    paired = [(value[control], value[treatment]) for value in blocks.values()
+              if control in value and treatment in value]
+    rate_c = control_successes / len(control_manipulated)
+    treatment_manipulated = [r for r in manipulated if r.spec.method == treatment]
+    rate_t = (sum(r.completed for r in treatment_manipulated) / len(treatment_manipulated)
+              if treatment_manipulated else rate_c)
+    clip = lambda value: min(0.995, max(0.005, value))
+    from math import log as _log
+    pairing = paired_noise_fraction(
+        paired, [_log(clip(rate_c) / (1 - clip(rate_c)))],
+        [_log(clip(rate_t) / (1 - clip(rate_t)))], sd["estimate"])
+
+    neutral_low, neutral_high = _wilson_interval(neutral_successes, len(neutral))
+    control_low, control_high = _wilson_interval(control_successes, len(control_manipulated))
+    neutral_rate = neutral_successes / len(neutral)
+    effect_ceiling = 1.0 - SMALLEST_EFFECT_OF_INTEREST * 4 / 3 - 0.01
+    adverse_control = control_low if abs(control_low - 0.5) < abs(control_high - 0.5) else control_high
+    adverse_neutral = neutral_low if abs(neutral_low - 0.5) < abs(neutral_high - 0.5) else neutral_high
+    return {
+        "model": "stratified: neutral controls carry no contrast",
+        "treatment": treatment, "control": control,
+        "families": sorted(families) if families else "all",
+        "neutral_rate": neutral_rate, "neutral_trials": len(neutral),
+        "manipulated_control_rate": rate_c, "manipulated_control_trials": len(control_manipulated),
+        "within_stratum_layout_sd": sd,
+        "paired_noise_fraction": pairing,
+        "grid": {
+            "neutral_rates": sorted({round(neutral_rate, 4), round(adverse_neutral, 4)}),
+            "manipulated_control_rates": sorted({
+                round(min(rate_c, effect_ceiling), 4),
+                round(min(adverse_control, effect_ceiling), 4)}),
+            "layout_logit_sds": sorted({round(sd["estimate"], 4), round(max(
+                2.0 * sd["estimate"], sd["estimate"] + 0.5, ADVERSE_LAYOUT_SD_FLOOR), 4)}),
+            "paired_noise_fractions": sorted({
+                round(pairing["estimate"], 4),
+                round(max(0.0, pairing["estimate"] - 0.25), 4)}),
+        },
+        # Runtime and measurement validation only; never an input to the grid.
+        "pilot_manipulated_treatment_rate_not_used_for_power": rate_t,
+    }

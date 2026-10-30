@@ -288,3 +288,17 @@ def test_the_batch_records_a_stack_hash_over_shared_inputs_only():
     assert 'parameters["stack_configuration_hash"]' in batch
     shared = batch.split("STACK_PARAMETERS = (", 1)[1].split(")", 1)[0]
     assert "seed" not in shared and "disturbance" not in shared
+
+
+def test_stratified_power_puts_the_whole_effect_in_the_manipulated_layouts():
+    from modular_robot_benchmarks.power import (
+        StratifiedPowerAssumptions, estimate_stratified_power)
+
+    assumptions = StratifiedPowerAssumptions(36, 3, 0.9, 0.05, 0.18, 0.5, 0.3)
+    assert assumptions.neutral_layouts == 9
+    assert assumptions.manipulated_effect == pytest.approx(0.18 * 36 / 27)
+    result = estimate_stratified_power(assumptions, simulations=200, randomization_draws=199)
+    # The simulated average effect is the declared 0.18, not the stratum's 0.24.
+    assert result["simulated_mean_effect"] == pytest.approx(0.18, abs=0.03)
+    with pytest.raises(ValueError):
+        StratifiedPowerAssumptions(36, 3, 0.9, 0.8, 0.18, 0.5, 0.3).validate()

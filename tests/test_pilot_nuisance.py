@@ -80,3 +80,43 @@ def test_adverse_values_move_every_nuisance_parameter_the_unfavourable_way():
     assert max(capped["control_rates"]) <= 1 - 0.18 - 0.01 + 1e-9
     assert capped["layout_logit_sds"] == [0.1, 1.0]   # the declared floor
     assert capped["paired_noise_fractions"] == [0.0]
+
+
+def _stratified(layouts_per_family, neutral_rate, control_rate, treatment_rate, seed):
+    rng = Random(seed)
+    records = []
+    for family in ("docking_observability", "combined_constraints"):
+        for index in range(layouts_per_family):
+            neutral = index % 4 == 0
+            for replicate in range(2):
+                for method, rate in (("feasibility_coupled", control_rate),
+                                     ("sensing_feasibility_coupled", treatment_rate)):
+                    completed = rng.random() < (neutral_rate if neutral else rate)
+                    spec = TrialSpec(f"{family}-{index:02d}-r{replicate}-{method}", family,
+                                     f"{family}-{index:02d}", replicate, method, 0, 1, 2, 3, 4)
+                    records.append(TrialRecord(
+                        schema_version=1, spec=spec,
+                        manifest=TrialManifest("abc", "cfg", "design", {}, {}),
+                        terminal_status="completed" if completed else "docking_failure",
+                        completed=completed, simulated_duration_s=40.0, wall_duration_s=200.0,
+                        final_execution_state="READY" if completed else "RECOVERY_REQUIRED",
+                        unrecovered_fault=not completed,
+                        infrastructure_attempts=[{"attempt": 1}]))
+    return records
+
+
+def test_stratified_estimates_survive_deterministic_strata():
+    """The pilot's shape: neutral nearly always completes, manipulated control never."""
+    from modular_robot_benchmarks.pilot_nuisance import estimate_scope_stratified
+
+    records = _stratified(40, 0.95, 0.0, 0.6, seed=9)
+    scope = estimate_scope_stratified(records, "sensing_feasibility_coupled",
+                                      "feasibility_coupled",
+                                      frozenset({"docking_observability", "combined_constraints"}))
+    assert scope["neutral_rate"] == pytest.approx(0.95, abs=0.07)
+    assert scope["manipulated_control_rate"] == 0.0
+    grid = scope["grid"]
+    assert grid["manipulated_control_rates"][0] == 0.0 and grid["manipulated_control_rates"][1] > 0
+    assert max(grid["layout_logit_sds"]) >= 1.0          # the declared floor
+    # The treatment rate is reported, never used for the grid.
+    assert "pilot_manipulated_treatment_rate_not_used_for_power" in scope
