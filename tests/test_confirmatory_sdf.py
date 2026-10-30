@@ -62,3 +62,41 @@ def test_occupancy_map_matches_scenario_grid_and_y_axis(tmp_path):
     assert set(pixels[:scenario.grid.width]) == {0}
     assert set(pixels[-scenario.grid.width:]) == {0}
     assert "image: map.pgm" in yaml_path.read_text()
+
+
+def test_keepout_mask_holds_the_shelf_but_not_the_elevated_screen_or_walls(tmp_path):
+    """ADR 0012: the controller must see what the planner plans around."""
+    from modular_robot_benchmarks.sdf_export import export_keepout_mask
+
+    scenario = make_confirmatory_scenario("combined_constraints", 1, 8196733574266853195)
+    names = {box.name for box in scenario.transition_obstacles}
+    assert {"raised_transition_shelf", "elevated_sight_screen"} <= names
+    yaml_path, image_path = export_keepout_mask(
+        scenario.grid, scenario.transition_obstacles, tmp_path / "keepout.yaml")
+    header, pixels = image_path.read_bytes().split(b"255\n", 1)
+    grid = scenario.grid
+    assert len(pixels) == grid.width * grid.height
+
+    def kept_out(x, y):   # image rows run top-down
+        return pixels[(grid.height - 1 - y) * grid.width + x] == 0
+
+    shelf = next(b for b in scenario.transition_obstacles if b.name == "raised_transition_shelf")
+    screen = next(b for b in scenario.transition_obstacles if b.name == "elevated_sight_screen")
+    assert kept_out(*grid.world_to_cell(shelf.center[0], shelf.center[1]))
+    assert not kept_out(*grid.world_to_cell(screen.center[0], screen.center[1]))
+    assert not kept_out(0, 0)            # a wall cell is the map's job, not the mask's
+    assert "mode: trinary" in yaml_path.read_text(encoding="utf-8")
+
+
+def test_the_batch_serves_the_keepout_mask_and_both_costmaps_apply_it():
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    batch = (root / "src/modular_robot_benchmarks/modular_robot_benchmarks/"
+             "mission_batch.py").read_text(encoding="utf-8")
+    assert 'f"keepout_mask:={keepout_yaml.resolve()}"' in batch
+    nav2 = (root / "src/modular_robot_bringup/config/nav2.yaml").read_text(encoding="utf-8")
+    assert nav2.count("plugin: nav2_costmap_2d::KeepoutFilter") == 2
+    launch = (root / "src/modular_robot_bringup/launch/demo.launch.py").read_text(encoding="utf-8")
+    assert '"mask_topic": "/keepout_filter_mask"' in launch
+    assert '"topic_name": "/keepout_filter_mask"' in launch

@@ -25,7 +25,7 @@ from .evaluator_metrics import (
     world_obstacle_boxes,
 )
 from .records import TrialManifest, TrialRecord, TrialStore
-from .sdf_export import export_confirmatory_sdf, export_occupancy_map
+from .sdf_export import export_confirmatory_sdf, export_keepout_mask, export_occupancy_map
 
 
 def classify_terminal(success: bool, message: str, timed_out: bool) -> str:
@@ -390,6 +390,8 @@ def run_batch(
             stimulus_boxes, generator)
         map_yaml, map_image = export_occupancy_map(
             scenario.grid, trial_artifacts / "map.yaml")
+        keepout_yaml, keepout_image = export_keepout_mask(
+            scenario.grid, scenario.transition_obstacles, trial_artifacts / "keepout.yaml")
         disturbance = json.loads(
             scenario_manifest.read_text(encoding="utf-8"))["physical_disturbance"]
         start_x = nominal_start_x + disturbance["initial_dx_m"]
@@ -429,6 +431,8 @@ def run_batch(
             scenario_manifest,
             map_yaml,
             map_image,
+            keepout_yaml,
+            keepout_image,
         ]
         manifest = TrialManifest(
             revision, configuration_hash(config_paths, parameters), design.design_hash,
@@ -459,6 +463,7 @@ def run_batch(
             process = subprocess.Popen(
                 ["ros2", "launch", "modular_robot_bringup", "demo.launch.py",
                  f"world:={world_path.resolve()}", f"map:={map_yaml.resolve()}",
+                 f"keepout_mask:={keepout_yaml.resolve()}",
                  # AMCL's prior only; the robot spawns at the true start. A
                  # Gate 1 localization case offsets it (a kidnapped robot).
                  f"initial_x:={start_x + amcl_offset[0]}",

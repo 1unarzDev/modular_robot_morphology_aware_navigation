@@ -23,7 +23,9 @@ def generate_launch_description():
     failure_injection = LaunchConfiguration("failure_injection")
     transition_environment = LaunchConfiguration("transition_environment")
     station_gated_visibility = LaunchConfiguration("station_gated_visibility")
+    keepout_mask = LaunchConfiguration("keepout_mask")
     has_map = PythonExpression(["'", map_file, "' != ''"])
+    has_keepout = PythonExpression(["'", keepout_mask, "' != ''"])
     localization_params = os.path.join(bringup, "config", "localization.yaml")
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -44,6 +46,11 @@ def generate_launch_description():
                         "declared workspace fiducial station rather than by the "
                         "onboard connector cameras. Set when the scenario "
                         "manifest declares a station."),
+        DeclareLaunchArgument(
+            "keepout_mask", default_value="",
+            description="ADR 0012: Nav2 keepout filter mask of declared obstacles "
+                        "below the lidar that the planner routes around. Empty "
+                        "leaves both costmaps' keepout filters inactive."),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(os.path.join(sim, "launch", "simulation.launch.py")),
             launch_arguments={"world": world}.items()),
@@ -68,6 +75,23 @@ def generate_launch_description():
              condition=IfCondition(has_map), parameters=[{
                  "use_sim_time": True, "autostart": True,
                  "node_names": ["map_server", "amcl"],
+             }]),
+        Node(package="nav2_map_server", executable="map_server",
+             name="filter_mask_server", output="screen", condition=IfCondition(has_keepout),
+             parameters=[{"use_sim_time": True, "yaml_filename": keepout_mask,
+                          "topic_name": "/keepout_filter_mask", "frame_id": "map"}]),
+        Node(package="nav2_map_server", executable="costmap_filter_info_server",
+             name="costmap_filter_info_server", output="screen",
+             condition=IfCondition(has_keepout),
+             parameters=[{"use_sim_time": True, "type": 0,
+                          "filter_info_topic": "/costmap_filter_info",
+                          "mask_topic": "/keepout_filter_mask",
+                          "base": 0.0, "multiplier": 1.0}]),
+        Node(package="nav2_lifecycle_manager", executable="lifecycle_manager",
+             name="lifecycle_manager_costmap_filters", output="screen",
+             condition=IfCondition(has_keepout), parameters=[{
+                 "use_sim_time": True, "autostart": True,
+                 "node_names": ["filter_mask_server", "costmap_filter_info_server"],
              }]),
         TimerAction(period=3.0, actions=[IncludeLaunchDescription(
             PythonLaunchDescriptionSource(os.path.join(nav2, "launch", "navigation_launch.py")),

@@ -49,6 +49,48 @@ def export_occupancy_map(grid, output_yaml: Path) -> tuple[Path, Path]:
     return output_yaml, image_path
 
 
+# ADR 0012: the tallest confirmatory morphology. A declared box whose underside
+# is below it blocks driving in the planner (`planner.py`, `_drive_rectangles`),
+# so it must block the controller too.
+DRIVE_OBSTACLE_MAX_UNDERSIDE_M = 0.30
+
+
+def export_keepout_mask(grid, obstacles, output_yaml: Path) -> tuple[Path, Path]:
+    """Nav2 keepout filter mask of the declared obstacles the robot cannot drive under.
+
+    Same geometry and image conventions as `export_occupancy_map`; a cell is
+    kept out when its square overlaps such an obstacle's footprint. The map AMCL
+    localizes against is untouched: these obstacles are below the lidar, so
+    cells for them there could only mislead it (ADR 0012).
+    """
+    blocked = [
+        (box.center[0] - box.size[0] / 2.0, box.center[1] - box.size[1] / 2.0,
+         box.center[0] + box.size[0] / 2.0, box.center[1] + box.size[1] / 2.0)
+        for box in obstacles
+        if box.center[2] - box.size[2] / 2.0 < DRIVE_OBSTACLE_MAX_UNDERSIDE_M]
+    output_yaml.parent.mkdir(parents=True, exist_ok=True)
+    image_path = output_yaml.with_suffix(".pgm")
+    pixels = bytearray()
+    half = grid.resolution / 2.0
+    for y in reversed(range(grid.height)):
+        for x in range(grid.width):
+            cx, cy = grid.cell_center(x, y)
+            kept_out = any(cx + half > left and cx - half < right
+                           and cy + half > bottom and cy - half < top
+                           for left, bottom, right, top in blocked)
+            pixels.append(0 if kept_out else 254)
+    image_path.write_bytes(
+        f"P5\n{grid.width} {grid.height}\n255\n".encode("ascii") + pixels)
+    output_yaml.write_text(
+        f"image: {image_path.name}\n"
+        f"mode: trinary\nresolution: {grid.resolution}\n"
+        f"origin: [{grid.origin_x}, {grid.origin_y}, 0.0]\n"
+        "negate: 0\noccupied_thresh: 0.65\nfree_thresh: 0.196\n",
+        encoding="utf-8",
+    )
+    return output_yaml, image_path
+
+
 def export_sdf(family: str, seed: int, output: Path) -> None:
     scenario = make_scenario(family, seed)
     sdf = Element("sdf", version="1.10")
