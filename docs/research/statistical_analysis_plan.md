@@ -220,6 +220,32 @@ disturbance seeds. Figures and tables are deterministic derivatives of accepted
 terminal records. Any rerun for a declared infrastructure failure receives a
 new audit entry; the original terminal record remains immutable.
 
+## Pilot nuisance estimation (declared 2026-10-30, before any pilot record)
+
+`modular_robot_benchmarks.pilot_nuisance` reads the three nuisance parameters
+of the power model from the pilot, per primary contrast scope, by rules fixed
+in its docstring before the pilot produced data:
+
+- Control probability at an average layout and the layout logit SD come from
+  the predeclared random-intercept logistic model, fitted to two crossed
+  halves (control from even replicates with treatment from odd ones, and the
+  mirror) and averaged. A fit to whole paired blocks absorbs the pairing as
+  layout variance: in simulation it recovered 1.2 for a true 0.8.
+- The paired-noise fraction is a moment estimate: observed within-block
+  agreement solved against the agreement the model predicts with a shared draw
+  and with independent ones, integrated over the fitted layout distribution.
+- Adverse grid values: the control rate's 95% Wilson bound nearer 0.5;
+  max(2 sigma, sigma + 0.5, 1.0) for the layout SD, the floor because sigma is
+  weakly identified (one simulated seed in four collapsed it to ~0 even at 150
+  layouts per family); and max(0, rho - 0.25) for the pairing. A control rate
+  above 0.81 cannot carry the 0.18 effect and is capped and reported.
+
+The layout count is then the smallest total in 36, 48, ..., 120 whose every
+grid cell meets 80% power on its Wilson lower bound, for both scopes (the
+sensing scope taking two thirds of the total). The pilot's own effect estimate
+is recorded for runtime and measurement validation only and never enters the
+grid.
+
 ## Frozen pilot power-grid procedure
 
 After the pilot decision record fixes the operational smallest effect of

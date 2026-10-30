@@ -126,6 +126,10 @@ def _fit(records: list[TrialRecord], treatment: str, control: str,
         "converged": converged,
         "log_likelihood": -objective(parameters),
         "method_log_odds_coefficient": float(beta[1]),
+        # Intercept, method, then one column per non-reference family, in
+        # sorted family order; the pilot reads nuisance parameters from these.
+        "coefficients": [float(value) for value in beta],
+        "families_in_order": family_names,
         "layout_random_intercept_sd": random_sd,
         "standardized_control_probability": control_probability,
         "standardized_treatment_probability": treatment_probability,
