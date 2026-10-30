@@ -1015,6 +1015,13 @@ freezing a route before asking where a transition fits -- not an omitted
 clearance cost, so the baseline stays as defined and the paper reports its
 planning-failure rate explicitly.
 
+**The pilot started at `6409b15` on 2026-10-30 00:40 UTC** with the full
+container suite passing first (286), the container image recorded, and
+`GZ_IP` discovery on loopback; about 5 min per trial, so roughly 12 h. The
+rules for reading it (`pilot_nuisance`, analysis plan "Pilot nuisance
+estimation") were committed at `76ffe6e`, when 3 pilot records existed and
+none had been opened; nothing in them was read before the rules were fixed.
+
 ### Gate 1 is satisfied: 10 of 10 controlled records, every class covered twice (2026-10-30)
 
 The frozen campaign `config/gate1_outcomes_campaign.json` (design hash
