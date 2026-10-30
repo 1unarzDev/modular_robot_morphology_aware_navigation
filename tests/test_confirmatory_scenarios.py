@@ -141,3 +141,38 @@ def test_golden_layouts_separate_3d_and_sensing_ablation_decisions():
     sensing_site, _ = _transition_site(
         "sensing_feasibility_coupled", combined, catalog)
     assert feasible_site != sensing_site
+
+
+def test_generator_two_varies_the_layout_and_admits_more_than_twelve():
+    from modular_robot_benchmarks.confirmatory_scenarios import make_confirmatory_scenario
+    from modular_robot_benchmarks.design import generate_design
+
+    design = generate_design(30, 1, 99991, design_kind="pilot_v2")
+    shapes = set()
+    for spec in design.trials:
+        if spec.family != "docking_observability" or spec.method != "geometry_coupled":
+            continue
+        index = int(spec.layout_id.rsplit("-", 1)[1])
+        scenario = make_confirmatory_scenario(spec.family, index, spec.world_seed, generator=2)
+        p = scenario.parameters
+        assert p["layout_generator"] == 2
+        shapes.add((p["width"], p["height"], p["wall_x_cell"], p["door_center_cell"],
+                    scenario.start, scenario.goal))
+        door_low = p["door_center_cell"] - p["door_cells"] // 2
+        # At least 0.7 m (7 interior cells) of wall on either side of the doorway.
+        assert door_low - 1 >= 7 and p["height"] - 1 - (door_low + p["door_cells"]) >= 7
+    assert len(shapes) == 30   # no duplicate layouts among 30
+
+
+def test_generator_one_is_unchanged_and_still_capped_at_twelve():
+    import pytest
+
+    from modular_robot_benchmarks.confirmatory_scenarios import make_confirmatory_scenario
+
+    scenario = make_confirmatory_scenario("combined_constraints", 0, 8196733574266853195)
+    assert scenario.parameters["layout_generator"] == 1
+    assert (scenario.start, scenario.goal) == ((6, 19), (50, 19))
+    assert scenario.grid.width == 60 and scenario.grid.height == 35
+    with pytest.raises(ValueError):
+        make_confirmatory_scenario("combined_constraints", 12, 1)
+    make_confirmatory_scenario("combined_constraints", 40, 1, generator=2)

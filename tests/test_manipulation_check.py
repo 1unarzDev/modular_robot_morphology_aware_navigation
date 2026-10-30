@@ -47,7 +47,7 @@ def _stub_decisions(monkeypatch, sites):
     monkeypatch.setattr(manipulation_check, "load_catalog",
                         lambda path: type("C", (), {"supported_experiment_subset": lambda s: None})())
     monkeypatch.setattr(manipulation_check, "make_confirmatory_scenario",
-                        lambda family, index, seed: None)
+                        lambda family, index, seed, **_: None)
 
 
 def test_report_covers_every_method_and_counts_layouts_that_separate(monkeypatch):

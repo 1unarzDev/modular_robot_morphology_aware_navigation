@@ -17,7 +17,7 @@ from typing import Any
 from .confirmatory_scenarios import make_confirmatory_scenario
 from .design import (
     FAULT_MATRIX_DESIGN_KIND, GATE1_OUTCOMES_DESIGN_KIND, OutcomeCase, StudyDesign,
-    fault_case_for_run, outcome_case_for_run,
+    fault_case_for_run, layout_generator_for, outcome_case_for_run,
 )
 from .evaluator_metrics import (
     clearance_metrics, localization_error_track, localization_errors,
@@ -368,8 +368,9 @@ def run_batch(
     for spec in pending:
         setup_start = time.monotonic()
         layout_index = int(spec.layout_id.rsplit("-", 1)[1])
+        generator = layout_generator_for(design.design_kind)
         scenario = make_confirmatory_scenario(
-            spec.family, layout_index, spec.world_seed)
+            spec.family, layout_index, spec.world_seed, generator=generator)
         trial_artifacts = artifact_root / spec.trial_id
         trial_artifacts.mkdir(parents=True, exist_ok=True)
         outcome_case = outcome_case_for(design, spec)
@@ -379,7 +380,7 @@ def run_batch(
         world_path, scenario_manifest = export_confirmatory_sdf(
             spec.family, layout_index, spec.world_seed,
             trial_artifacts / "world.sdf", catalog_path, spec.friction_seed,
-            stimulus_boxes)
+            stimulus_boxes, generator)
         map_yaml, map_image = export_occupancy_map(
             scenario.grid, trial_artifacts / "map.yaml")
         disturbance = json.loads(
@@ -501,12 +502,12 @@ def run_batch(
                 observation.message += (
                     "; DDS transport initialization failed on "
                     + ", ".join(sorted(failed_ports)))
-            # Evaluator-only contact inference from module poses against the
             clock_fault = mission_clock_discontinuity(observation.controller_diagnostics)
             if clock_fault and observation.terminal_status != "infrastructure_failure":
                 observation.terminal_status = "infrastructure_failure"
                 observation.completed = False
                 observation.message += f"; {clock_fault}"
+            # Evaluator-only contact inference from module poses against the
             # generated world, and localization loss against core truth; see
             # `evaluator_outcome` for how each re-attributes the status.
             clearance = clearance_metrics(

@@ -153,40 +153,57 @@ class ConfirmatoryScenario:
         }
 
 
+# ADR 0011: the layout population. Generator 1 is what every engineering
+# campaign and the superseded 36-layout design were built from; its draws are
+# frozen. Generator 2 widens the population for the pilot and the confirmatory
+# design, which need far more than 12 distinct layouts per family.
+LAYOUT_GENERATORS = (1, 2)
+# Generator 1 admits only 12 layout indices per family; 2 admits any number.
+GENERATOR_1_MAX_LAYOUTS = 12
+
+
 def make_confirmatory_scenario(
     family: str,
     layout_index: int,
     world_seed: int,
     resolution: float = 0.1,
+    generator: int = 1,
 ) -> ConfirmatoryScenario:
     if family in WORKSHOP_VARIANTS:
         return make_workshop_scenario(family, world_seed, resolution)
     if family not in CONFIRMATORY_FAMILIES:
         raise ValueError(f"unknown confirmatory family: {family}")
-    if not 0 <= layout_index < 12:
+    if generator not in LAYOUT_GENERATORS:
+        raise ValueError(f"unknown layout generator: {generator}")
+    if layout_index < 0 or (generator == 1 and layout_index >= GENERATOR_1_MAX_LAYOUTS):
         raise ValueError("confirmatory layout index must be in [0, 12)")
     rng = Random(world_seed)
-    grid = OccupancyGrid(round(6.0 / resolution), round(3.5 / resolution), resolution)
-    _border(grid)
-    wall_x = round(3.0 / resolution) + rng.randrange(-1, 2)
-    door_center = round(1.75 / resolution) + rng.randrange(-1, 2)
     # Use an odd cell count so the opening is centered on the route cell. The
     # compact 0.70 m safety footprint is rejected at wall contact, while the
     # narrow 0.52 m safety footprint retains 0.09 m clearance per side.
     door_cells = max(7, round(0.7 / resolution))
+    if generator == 1:
+        grid = OccupancyGrid(round(6.0 / resolution), round(3.5 / resolution), resolution)
+        wall_x = round(3.0 / resolution) + rng.randrange(-1, 2)
+        door_center = round(1.75 / resolution) + rng.randrange(-1, 2)
+        start = (round(0.6 / resolution), door_center)
+        goal = (round(5.0 / resolution), door_center)
+        band_steps = 3
+    else:
+        grid, wall_x, door_center, start, goal = _wide_layout(rng, resolution, door_cells)
+        band_steps = 5
+    _border(grid)
     door_low = door_center - door_cells // 2
     for y in range(1, grid.height - 1):
         if not door_low <= y < door_low + door_cells:
             grid.set_value(wall_x, y, OCCUPIED)
-    start = (round(0.6 / resolution), door_center)
-    goal = (round(5.0 / resolution), door_center)
     neutral = layout_index % 4 == 0
 
     # The direct staging band is broad enough to admit the 2D clearance disk.
     band_x0 = 0.0
-    band_x1 = wall_x * resolution - 0.8 + 0.05 * rng.randrange(3)
+    band_x1 = wall_x * resolution - 0.8 + 0.05 * rng.randrange(band_steps)
     center_y = (door_center + 0.5) * resolution
-    band_half_height = 0.45 + 0.05 * rng.randrange(3)
+    band_half_height = 0.45 + 0.05 * rng.randrange(band_steps)
     # The shelf is below pod-body height, so it still begins beyond the compact
     # robot's spawn footprint in x.
     start_x_m = (start[0] + 0.5) * resolution
@@ -223,6 +240,7 @@ def make_confirmatory_scenario(
             ),)
 
     parameters = {
+        "layout_generator": generator,
         "resolution": resolution,
         "width": grid.width,
         "height": grid.height,
@@ -274,6 +292,33 @@ def make_workshop_scenario(
         variant, 0, world_seed, variant == "workshop_neutral", base.grid,
         base.start, base.goal, obstacles, (), parameters,
     )
+
+
+def _wide_layout(rng: Random, resolution: float, door_cells: int):
+    """Generator 2: arena, wall, doorway, start and goal all vary (ADR 0011).
+
+    The structure every manipulation depends on is kept: one interior wall
+    with one 0.70 m doorway, a start room the robot must stage in, and a goal
+    room beyond the door. What varies is everything a reviewer would expect a
+    layout population to vary: the arena's size, where the wall and doorway
+    are, and how far the start and goal sit off the door line, so a route can
+    no longer be a straight line to the door.
+    """
+    cells = lambda metres: round(metres / resolution)
+    width = cells(6.0) + rng.randrange(-3, 7)            # 5.7 .. 6.6 m
+    height = cells(3.5) + rng.randrange(-3, 6)           # 3.2 .. 4.0 m
+    grid = OccupancyGrid(width, height, resolution)
+    wall_x = cells(3.0) + rng.randrange(-4, 5)           # 2.6 .. 3.4 m
+    # At least 0.7 m of interior wall stays on either side of the doorway.
+    low = door_cells // 2 + cells(0.8)
+    high = height - 1 - door_cells // 2 - cells(0.8)
+    door_center = rng.randint(low, high)
+    def off_door_line(limit_cells: int) -> int:
+        value = door_center + rng.randint(-limit_cells, limit_cells)
+        return max(cells(0.6), min(height - 1 - cells(0.6), value))
+    start = (cells(0.6), off_door_line(cells(0.3)))
+    goal = (width - 1 - cells(0.9), off_door_line(cells(0.6)))
+    return grid, wall_x, door_center, start, goal
 
 
 def _station_for(region: ObservabilityRegion) -> FiducialStation:

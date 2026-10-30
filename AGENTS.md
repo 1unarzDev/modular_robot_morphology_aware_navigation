@@ -1,5 +1,25 @@
 ## Current resumption point
 
+**Pre-data design decisions taken 2026-10-28** under the author's standing
+delegation (the author asked the agent to self-direct and decide as they
+would; revisit any of these only while pilot evidence is still 0):
+smallest effect of interest 0.18; localization loss defined by evaluator truth
+and every robot outcome named by its earliest evaluator cause (analysis plan,
+"Outcome definitions"); ADR 0010 accepted as A with a per-trial site-placement
+measurement; ADR 0011 widens the layout population (generator 2, design kinds
+`pilot_v2` / `confirmatory_v2`), because generator 1 allows only 81 near-identical
+layouts per family and the frozen 36 already hold 2 duplicates.
+`config/gate1_outcomes_campaign.json` (hash `268b64d7...`) is the frozen Gate 1
+controlled-outcome campaign, owed a run. **Resume here:** run it, audit with
+`gate1_audit`, then freeze and run the `pilot_v2` design (disjoint seeds:
+`study freeze-design --disjoint-from`). **The frozen clock is root-caused and
+prevented** (2026-10-29): gz-transport dropped Gazebo's publishers from the
+bridge after 3 s of discovery silence; `GZ_IP=127.0.0.1` in
+`simulation.launch.py` took it from 3 of 13 loaded trials to 0 of 14, and a
+mission whose clock jumps is recorded as infrastructure (`e5a0401`). External
+`gz topic` probes must export the same `GZ_IP`. The planner is ~3x faster with
+identical plans (`976e9fc`), so a manipulation-check layout now costs ~1 min.
+
 **Gate 1 is in progress (2026-10-27).** `gate1_audit` exists and passes every
 telemetry check on the 62 Gate 0 records; records now also carry the container
 image and stack process deaths. **Every campaign from here must pass the image

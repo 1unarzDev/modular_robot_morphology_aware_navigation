@@ -35,7 +35,7 @@ from morphology_planner import (
 from morphology_planner.planner import NoPathError
 
 from .confirmatory_scenarios import make_confirmatory_scenario
-from .design import StudyDesign
+from .design import StudyDesign, layout_generator_for
 
 
 DEFAULT_CATALOG = Path("src/modular_robot_description/config/morphologies.yaml")
@@ -128,7 +128,9 @@ def separation_report(design: StudyDesign, families: tuple[str, ...],
     layouts = []
     for family in families:
         for index, world_seed in layout_seeds(design, family):
-            scenario = make_confirmatory_scenario(family, index, world_seed)
+            scenario = make_confirmatory_scenario(
+                family, index, world_seed,
+                generator=layout_generator_for(design.design_kind))
             decisions = {
                 method: method_decision(method, scenario, catalog, heading_bins, epsilon)
                 for method in METHOD_ORDER
@@ -174,6 +176,7 @@ def separation_report(design: StudyDesign, families: tuple[str, ...],
         "schema_version": 1,
         "purpose": "gate2_planner_manipulation_check",
         "design_hash": design.design_hash,
+        "layout_generator": layout_generator_for(design.design_kind),
         "heading_bins": heading_bins,
         "epsilon": epsilon,
         "sensing": "station_observability_predicted_from_priors",

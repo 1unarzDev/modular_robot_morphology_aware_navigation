@@ -240,3 +240,23 @@ def test_trial_store_digests_identify_a_record_set(tmp_path):
     changed.write_terminal(replace(record, simulated_duration_s=record.simulated_duration_s + 1.0))
     assert changed.campaign_digest() != first
     assert TrialStore(tmp_path / "empty").campaign_digest() != first
+
+
+def test_designs_with_one_master_seed_share_plant_seeds_and_the_check_catches_it():
+    from modular_robot_benchmarks.design import generate_design, shared_seeds
+
+    confirmatory = generate_design(2, 1, 20260911, design_kind="confirmatory_v2")
+    same_master = generate_design(2, 1, 20260911, design_kind="pilot_v2")
+    shared = shared_seeds(confirmatory, same_master)
+    # The design kind changes only the world seed.
+    assert not shared["world_seed"] and shared["sensing_seed"] and shared["friction_seed"]
+    disjoint = generate_design(2, 1, 20261029, design_kind="pilot_v2")
+    assert not any(shared_seeds(confirmatory, disjoint).values())
+
+
+def test_the_wide_design_kinds_select_generator_two():
+    from modular_robot_benchmarks.design import layout_generator_for
+
+    assert layout_generator_for("pilot_v2") == layout_generator_for("confirmatory_v2") == 2
+    assert layout_generator_for("confirmatory") == 1
+    assert layout_generator_for("engineering_gate1_outcomes") == 1

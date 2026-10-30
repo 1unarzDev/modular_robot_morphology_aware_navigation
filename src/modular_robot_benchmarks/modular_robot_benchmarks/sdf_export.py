@@ -81,6 +81,7 @@ def export_confirmatory_sdf(
     family: str, layout_index: int, world_seed: int,
     output: Path, catalog_path: Path, friction_seed: int | None = None,
     unperceived_obstacles: tuple[tuple[str, tuple, tuple], ...] = (),
+    generator: int = 1,
 ) -> tuple[Path, Path]:
     """Write a complete Gazebo world plus its immutable scenario manifest.
 
@@ -88,7 +89,8 @@ def export_confirmatory_sdf(
     only. They are a Gate 1 stimulus: the scenario manifest, which the planner
     reads as its prior, and the occupancy map never mention them.
     """
-    scenario = make_confirmatory_scenario(family, layout_index, world_seed)
+    scenario = make_confirmatory_scenario(
+        family, layout_index, world_seed, generator=generator)
     disturbance = physical_disturbance(friction_seed)
     catalog = load_catalog(catalog_path).supported_experiment_subset()
     sdf = Element("sdf", version="1.10")

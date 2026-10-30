@@ -21,6 +21,17 @@ CONFIRMATORY_FAMILIES = (
 )
 SENSING_FAMILIES = frozenset({"docking_observability", "combined_constraints"})
 FAULT_MATRIX_DESIGN_KIND = "engineering_fault_matrix"
+# ADR 0011: designs that draw from the widened layout population. The generator
+# is bound to the design kind, which the design hash covers, so a frozen design
+# can never silently change which worlds it names.
+PILOT_DESIGN_KIND = "pilot_v2"
+CONFIRMATORY_DESIGN_KIND = "confirmatory_v2"
+WIDE_LAYOUT_DESIGN_KINDS = frozenset({PILOT_DESIGN_KIND, CONFIRMATORY_DESIGN_KIND})
+
+
+def layout_generator_for(design_kind: str) -> int:
+    """The layout generator a design's worlds are built with (ADR 0011)."""
+    return 2 if design_kind in WIDE_LAYOUT_DESIGN_KINDS else 1
 # Workshop diagnostic study: one passage environment in three variants.
 WORKSHOP_DESIGN_KIND = "workshop_diagnostic"
 WORKSHOP_VARIANTS = ("workshop_blocked_a", "workshop_blocked_b", "workshop_neutral")
@@ -163,6 +174,22 @@ def generate_design(
                     ))
     return StudyDesign(1, design_kind, layouts_per_family, replicates, master_seed,
                        METHODS, families, tuple(trials))
+
+
+SEED_FIELDS = ("world_seed", "sensing_seed", "friction_seed", "fault_seed")
+
+
+def shared_seeds(first: StudyDesign, second: StudyDesign) -> dict[str, list[int]]:
+    """Seeds of each kind that both designs use; empty lists when disjoint.
+
+    Gate 3 requires that pilot layouts and seeds never appear in the
+    confirmatory schedule. `generate_design` mixes the design kind into the
+    world seed only, so two designs with one master seed share every plant
+    seed; this is the check that catches it.
+    """
+    return {field: sorted({getattr(spec, field) for spec in first.trials}
+                          & {getattr(spec, field) for spec in second.trials})
+            for field in SEED_FIELDS}
 
 
 def generate_workshop_design(

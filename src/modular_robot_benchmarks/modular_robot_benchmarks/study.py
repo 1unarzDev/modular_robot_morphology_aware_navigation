@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 from .analysis import run_analysis, validate_records
-from .design import CONFIRMATORY_FAMILIES, StudyDesign, generate_design
+from .design import CONFIRMATORY_FAMILIES, StudyDesign, generate_design, shared_seeds
 from .power import (
     PowerAssumptions, estimate_power, estimate_power_grid, write_power,
 )
@@ -53,6 +53,9 @@ def _parser() -> argparse.ArgumentParser:
     freeze.add_argument("--master-seed", type=int, default=20260911)
     freeze.add_argument("--kind", default="confirmatory")
     freeze.add_argument("--families", nargs="+", default=list(CONFIRMATORY_FAMILIES))
+    freeze.add_argument(
+        "--disjoint-from", type=Path, action="append", default=[],
+        help="frozen design that must share no seed with this one (Gate 3)")
 
     status = commands.add_parser("status", help="audit progress against a frozen design")
     status.add_argument("--design", type=Path, required=True)
@@ -101,6 +104,11 @@ def main() -> None:
     if args.command == "freeze-design":
         design = generate_design(args.layouts_per_family, args.replicates,
                                  args.master_seed, args.families, args.kind)
+        for other in args.disjoint_from:
+            shared = shared_seeds(design, StudyDesign.read_frozen(other))
+            if any(shared.values()):
+                raise SystemExit(f"refusing to freeze: shares seeds with {other}: "
+                                 + ", ".join(f"{k}={len(v)}" for k, v in shared.items() if v))
         design.write_frozen(args.output)
         result = {"path": str(args.output), "design_hash": design.design_hash,
                   "expected_trials": design.expected_trials}
