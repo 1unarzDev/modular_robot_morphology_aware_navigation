@@ -154,3 +154,68 @@ def test_route_first_baseline_does_not_revise_route_for_transition_feasibility()
         catalog, grid, heading_bins=4, transition_validator=validator)
     with pytest.raises(NoPathError, match="fixed spatial route"):
         sequential.plan(start, (42, 13))
+
+
+def test_indexed_footprint_check_matches_a_cell_by_cell_scan():
+    """The blocked-cell index is an optimization; it must never change an answer."""
+    from math import cos, sin
+    from random import Random
+
+    from morphology_planner.grid import (
+        OCCUPIED, UNKNOWN, OccupancyGrid, _polygon_intersects_cell)
+
+    def reference(grid, wx, wy, yaw, footprint, unknown_is_occupied):
+        c, s = cos(yaw), sin(yaw)
+        polygon = tuple((wx + c * x - s * y, wy + s * x + c * y) for x, y in footprint)
+        cmin_x, cmin_y = grid.world_to_cell(min(x for x, _ in polygon), min(y for _, y in polygon))
+        cmax_x, cmax_y = grid.world_to_cell(max(x for x, _ in polygon), max(y for _, y in polygon))
+        for gy in range(cmin_y - 1, cmax_y + 2):
+            for gx in range(cmin_x - 1, cmax_x + 2):
+                value = grid.value(gx, gy)
+                if value >= OCCUPIED or (unknown_is_occupied and value == UNKNOWN):
+                    if _polygon_intersects_cell(polygon, *grid.cell_center(gx, gy), grid.resolution):
+                        return False
+        return True
+
+    rng = Random(7)
+    grid = OccupancyGrid(40, 30, 0.1)
+    for _ in range(120):
+        grid.set_value(rng.randrange(40), rng.randrange(30), rng.choice((OCCUPIED, UNKNOWN)))
+    footprint = ((0.88, 0.33), (-0.88, 0.33), (-0.88, -0.33), (0.88, -0.33))
+    for trial in range(600):
+        if trial == 300:   # the index must follow a change to the grid
+            for _ in range(60):
+                grid.set_value(rng.randrange(40), rng.randrange(30), OCCUPIED)
+        pose = (rng.uniform(-0.5, 4.5), rng.uniform(-0.5, 3.5), rng.uniform(-3.2, 3.2))
+        for unknown in (False, True):
+            assert grid.footprint_is_free(*pose, footprint, unknown) == reference(
+                grid, *pose, footprint, unknown)
+
+
+def test_polygon_rectangle_test_is_unchanged_by_its_bounding_box_rejection():
+    from math import cos, sin
+    from random import Random
+
+    from morphology_planner.grid import _segments_intersect, _point_in_polygon, polygon_intersects_rectangle
+
+    def reference(polygon, left, bottom, right, top):
+        corners = ((left, bottom), (right, bottom), (right, top), (left, top))
+        if any(_point_in_polygon(x, y, polygon) for x, y in corners):
+            return True
+        if any(left <= x <= right and bottom <= y <= top for x, y in polygon):
+            return True
+        return any(_segments_intersect(*a, *b)
+                   for a in zip(polygon, polygon[1:] + polygon[:1])
+                   for b in zip(corners, corners[1:] + corners[:1]))
+
+    rng = Random(11)
+    for _ in range(3000):
+        cx, cy, yaw = rng.uniform(-1, 1), rng.uniform(-1, 1), rng.uniform(-3.2, 3.2)
+        hx, hy = rng.uniform(0.05, 0.9), rng.uniform(0.05, 0.4)
+        c, s = cos(yaw), sin(yaw)
+        polygon = tuple((cx + c * x - s * y, cy + s * x + c * y)
+                        for x, y in ((hx, hy), (-hx, hy), (-hx, -hy), (hx, -hy)))
+        left, bottom = rng.uniform(-1.5, 1.5), rng.uniform(-1.5, 1.5)
+        size = rng.choice((0.1, 0.3))
+        rect = (left, bottom, left + size, bottom + size)
+        assert polygon_intersects_rectangle(polygon, *rect) == reference(polygon, *rect)
