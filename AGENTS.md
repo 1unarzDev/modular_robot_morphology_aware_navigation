@@ -9,14 +9,25 @@ and every robot outcome named by its earliest evaluator cause (analysis plan,
 measurement; ADR 0011 widens the layout population (generator 2, design kinds
 `pilot_v2` / `confirmatory_v2`), because generator 1 allows only 81 near-identical
 layouts per family and the frozen 36 already hold 2 duplicates.
-**Gate 1 is satisfied (2026-10-30).** **The generator-2 pilot ran (144/144) and
-showed the study could not detect an effect**: the treatment could not drive
-the narrow body from its off-line observable sites to the doorway. Fixes and
-ADR 0012/0013 followed (see `docs/current_status.md`, "measurement-validation
-pilot"). **Resume here:** the generator-3 treatment round trip
-(`config/roundtrip_v3_design.json`), then the `pilot_v3` run
-(`studies/pilot_v3/design.json`) with `results/qualification/start_campaign.sh
-<commit> <script>` in the WSL clone, then Gate 0 re-collected on generator 3. **The frozen clock is root-caused and
+**Gate 1 is satisfied (2026-10-30).** The generator-2 pilot (144/144) showed the
+study could not detect an effect: the treatment could not execute its
+missions. Fixed since, all method-agnostic: ADR 0012 keepout mask, ADR 0013
+(0.10 m turning clearance + layout generator 3), start-state repair and
+replan budget (`1c1a8c0`), AMCL sensor model (`36953a9`), 0.08 m
+placement-robust station prediction (`43255f7`), 4x finer localization map
+(`9371593`), and RPP's narrow rotation no longer ratcheting on odometry
+(`971affb`; the narrow odometry over-reports ~0.2 rad/s, still unexplained).
+
+**Resume here (2026-10-31):** read the generator-3 treatment round trip left
+running overnight at `971affb` -- `results/run_roundtrip_v3e.launch.log` and
+`results/qualification/roundtrip_v3e_raw` / `roundtrip_v3e_audit.json` in the
+WSL clone (trial 1 completed). If it passes, run `pilot_v3`
+(`studies/pilot_v3/design.json`, planner check committed) with
+`results/qualification/start_campaign.sh <commit> run_pilot` after pointing
+run_pilot.sh at the pilot_v3 design; then `pilot_nuisance --power`, Gate 0 on
+generator 3, and the `confirmatory_v3` freeze. If it fails, diagnose the
+records the same way the earlier v3 runs were (obstacle at first contact,
+localization against truth, commanded vs odometry rates). **The frozen clock is root-caused and
 prevented** (2026-10-29): gz-transport dropped Gazebo's publishers from the
 bridge after 3 s of discovery silence; `GZ_IP=127.0.0.1` in
 `simulation.launch.py` took it from 3 of 13 loaded trials to 0 of 14, and a

@@ -1003,6 +1003,17 @@ transitions executable -- a 0.10 m turning margin in the shared motion model
 and layout generator 3 with start rooms long enough to turn in -- and a new
 pilot on generator 3 supplies the nuisance parameters.
 
+**Generator-3 qualification, in progress (2026-10-30 evening).** Each run of
+the treatment round trip on manipulated generator-3 layouts uncovered the next
+defect along the mission, each fixed for every method: AMCL settled 5 cm off
+truth (sensor model, then a 4x finer localization map: mean error 5.0 -> 2.2
+cm); the sensing site sat at the shadow's edge so 5 cm of placement error lost
+the station's view (placement-robust prediction); and RPP's rotate-to-heading
+ratcheted the narrow body into a 1.4 rad/s spin on its own odometry
+over-report. With all but the last fixed, 5 of 7 trials completed (placement
+0.4--2.4 cm), both failures being that spin. The run with every fix
+(`roundtrip_v3e`, at `971affb`) was left running; its first trial completed.
+
 **Running (2026-10-30):** the generator-3 treatment round trip
 (`config/roundtrip_v3_design.json`, hash `fa867641...`, at `44683a7`), and the
 `pilot_v3` design (hash `3369f2e4...`, 144 trials, master seed 20261103,
