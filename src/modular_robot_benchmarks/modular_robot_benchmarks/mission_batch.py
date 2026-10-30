@@ -38,6 +38,13 @@ def classify_terminal(success: bool, message: str, timed_out: bool) -> str:
         return "motion_qualification_failure"
     if "costmap" in lowered and "acknowledge" in lowered:
         return "infrastructure_failure"
+    # A method that found no plan never moved for a reason of its own; checked
+    # before the transition keywords, because route-first's NoPathError names
+    # "feasible transitions" and was being recorded as a docking failure.
+    if (lowered.startswith("fixed spatial route cannot be adapted")
+            or lowered.startswith("no collision-free hybrid plan")
+            or lowered.startswith("no morphology-agnostic spatial route")):
+        return "planning_failure"
     if ("recovery required" in lowered or "requires recovery" in lowered
             or "unsafe topology" in lowered):
         return "unsafe_topology"

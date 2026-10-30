@@ -129,3 +129,15 @@ def test_the_batch_checks_the_clock_before_scoring_the_robot():
     trial = (Path(__file__).resolve().parents[1] / "src/modular_robot_benchmarks/"
              "modular_robot_benchmarks/mission_trial.py").read_text(encoding="utf-8")
     assert '"clock_discontinuities": list(node.clock_discontinuities)' in trial
+
+
+def test_a_planner_that_finds_no_plan_is_a_planning_failure_not_a_docking_failure():
+    # Seen in the pilot: route-first's NoPathError names "feasible transitions".
+    for message in ("fixed spatial route cannot be adapted with feasible transitions",
+                    "no collision-free hybrid plan",
+                    "no morphology-agnostic spatial route"):
+        assert classify_terminal(False, message, False) == "planning_failure"
+    # An execution failure whose replan then found no plan stays an execution failure.
+    assert classify_terminal(
+        False, "execution failed; replanning failed: no collision-free hybrid plan", False
+    ) == "controller_failure"
