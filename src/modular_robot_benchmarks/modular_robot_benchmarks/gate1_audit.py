@@ -137,13 +137,17 @@ def main() -> None:
                         help="raw record directory; repeat to pool campaigns")
     parser.add_argument("--output", type=Path, required=True)
     arguments = parser.parse_args()
-    records, digests = [], {}
+    records, digests, record_digests = [], {}, {}
     for raw in arguments.raw:
         store = TrialStore(raw)
         records.extend(store.load_all())
         digests[str(raw)] = store.campaign_digest()
+        # Per-record digests let `retain_campaign_records` prove a restored
+        # archive is the set this audit was computed on (ADR 0005).
+        record_digests.update(store.digests())
     summary = audit_records(records)
     summary["campaign_digests"] = digests
+    summary["record_digests"] = dict(sorted(record_digests.items()))
     arguments.output.parent.mkdir(parents=True, exist_ok=True)
     arguments.output.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n",
                                 encoding="utf-8")

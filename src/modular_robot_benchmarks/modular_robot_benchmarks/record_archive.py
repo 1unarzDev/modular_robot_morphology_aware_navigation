@@ -181,3 +181,7 @@ def main() -> None:
                     f"size guard: {part} is {size} bytes, over the {limit} limit")
     report = verify_archive(arguments.output, arguments.audit)
     print(json.dumps(report, indent=2, sort_keys=True))
+
+
+if __name__ == "__main__":
+    main()

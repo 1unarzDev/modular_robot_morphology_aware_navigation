@@ -122,3 +122,12 @@ def test_the_batch_reads_deaths_before_teardown_kills_the_stack():
         "_stop_process(process)")
     assert '"stack_process_deaths": premature_deaths' in source
     assert '"MORPHOLOGY_CONTAINER_IMAGE"' in source
+
+
+def test_the_cli_audit_carries_record_digests_so_its_archive_can_be_verified():
+    from pathlib import Path
+
+    source = (Path(__file__).resolve().parents[1] / "src/modular_robot_benchmarks/"
+              "modular_robot_benchmarks/gate1_audit.py").read_text(encoding="utf-8")
+    assert 'summary["record_digests"]' in source
+    assert "record_digests.update(store.digests())" in source
