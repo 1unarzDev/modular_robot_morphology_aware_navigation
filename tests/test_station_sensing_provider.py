@@ -84,9 +84,14 @@ def test_observability_is_location_dependent():
     assert all(state.connector_visible for state in clear.values())
 
 
-def test_a_low_obstacle_does_not_occlude_a_raised_station():
+def test_a_low_obstacle_does_not_occlude_a_raised_station(monkeypatch):
     """The raised transition shelf is a driving and relocation obstacle, not a
-    sight-line one; only a body in the station's line degrades observability."""
+    sight-line one; only a body in the station's line degrades observability.
+    Checked at the nominal placement: with the placement margin, a pod docked
+    beside the shelf can lose its line over it (next test)."""
+    import morphology_planner.transition_policy as policy
+
+    monkeypatch.setattr(policy, "SITE_PLACEMENT_MARGIN_M", 0.0)
     catalog, transition, grid = _setup()
     wx, wy = grid.cell_center(20, 17)
     station = FiducialStation("east", (wx, wy + 3.0, 1.6))
@@ -300,3 +305,19 @@ def test_covariance_tracks_range_from_the_station():
     assert near[pod].covariance_trace < far[pod].covariance_trace
     assert far[pod].covariance_trace < GATE
     assert near[pod].covariance_trace > precise_trace(0.0)
+
+
+def test_observability_must_hold_across_the_placement_margin():
+    """Generator-3 round trip: transformed 5 cm off a site at the shadow's edge,
+    the station could not see pod_0. Prediction now covers that placement."""
+    import morphology_planner.transition_policy as policy
+
+    catalog, transition, grid = _setup()
+    wx, wy = grid.cell_center(20, 17)
+    station = FiducialStation("east", (wx, wy + 3.0, 1.6))
+    shelf = Box3("raised_transition_shelf", (wx, wy + 0.415, 0.14), (0.6, 0.1, 0.08))
+    nominal = station_sensing_provider(catalog, (station,), (shelf,), grid, HEADING_BINS)
+    assert policy.SITE_PLACEMENT_MARGIN_M >= 0.05
+    robust = nominal(transition, _site(grid))
+    # pod_4 docks beside the shelf; shifted toward it, its line passes over the top.
+    assert not robust["pod_4"].connector_visible

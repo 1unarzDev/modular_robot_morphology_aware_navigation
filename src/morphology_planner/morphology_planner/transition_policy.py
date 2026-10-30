@@ -428,6 +428,13 @@ class CoupledTransitionPolicy:
         }
 
 
+# Placement the robot achieves at a site: up to about the worst localization
+# error with AMCL matched to the lidar (0.081 m, 2026-10-30). The generator-3
+# round trip transformed 0.050 m from a site at the shadow's edge, and the
+# station could not see pod_0 there.
+SITE_PLACEMENT_MARGIN_M = 0.08
+
+
 def station_sensing_provider(
     catalog: Catalog,
     stations: tuple[FiducialStation, ...],
@@ -451,19 +458,29 @@ def station_sensing_provider(
         if cached is not None:
             return cached
         wx, wy = grid.cell_center(state.x, state.y)
-        base = Pose3(wx, wy, 0.0, state.heading * 2.0 * pi / heading_bins)
+        yaw = state.heading * 2.0 * pi / heading_bins
+        # The robot transforms where it localizes the site to be, not exactly
+        # there, so a pod counts as observed only if the station sees it from
+        # every placement within SITE_PLACEMENT_MARGIN_M (ADR 0013).
+        bases = [Pose3(wx + dx, wy + dy, 0.0, yaw) for dx, dy in (
+            (0.0, 0.0), (SITE_PLACEMENT_MARGIN_M, 0.0), (-SITE_PLACEMENT_MARGIN_M, 0.0),
+            (0.0, SITE_PLACEMENT_MARGIN_M), (0.0, -SITE_PLACEMENT_MARGIN_M))]
         sensing: dict[str, PodSensingState] = {}
         for pod in transition.moved_pods:
-            docked = _world_pose(
-                catalog.morphologies[transition.target].pod_poses[pod],
-                base, catalog.module_sizes[pod][2])
-            point = (docked.x, docked.y, docked.z)
-            station = observed_by_any(stations, point, environment)
-            sensing[pod] = (
-                PodSensingState(True, precise_trace(station.range_to(point)))
-                if station is not None
-                else PodSensingState(False, STATION_UNOBSERVED_TRACE)
-            )
+            worst = None
+            for base in bases:
+                docked = _world_pose(
+                    catalog.morphologies[transition.target].pod_poses[pod],
+                    base, catalog.module_sizes[pod][2])
+                point = (docked.x, docked.y, docked.z)
+                station = observed_by_any(stations, point, environment)
+                if station is None:
+                    worst = None
+                    break
+                trace = precise_trace(station.range_to(point))
+                worst = trace if worst is None else max(worst, trace)
+            sensing[pod] = (PodSensingState(True, worst) if worst is not None
+                            else PodSensingState(False, STATION_UNOBSERVED_TRACE))
         cache[(transition.id, state.x, state.y, state.heading)] = sensing
         return sensing
 
