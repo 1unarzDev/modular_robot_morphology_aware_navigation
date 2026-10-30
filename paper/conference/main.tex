@@ -1,0 +1,250 @@
+% Main conference paper: methods-and-design draft.
+%
+% Evidence state at drafting (2026-10-28): pilot and confirmatory evidence are
+% both 0. Every number below is taken from docs/current_status.md, the
+% statistical analysis plan, or an accepted ADR, and must be re-checked against
+% docs/current_status.md before submission. Results and Discussion are
+% placeholders by design; do not fill them from anything but accepted
+% confirmatory terminal records.
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+\usepackage{cite}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+
+\newcommand{\pending}[1]{\textbf{[PENDING: #1]}}
+\newcommand{\method}[1]{\texttt{#1}}
+
+\begin{document}
+
+\title{Where Can a Modular Robot Change Shape?\\Joint Route, Morphology, and Site Selection\\under Transition Feasibility and Sensing Constraints}
+
+\author{\IEEEauthorblockN{Rishan Checker}
+\IEEEauthorblockA{Independent Researcher}}
+
+\maketitle
+
+\begin{abstract}
+A self-reconfigurable mobile robot that can change morphology during a mission must decide not only \emph{which} body to use on each part of a route but \emph{where} it can physically perform the change. Two morphologies can each fit at a location while the module motions that connect them, or the assembled motion that verifies the new body, collide; and a docking step that needs a precise relative-pose estimate can fail at a site where that estimate is poor. We study a hybrid planner that searches jointly over planar pose, heading, and morphology, and admits a reconfiguration edge only after sweeping every relocating module and the post-transition verification maneuver through the declared 3D environment and checking that each moved module will be observable well enough to dock. We evaluate it in simulation (ROS~2 Jazzy, Gazebo, Nav2) on a six-pod robot that detaches, relocates, and re-docks its pods to switch between a compact and a narrow tandem morphology, against an ablation ladder of route-first adaptation, geometry-only coupling, and feasibility-only coupling, all sharing one execution stack. The comparison is a paired, layout-clustered design over a generated layout population with neutral controls, a 300\,s simulated deadline, outcome definitions fixed before any pilot data, and a smallest effect of interest of 0.18 in completion probability. \pending{confirmatory data --- primary contrasts with 95\% layout-bootstrap intervals and Holm-adjusted sign-flip $p$ values; secondary deadline-penalized time.}
+\end{abstract}
+
+% ---------------------------------------------------------------------------
+\section{Introduction}
+
+Modular robots that reconfigure during a task trade a fixed body for a choice of bodies. For a mobile robot the most direct use of that choice is passage: a compact body for open space and turning, a narrower one for a constrained doorway. Choosing the morphology on each segment of a route is an established problem. Planners already select among a small set of shapes during coverage~\cite{le2018htetro,le2019htetro,cheng2020htetro}, continuously variable bases already couple driving and footprint change through model-predictive control~\cite{pankert2022base}, and integrated modular systems already choose configurations from perceived environment requirements~\cite{daudelin2018perception,jing2016smores} or reconfigure autonomously with onboard sensing~\cite{tu2026freesn}. We therefore do not claim the first morphology-aware navigation stack, the first autonomous reconfiguration system, or the first ROS-based one.
+
+What these layers leave open is the transformation itself as a spatially located physical event. Task-level planners commonly treat a morphology change as a switch between two admissible configurations, and reconfiguration planners take the target and, implicitly, its location as given~\cite{yoshida2002reconfig,liu2019distributed}. Between them sits a coupling that neither represents: at a given site both bodies may be collision-free while a relocating module's path is not; the relocation may be clear while the assembled maneuver the robot performs to verify its new body is not; and the docking that closes the transition may require a relative-pose estimate that the site cannot supply. Whether the robot can change shape \emph{here} then depends on the route that brought it here, and the choice of route depends on where it can change shape.
+
+\textbf{Research question.} Does joint route and morphology selection, conditioned on full 3D transition feasibility and on sensing uncertainty at the transition site, improve mission completion under a fixed deadline relative to route-first adaptation, geometry-only coupled planning, and feasibility-only coupled planning, when all four share mechanics, sensing, maps, controllers, and disturbances?
+
+\textbf{Contribution.} The contribution is bounded and is a hypothesis under test rather than a claim that no prior system does this:
+\begin{enumerate}
+\item A hybrid planner over $(x, y, \theta, m)$ whose reconfiguration edges are conditioned on environmental transition feasibility (sequential 3D module trajectories \emph{and} the post-transition verification maneuver), on predicted docking observability, and on time, energy, and risk costs.
+\item A four-method ablation ladder executed through one simulation and autonomy stack, so that each rung differs from the one below it only in the information its transition test consumes.
+\item A paired, layout-clustered evaluation protocol fixed before data, preceded by platform qualification gates and enforced by integrity rules that keep simulator truth out of autonomy and keep infrastructure failures out of robot outcomes.
+\end{enumerate}
+ROS integration and typed module graphs support the study but are not themselves claimed as novel.
+
+% ---------------------------------------------------------------------------
+\section{Related Work}
+
+\textbf{Joint path and morphology.} Le et al.\ select among the four morphologies of the hTetro tiling robot with a modified A* to cover narrow regions~\cite{le2018htetro}, and combine coverage with morphology shifts by graph search and dynamic programming~\cite{le2019htetro}; Cheng et al.\ plan paths for a hinged-tetro robot with a multi-objective genetic algorithm~\cite{cheng2020htetro}. These establish joint search over pose and shape. Their objective is coverage on one platform with a small discrete shape set, and their shape changes are actuated in place, without detached modules or docking.
+
+\textbf{Simultaneous driving and reconfiguration.} Pankert et al.\ drive and reconfigure a steerable robotic base simultaneously with MPC~\cite{pankert2022base}, and MIRRAX changes its Mecanum-wheel geometry with configuration-dependent controllability for restricted spaces~\cite{west2022mirrax}. Both have fixed topology and continuous geometry; feasibility of the change is a property of the controller rather than of the site.
+
+\textbf{Configuration selection in modular systems.} SMORES-EP maps task requirements to a library of configurations and behaviors~\cite{jing2016smores}, and Daudelin et al.\ select configurations from perceived environment properties in an integrated perception-driven system~\cite{daudelin2018perception}, the closest architectural precedent. FreeSN performs autonomous 3D locomotion and self-reconfiguration with configuration matching, behavior libraries, and onboard sensing~\cite{tu2026freesn}. Detach--drive--redock and sensor-driven topology estimation are prior art here; what we vary is how the choice of where to reconfigure is conditioned, which these systems address through symbolic regions or stored behaviors rather than geometric search over transition sites.
+
+\textbf{Reconfiguration planning and control.} Yoshida et al.\ generate module motions along a supplied trajectory~\cite{yoshida2002reconfig}; distributed SMORES planning transforms to a specified target~\cite{liu2019distributed}. Graph-structured policies generalize locomotion across module graphs~\cite{whitman2023modular}, and QP control adapts to changing kinematics~\cite{liu2020qp}. In each, the target morphology or route is an input. Freeform connectors such as FreeBOT~\cite{liang2020freebot} relax where modules may attach but do not decide where a mobile robot should transform.
+
+% ---------------------------------------------------------------------------
+\section{System}
+
+\subsection{Platform and morphologies}
+The robot is a sensor core carrying six self-mobile differential-drive pods, simulated in Gazebo and controlled through ROS~2 Jazzy and Nav2. Each pod is independently drivable when detached; when assembled, one controller owns all wheel joints and allocates a body twist to the pods in the body frame. Wheels have bounded-effort actuation and vertical suspension, and each pod carries low-friction fore/aft caster contacts that stabilize its pitch.
+
+Two morphologies are in scope. \method{compact\_diff} is a skid-steer assembly with a 0.72\,m-wide safety footprint. \method{narrow\_tandem} is 1.76\,m long with a 0.66\,m-wide footprint, so it alone passes a 0.70\,m doorway. Pod centers sit at $\pm 0.20$\,m to clear the 0.20\,m-wide core; the tallest morphology is 0.30\,m. Other catalog entries (Ackermann, omni, crawler, articulated, stacked) are placeholders with no experimental support and are excluded.
+
+Wheel contact uses anisotropic Coulomb friction (rolling coefficient 1.2, lateral 0.08) with the friction direction attached to the wheel frame. With world-fixed axes, which the simulator applies when no direction is declared, rotation authority depended on world heading and vanished near $\pm 90^\circ$; attaching the axes to the wheel removed that dependence and is part of the qualified platform model (Sec.~\ref{sec:integrity}).
+
+\subsection{Reconfiguration execution}
+A reconfiguration executor runs each transition as a staged, sensor-driven procedure: detach, self-mobile relocation of each moved pod along its declared waypoint path, alignment from connector observations, latch, and verification of the observed topology. Observed topology is authoritative for safety even when it differs from the requested topology. Assembled drive is inhibited throughout a transition, and any partial or inconsistent observed topology moves execution to \texttt{RECOVERY\_REQUIRED}, from which only an explicit reconciliation to a complete supported morphology returns it to \texttt{READY}. Before a transition the navigator aligns the core to the planned site pose (0.03\,m, 0.05\,rad) and replans rather than transforming if it cannot; an in-place rotation that makes no progress is detected and abandoned rather than held. After a commit the core yaw is trimmed back to the planned heading before the robot drives on. Every wait and command window in the navigator and executor advances on the simulated clock, with wall time only as a stall backstop. Connector capture and latches are idealized simulation mechanisms.
+
+\subsection{Sensing}
+Localization is AMCL on lidar with wheel odometry. For docking, four connector sensors at the core origin report pods within a frustum (0.05--1.2\,m, 1.8\,rad horizontal field of view each); they perform no occlusion test, and their relative-pose covariance is a function of range alone. Docking is accepted only if every moved pod's connector is visible and its covariance trace is at most 0.015.
+
+Because the connector sight lines run from the core to the pods along nearly the pods' own relocation paths, no external body can occlude them without lying inside the robot's post-transition footprint. Location-dependent observability therefore cannot arise from the onboard sensors on this platform. We make it physical with an external workspace \emph{fiducial station}: a fixed pose declared with the world from which a pod is \emph{station-observed} when the segment from the station to the pod is within range and unoccluded by the declared 3D environment. Station-observed pods receive the range-based precision of the onboard sensors; pods the station cannot see remain visible but carry a covariance trace of 0.04, above the docking gate, so the existing \texttt{covariance\_too\_large} rejection applies. Occlusion is provided by an \emph{elevated} screen whose underside is at 0.60\,m, above the 0.30\,m robot and the pod relocation sweeps, so it constrains neither driving nor geometric feasibility and cannot register as a contact.
+
+\textbf{Infrastructure assumption.} Precision docking in this study depends on an external station, and a site is well observed only where the station can see the moved pods. This is a property of the experimental platform that the results inherit, not a claim about self-contained connector sensing.
+
+% ---------------------------------------------------------------------------
+\section{Method}
+
+\subsection{Hybrid state space and search}
+The planner searches hybrid states $s = (x, y, \theta, m)$ on a 0.1\,m occupancy grid with discretized heading and $m \in \{\text{\method{compact\_diff}}, \text{\method{narrow\_tandem}}\}$, using weighted A*. Traversal edges use morphology-specific footprints, kinematics, and costs; every method drives around the same declared raised obstacles. A reconfiguration edge $s \to s'$ keeps the pose and changes $m$ through a catalog transition (\method{compact\_to\_narrow} or \method{narrow\_to\_compact}). Edge cost is
+\begin{equation}
+c = T + \lambda_E E + \lambda_R \bigl(-\log(1 - p)\bigr),
+\end{equation}
+with duration $T$, mechanical energy $E$, and failure probability $p$ (zero for traversal; a declared per-transition prior for reconfiguration), plus a risk charge on unknown space. The planner returns the route, the morphology sequence, and the transition sites, and reports a pre-action $p$ beside each attempted transition so that calibration can be scored against observed outcomes.
+
+\subsection{Transition-feasibility edges}
+A candidate site is tested in up to four stages, and each failure contributes a structured, per-module rejection reason that is retained in the trial record.
+
+\textbf{(i) Planar admissibility.} The transition's planar clearance disk (radius 1.0\,m) must be free in the occupancy grid, and the target morphology's footprint must fit at the site.
+
+\textbf{(ii) Module trajectories.} The relocation is expanded into sequential compound pod, body, and wheel trajectories in 3D and sampled against the stationary core, already-placed pods, and the declared 3D transition obstacles, with support and latch conditions at each target. The 2D occupancy map cannot represent these obstacles (e.g., a raised shelf the core passes beneath), which is why the check is 3D.
+
+\textbf{(iii) Post-transition verification maneuver.} Before releasing drive in the new morphology, the robot executes a declared verification maneuver at the site: in-place yaw of $\pm 0.25$\,rad/s for 1.5\,s each, then $\pm 0.12$\,m/s for 1.0\,s each. The maneuver is declared once in the morphology catalog and consumed both by the executor and by the planner, which sweeps the rigid target body, core and every pod, through the commanded twists and rejects the edge with \texttt{<module>:post\_transition\_collision} on contact. A test binds the two so that the planner cannot accept a site against a maneuver the robot does not perform. The swept boxes are inflated by a 0.07\,m margin to cover the 0.03\,m site tolerance plus part of the localization error; the inflated sweep reaches 0.99\,m, inside the 1.0\,m disk that covers walls, and a test enforces that invariant. The principle is that a site must admit every motion performed there, not only the transformation.
+
+\textbf{(iv) Docking observability.} For each moved pod, a sensing provider predicts from priors alone (the station pose declared with the map, the 3D environment, and the catalog's transition geometry) whether the pod will be station-observed at its docked pose, and hence its connector visibility and covariance trace. The edge is rejected if any moved pod is predicted not visible or above the 0.015 gate. The planner's predicate and the executor's docking acceptance apply the same two criteria, so a site rejected for observability is one at which the executor would refuse to dock. No evaluator truth enters the prediction.
+
+\subsection{Methods as an ablation ladder}
+All four methods share the search, cost model, mechanics, controllers, localization, maps, retry limits, and disturbance realizations; they differ only in the transition test (Table~\ref{tab:methods}).
+
+\begin{table}[t]
+\centering
+\caption{Ablation ladder. Each rung adds information to the transition test.}
+\label{tab:methods}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Method & joint & (i) & (ii)+(iii) & (iv) \\
+\midrule
+\method{route\_first\_adaptation} & -- & \checkmark & \checkmark & \checkmark \\
+\method{geometry\_coupled} & \checkmark & \checkmark & -- & -- \\
+\method{feasibility\_coupled} & \checkmark & \checkmark & \checkmark & -- \\
+\method{sensing\_feasibility\_coupled} & \checkmark & \checkmark & \checkmark & \checkmark \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\method{route\_first\_adaptation} fixes the spatial route first and then inserts morphology changes along it, applying the full transition test; it isolates the value of choosing the route jointly. \method{geometry\_coupled} searches jointly but admits a transition on planar clearance and target footprint alone. \method{feasibility\_coupled} adds the 3D module trajectories and the verification sweep. \method{sensing\_feasibility\_coupled} additionally conditions on predicted docking observability. The two confirmatory contrasts are \method{sensing\_feasibility\_coupled} against \method{geometry\_coupled} (the full increment of physical and sensing conditioning) and against \method{feasibility\_coupled} (the sensing increment alone). An oracle with true state or a complete map would be a labeled upper bound and is not a competitor here.
+
+% ---------------------------------------------------------------------------
+\section{Experimental Design}
+
+\subsection{Layout families and neutral controls}
+Three families target different rungs: \emph{reconfiguration workspace}, in which raised 3D obstacles near the attractive staging area constrain module trajectories; \emph{docking observability}, in which the station and elevated screen shadow part of the staging area; and \emph{combined constraints}, in which both act. Every layout has one interior wall with one 0.70\,m doorway, a start room in which the robot must transform to pass, and a goal room beyond. Every fourth layout of each family is a neutral control with walls and doorway only, in which the added constraints should not help and all methods are expected to agree.
+
+\subsection{Layout population}
+The layout is the independent sampling unit, so the estimand is only as broad as the generator. A first generator varied the wall and doorway by at most 0.1\,m and kept start and goal on the door line; it was replaced before any pilot data. Layouts are drawn from a second generator bound to the design kind, so the design hash covers it: arena 5.7--6.6\,m by 3.2--4.0\,m; interior wall at $x \in [2.6, 3.4]$\,m; doorway center anywhere leaving at least 0.7\,m of wall on either side; start $\pm 0.3$\,m and goal $\pm 0.6$\,m off the door line, so routes must turn toward the doorway; and five values each for the staging-band extent and half-height. Clutter was deliberately not added: it would vary navigation without interacting with the transition decision. A planner manipulation check on the drawn layouts, reporting each method's route, morphology, site, cost terms, and rejection reasons, must show separation in non-neutral layouts and agreement in neutral ones before the design is frozen. \pending{manipulation check on the generator-2 design.}
+
+\subsection{Paired seeds and schedule}
+Each layout is run in three stochastic replicates under all four methods. World, sensing, friction, and fault seeds are derived deterministically as independent streams, and the four methods in a layout--replicate block share the same realization; plant randomization realizes ground friction in $[0.70, 1.10]$ and a spawn offset of $\pm 0.015$\,m in $x,y$ and $\pm 0.035$\,rad in yaw, applied identically to Gazebo and to the localization prior. Method order is randomized within each block. Pilot layouts and seeds are disjoint from the confirmatory schedule. The generated design is frozen as JSON and its SHA-256 hash reported; the number of layouts is set by the power procedure below. \pending{frozen design hash and final layout count.}
+
+\subsection{Outcomes}
+The primary outcome is mission completion within a 300\,s simulated deadline: reaching the goal with no collision, a valid observed topology in \texttt{READY}, and no unrecovered fault. The secondary mission-level outcome is deadline-penalized time, with failures scored at 300\,s. Successful-run time and mechanical work are reported descriptively and separately, so a completion/work trade-off is not hidden in one scalar.
+
+Each terminal record carries exactly one status, defined before any pilot data:
+\begin{itemize}
+\item \emph{Planning failure}: a method that cannot produce a plan (e.g., route-first adaptation when no feasible transition exists along its fixed route) is a mission failure at 300\,s; it is never excluded or retried.
+\item \emph{Collision}: evaluator-inferred contact, clearance $\le 0$ between module poses and the generated world geometry, debounced per module over 0.5\,s.
+\item \emph{Localization loss}: defined against evaluator truth, not the autonomy's own report; an episode is at least three consecutive 2\,Hz samples whose planar estimate error exceeds 0.30\,m. The worst error AMCL showed while working normally, over 124 retained qualification records, was 0.126\,m. A navigator failure naming localization or a transform also records loss.
+\item \emph{Earliest cause}: for a completed mission or any failed robot outcome, the earlier of first contact and first loss episode names the status. A completed mission counts only a loss episode still in progress at its end. Infrastructure failures, crashes, and planning failures are never re-attributed.
+\item \emph{Timeout}: the deadline elapsed with no other status.
+\end{itemize}
+Secondary measures with explicit denominators include minimum 3D clearance, localization RMSE against time-aligned truth, docking attempts, transition failures, planning latency, expanded states, the failure taxonomy, and the transition Brier score with reliability bins by method. Achieved site placement is reported as the evaluator-truth distance of the core from each planned site at the start of its transition, beside the nominal 0.03\,m control target. Planner-decision diagnostics (rejection-reason counts by method; fraction of blocks in which a baseline selects a different route or site from \method{sensing\_feasibility\_coupled}) are manipulation checks and receive no significance tests.
+
+\subsection{Analysis}
+The primary estimand is the layout-balanced paired difference in completion probability: replicates are averaged within a layout, and layouts are weighted equally within the declared family scope (all three families for the first contrast; docking observability and combined constraints for the second). We report absolute differences with 95\% intervals from a bootstrap that resamples whole layouts within family, retaining every method and replicate in a sampled cluster. Two-sided $p$ values come from sign-flipping layout-level mean differences, exhaustively when a contrast has at most 20 layouts and otherwise by a predeclared seeded Monte Carlo draw count, reported with its Monte Carlo standard error $\sqrt{p(1-p)/(B+1)}$ or, for exact tests, the minimum attainable $p$. Holm correction is applied to the two confirmatory $p$ values. Effect sizes and intervals are reported regardless of significance; family-level effects are heterogeneity diagnostics without confirmatory tests.
+
+Two sensitivity analyses are frozen before unblinding and do not replace the primary analysis: a paired hierarchical logistic model per contrast with treatment and family fixed effects and a Gaussian layout random intercept (15-point Gauss--Hermite quadrature), reported as marginal probability differences standardized over layouts with a layout-cluster bootstrap of at least 400 refits; and a deadline-time analysis with a 300\,s point mass for failures.
+
+\textbf{Smallest effect of interest and sample size.} The smallest effect of interest is 0.18 absolute completion probability for both contrasts, fixed before any pilot data on operational grounds: the method adds feasibility and sensing models to every query and commits the robot to reconfigurations it would otherwise skip, and a gain below roughly one additional completed mission in six does not justify that. The pilot supplies only nuisance parameters. A frozen grid spanning at least two values each of control completion rate, layout logit standard deviation, and paired-noise fraction, including an adverse value of each, is simulated for both contrast scopes at $\alpha = 0.025$ as a conservative Holm planning threshold. The design passes only if every cell's 95\% Wilson lower bound reaches target power; otherwise simulations are increased for Monte Carlo precision and then layouts are added, never the threshold changed. An illustrative preview implies 60--96 layouts in total. \pending{pilot nuisance estimates, power-grid result, final layout count.}
+
+% ---------------------------------------------------------------------------
+\section{Evaluation Integrity}
+\label{sec:integrity}
+
+\subsection{Platform qualification (Gate 0)}
+Before any pilot, the platform must pass engineering qualification on the repaired wheel model. These are qualification results, not study evidence; each has a committed machine-readable audit with per-record digests and retained, restore-verified records (Table~\ref{tab:gate0}).
+
+\begin{table}[t]
+\centering
+\caption{Gate 0 platform qualification on the repaired wheel model.}
+\label{tab:gate0}
+\begin{tabular}{@{}p{0.52\columnwidth}r@{}}
+\toprule
+Item & Result \\
+\midrule
+Signed motion, detached pod and compact assembly, incl.\ imposed headings of $0, 45, \pm 90^\circ$ & 10/10 \\
+Randomized compact$\to$narrow$\to$compact round trips & 20/20 \\
+Fail-closed fault matrix (7 faults $\times$ 3 layouts $\times$ 2 realizations) & 42/42 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\emph{Signed motion.} Across imposed headings, assembled rotation spans 1.0196--1.0254\,rad and straight travel 0.7381--0.7429\,m, a 0.6\% and 0.7\% spread, so heading invariance is inside the gate.
+
+\emph{Round trip.} Each of 20 randomized missions made both transitions with no reconfiguration failure, passed both post-transition motion qualifications including all-pod rigidity (40/40), ended \texttt{READY} in \method{compact\_diff} with no unrecovered fault and no evaluator collision (minimum clearance 0.015--0.051\,m), and finished in 154--159\,s of the 300\,s deadline. Forward travel is the binding motion gate, with a worst margin of $+0.0301$\,m over its 0.08\,m floor. Real-time factor ranged 0.488--0.974 without degrading travel or yaw.
+
+\emph{Fault matrix.} Detach, relocation, latch, stale-observation, cancellation, commit, and partial-topology faults were each injected six times into the first transition. Every case recorded its injection as fired, ended with drive inhibited under a post-terminal motion stimulus and \texttt{RECOVERY\_REQUIRED}, and reconciled only to the observed topology.
+
+\subsection{Infrastructure failures and retries}
+Robot failures are never retried or excluded. The runner retries a trial at most twice, and only when the live stack fails before mission execution (for example, a Nav2 lifecycle activation timeout); crashes, planner and controller failures, timeouts, and any mission that began executing are kept as recorded. Each attempt has its own immutable log and an fsync'd audit entry, and the terminal record embeds the attempt list. The mission observer runs in its own process, so a wedged observer is recorded as an infrastructure failure by a parent watchdog rather than as a robot outcome; a trial whose launch log shows a DDS transport failure is likewise classified as infrastructure. One harness defect is disclosed with its fix: under host load the ROS-side simulation clock occasionally stopped at mission start (4 of 78 qualification trials) while Gazebo kept stepping, because the bridge's gz-transport discovery dropped the simulator's publishers after 3\,s of heartbeat silence. Keeping discovery on loopback removed it under the same load (0 of 14 against 3 of 13), and any recurrence is detected as a simulated-clock discontinuity and recorded as infrastructure, never as a robot outcome. Infrastructure-attempt counts and rates are reported separately from mission outcomes. \pending{pilot and confirmatory infrastructure-attempt rates.}
+
+\subsection{Timing}
+Every window that paces robot motion, including the verification maneuver, advances on the simulated clock, with the wall clock only as a stall backstop. Each stage records commanded and simulated duration, and record validation rejects any stage that ran less simulated time than it commanded. A wall-clock window would make commanded travel scale with host load and present a measurement artifact as a mechanical fault.
+
+\subsection{Ground-truth isolation}
+Simulator truth is evaluator-only. Clearance, contact, localization error, and site placement are computed from evaluator streams; no truth stream feeds planning, control, recovery, or readiness. A static test rejects any reference to evaluator topics or bridged simulator poses in autonomy packages, and the observability predictor consumes only declared priors. A telemetry audit rejects records with dropped diagnostics, missing or unsynchronized truth, sparse localization, or stored errors that disagree with recomputation, and terminal observations are snapshotted so post-terminal probes cannot leak into a record.
+
+\subsection{Provenance and retention}
+Analysis refuses incomplete blocks, changed trial specifications, unpaired seeds, and mixed commit, configuration, or design hashes. Records carry source revision, container image, configuration hash, and stack process deaths. Raw records are retained as compressed campaign archives beside committed audits with per-record and campaign digests, so every reported figure can be recomputed from the records it was computed on.
+
+% ---------------------------------------------------------------------------
+\section{Results}
+\pending{confirmatory data}
+
+\subsection{Manipulation checks}
+\pending{confirmatory data}
+
+\subsection{Primary contrasts}
+\pending{confirmatory data}
+
+\subsection{Secondary outcomes, sensitivity analyses, and failure taxonomy}
+\pending{confirmatory data}
+
+\subsection{Transition-risk calibration and site placement}
+\pending{confirmatory data}
+
+% ---------------------------------------------------------------------------
+\section{Discussion}
+\pending{confirmatory data}
+
+% ---------------------------------------------------------------------------
+\section{Limitations}
+
+\textbf{Simulation only.} All results are from Gazebo. Connector capture and latches are idealized, contact is geometric (inferred from poses against declared geometry within 1.0\,m of a known obstacle, not from a physics contact sensor), and the feasibility checks are geometric validation, not physical certification.
+
+\textbf{Two morphologies.} Only \method{compact\_diff} and \method{narrow\_tandem} are in scope, connected by one transition pair. Larger morphology sets may change how often site choice binds.
+
+\textbf{Docking observability depends on infrastructure.} The sensing contrast is realized through an external fiducial station and an elevated screen. The planner's prediction and the station's measurement share one geometric rule with different inputs, so an audit of one against the other checks placement and inputs, not the rule.
+
+\textbf{Site tolerance is nominal.} The 0.03\,m site tolerance is a control target servoed on an estimate whose error has reached 0.10\,m, so it is not an achieved-placement bound. The 0.07\,m sweep margin covers the tolerance plus 0.04\,m of estimation error; error beyond that is unmodelled, and a linear box inflation is an imperfect model of angular error. We therefore report measured placement beside the nominal target. The margin cannot grow without enlarging the clearance disk, which changes site selection.
+
+\textbf{Scope of the 3D model.} Declared 3D obstacles enter traversal only as driving obstacles; ordinary traversal edges are otherwise checked against the 2D occupancy grid. The transition risk prior is a declared per-transition constant; a learned or sensing-dependent risk model is future work.
+
+\textbf{Generalization.} The population is generated rooms with one wall and one doorway. Conclusions extend to that population, not to arbitrary environments.
+
+% ---------------------------------------------------------------------------
+% Bibliography stub: only works named in docs/research/literature_review.md.
+% Metadata marked TODO was not in the review and must be verified from the DOI.
+\begin{thebibliography}{99}
+\bibitem{le2018htetro} A. V. Le \emph{et al.}, ``Modified A-star algorithm for efficient coverage path planning in Tetris inspired self-reconfigurable robot with integrated laser sensor,'' \emph{Sensors}, vol. 18, no. 8, p. 2585, 2018, doi:10.3390/s18082585.
+\bibitem{cheng2020htetro} K. P. Cheng \emph{et al.}, ``Path planning for a hinged-tetro reconfigurable tiling robot using a multi-objective genetic algorithm,'' \emph{IEEE Access}, 2020, doi:10.1109/ACCESS.2020.3006579. % TODO verify authors and title
+\bibitem{le2019htetro} A. V. Le \emph{et al.}, [coverage with hTetro morphology shifts by graph search and dynamic programming], \emph{IEEE Access}, 2019, doi:10.1109/ACCESS.2019.2928467. % TODO title
+\bibitem{pankert2022base} J. Pankert \emph{et al.}, ``Design and motion planning for a reconfigurable robotic base,'' \emph{IEEE Robot. Autom. Lett.}, vol. 7, no. 4, pp. 9012--9019, 2022, doi:10.1109/LRA.2022.3189166.
+\bibitem{daudelin2018perception} J. Daudelin \emph{et al.}, ``An integrated system for perception-driven autonomy with modular robots,'' \emph{Science Robotics}, vol. 3, no. 23, 2018, doi:10.1126/scirobotics.aat4983.
+\bibitem{tu2026freesn} Y. Tu \emph{et al.}, ``Locomotion and self-reconfiguration autonomy for spherical freeform modular robots,'' \emph{Int. J. Robot. Res.}, vol. 45, no. 3, pp. 477--500, 2026 (online 2025), doi:10.1177/02783649251360360. % TODO verify first-author initial
+\bibitem{west2022mirrax} M. West \emph{et al.}, ``MIRRAX: A reconfigurable robot for limited access environments,'' arXiv:2203.00337, 2022. % TODO verify authors and title
+\bibitem{jing2016smores} G. Jing, T. Tosun, M. Yim, and H. Kress-Gazit, ``An end-to-end system for accomplishing tasks with modular robots,'' in \emph{Proc. Robotics: Science and Systems}, 2016, doi:10.15607/RSS.2016.XII.025. % TODO verify author list
+\bibitem{whitman2023modular} J. Whitman \emph{et al.}, [graph-structured policies for modular robot locomotion], \emph{IEEE Trans. Robot.}, 2023, doi:10.1109/TRO.2023.3284362. % TODO title
+\bibitem{liu2020qp} C. Liu \emph{et al.}, [QP-based motion control for modular robots with changing kinematics], in \emph{Proc. IEEE Int. Conf. Robotic Computing (IRC)}, 2020, doi:10.1109/IRC.2020.00008. % TODO authors and title
+\bibitem{yoshida2002reconfig} E. Yoshida \emph{et al.}, ``A self-reconfigurable modular robot: Reconfiguration planning and experiments,'' \emph{Int. J. Robot. Res.}, vol. 21, no. 10--11, 2002, doi:10.1177/0278364902021010835.
+\bibitem{liu2019distributed} C. Liu, M. Whitzer, and M. Yim, ``A distributed reconfiguration planning algorithm for modular robots,'' \emph{IEEE Robot. Autom. Lett.}, vol. 4, no. 4, 2019, doi:10.1109/LRA.2019.2930432.
+\bibitem{liang2020freebot} G. Liang \emph{et al.}, ``FreeBOT: A freeform modular self-reconfigurable robot with arbitrary connection point,'' in \emph{Proc. IEEE/RSJ IROS}, 2020, doi:10.1109/IROS45743.2020.9341129. % TODO verify authors and title
+\end{thebibliography}
+
+\end{document}
