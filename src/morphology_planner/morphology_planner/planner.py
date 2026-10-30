@@ -42,6 +42,18 @@ class HybridPlan:
     sensing_revision: int = 0
 
 
+# Tracking margin demanded of turning motion primitives (2026-10-30, pilot):
+# about the site-placement and localization error the pilot records show.
+TURN_CLEARANCE_M = 0.10
+
+
+def inflated_footprint(footprint, margin: float) -> tuple[tuple[float, float], ...]:
+    """Grow a body-centred convex footprint outward by `margin` on each side."""
+    return tuple((x + (margin if x > 0 else -margin if x < 0 else 0.0),
+                  y + (margin if y > 0 else -margin if y < 0 else 0.0))
+                 for x, y in footprint)
+
+
 class NoPathError(RuntimeError):
     pass
 
@@ -268,13 +280,20 @@ class MorphologyAStar:
             abs(delta_yaw) * morphology.radius,
         )
         samples = max(1, ceil(swept_distance / (0.25 * self.grid.resolution)))
+        # A long body tracks a straight line closely and a turn loosely: the
+        # pilot's narrow body, planned along an exact S-turn 3.5 cm from the
+        # raised shelf, swung its nose into it on every attempt. Turning
+        # primitives keep TURN_CLEARANCE_M from everything; straight ones keep
+        # the exact check, so the 0.70 m doorway stays passable.
+        footprint = (inflated_footprint(morphology.footprint, TURN_CLEARANCE_M)
+                     if delta_heading else morphology.footprint)
         for index in range(samples + 1):
             fraction = index / samples
             wx = source_x + fraction * (target_x - source_x)
             wy = source_y + fraction * (target_y - source_y)
             yaw = source_yaw + fraction * delta_yaw
-            if (not self.grid.footprint_is_free(wx, wy, yaw, morphology.footprint)
-                    or self._footprint_hits_drive_obstacle(wx, wy, yaw, morphology)):
+            if (not self.grid.footprint_is_free(wx, wy, yaw, footprint)
+                    or self._footprint_hits_drive_obstacle(wx, wy, yaw, morphology, footprint)):
                 self._traversal_collision_cache[cache_key] = False
                 return False
         self._traversal_collision_cache[cache_key] = True
@@ -282,13 +301,14 @@ class MorphologyAStar:
 
     def _footprint_hits_drive_obstacle(
         self, wx: float, wy: float, yaw: float, morphology: Morphology,
+        footprint=None,
     ) -> bool:
         rectangles = self._drive_rectangles.get(morphology.id, ())
         if not rectangles:
             return False
         c, s = cos(yaw), sin(yaw)
         polygon = tuple((wx + c * x - s * y, wy + s * x + c * y)
-                        for x, y in morphology.footprint)
+                        for x, y in (footprint or morphology.footprint))
         return any(polygon_intersects_rectangle(polygon, *rectangle)
                    for rectangle in rectangles)
 

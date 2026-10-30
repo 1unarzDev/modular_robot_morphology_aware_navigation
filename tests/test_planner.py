@@ -142,18 +142,23 @@ def test_footprint_rejects_occupied_cell_corner_overlap():
 
 def test_route_first_baseline_does_not_revise_route_for_transition_feasibility():
     catalog = load_catalog(CATALOG).supported_experiment_subset()
-    grid = doorway_grid()
+    # A start room long enough to turn the narrow body in with the turning
+    # clearance (TURN_CLEARANCE_M); doorway_grid's 2.0 m room is not.
+    grid = OccupancyGrid(70, 25, 0.1)
+    for y in range(grid.height):
+        if not 10 <= y <= 16:
+            grid.set_value(30, y, OCCUPIED)
     start = HybridState(7, 13, 0, "compact_diff")
     # The transition is feasible only after an in-place staging rotation. Joint
     # search can add it, while the frozen route contains only heading-zero poses.
     validator = lambda transition, state: state.heading == 1
     joint = MorphologyAStar(catalog, grid, heading_bins=4,
                             transition_validator=validator)
-    assert joint.plan(start, (42, 13)).segments
+    assert joint.plan(start, (55, 13)).segments
     sequential = RouteFirstAdaptationPlanner(
         catalog, grid, heading_bins=4, transition_validator=validator)
     with pytest.raises(NoPathError, match="fixed spatial route"):
-        sequential.plan(start, (42, 13))
+        sequential.plan(start, (55, 13))
 
 
 def test_indexed_footprint_check_matches_a_cell_by_cell_scan():
@@ -250,3 +255,27 @@ def test_a_start_snapped_into_collision_is_repaired_to_the_nearest_free_state():
     trapped = make_method_planner("geometry_coupled", catalog, walled_in, heading_bins=8).planner
     with pytest.raises(NoPathError, match="start state is in collision"):
         trapped.repaired_start(HybridState(2, 2, 0, "narrow_tandem"))
+
+
+def test_turning_keeps_a_tracking_margin_that_straight_motion_does_not_need():
+    """Pilot: the narrow body's exact S-turn 3.5 cm from the shelf always touched it."""
+    from morphology_planner.planner import TURN_CLEARANCE_M, inflated_footprint
+
+    catalog = load_catalog(CATALOG).supported_experiment_subset()
+    narrow = catalog.morphologies["narrow_tandem"]
+    grown = inflated_footprint(narrow.footprint, TURN_CLEARANCE_M)
+    assert max(x for x, _ in grown) == max(x for x, _ in narrow.footprint) + TURN_CLEARANCE_M
+    # A corridor whose walls are 3 cm clear of the narrow body: it drives straight
+    # along it, but may not turn in place there.
+    half_width = max(abs(y) for _, y in narrow.footprint)
+    grid = OccupancyGrid(80, 30, 0.1)
+    low = round((1.5 - half_width - 0.03) / 0.1) - 1
+    high = round((1.5 + half_width + 0.03) / 0.1)
+    for x in range(80):
+        grid.set_value(x, low, OCCUPIED)
+        grid.set_value(x, high, OCCUPIED)
+    planner = MorphologyAStar(catalog, grid, heading_bins=8)
+    straight = (HybridState(40, 15, 0, "narrow_tandem"), HybridState(41, 15, 0, "narrow_tandem"))
+    turn = (HybridState(40, 15, 0, "narrow_tandem"), HybridState(40, 15, 1, "narrow_tandem"))
+    assert planner._traversal_is_free(*straight)
+    assert not planner._traversal_is_free(*turn)

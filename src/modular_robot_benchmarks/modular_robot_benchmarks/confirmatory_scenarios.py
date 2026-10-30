@@ -157,7 +157,10 @@ class ConfirmatoryScenario:
 # campaign and the superseded 36-layout design were built from; its draws are
 # frozen. Generator 2 widens the population for the pilot and the confirmatory
 # design, which need far more than 12 distinct layouts per family.
-LAYOUT_GENERATORS = (1, 2)
+# Generator 3 (ADR 0013) is generator 2 with start rooms long enough for the
+# narrow body to turn with the planner's turning clearance.
+LAYOUT_GENERATORS = (1, 2, 3)
+WIDE_LAYOUT_ROOMS = {2: (3.0, 6.0), 3: (3.9, 7.4)}   # (wall x, arena width) centres, m
 # Generator 1 admits only 12 layout indices per family; 2 admits any number.
 GENERATOR_1_MAX_LAYOUTS = 12
 
@@ -190,7 +193,8 @@ def make_confirmatory_scenario(
         goal = (round(5.0 / resolution), door_center)
         band_steps = 3
     else:
-        grid, wall_x, door_center, start, goal = _wide_layout(rng, resolution, door_cells)
+        grid, wall_x, door_center, start, goal = _wide_layout(
+            rng, resolution, door_cells, *WIDE_LAYOUT_ROOMS[generator])
         band_steps = 5
     _border(grid)
     door_low = door_center - door_cells // 2
@@ -294,7 +298,8 @@ def make_workshop_scenario(
     )
 
 
-def _wide_layout(rng: Random, resolution: float, door_cells: int):
+def _wide_layout(rng: Random, resolution: float, door_cells: int,
+                 wall_x_m: float = 3.0, arena_width_m: float = 6.0):
     """Generator 2: arena, wall, doorway, start and goal all vary (ADR 0011).
 
     The structure every manipulation depends on is kept: one interior wall
@@ -305,10 +310,10 @@ def _wide_layout(rng: Random, resolution: float, door_cells: int):
     no longer be a straight line to the door.
     """
     cells = lambda metres: round(metres / resolution)
-    width = cells(6.0) + rng.randrange(-3, 7)            # 5.7 .. 6.6 m
+    width = cells(arena_width_m) + rng.randrange(-3, 7)  # 5.7 .. 6.6 m in generator 2
     height = cells(3.5) + rng.randrange(-3, 6)           # 3.2 .. 4.0 m
     grid = OccupancyGrid(width, height, resolution)
-    wall_x = cells(3.0) + rng.randrange(-4, 5)           # 2.6 .. 3.4 m
+    wall_x = cells(wall_x_m) + rng.randrange(-4, 5)      # 2.6 .. 3.4 m in generator 2
     # At least 0.7 m of interior wall stays on either side of the doorway.
     low = door_cells // 2 + cells(0.8)
     high = height - 1 - door_cells // 2 - cells(0.8)

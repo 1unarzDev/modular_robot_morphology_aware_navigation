@@ -7,7 +7,8 @@ from pathlib import Path
 from statistics import median
 
 from .design import (
-    METHODS, ROUNDTRIP_V2_DESIGN_KIND, StudyDesign, TrialSpec, _seed, generate_design,
+    METHODS, ROUNDTRIP_V2_DESIGN_KIND, ROUNDTRIP_V3_DESIGN_KIND, StudyDesign, TrialSpec,
+    _seed, generate_design,
 )
 from .records import TrialRecord, TrialStore
 
@@ -35,11 +36,12 @@ V2_QUALIFICATION_METHOD = "sensing_feasibility_coupled"
 
 def generate_roundtrip_v2_design(layout_indices: tuple[int, ...],
                                  runs_per_layout: int = 4,
-                                 master_seed: int = 20261031) -> StudyDesign:
-    """20 round trips across generator-2 layouts, one plant realization each."""
+                                 master_seed: int = 20261031,
+                                 kind: str = ROUNDTRIP_V2_DESIGN_KIND) -> StudyDesign:
+    """20 round trips across wide-generator layouts, one plant realization each."""
     if any(index % 4 == 0 for index in layout_indices):
         raise ValueError("neutral layouts carry no shelf; use manipulated ones")
-    family, kind = "combined_constraints", ROUNDTRIP_V2_DESIGN_KIND
+    family = "combined_constraints"
     trials = []
     for index in layout_indices:
         world_seed = _seed(master_seed, kind, family, index, "world")
@@ -166,7 +168,8 @@ def audit_roundtrip_records(records: list[TrialRecord], design: StudyDesign) -> 
     expected_ids = {spec.trial_id for spec in design.trials}
     observed_ids = {record.spec.trial_id for record in records}
     failures = []
-    if design.design_kind not in (DESIGN_KIND, ROUNDTRIP_V2_DESIGN_KIND):
+    if design.design_kind not in (DESIGN_KIND, ROUNDTRIP_V2_DESIGN_KIND,
+                                  ROUNDTRIP_V3_DESIGN_KIND):
         failures.append(f"unexpected design kind {design.design_kind}")
     if len(design.trials) != 20:
         failures.append(f"expected 20 frozen runs, found {len(design.trials)}")

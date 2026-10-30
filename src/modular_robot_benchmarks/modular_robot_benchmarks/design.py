@@ -30,10 +30,18 @@ CONFIRMATORY_DESIGN_KIND = "confirmatory_v2"
 ROUNDTRIP_V2_DESIGN_KIND = "engineering_roundtrip_v2"
 WIDE_LAYOUT_DESIGN_KINDS = frozenset({
     PILOT_DESIGN_KIND, CONFIRMATORY_DESIGN_KIND, ROUNDTRIP_V2_DESIGN_KIND})
+# ADR 0013: generator 3, start rooms long enough to turn the narrow body in.
+PILOT_V3_DESIGN_KIND = "pilot_v3"
+CONFIRMATORY_V3_DESIGN_KIND = "confirmatory_v3"
+ROUNDTRIP_V3_DESIGN_KIND = "engineering_roundtrip_v3"
+LONG_ROOM_DESIGN_KINDS = frozenset({
+    PILOT_V3_DESIGN_KIND, CONFIRMATORY_V3_DESIGN_KIND, ROUNDTRIP_V3_DESIGN_KIND})
 
 
 def layout_generator_for(design_kind: str) -> int:
-    """The layout generator a design's worlds are built with (ADR 0011)."""
+    """The layout generator a design's worlds are built with (ADR 0011, 0013)."""
+    if design_kind in LONG_ROOM_DESIGN_KINDS:
+        return 3
     return 2 if design_kind in WIDE_LAYOUT_DESIGN_KINDS else 1
 # Workshop diagnostic study: one passage environment in three variants.
 WORKSHOP_DESIGN_KIND = "workshop_diagnostic"

@@ -109,7 +109,11 @@ def test_golden_layouts_separate_3d_and_sensing_ablation_decisions():
     catalog = load_catalog(
         "src/modular_robot_description/config/morphologies.yaml"
     ).supported_experiment_subset()
-    workspace = make_confirmatory_scenario("reconfiguration_workspace", 1, 8)
+    # Generator 3 since ADR 0013: under the planner's turning clearance the
+    # generator-1 start rooms are too short to turn the narrow body in. The
+    # same layout indices and world seeds separate unchanged, so no fixture
+    # was re-selected.
+    workspace = make_confirmatory_scenario("reconfiguration_workspace", 1, 8, generator=3)
     geometry_site, geometry = _transition_site("geometry_coupled", workspace, catalog)
     feasible_site, feasible = _transition_site("feasibility_coupled", workspace, catalog)
     assert geometry_site != feasible_site
@@ -117,7 +121,7 @@ def test_golden_layouts_separate_3d_and_sensing_ablation_decisions():
                for decision in feasible.transition_policy.decisions
                for reason in decision.reasons)
 
-    observability = make_confirmatory_scenario("docking_observability", 1, 8)
+    observability = make_confirmatory_scenario("docking_observability", 1, 8, generator=3)
     feasible_site, _ = _transition_site("feasibility_coupled", observability, catalog)
     sensing_site, sensing = _transition_site(
         "sensing_feasibility_coupled", observability, catalog)
@@ -136,7 +140,7 @@ def test_golden_layouts_separate_3d_and_sensing_ablation_decisions():
     # docking_observability separates on 12/12 seeds either way and is
     # unchanged. No pilot or confirmatory data exists, so this re-selection
     # cannot be a response to an outcome.
-    combined = make_confirmatory_scenario("combined_constraints", 1, 1)
+    combined = make_confirmatory_scenario("combined_constraints", 1, 1, generator=3)
     feasible_site, _ = _transition_site("feasibility_coupled", combined, catalog)
     sensing_site, _ = _transition_site(
         "sensing_feasibility_coupled", combined, catalog)
