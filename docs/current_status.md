@@ -939,9 +939,17 @@ before any evaluator re-attribution. **No Gate 0 result is affected:** the
 by more than 0.53 s in any of the 62 retained records behind the 20/20 round
 trip and the 42/42 fault matrix, so neither set holds a hidden jump.
 
-Prevention under test: `GZ_IP=127.0.0.1` (discovery on loopback rather than the
-WSL mirrored interfaces), 14 trials under the same load
-(`freeze_repro5_*`).
+**Prevented (2026-10-29):** `simulation.launch.py` now sets
+`GZ_IP=127.0.0.1`, keeping gz-transport discovery on loopback instead of the
+WSL mirrored interfaces. Declared before running: 14 round-trip trials under
+the same four extra busy loops that froze 3 of 13 without it. Result
+(`freeze_repro5_*`, engineering debug, never scored): **14 of 14 completed, 0
+freezes, 0 infrastructure retries, 0 clock jumps**, real-time factor
+0.35--0.76, so the load was real. Against the 3/13 baseline rate that is
+p ~ 0.025. The `e5a0401` guard stays: prevention lowers the rate, the guard
+keeps any recurrence out of the robot outcomes. Any tool that talks to Gazebo
+from outside the launch (`gz topic`, a capture script) must export the same
+`GZ_IP` or it will not discover anything.
 
 #### Earlier reading, 2026-10-27: a busy Gazebo main thread, not a deadlock
 

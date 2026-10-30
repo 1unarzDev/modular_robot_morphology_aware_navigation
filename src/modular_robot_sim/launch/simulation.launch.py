@@ -19,6 +19,14 @@ def generate_launch_description():
             "world", default_value=os.path.join(share, "worlds", "indoor_doorway.sdf")),
         SetEnvironmentVariable("GZ_SIM_RESOURCE_PATH", resource_path),
         SetEnvironmentVariable("GZ_SIM_SYSTEM_PLUGIN_PATH", os.path.join(plugin_prefix, "lib")),
+        # gz-transport drops every publisher of a process whose discovery
+        # heartbeats are silent for 3 s and relearns them only on a fresh
+        # subscription. Over the WSL mirrored interfaces the bridge lost
+        # Gazebo that way in 3 of 13 loaded trials, freezing the ROS clock while
+        # the simulator ran on; with discovery on loopback, 0 of 14 under the
+        # same load (docs/current_status.md, "The frozen clock"). Gazebo and the
+        # bridge run on one host, so nothing needs discovery beyond it.
+        SetEnvironmentVariable("GZ_IP", "127.0.0.1"),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(os.path.join(gz_share, "launch", "gz_sim.launch.py")),
             # DART supports detachable fixed joints and differential pod yaw.

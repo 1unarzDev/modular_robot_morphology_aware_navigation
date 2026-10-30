@@ -120,3 +120,15 @@ def test_only_fastrtps_segments_are_considered(tmp_path):
     unrelated.write_bytes(b"x")
     assert unused_dds_segments(tmp_path) == []
     assert unrelated.exists()
+
+
+def test_gazebo_discovery_stays_on_loopback():
+    """Off loopback the bridge lost Gazebo's publishers in 3 of 13 loaded trials."""
+    from pathlib import Path
+
+    launch = (Path(__file__).resolve().parents[1]
+              / "src/modular_robot_sim/launch/simulation.launch.py").read_text(encoding="utf-8")
+    assert 'SetEnvironmentVariable("GZ_IP", "127.0.0.1")' in launch
+    # Set before Gazebo and the bridge start, so both inherit it.
+    assert launch.index('"GZ_IP"') < launch.index("gz_sim.launch.py")
+    assert launch.index('"GZ_IP"') < launch.index("parameter_bridge")
