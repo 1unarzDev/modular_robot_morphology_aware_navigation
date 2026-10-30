@@ -1,3 +1,5 @@
+from pathlib import Path
+ROOT = Path(__file__).resolve().parents[1]
 from dataclasses import replace
 
 import pytest
@@ -137,3 +139,20 @@ def test_audit_reports_worst_case_motion_margins_and_the_load_it_met():
     assert forward["median_margin"] == pytest.approx(0.033)
     assert result["real_time_factors"]["minimum"] == pytest.approx(0.5)
     assert result["real_time_factors"]["maximum"] == pytest.approx(0.69)
+
+
+def test_the_generator_two_round_trip_is_twenty_sensing_runs_on_manipulated_layouts():
+    import pytest
+
+    from modular_robot_benchmarks.design import StudyDesign, layout_generator_for
+    from modular_robot_benchmarks.roundtrip_qualification import generate_roundtrip_v2_design
+
+    design = generate_roundtrip_v2_design((1, 2, 3, 5, 6))
+    assert design.expected_trials == 20
+    assert layout_generator_for(design.design_kind) == 2
+    assert {spec.method for spec in design.trials} == {"sensing_feasibility_coupled"}
+    assert len({spec.friction_seed for spec in design.trials}) == 20
+    frozen = StudyDesign.read_frozen(ROOT / "config/roundtrip_v2_design.json")
+    assert frozen.design_hash == design.design_hash
+    with pytest.raises(ValueError):
+        generate_roundtrip_v2_design((0, 1))

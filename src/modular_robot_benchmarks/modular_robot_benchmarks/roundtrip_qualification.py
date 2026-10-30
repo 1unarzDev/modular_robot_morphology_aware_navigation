@@ -6,7 +6,9 @@ from dataclasses import replace
 from pathlib import Path
 from statistics import median
 
-from .design import METHODS, StudyDesign, generate_design
+from .design import (
+    METHODS, ROUNDTRIP_V2_DESIGN_KIND, StudyDesign, TrialSpec, _seed, generate_design,
+)
 from .records import TrialRecord, TrialStore
 
 
@@ -22,6 +24,35 @@ def generate_roundtrip_design(runs: int = 20, master_seed: int = 20260913) -> St
     trials = tuple(spec for spec in generated.trials
                    if spec.method == QUALIFICATION_METHOD)
     return replace(generated, trials=trials)
+
+
+# ADR 0012: the generator-2 round trip. Manipulated combined_constraints
+# layouts are the ones with the raised shelf and turning approaches, and the
+# sensing method is the one that completes there by design; the others are
+# refused at shadowed sites, which is the manipulation and not a mechanics test.
+V2_QUALIFICATION_METHOD = "sensing_feasibility_coupled"
+
+
+def generate_roundtrip_v2_design(layout_indices: tuple[int, ...],
+                                 runs_per_layout: int = 4,
+                                 master_seed: int = 20261031) -> StudyDesign:
+    """20 round trips across generator-2 layouts, one plant realization each."""
+    if any(index % 4 == 0 for index in layout_indices):
+        raise ValueError("neutral layouts carry no shelf; use manipulated ones")
+    family, kind = "combined_constraints", ROUNDTRIP_V2_DESIGN_KIND
+    trials = []
+    for index in layout_indices:
+        world_seed = _seed(master_seed, kind, family, index, "world")
+        for run in range(runs_per_layout):
+            trials.append(TrialSpec(
+                trial_id=f"{kind}-{family}-{index:02d}-r{run}", family=family,
+                layout_id=f"{family}-{index:02d}", replicate=run,
+                method=V2_QUALIFICATION_METHOD, method_order=0, world_seed=world_seed,
+                sensing_seed=_seed(master_seed, kind, family, index, run, "sensing"),
+                friction_seed=_seed(master_seed, kind, family, index, run, "friction"),
+                fault_seed=_seed(master_seed, kind, family, index, run, "fault")))
+    return StudyDesign(1, kind, len(layout_indices), runs_per_layout, master_seed,
+                       (V2_QUALIFICATION_METHOD,), (family,), tuple(trials))
 
 
 # Gate 0 signed-motion bounds, mirrored from
@@ -135,7 +166,7 @@ def audit_roundtrip_records(records: list[TrialRecord], design: StudyDesign) -> 
     expected_ids = {spec.trial_id for spec in design.trials}
     observed_ids = {record.spec.trial_id for record in records}
     failures = []
-    if design.design_kind != DESIGN_KIND:
+    if design.design_kind not in (DESIGN_KIND, ROUNDTRIP_V2_DESIGN_KIND):
         failures.append(f"unexpected design kind {design.design_kind}")
     if len(design.trials) != 20:
         failures.append(f"expected 20 frozen runs, found {len(design.trials)}")

@@ -26,7 +26,10 @@ FAULT_MATRIX_DESIGN_KIND = "engineering_fault_matrix"
 # can never silently change which worlds it names.
 PILOT_DESIGN_KIND = "pilot_v2"
 CONFIRMATORY_DESIGN_KIND = "confirmatory_v2"
-WIDE_LAYOUT_DESIGN_KINDS = frozenset({PILOT_DESIGN_KIND, CONFIRMATORY_DESIGN_KIND})
+# ADR 0012: the round trip re-qualified on generator-2 layouts.
+ROUNDTRIP_V2_DESIGN_KIND = "engineering_roundtrip_v2"
+WIDE_LAYOUT_DESIGN_KINDS = frozenset({
+    PILOT_DESIGN_KIND, CONFIRMATORY_DESIGN_KIND, ROUNDTRIP_V2_DESIGN_KIND})
 
 
 def layout_generator_for(design_kind: str) -> int:
