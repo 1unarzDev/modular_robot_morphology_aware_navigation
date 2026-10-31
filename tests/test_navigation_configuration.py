@@ -15,7 +15,13 @@ def test_narrow_controller_does_not_rotate_for_localization_scale_errors():
     assert narrow["rotate_to_heading_min_angle"] >= 0.15
     assert narrow["desired_linear_vel"] <= 0.2
     assert narrow["use_velocity_scaled_lookahead_dist"] is False
-    assert narrow["lookahead_dist"] >= 0.8
+    # The lateral offset RPP tolerates before turning in place is the lookahead
+    # times tan(min angle): it must exceed centimetre-scale localization
+    # corrections (0.01 rad hunted), yet a short lookahead is what lets the
+    # narrow body turn at planned vertices rather than cut them.
+    from math import tan
+    tolerated = narrow["lookahead_dist"] * tan(narrow["rotate_to_heading_min_angle"])
+    assert tolerated >= 0.06
     goal_checker = config["controller_server"]["ros__parameters"]["goal_checker"]
     assert goal_checker["stateful"] is False
     assert goal_checker["yaw_goal_tolerance"] >= 3.14
