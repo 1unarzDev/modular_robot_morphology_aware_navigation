@@ -1203,6 +1203,25 @@ shared motion model and so needs an ADR. A planner-only sweep (reverse allowed
 layouts is measuring what each option does to plannability and the
 manipulation before anything is chosen.
 
+**That sweep (`pilot_v3b`, 18 layouts):** forbidding reverse steps, for the
+narrow body or for every body, leaves every method's plannability unchanged
+(route-first 1, geometry 18, feasibility 18, treatment 17 of 18), moves one
+treatment site, keeps treatment-vs-geometry separation at 11 of 12 manipulated
+layouts and agreement in all 6 neutral ones. Routes change; the manipulation
+does not.
+
+**Forward-only experiment: protocol declared before any run (2026-10-31).**
+Design `config/engineering/narrow_turn_repro.json` again (`760cc21b...`, 7
+treatment trials), one arm at a branch identical to `main` except the planner
+offers no reverse step to any body. Baseline: the turn-rate candidate arm
+(`622785f`, the same plant, scale 1.7, reverse allowed), not re-run; `main`
+differs from it only in analysis code, telemetry retention and documents.
+Accepted only if (1) no trial turns the narrow body in place by more than
+1.5 rad in one turn after a `compact_to_narrow` transition (the failure
+signature; it holds in 6 of 7 baseline trials); (2) no evaluator contact;
+(3) every recorded post-transition motion qualification passes; (4) the
+turn-rate criteria still hold. Completions are reported, not the criterion.
+
 **Open harness item: long missions lose early truth.** The two 300 s timeouts
 (`docking_observability-02`, both arms) are flagged by `gate1_audit`:
 "evaluator diagnostics dropped 600 samples", evaluator truth only from 50.4 s.
