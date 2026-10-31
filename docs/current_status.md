@@ -1222,6 +1222,30 @@ signature; it holds in 6 of 7 baseline trials); (2) no evaluator contact;
 (3) every recorded post-transition motion qualification passes; (4) the
 turn-rate criteria still hold. Completions are reported, not the criterion.
 
+**Narrow lookahead experiment: protocol declared before any run
+(2026-10-31, while the forward-only arm runs).** Its first records already
+show the turnaround gone (largest narrow in-place turn 0.38--0.47 rad) and a
+third mismatch of the same kind: the plan leaves the site on a 0.28 m diagonal
+leg, turns in place at its vertex and runs straight, while RPP's 0.8 m carrot
+is already past that vertex, so RPP turns once at the site and drives the
+chord, about 15 cm inside the planned vertex. The planner models heading
+changes as in-place turns at vertices; pure pursuit cuts any vertex nearer than
+its lookahead. The narrow lookahead (0.8 m) and `rotate_to_heading_min_angle`
+(0.2) were set on 2026-09-12 for generator-1 routes along the door line and
+never measured on generator 3. Measure: the distance of the true narrow core
+from the nearest planned route segment while commanded forward (pod_0, 2 Hz).
+Every narrow failure in the turn-rate candidate arm and the forward-only arm
+reaches 0.099--0.165 m (ADR 0013's turning margin is 0.10 m); completed
+treatment runs reach at most 0.097 m but one (0.112); the 20 `roundtrip_v3f`
+runs at most 0.088 m. Candidate: the forward-only branch plus a fixed 0.35 m
+narrow lookahead (`lookahead_dist`, `min_`, `max_`), so the carrot swings past
+0.2 rad near each vertex and RPP turns in place there, as planned. Same 7-trial
+design, one campaign at one commit; baseline the forward-only arm. Accepted
+only if (1) every trial's maximum narrow route offset is at most 0.08 m;
+(2) no evaluator contact; (3) every recorded motion qualification passes;
+(4) the turn-rate criteria hold and no narrow in-place turn exceeds 1.5 rad.
+Completions reported, not the criterion.
+
 **Open harness item: long missions lose early truth.** The two 300 s timeouts
 (`docking_observability-02`, both arms) are flagged by `gate1_audit`:
 "evaluator diagnostics dropped 600 samples", evaluator truth only from 50.4 s.
