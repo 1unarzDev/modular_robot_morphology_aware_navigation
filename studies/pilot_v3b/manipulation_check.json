@@ -1,0 +1,1448 @@
+{
+  "contrast_summary": {
+    "sensing_feasibility_coupled_vs_feasibility_coupled": {
+      "combined_constraints": {
+        "layouts": 6,
+        "route_separating": 3,
+        "site_separating": 3,
+        "unplanned": 1
+      },
+      "docking_observability": {
+        "layouts": 6,
+        "route_separating": 4,
+        "site_separating": 4,
+        "unplanned": 0
+      }
+    },
+    "sensing_feasibility_coupled_vs_geometry_coupled": {
+      "combined_constraints": {
+        "layouts": 6,
+        "route_separating": 3,
+        "site_separating": 3,
+        "unplanned": 1
+      },
+      "docking_observability": {
+        "layouts": 6,
+        "route_separating": 4,
+        "site_separating": 4,
+        "unplanned": 0
+      },
+      "reconfiguration_workspace": {
+        "layouts": 6,
+        "route_separating": 4,
+        "site_separating": 4,
+        "unplanned": 0
+      }
+    }
+  },
+  "design_hash": "482ccb771dcb5bf9198357d425e97c3c71b35cf264d7684484e4222491f82614",
+  "epsilon": 2.5,
+  "heading_bins": 8,
+  "layout_generator": 3,
+  "layouts": [
+    {
+      "decisions": {
+        "feasibility_coupled": {
+          "method": "feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "dc876899787c9715bbad2d4cc531e91af476b29b496656da17f61f3a83b80d40",
+          "transition_site": [
+            30,
+            11
+          ]
+        },
+        "geometry_coupled": {
+          "method": "geometry_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "dc876899787c9715bbad2d4cc531e91af476b29b496656da17f61f3a83b80d40",
+          "transition_site": [
+            30,
+            11
+          ]
+        },
+        "route_first_adaptation": {
+          "error": "NoPathError: fixed spatial route cannot be adapted with feasible transitions",
+          "method": "route_first_adaptation",
+          "planned": false
+        },
+        "sensing_feasibility_coupled": {
+          "method": "sensing_feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "dc876899787c9715bbad2d4cc531e91af476b29b496656da17f61f3a83b80d40",
+          "transition_site": [
+            30,
+            11
+          ]
+        }
+      },
+      "family": "reconfiguration_workspace",
+      "layout_index": 0,
+      "separates": {
+        "sensing_feasibility_coupled_vs_geometry_coupled": {
+          "route_differs": false,
+          "site_differs": false
+        }
+      },
+      "world_seed": 7174141607240007677
+    },
+    {
+      "decisions": {
+        "feasibility_coupled": {
+          "method": "feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "core:post_transition_collision",
+            "planar_clearance",
+            "pod_0:environment_collision",
+            "pod_0:post_transition_collision",
+            "pod_1:environment_collision",
+            "pod_1:post_transition_collision",
+            "pod_2:environment_collision",
+            "pod_2:post_transition_collision",
+            "pod_3:environment_collision",
+            "pod_3:post_transition_collision",
+            "pod_4:environment_collision",
+            "pod_4:post_transition_collision",
+            "pod_5:environment_collision",
+            "pod_5:post_transition_collision",
+            "target_footprint"
+          ],
+          "route_signature": "2b2366388b4f93030bfa7c0f895ed7cc2a306110e3b301704752e87f30f19c52",
+          "transition_site": [
+            15,
+            20
+          ]
+        },
+        "geometry_coupled": {
+          "method": "geometry_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "f1bbb8e729903bbf1fd08d6c27b7ad14cabece3b17efbbc6b89edf9831f02e65",
+          "transition_site": [
+            28,
+            20
+          ]
+        },
+        "route_first_adaptation": {
+          "error": "NoPathError: fixed spatial route cannot be adapted with feasible transitions",
+          "method": "route_first_adaptation",
+          "planned": false
+        },
+        "sensing_feasibility_coupled": {
+          "method": "sensing_feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "core:post_transition_collision",
+            "planar_clearance",
+            "pod_0:connector_not_visible",
+            "pod_0:covariance_too_large",
+            "pod_0:environment_collision",
+            "pod_0:post_transition_collision",
+            "pod_1:connector_not_visible",
+            "pod_1:covariance_too_large",
+            "pod_1:environment_collision",
+            "pod_1:post_transition_collision",
+            "pod_2:connector_not_visible",
+            "pod_2:covariance_too_large",
+            "pod_2:environment_collision",
+            "pod_2:post_transition_collision",
+            "pod_3:connector_not_visible",
+            "pod_3:covariance_too_large",
+            "pod_3:environment_collision",
+            "pod_3:post_transition_collision",
+            "pod_4:environment_collision",
+            "pod_4:post_transition_collision",
+            "pod_5:environment_collision",
+            "pod_5:post_transition_collision",
+            "target_footprint"
+          ],
+          "route_signature": "2b2366388b4f93030bfa7c0f895ed7cc2a306110e3b301704752e87f30f19c52",
+          "transition_site": [
+            15,
+            20
+          ]
+        }
+      },
+      "family": "reconfiguration_workspace",
+      "layout_index": 1,
+      "separates": {
+        "sensing_feasibility_coupled_vs_geometry_coupled": {
+          "route_differs": true,
+          "site_differs": true
+        }
+      },
+      "world_seed": 7911778631919671217
+    },
+    {
+      "decisions": {
+        "feasibility_coupled": {
+          "method": "feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "core:post_transition_collision",
+            "planar_clearance",
+            "pod_0:environment_collision",
+            "pod_0:post_transition_collision",
+            "pod_1:environment_collision",
+            "pod_1:post_transition_collision",
+            "pod_2:environment_collision",
+            "pod_2:post_transition_collision",
+            "pod_3:environment_collision",
+            "pod_3:post_transition_collision",
+            "pod_4:environment_collision",
+            "pod_4:post_transition_collision",
+            "pod_5:environment_collision",
+            "pod_5:post_transition_collision",
+            "target_footprint"
+          ],
+          "route_signature": "2d16b295c87f3295ae0e2a0defc39b79a85c54d2e59232142836643116f40e2f",
+          "transition_site": [
+            17,
+            17
+          ]
+        },
+        "geometry_coupled": {
+          "method": "geometry_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "c446c9fa45b68fb89860d878f19aa75c7ab288c6ee73c0c99d0e020d9eadf72f",
+          "transition_site": [
+            30,
+            17
+          ]
+        },
+        "route_first_adaptation": {
+          "error": "NoPathError: fixed spatial route cannot be adapted with feasible transitions",
+          "method": "route_first_adaptation",
+          "planned": false
+        },
+        "sensing_feasibility_coupled": {
+          "method": "sensing_feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "core:post_transition_collision",
+            "planar_clearance",
+            "pod_0:connector_not_visible",
+            "pod_0:covariance_too_large",
+            "pod_0:environment_collision",
+            "pod_0:post_transition_collision",
+            "pod_1:connector_not_visible",
+            "pod_1:covariance_too_large",
+            "pod_1:environment_collision",
+            "pod_1:post_transition_collision",
+            "pod_2:connector_not_visible",
+            "pod_2:covariance_too_large",
+            "pod_2:environment_collision",
+            "pod_2:post_transition_collision",
+            "pod_3:connector_not_visible",
+            "pod_3:covariance_too_large",
+            "pod_3:environment_collision",
+            "pod_3:post_transition_collision",
+            "pod_4:environment_collision",
+            "pod_4:post_transition_collision",
+            "pod_5:environment_collision",
+            "pod_5:post_transition_collision",
+            "target_footprint"
+          ],
+          "route_signature": "2d16b295c87f3295ae0e2a0defc39b79a85c54d2e59232142836643116f40e2f",
+          "transition_site": [
+            17,
+            17
+          ]
+        }
+      },
+      "family": "reconfiguration_workspace",
+      "layout_index": 2,
+      "separates": {
+        "sensing_feasibility_coupled_vs_geometry_coupled": {
+          "route_differs": true,
+          "site_differs": true
+        }
+      },
+      "world_seed": 15565262481464412106
+    },
+    {
+      "decisions": {
+        "feasibility_coupled": {
+          "method": "feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "pod_0:environment_collision",
+            "pod_0:post_transition_collision",
+            "pod_1:environment_collision",
+            "pod_1:post_transition_collision",
+            "pod_2:environment_collision",
+            "pod_2:post_transition_collision",
+            "pod_3:environment_collision",
+            "pod_3:post_transition_collision",
+            "pod_4:environment_collision",
+            "pod_4:post_transition_collision",
+            "pod_5:environment_collision",
+            "pod_5:post_transition_collision",
+            "target_footprint"
+          ],
+          "route_signature": "cfc82f925eaedf75c247b91a44346f18d307f845e18449d01b29f725f5977abe",
+          "transition_site": [
+            18,
+            15
+          ]
+        },
+        "geometry_coupled": {
+          "method": "geometry_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "a2e78b9b4ffc9d346355c3f21573be56d6d095d975dc64c1eeaab2ac8009580b",
+          "transition_site": [
+            30,
+            15
+          ]
+        },
+        "route_first_adaptation": {
+          "error": "NoPathError: fixed spatial route cannot be adapted with feasible transitions",
+          "method": "route_first_adaptation",
+          "planned": false
+        },
+        "sensing_feasibility_coupled": {
+          "method": "sensing_feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "pod_0:connector_not_visible",
+            "pod_0:covariance_too_large",
+            "pod_0:environment_collision",
+            "pod_0:post_transition_collision",
+            "pod_1:connector_not_visible",
+            "pod_1:covariance_too_large",
+            "pod_1:environment_collision",
+            "pod_1:post_transition_collision",
+            "pod_2:connector_not_visible",
+            "pod_2:covariance_too_large",
+            "pod_2:environment_collision",
+            "pod_2:post_transition_collision",
+            "pod_3:connector_not_visible",
+            "pod_3:covariance_too_large",
+            "pod_3:environment_collision",
+            "pod_3:post_transition_collision",
+            "pod_4:connector_not_visible",
+            "pod_4:covariance_too_large",
+            "pod_4:environment_collision",
+            "pod_4:post_transition_collision",
+            "pod_5:connector_not_visible",
+            "pod_5:covariance_too_large",
+            "pod_5:environment_collision",
+            "pod_5:post_transition_collision",
+            "target_footprint"
+          ],
+          "route_signature": "cfc82f925eaedf75c247b91a44346f18d307f845e18449d01b29f725f5977abe",
+          "transition_site": [
+            18,
+            15
+          ]
+        }
+      },
+      "family": "reconfiguration_workspace",
+      "layout_index": 3,
+      "separates": {
+        "sensing_feasibility_coupled_vs_geometry_coupled": {
+          "route_differs": true,
+          "site_differs": true
+        }
+      },
+      "world_seed": 8273333987803867732
+    },
+    {
+      "decisions": {
+        "feasibility_coupled": {
+          "method": "feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "dc6591addb3202f2e382f1e8b61ad776ca0fbedf074753253532e5d7ca3a03e3",
+          "transition_site": [
+            32,
+            15
+          ]
+        },
+        "geometry_coupled": {
+          "method": "geometry_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "dc6591addb3202f2e382f1e8b61ad776ca0fbedf074753253532e5d7ca3a03e3",
+          "transition_site": [
+            32,
+            15
+          ]
+        },
+        "route_first_adaptation": {
+          "error": "NoPathError: fixed spatial route cannot be adapted with feasible transitions",
+          "method": "route_first_adaptation",
+          "planned": false
+        },
+        "sensing_feasibility_coupled": {
+          "method": "sensing_feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "dc6591addb3202f2e382f1e8b61ad776ca0fbedf074753253532e5d7ca3a03e3",
+          "transition_site": [
+            32,
+            15
+          ]
+        }
+      },
+      "family": "reconfiguration_workspace",
+      "layout_index": 4,
+      "separates": {
+        "sensing_feasibility_coupled_vs_geometry_coupled": {
+          "route_differs": false,
+          "site_differs": false
+        }
+      },
+      "world_seed": 4217894130456278096
+    },
+    {
+      "decisions": {
+        "feasibility_coupled": {
+          "method": "feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "core:post_transition_collision",
+            "planar_clearance",
+            "pod_0:environment_collision",
+            "pod_0:post_transition_collision",
+            "pod_1:environment_collision",
+            "pod_1:post_transition_collision",
+            "pod_2:environment_collision",
+            "pod_2:post_transition_collision",
+            "pod_3:environment_collision",
+            "pod_3:post_transition_collision",
+            "pod_4:environment_collision",
+            "pod_4:post_transition_collision",
+            "pod_5:environment_collision",
+            "pod_5:post_transition_collision",
+            "target_footprint"
+          ],
+          "route_signature": "61d4a3af8c3ee6d72a77db47e20a9e16b0e8a35352f039fd71b134e4eb067f77",
+          "transition_site": [
+            13,
+            13
+          ]
+        },
+        "geometry_coupled": {
+          "method": "geometry_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "f582647a2710a4ca32e7f8afe2b71f30f247c5ef7162562089a720ce61ed8043",
+          "transition_site": [
+            27,
+            13
+          ]
+        },
+        "route_first_adaptation": {
+          "error": "NoPathError: fixed spatial route cannot be adapted with feasible transitions",
+          "method": "route_first_adaptation",
+          "planned": false
+        },
+        "sensing_feasibility_coupled": {
+          "method": "sensing_feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "core:post_transition_collision",
+            "planar_clearance",
+            "pod_0:connector_not_visible",
+            "pod_0:covariance_too_large",
+            "pod_0:environment_collision",
+            "pod_0:post_transition_collision",
+            "pod_1:connector_not_visible",
+            "pod_1:covariance_too_large",
+            "pod_1:environment_collision",
+            "pod_1:post_transition_collision",
+            "pod_2:connector_not_visible",
+            "pod_2:covariance_too_large",
+            "pod_2:environment_collision",
+            "pod_2:post_transition_collision",
+            "pod_3:connector_not_visible",
+            "pod_3:covariance_too_large",
+            "pod_3:environment_collision",
+            "pod_3:post_transition_collision",
+            "pod_4:connector_not_visible",
+            "pod_4:covariance_too_large",
+            "pod_4:environment_collision",
+            "pod_4:post_transition_collision",
+            "pod_5:connector_not_visible",
+            "pod_5:covariance_too_large",
+            "pod_5:environment_collision",
+            "pod_5:post_transition_collision",
+            "target_footprint"
+          ],
+          "route_signature": "61d4a3af8c3ee6d72a77db47e20a9e16b0e8a35352f039fd71b134e4eb067f77",
+          "transition_site": [
+            13,
+            13
+          ]
+        }
+      },
+      "family": "reconfiguration_workspace",
+      "layout_index": 5,
+      "separates": {
+        "sensing_feasibility_coupled_vs_geometry_coupled": {
+          "route_differs": true,
+          "site_differs": true
+        }
+      },
+      "world_seed": 10085450394392979593
+    },
+    {
+      "decisions": {
+        "feasibility_coupled": {
+          "method": "feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "759c7b092f7ebb59878a54861f0a4b611856419b87662470c69dff9262040320",
+          "transition_site": [
+            30,
+            14
+          ]
+        },
+        "geometry_coupled": {
+          "method": "geometry_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "759c7b092f7ebb59878a54861f0a4b611856419b87662470c69dff9262040320",
+          "transition_site": [
+            30,
+            14
+          ]
+        },
+        "route_first_adaptation": {
+          "error": "NoPathError: fixed spatial route cannot be adapted with feasible transitions",
+          "method": "route_first_adaptation",
+          "planned": false
+        },
+        "sensing_feasibility_coupled": {
+          "method": "sensing_feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "759c7b092f7ebb59878a54861f0a4b611856419b87662470c69dff9262040320",
+          "transition_site": [
+            30,
+            14
+          ]
+        }
+      },
+      "family": "docking_observability",
+      "layout_index": 0,
+      "separates": {
+        "sensing_feasibility_coupled_vs_feasibility_coupled": {
+          "route_differs": false,
+          "site_differs": false
+        },
+        "sensing_feasibility_coupled_vs_geometry_coupled": {
+          "route_differs": false,
+          "site_differs": false
+        }
+      },
+      "world_seed": 7770345403414186131
+    },
+    {
+      "decisions": {
+        "feasibility_coupled": {
+          "method": "feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "d507e86f51507902c908bb2b3c67135ce8b59e1484d4a7263c8586fed1ea7dde",
+          "transition_site": [
+            27,
+            18
+          ]
+        },
+        "geometry_coupled": {
+          "method": "geometry_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "d507e86f51507902c908bb2b3c67135ce8b59e1484d4a7263c8586fed1ea7dde",
+          "transition_site": [
+            27,
+            18
+          ]
+        },
+        "route_first_adaptation": {
+          "error": "NoPathError: fixed spatial route cannot be adapted with feasible transitions",
+          "method": "route_first_adaptation",
+          "planned": false
+        },
+        "sensing_feasibility_coupled": {
+          "method": "sensing_feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "pod_0:connector_not_visible",
+            "pod_0:covariance_too_large",
+            "pod_1:connector_not_visible",
+            "pod_1:covariance_too_large",
+            "pod_2:connector_not_visible",
+            "pod_2:covariance_too_large",
+            "pod_3:connector_not_visible",
+            "pod_3:covariance_too_large",
+            "pod_4:connector_not_visible",
+            "pod_4:covariance_too_large",
+            "pod_5:connector_not_visible",
+            "pod_5:covariance_too_large",
+            "target_footprint"
+          ],
+          "route_signature": "a15f72d9ee08ccff90fa410ee7214aaa89bf046fb452b6452a31bdaa65db3fb7",
+          "transition_site": [
+            26,
+            11
+          ]
+        }
+      },
+      "family": "docking_observability",
+      "layout_index": 1,
+      "separates": {
+        "sensing_feasibility_coupled_vs_feasibility_coupled": {
+          "route_differs": true,
+          "site_differs": true
+        },
+        "sensing_feasibility_coupled_vs_geometry_coupled": {
+          "route_differs": true,
+          "site_differs": true
+        }
+      },
+      "world_seed": 18058814895912122679
+    },
+    {
+      "decisions": {
+        "feasibility_coupled": {
+          "method": "feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "86010a1b96859804fd04c821a5ab3f504703f4b5bf67ca0339e71e545bb47bec",
+          "transition_site": [
+            26,
+            24
+          ]
+        },
+        "geometry_coupled": {
+          "method": "geometry_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "86010a1b96859804fd04c821a5ab3f504703f4b5bf67ca0339e71e545bb47bec",
+          "transition_site": [
+            26,
+            24
+          ]
+        },
+        "route_first_adaptation": {
+          "error": "NoPathError: fixed spatial route cannot be adapted with feasible transitions",
+          "method": "route_first_adaptation",
+          "planned": false
+        },
+        "sensing_feasibility_coupled": {
+          "method": "sensing_feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "pod_0:connector_not_visible",
+            "pod_0:covariance_too_large",
+            "pod_1:connector_not_visible",
+            "pod_1:covariance_too_large",
+            "pod_2:connector_not_visible",
+            "pod_2:covariance_too_large",
+            "pod_3:connector_not_visible",
+            "pod_3:covariance_too_large",
+            "pod_4:connector_not_visible",
+            "pod_4:covariance_too_large",
+            "pod_5:connector_not_visible",
+            "pod_5:covariance_too_large",
+            "target_footprint"
+          ],
+          "route_signature": "39174c1c7189ae3792c5b9baae6ddac3c2b65235db2c66ff01b275371df8015a",
+          "transition_site": [
+            25,
+            18
+          ]
+        }
+      },
+      "family": "docking_observability",
+      "layout_index": 2,
+      "separates": {
+        "sensing_feasibility_coupled_vs_feasibility_coupled": {
+          "route_differs": true,
+          "site_differs": true
+        },
+        "sensing_feasibility_coupled_vs_geometry_coupled": {
+          "route_differs": true,
+          "site_differs": true
+        }
+      },
+      "world_seed": 271560892161085801
+    },
+    {
+      "decisions": {
+        "feasibility_coupled": {
+          "method": "feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "74b9d220685f1951f089f3e16b5b537b2cfa2ce67e1360f88761d654d6edc92d",
+          "transition_site": [
+            32,
+            15
+          ]
+        },
+        "geometry_coupled": {
+          "method": "geometry_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "74b9d220685f1951f089f3e16b5b537b2cfa2ce67e1360f88761d654d6edc92d",
+          "transition_site": [
+            32,
+            15
+          ]
+        },
+        "route_first_adaptation": {
+          "error": "NoPathError: fixed spatial route cannot be adapted with feasible transitions",
+          "method": "route_first_adaptation",
+          "planned": false
+        },
+        "sensing_feasibility_coupled": {
+          "method": "sensing_feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "pod_0:connector_not_visible",
+            "pod_0:covariance_too_large",
+            "pod_1:connector_not_visible",
+            "pod_1:covariance_too_large",
+            "pod_2:connector_not_visible",
+            "pod_2:covariance_too_large",
+            "pod_3:connector_not_visible",
+            "pod_3:covariance_too_large",
+            "pod_4:connector_not_visible",
+            "pod_4:covariance_too_large",
+            "pod_5:connector_not_visible",
+            "pod_5:covariance_too_large",
+            "target_footprint"
+          ],
+          "route_signature": "492d664fc9a3efe6aa61115449b72629b22552f59aee7aeee731a3bcfa416a8e",
+          "transition_site": [
+            29,
+            13
+          ]
+        }
+      },
+      "family": "docking_observability",
+      "layout_index": 3,
+      "separates": {
+        "sensing_feasibility_coupled_vs_feasibility_coupled": {
+          "route_differs": true,
+          "site_differs": true
+        },
+        "sensing_feasibility_coupled_vs_geometry_coupled": {
+          "route_differs": true,
+          "site_differs": true
+        }
+      },
+      "world_seed": 17758593553534250790
+    },
+    {
+      "decisions": {
+        "feasibility_coupled": {
+          "method": "feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "08c9369ac56be78f501a17ab1a3cf0395bf7c35bba674cf74730ad1346f47522",
+          "transition_site": [
+            31,
+            14
+          ]
+        },
+        "geometry_coupled": {
+          "method": "geometry_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "08c9369ac56be78f501a17ab1a3cf0395bf7c35bba674cf74730ad1346f47522",
+          "transition_site": [
+            31,
+            14
+          ]
+        },
+        "route_first_adaptation": {
+          "error": "NoPathError: fixed spatial route cannot be adapted with feasible transitions",
+          "method": "route_first_adaptation",
+          "planned": false
+        },
+        "sensing_feasibility_coupled": {
+          "method": "sensing_feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "08c9369ac56be78f501a17ab1a3cf0395bf7c35bba674cf74730ad1346f47522",
+          "transition_site": [
+            31,
+            14
+          ]
+        }
+      },
+      "family": "docking_observability",
+      "layout_index": 4,
+      "separates": {
+        "sensing_feasibility_coupled_vs_feasibility_coupled": {
+          "route_differs": false,
+          "site_differs": false
+        },
+        "sensing_feasibility_coupled_vs_geometry_coupled": {
+          "route_differs": false,
+          "site_differs": false
+        }
+      },
+      "world_seed": 9409395258750428616
+    },
+    {
+      "decisions": {
+        "feasibility_coupled": {
+          "method": "feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "2eb11339a8225d85205b0b19d20e723886c8877bd7ebf87fe0feb09808479b71",
+          "transition_site": [
+            26,
+            12
+          ]
+        },
+        "geometry_coupled": {
+          "method": "geometry_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "2eb11339a8225d85205b0b19d20e723886c8877bd7ebf87fe0feb09808479b71",
+          "transition_site": [
+            26,
+            12
+          ]
+        },
+        "route_first_adaptation": {
+          "error": "NoPathError: fixed spatial route cannot be adapted with feasible transitions",
+          "method": "route_first_adaptation",
+          "planned": false
+        },
+        "sensing_feasibility_coupled": {
+          "method": "sensing_feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "pod_0:connector_not_visible",
+            "pod_0:covariance_too_large",
+            "pod_1:connector_not_visible",
+            "pod_1:covariance_too_large",
+            "pod_2:connector_not_visible",
+            "pod_2:covariance_too_large",
+            "pod_3:connector_not_visible",
+            "pod_3:covariance_too_large",
+            "pod_4:connector_not_visible",
+            "pod_4:covariance_too_large",
+            "pod_5:connector_not_visible",
+            "pod_5:covariance_too_large",
+            "target_footprint"
+          ],
+          "route_signature": "cf293b1ce870e46f4cf890bf051e7525bee58b488cbd6e3f97fea8422d8cf624",
+          "transition_site": [
+            24,
+            11
+          ]
+        }
+      },
+      "family": "docking_observability",
+      "layout_index": 5,
+      "separates": {
+        "sensing_feasibility_coupled_vs_feasibility_coupled": {
+          "route_differs": true,
+          "site_differs": true
+        },
+        "sensing_feasibility_coupled_vs_geometry_coupled": {
+          "route_differs": true,
+          "site_differs": true
+        }
+      },
+      "world_seed": 9057038805600400025
+    },
+    {
+      "decisions": {
+        "feasibility_coupled": {
+          "method": "feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "f0778c23220879f6fccaf2c9fa2c3069c612e62c6e5c3d99348b7559d72b5414",
+          "transition_site": [
+            26,
+            15
+          ]
+        },
+        "geometry_coupled": {
+          "method": "geometry_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "f0778c23220879f6fccaf2c9fa2c3069c612e62c6e5c3d99348b7559d72b5414",
+          "transition_site": [
+            26,
+            15
+          ]
+        },
+        "route_first_adaptation": {
+          "error": "NoPathError: fixed spatial route cannot be adapted with feasible transitions",
+          "method": "route_first_adaptation",
+          "planned": false
+        },
+        "sensing_feasibility_coupled": {
+          "method": "sensing_feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "f0778c23220879f6fccaf2c9fa2c3069c612e62c6e5c3d99348b7559d72b5414",
+          "transition_site": [
+            26,
+            15
+          ]
+        }
+      },
+      "family": "combined_constraints",
+      "layout_index": 0,
+      "separates": {
+        "sensing_feasibility_coupled_vs_feasibility_coupled": {
+          "route_differs": false,
+          "site_differs": false
+        },
+        "sensing_feasibility_coupled_vs_geometry_coupled": {
+          "route_differs": false,
+          "site_differs": false
+        }
+      },
+      "world_seed": 506284564803017966
+    },
+    {
+      "decisions": {
+        "feasibility_coupled": {
+          "method": "feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "core:post_transition_collision",
+            "planar_clearance",
+            "pod_0:environment_collision",
+            "pod_0:post_transition_collision",
+            "pod_1:environment_collision",
+            "pod_1:post_transition_collision",
+            "pod_2:environment_collision",
+            "pod_2:post_transition_collision",
+            "pod_3:environment_collision",
+            "pod_3:post_transition_collision",
+            "pod_4:environment_collision",
+            "pod_4:post_transition_collision",
+            "pod_5:environment_collision",
+            "pod_5:post_transition_collision",
+            "target_footprint"
+          ],
+          "route_signature": "ca9f05460825b253b5bb3cc955b40c5299e64b948089ac7aff20dcf063e11a4c",
+          "transition_site": [
+            13,
+            16
+          ]
+        },
+        "geometry_coupled": {
+          "method": "geometry_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "2b10cfb96698d9fc00193063c1bc955dcc53c6d44e4c072a14140e554574bfd2",
+          "transition_site": [
+            25,
+            16
+          ]
+        },
+        "route_first_adaptation": {
+          "error": "NoPathError: fixed spatial route cannot be adapted with feasible transitions",
+          "method": "route_first_adaptation",
+          "planned": false
+        },
+        "sensing_feasibility_coupled": {
+          "method": "sensing_feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "core:post_transition_collision",
+            "planar_clearance",
+            "pod_0:connector_not_visible",
+            "pod_0:covariance_too_large",
+            "pod_0:environment_collision",
+            "pod_0:post_transition_collision",
+            "pod_1:connector_not_visible",
+            "pod_1:covariance_too_large",
+            "pod_1:environment_collision",
+            "pod_1:post_transition_collision",
+            "pod_2:connector_not_visible",
+            "pod_2:covariance_too_large",
+            "pod_2:environment_collision",
+            "pod_2:post_transition_collision",
+            "pod_3:connector_not_visible",
+            "pod_3:covariance_too_large",
+            "pod_3:environment_collision",
+            "pod_3:post_transition_collision",
+            "pod_4:connector_not_visible",
+            "pod_4:covariance_too_large",
+            "pod_4:environment_collision",
+            "pod_4:post_transition_collision",
+            "pod_5:connector_not_visible",
+            "pod_5:covariance_too_large",
+            "pod_5:environment_collision",
+            "pod_5:post_transition_collision",
+            "target_footprint"
+          ],
+          "route_signature": "1313f6b434ac753880d4c05d5205563507a34161947925c64ae27937b3fb6133",
+          "transition_site": [
+            12,
+            16
+          ]
+        }
+      },
+      "family": "combined_constraints",
+      "layout_index": 1,
+      "separates": {
+        "sensing_feasibility_coupled_vs_feasibility_coupled": {
+          "route_differs": true,
+          "site_differs": true
+        },
+        "sensing_feasibility_coupled_vs_geometry_coupled": {
+          "route_differs": true,
+          "site_differs": true
+        }
+      },
+      "world_seed": 5392139205656562707
+    },
+    {
+      "decisions": {
+        "feasibility_coupled": {
+          "method": "feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "core:post_transition_collision",
+            "planar_clearance",
+            "pod_0:environment_collision",
+            "pod_0:post_transition_collision",
+            "pod_1:environment_collision",
+            "pod_1:post_transition_collision",
+            "pod_2:environment_collision",
+            "pod_2:post_transition_collision",
+            "pod_3:environment_collision",
+            "pod_3:post_transition_collision",
+            "pod_4:environment_collision",
+            "pod_4:post_transition_collision",
+            "pod_5:environment_collision",
+            "pod_5:post_transition_collision",
+            "target_footprint"
+          ],
+          "route_signature": "1f4cb53893181c048258bbc6a83fad8de9203f8d501e003a87ea0b88a1257308",
+          "transition_site": [
+            16,
+            18
+          ]
+        },
+        "geometry_coupled": {
+          "method": "geometry_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "7b2057cb4a32f62e32a277cced8e38c1bd06101034dad608598062a7eef27ee8",
+          "transition_site": [
+            30,
+            18
+          ]
+        },
+        "route_first_adaptation": {
+          "error": "NoPathError: fixed spatial route cannot be adapted with feasible transitions",
+          "method": "route_first_adaptation",
+          "planned": false
+        },
+        "sensing_feasibility_coupled": {
+          "method": "sensing_feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "core:post_transition_collision",
+            "planar_clearance",
+            "pod_0:connector_not_visible",
+            "pod_0:covariance_too_large",
+            "pod_0:environment_collision",
+            "pod_0:post_transition_collision",
+            "pod_1:connector_not_visible",
+            "pod_1:covariance_too_large",
+            "pod_1:environment_collision",
+            "pod_1:post_transition_collision",
+            "pod_2:connector_not_visible",
+            "pod_2:covariance_too_large",
+            "pod_2:environment_collision",
+            "pod_2:post_transition_collision",
+            "pod_3:connector_not_visible",
+            "pod_3:covariance_too_large",
+            "pod_3:environment_collision",
+            "pod_3:post_transition_collision",
+            "pod_4:connector_not_visible",
+            "pod_4:covariance_too_large",
+            "pod_4:environment_collision",
+            "pod_4:post_transition_collision",
+            "pod_5:connector_not_visible",
+            "pod_5:covariance_too_large",
+            "pod_5:environment_collision",
+            "pod_5:post_transition_collision",
+            "target_footprint"
+          ],
+          "route_signature": "c4d4f33322b4bff7b3415e3da801cb3ec0a2638904dd1c2d228e6682f77614df",
+          "transition_site": [
+            11,
+            18
+          ]
+        }
+      },
+      "family": "combined_constraints",
+      "layout_index": 2,
+      "separates": {
+        "sensing_feasibility_coupled_vs_feasibility_coupled": {
+          "route_differs": true,
+          "site_differs": true
+        },
+        "sensing_feasibility_coupled_vs_geometry_coupled": {
+          "route_differs": true,
+          "site_differs": true
+        }
+      },
+      "world_seed": 12459851974317961615
+    },
+    {
+      "decisions": {
+        "feasibility_coupled": {
+          "method": "feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "core:post_transition_collision",
+            "planar_clearance",
+            "pod_0:environment_collision",
+            "pod_0:post_transition_collision",
+            "pod_1:environment_collision",
+            "pod_1:post_transition_collision",
+            "pod_2:environment_collision",
+            "pod_2:post_transition_collision",
+            "pod_3:environment_collision",
+            "pod_3:post_transition_collision",
+            "pod_4:environment_collision",
+            "pod_4:post_transition_collision",
+            "pod_5:environment_collision",
+            "pod_5:post_transition_collision",
+            "target_footprint"
+          ],
+          "route_signature": "2155cee281973ae88e24cdc39aae311ff21d6d4bca904ab6ac5dd70db06d6a14",
+          "transition_site": [
+            12,
+            18
+          ]
+        },
+        "geometry_coupled": {
+          "method": "geometry_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "abc47d362dd86d22fd58cca40e52da1ae0c2d539dfa7a5e3ea348337197b34c9",
+          "transition_site": [
+            26,
+            18
+          ]
+        },
+        "route_first_adaptation": {
+          "error": "NoPathError: fixed spatial route cannot be adapted with feasible transitions",
+          "method": "route_first_adaptation",
+          "planned": false
+        },
+        "sensing_feasibility_coupled": {
+          "error": "NoPathError: no collision-free hybrid plan",
+          "method": "sensing_feasibility_coupled",
+          "planned": false
+        }
+      },
+      "family": "combined_constraints",
+      "layout_index": 3,
+      "separates": {
+        "sensing_feasibility_coupled_vs_feasibility_coupled": null,
+        "sensing_feasibility_coupled_vs_geometry_coupled": null
+      },
+      "world_seed": 8959762373269364205
+    },
+    {
+      "decisions": {
+        "feasibility_coupled": {
+          "method": "feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "f5252f07a53fbba33fb6b47954cc7ce471c36ada90276793d6e65d78e9ba8b3c",
+          "transition_site": [
+            28,
+            19
+          ]
+        },
+        "geometry_coupled": {
+          "method": "geometry_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "f5252f07a53fbba33fb6b47954cc7ce471c36ada90276793d6e65d78e9ba8b3c",
+          "transition_site": [
+            28,
+            19
+          ]
+        },
+        "route_first_adaptation": {
+          "error": "NoPathError: fixed spatial route cannot be adapted with feasible transitions",
+          "method": "route_first_adaptation",
+          "planned": false
+        },
+        "sensing_feasibility_coupled": {
+          "method": "sensing_feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "f5252f07a53fbba33fb6b47954cc7ce471c36ada90276793d6e65d78e9ba8b3c",
+          "transition_site": [
+            28,
+            19
+          ]
+        }
+      },
+      "family": "combined_constraints",
+      "layout_index": 4,
+      "separates": {
+        "sensing_feasibility_coupled_vs_feasibility_coupled": {
+          "route_differs": false,
+          "site_differs": false
+        },
+        "sensing_feasibility_coupled_vs_geometry_coupled": {
+          "route_differs": false,
+          "site_differs": false
+        }
+      },
+      "world_seed": 1841274248864033772
+    },
+    {
+      "decisions": {
+        "feasibility_coupled": {
+          "method": "feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "core:post_transition_collision",
+            "planar_clearance",
+            "pod_0:environment_collision",
+            "pod_0:post_transition_collision",
+            "pod_1:environment_collision",
+            "pod_1:post_transition_collision",
+            "pod_2:environment_collision",
+            "pod_2:post_transition_collision",
+            "pod_3:environment_collision",
+            "pod_3:post_transition_collision",
+            "pod_4:environment_collision",
+            "pod_4:post_transition_collision",
+            "pod_5:environment_collision",
+            "pod_5:post_transition_collision",
+            "target_footprint"
+          ],
+          "route_signature": "d8d18c033fa07e6dd679052fe593c04f097b747399ae5026c222f3b1adb33098",
+          "transition_site": [
+            16,
+            13
+          ]
+        },
+        "geometry_coupled": {
+          "method": "geometry_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "target_footprint"
+          ],
+          "route_signature": "6a46f737f243f52231199e160e1b7228cc3314d04058cd073bd6a18d4230332a",
+          "transition_site": [
+            30,
+            13
+          ]
+        },
+        "route_first_adaptation": {
+          "method": "route_first_adaptation",
+          "planned": true,
+          "rejection_reasons": [
+            "planar_clearance",
+            "pod_0:connector_not_visible",
+            "pod_0:covariance_too_large",
+            "pod_0:post_transition_collision",
+            "pod_1:connector_not_visible",
+            "pod_1:covariance_too_large",
+            "pod_2:connector_not_visible",
+            "pod_2:covariance_too_large",
+            "pod_3:connector_not_visible",
+            "pod_3:covariance_too_large",
+            "pod_4:connector_not_visible",
+            "pod_4:covariance_too_large",
+            "pod_4:environment_collision",
+            "pod_4:post_transition_collision",
+            "pod_5:connector_not_visible",
+            "pod_5:covariance_too_large",
+            "target_footprint"
+          ],
+          "route_signature": "434397572aec3487715e535a37c10bf360e309767e802a20a5225e0c0778ce2e",
+          "transition_site": [
+            11,
+            13
+          ]
+        },
+        "sensing_feasibility_coupled": {
+          "method": "sensing_feasibility_coupled",
+          "planned": true,
+          "rejection_reasons": [
+            "core:post_transition_collision",
+            "planar_clearance",
+            "pod_0:connector_not_visible",
+            "pod_0:covariance_too_large",
+            "pod_0:environment_collision",
+            "pod_0:post_transition_collision",
+            "pod_1:connector_not_visible",
+            "pod_1:covariance_too_large",
+            "pod_1:environment_collision",
+            "pod_1:post_transition_collision",
+            "pod_2:connector_not_visible",
+            "pod_2:covariance_too_large",
+            "pod_2:environment_collision",
+            "pod_2:post_transition_collision",
+            "pod_3:connector_not_visible",
+            "pod_3:covariance_too_large",
+            "pod_3:environment_collision",
+            "pod_3:post_transition_collision",
+            "pod_4:connector_not_visible",
+            "pod_4:covariance_too_large",
+            "pod_4:environment_collision",
+            "pod_4:post_transition_collision",
+            "pod_5:connector_not_visible",
+            "pod_5:covariance_too_large",
+            "pod_5:environment_collision",
+            "pod_5:post_transition_collision",
+            "target_footprint"
+          ],
+          "route_signature": "6b4b49757cfb9744dc357c58835331a2e814aa36a12e03265b63af8083c1f2e3",
+          "transition_site": [
+            11,
+            13
+          ]
+        }
+      },
+      "family": "combined_constraints",
+      "layout_index": 5,
+      "separates": {
+        "sensing_feasibility_coupled_vs_feasibility_coupled": {
+          "route_differs": true,
+          "site_differs": true
+        },
+        "sensing_feasibility_coupled_vs_geometry_coupled": {
+          "route_differs": true,
+          "site_differs": true
+        }
+      },
+      "world_seed": 17349021301846409392
+    }
+  ],
+  "purpose": "gate2_planner_manipulation_check",
+  "schema_version": 1,
+  "sensing": "station_observability_predicted_from_priors",
+  "sensing_caveat": "ADR 0006: this is the predictor the planner node installs in a mission, reading the station and obstacles the scenario declares, so the planner is no longer handed a declared answer. What it still does not show is that the simulator's station delivers the same observability in a running mission; that is what station_observability_audit has to establish."
+}

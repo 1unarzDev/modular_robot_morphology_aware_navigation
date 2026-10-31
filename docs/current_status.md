@@ -1200,6 +1200,26 @@ platform, so freezing now decides nothing an outcome could inform; it runs
 only after both fixes are decided and Gate 0 is re-qualified, read by the
 same rules as `pilot_v3` was to be.
 
+Its planner manipulation check is committed before any trial
+(`studies/pilot_v3b/manipulation_check.json`, all three families, current
+planner; neither pending fix touches the planner, and the check is recomputed
+if one ever does):
+
+| Contrast | Family | site separates | unplanned |
+|---|---|---|---|
+| sensing vs geometry | `reconfiguration_workspace` | 4/4 | 0 |
+| sensing vs geometry | `docking_observability` | 4/4 | 0 |
+| sensing vs geometry | `combined_constraints` | 3/4 | 1 |
+| sensing vs feasibility | `docking_observability` | 4/4 | 0 |
+| sensing vs feasibility | `combined_constraints` | 3/4 | 1 |
+
+All six neutral layouts agree across methods. The unplanned layout is
+`combined_constraints-03`, where `sensing_feasibility_coupled` itself finds no
+hybrid plan (both controls plan, at shadowed sites). As in the generator-2
+pilot it is kept and scores as the treatment's mission failure, which biases
+against the treatment; screening it out would select the population in its
+favour.
+
 **A half-started stack was scored as a robot outcome (pilot_v3 at 56 of 144).**
 `docking_observability-00-r1-feasibility_coupled`, a neutral layout, ended
 `controller_failure` after 125 s simulated and four "Failed to make progress"
