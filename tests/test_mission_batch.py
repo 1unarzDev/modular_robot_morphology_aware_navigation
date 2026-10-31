@@ -36,6 +36,13 @@ def test_reconfiguration_failure_and_unsafe_topology_have_distinct_labels():
     ) == "motion_qualification_failure"
 
 
+def test_unsettled_planner_revisions_are_infrastructure():
+    assert classify_terminal(
+        False, "planner revisions did not settle: sensing signature changed "
+        "before planning", False
+    ) == "infrastructure_failure"
+
+
 def test_only_live_launch_infrastructure_failures_are_retried():
     assert retryable_infrastructure_failure("infrastructure_failure", None)
     assert not retryable_infrastructure_failure("process_crash", 1)

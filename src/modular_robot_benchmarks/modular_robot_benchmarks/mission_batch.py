@@ -38,6 +38,10 @@ def classify_terminal(success: bool, message: str, timed_out: bool) -> str:
         return "motion_qualification_failure"
     if "costmap" in lowered and "acknowledge" in lowered:
         return "infrastructure_failure"
+    # The stack's nodes never agreed on the state to plan from; the robot was
+    # never asked to move.
+    if lowered.startswith("planner revisions did not settle"):
+        return "infrastructure_failure"
     # A method that found no plan never moved for a reason of its own; checked
     # before the transition keywords, because route-first's NoPathError names
     # "feasible transitions" and was being recorded as a docking failure.

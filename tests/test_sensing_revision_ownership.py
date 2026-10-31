@@ -22,6 +22,18 @@ def test_navigator_retries_preplan_revision_changes() -> None:
     assert '"changed before planning" in plan_result.message' in text
 
 
+def test_stale_revision_retries_wait_and_spend_no_planning_pass() -> None:
+    """Immediate retries exhausted the loop in 23 ms of a startup race and were
+    recorded as a controller failure (roundtrip_v3e, 2026-10-31)."""
+    source = ROOT / "src/modular_robot_bringup/modular_robot_bringup/hybrid_navigator.py"
+    text = source.read_text(encoding="utf-8")
+    branch = text.split('"changed before planning" in plan_result.message', 1)[1]
+    branch = branch.split("passes += 1", 1)[0]
+    assert "await self._sleep(REVISION_SETTLE_S)" in branch
+    assert "continue" in branch
+    assert "did not settle" in branch
+
+
 def test_docking_stability_counts_fresh_samples_not_planning_revisions() -> None:
     source = ROOT / "src/reconfiguration_executor/reconfiguration_executor/node.py"
     text = source.read_text(encoding="utf-8")

@@ -18,16 +18,16 @@ placement-robust station prediction (`43255f7`), 4x finer localization map
 (`9371593`), and RPP's narrow rotation no longer ratcheting on odometry
 (`971affb`; the narrow odometry over-reports ~0.2 rad/s, still unexplained).
 
-**Resume here (2026-10-31):** read the generator-3 treatment round trip left
-running overnight at `971affb` -- `results/run_roundtrip_v3e.launch.log` and
-`results/qualification/roundtrip_v3e_raw` / `roundtrip_v3e_audit.json` in the
-WSL clone. **It was interrupted by a shutdown** with 7 or more of 20 terminal
-records, all completed. Resume it at the same commit -- mission_batch skips
-terminal records, so the campaign stays one commit -- from Windows with
-(resume_campaign.sh is start_campaign.sh without the fetch, so it cannot
-move the clone off the run commit) `Start-Process wsl.exe -ArgumentList '-e bash -lc "/home/checker/morphology_ws/results/qualification/resume_campaign.sh 971affb run_roundtrip_v3e"' -WindowStyle Hidden`.
-The WSL clone must still be at `971affb` (`git -C /home/checker/morphology_ws
-log -1`); do not fast-forward it until this run is audited. If it passes, run `pilot_v3`
+**Resume here (2026-10-31):** `roundtrip_v3e` at `971affb` finished 19 of 20
+(audit and records under `studies/gate0/`); its one failure was a navigator
+startup race that never moved the robot, now fixed (`docs/current_status.md`,
+generator-3 qualification). A fresh 20, `roundtrip_v3f`, runs at the fixing
+commit -- `results/run_roundtrip_v3f.launch.log` and
+`results/qualification/roundtrip_v3f_audit.json` in the WSL clone; it was
+started with `results/qualification/start_campaign.sh <commit>
+run_roundtrip_v3f`, and an interrupted run resumes at the same commit with
+`resume_campaign.sh <commit> run_roundtrip_v3f`. Do not move the WSL clone off
+the run commit until it is audited. If it passes, run `pilot_v3`
 (`studies/pilot_v3/design.json`, planner check committed) with
 `results/qualification/start_campaign.sh <commit> run_pilot` after pointing
 run_pilot.sh at the pilot_v3 design; then `pilot_nuisance --power`, Gate 0 on

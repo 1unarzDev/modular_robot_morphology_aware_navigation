@@ -28,8 +28,14 @@ from .qualification import (
 
 
 # Replans a mission may make that are not recoveries: one per committed
-# transformation, plus revision changes. Generous; it is a loop guard only.
+# transformation, plus revisions changed mid-plan. Generous; a loop guard only.
 MAX_PLANNED_REPLANS = 8
+# The planner and this node follow the estimator's revisions through their own
+# subscriptions, so for a few callbacks after startup they can disagree. A
+# stale-revision rejection waits this long on the simulated clock and retries,
+# up to this many times in a row, without spending a planning pass.
+REVISION_SETTLE_S = 0.1
+MAX_STALE_REVISION_RETRIES = 50
 
 class HybridNavigator(Node):
     def __init__(self) -> None:
@@ -130,7 +136,9 @@ class HybridNavigator(Node):
         # makes two of them; counting those left one recovery for a whole
         # mission (pilot, 2026-10-30). The iteration cap only stops a
         # revision-change loop from spinning.
-        for _ in range(max_replans + 1 + MAX_PLANNED_REPLANS):
+        passes = 0
+        stale_revisions = 0
+        while passes < max_replans + 1 + MAX_PLANNED_REPLANS:
             if execution_failures > max_replans:
                 break
             if self.morphology is None:
@@ -157,7 +165,23 @@ class HybridNavigator(Node):
                     *result.transition_decision_json, *plan_result.transition_decision_json]
             if (plan_result is not None and not plan_result.success
                     and "changed before planning" in plan_result.message):
+                # Retrying at once spent every pass in 23 ms before the robot
+                # moved, recorded as a controller failure (roundtrip_v3e,
+                # combined_constraints-06-r2, 2026-10-31).
+                stale_revisions += 1
+                if stale_revisions > MAX_STALE_REVISION_RETRIES:
+                    result.message = (
+                        f"planner revisions did not settle: {plan_result.message}")
+                    self._set_plan_metrics(
+                        result, selected_plans, planning_latency, expanded_states)
+                    result.observed_time = time.monotonic() - started
+                    result.reconfiguration_count = reconfigurations
+                    goal_handle.abort()
+                    return result
+                await self._sleep(REVISION_SETTLE_S)
                 continue
+            stale_revisions = 0
+            passes += 1
             if plan_result is None or not plan_result.success:
                 planning_message = plan_result.message if plan_result else "planner unavailable"
                 result.message = (

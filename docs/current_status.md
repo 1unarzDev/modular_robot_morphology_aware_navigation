@@ -1011,8 +1011,32 @@ cm); the sensing site sat at the shadow's edge so 5 cm of placement error lost
 the station's view (placement-robust prediction); and RPP's rotate-to-heading
 ratcheted the narrow body into a 1.4 rad/s spin on its own odometry
 over-report. With all but the last fixed, 5 of 7 trials completed (placement
-0.4--2.4 cm), both failures being that spin. The run with every fix
-(`roundtrip_v3e`, at `971affb`) was left running unattended: at the last check **7 of 7 completed** (all of layout 01 and three of layout 02, the 45-degree layout whose spin it fixes), placement 0.3--1.8 cm, mean localization error 2.0--2.5 cm. Not a result until all 20 are audited.
+0.4--2.4 cm), both failures being that spin.
+
+**`roundtrip_v3e` at `971affb`: 19 of 20, audit failed (2026-10-31).** Design
+hash `fa867641...`, campaign digest `a39c93c7...`; audit
+`studies/gate0/roundtrip_v3e_audit.json`, records retained and restore-verified
+at `studies/gate0/records/roundtrip_v3e_raw.tar.xz` (sha256 `b9f27052...`).
+Every robot that moved completed, including all of the 45-degree layout 02
+that spun before `971affb`. Motion qualifications pass with wide margins
+(38 samples; worst forward-travel margin 3.1 cm).
+
+**The one failure never moved the robot and is a navigator defect, not a
+robot outcome.** `combined_constraints-06-r2` (r0, r1, r3 of the same layout
+completed) ended `controller_failure`, "execution failed after replanning
+limit", after **0.026 s simulated and 28 ms wall**, with 0 expanded states, no
+route and all-zero commands. No "replanning attempt" warning was logged, so no
+execution failure spent the budget, and a successful plan would have expanded
+states: every one of the navigator's 12 loop passes was the planner refusing
+with "revision changed before planning". The planner and navigator each follow
+the estimator's revision through their own subscription and can disagree for a
+few callbacks at startup; the navigator retried at once, burned its loop guard
+in ~20 ms, and fell through to the replan-limit message. Fixed for every
+method: a stale-revision refusal now waits 0.1 s on the simulated clock and
+retries (up to 50 in a row) without spending a planning pass, and if the
+revisions never agree the mission ends "planner revisions did not settle",
+classified `infrastructure_failure`. The v3e record keeps its status; the round
+trip is re-collected at the fixing commit (`roundtrip_v3f`).
 
 **Running (2026-10-30):** the generator-3 treatment round trip
 (`config/roundtrip_v3_design.json`, hash `fa867641...`, at `44683a7`), and the

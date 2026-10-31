@@ -37,6 +37,6 @@ def test_only_execution_failures_spend_the_replan_budget():
               "modular_robot_bringup/hybrid_navigator.py").read_text(encoding="utf-8")
     loop = source.split("async def _execute(self, goal_handle):", 1)[1].split(
         "def _unsafe_state_message", 1)[0]
-    assert "for _ in range(max_replans + 1 + MAX_PLANNED_REPLANS):" in loop
+    assert "while passes < max_replans + 1 + MAX_PLANNED_REPLANS:" in loop
     assert "if execution_failures > max_replans:" in loop
     assert "for attempt in range" not in loop
