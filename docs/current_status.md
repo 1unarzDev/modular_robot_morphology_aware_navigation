@@ -1234,6 +1234,26 @@ experiment targets: maximum narrow route offset 0.11--0.28 m, each held by
 `collision_monitor` and failing after the replan limit (two end "no
 collision-free hybrid plan" on replanning from where the body was held).
 
+**Drive-margin experiment: protocol declared before any run (2026-10-31).**
+ADR 0014 decision 2. Design `config/engineering/shelf_clearance_repro.json`
+again (`85341383...`, the 16 `geometry_coupled` trials at minimum shelf
+clearance). Two arms, one campaign each at one commit: the baseline at `main`
+(forward-only adopted, so re-run rather than reusing the earlier baseline,
+whose compact routes reversed), and the candidate, identical except a 0.03 m
+margin between every traversal footprint and raised drive obstacles
+(`DRIVE_OBSTACLE_CLEARANCE_M`, measured in the sweep as the generator-3
+ceiling) together with the finer keepout raster (branch
+`engineering/drive-margin`). The margin moves the geometry control's site in
+these layouts by construction; that is the decision being tested, and the
+manipulation check is recomputed if it is adopted. Accepted only if (1) no
+trial logs an RPP "detected collision ahead"; (2) no evaluator contact falls
+outside a `TRANSITIONING` window (contacts during the geometry control's
+unchecked pod relocation are the manipulation and are reported, not judged);
+(3) every recorded motion qualification passes. Informative only if the
+baseline logs at least one such abort; otherwise inconclusive and nothing
+merges. Learned from the first shelf experiment: no criterion compares route
+signatures, and contacts are judged by phase.
+
 **Narrow lookahead experiment: protocol declared before any run
 (2026-10-31, while the forward-only arm runs).** Its first records already
 show the turnaround gone (largest narrow in-place turn 0.38--0.47 rad) and a
