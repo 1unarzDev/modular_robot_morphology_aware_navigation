@@ -132,3 +132,16 @@ def test_gazebo_discovery_stays_on_loopback():
     # Set before Gazebo and the bridge start, so both inherit it.
     assert launch.index('"GZ_IP"') < launch.index("gz_sim.launch.py")
     assert launch.index('"GZ_IP"') < launch.index("parameter_bridge")
+
+
+def test_a_mid_trial_stack_death_is_retryable_infrastructure():
+    """A controller_server crash left a pilot mission idle to its deadline, and
+    the timeout was scored as a robot outcome (pilot_v3, 2026-10-31)."""
+    source = (Path(__file__).parents[1]
+              / "src/modular_robot_benchmarks/modular_robot_benchmarks/mission_batch.py"
+              ).read_text(encoding="utf-8")
+    assert "if (premature_deaths and not observation.completed" in source
+    assert source.index("premature_deaths = stack_process_deaths(") < source.index(
+        "if (premature_deaths and not observation.completed") < source.index(
+        "retryable_infrastructure_failure(" + chr(10))
+    assert retryable_infrastructure_failure("infrastructure_failure", None)

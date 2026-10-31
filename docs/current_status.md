@@ -1230,7 +1230,17 @@ one is the half-started stack; **5 of the treatment's 6 failures end in
 `narrow_tandem` held by `collision_monitor`'s approach zone at 1--2 cm** (the
 narrow over-rotation signature); the sixth,
 `docking_observability-04-r1`, is a 300 s timeout still compact with no
-abort in its log, **not yet explained**.
+abort in its log -- **explained the same day: infrastructure.** It made both
+transitions; on the first goal after the second, `controller_server` died of
+`std::bad_alloc` (exit -6), Nav2's lifecycle manager shut the navigation stack
+down after 4 s without a heartbeat, and the mission idled 130 s to the
+deadline. The record carried the death (`stack_process_deaths`) and
+`gate1_audit` flagged it, but the status stayed `timeout` and no retry ran.
+It is the only stack death in 644 unique retained records. Fixed for later
+campaigns: an unfinished trial with a mid-trial stack death is
+`infrastructure_failure` and so retried, as DDS transport failures already
+are; the death stays in the record and in the audit. The bad_alloc itself is
+not explained and is watched for.
 
 ### The Gate 3 pilot is frozen (2026-10-30)
 

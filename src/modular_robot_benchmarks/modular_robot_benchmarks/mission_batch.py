@@ -537,6 +537,15 @@ def run_batch(
                 observation.message += (
                     "; DDS transport initialization failed on "
                     + ", ".join(sorted(failed_ports)))
+            # A stack process that died mid-trial took the navigation stack down
+            # with it (pilot_v3, docking_observability-04-r1: controller_server
+            # std::bad_alloc, then 130 s idle to the deadline, scored timeout).
+            # The death stays in the record and gate1_audit still flags it.
+            if (premature_deaths and not observation.completed
+                    and observation.terminal_status != "infrastructure_failure"):
+                observation.terminal_status = "infrastructure_failure"
+                observation.message += "; stack process died: " + ", ".join(
+                    death["process"] for death in premature_deaths)
             clock_fault = mission_clock_discontinuity(observation.controller_diagnostics)
             if clock_fault and observation.terminal_status != "infrastructure_failure":
                 observation.terminal_status = "infrastructure_failure"
