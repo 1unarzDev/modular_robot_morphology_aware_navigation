@@ -1276,6 +1276,33 @@ planner-only sweep (with and without the 0.03 m drive margin) over
 `pilot_v3b` and both Gate 0 designs is measuring plannability and the
 manipulation before any protocol is declared.
 
+**Its interim result rules the rule out:** in the first 14 `pilot_v3b` layouts
+it makes the treatment unplannable in 4 manipulated layouts
+(`combined_constraints-01`, `docking_observability-01`, `-02`, `-05`) where
+every control still plans, because there every observable site lies within a
+body length of the door. Adopting it would score the treatment as failing
+precisely where the contrast lives, for a defect of execution, not of the
+method. The plan is not wrong; the controller executes its in-place turns
+loosely (RPP stops within 0.2 rad of a carrot that has already swung past the
+vertex). **Candidate instead: execute the plan's vertices literally** (branch
+`engineering/vertex-turns`, `42b88ec`). For `FollowPathNarrow` the navigator
+splits each traverse path at its heading changes (`path_pieces`); RPP follows
+each straight piece, and at each vertex the body is servoed onto the vertex and
+the next heading by the existing site alignment (0.03 m, 0.05 rad, fail-fast)
+and the post-transition yaw trim (0.02 rad). Plans, sites and the manipulation
+are unchanged.
+
+**Vertex-turn experiment: protocol declared before any run (2026-10-31).**
+Design `config/engineering/narrow_turn_repro.json` (`760cc21b...`, the 7
+treatment trials), one arm at `42b88ec`; baseline the forward-only arm
+(`fc1eceb`, behaviourally `main` for the narrow body). Accepted only if
+(1) every trial's maximum narrow route offset (`execution_metrics`) is at most
+0.08 m; (2) every narrow approach that reaches the door arrives with its nose
+within 0.05 m of the door centreline (`narrow_door_runin` measure; the 24
+crossing approaches at long run-in reached at most 0.044 m); (3) no evaluator
+contact; (4) every recorded motion qualification passes. Completions are
+reported, not the criterion.
+
 **Drive-margin experiment: protocol declared before any run (2026-10-31).**
 ADR 0014 decision 2. Design `config/engineering/shelf_clearance_repro.json`
 again (`85341383...`, the 16 `geometry_coupled` trials at minimum shelf
