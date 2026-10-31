@@ -1250,6 +1250,41 @@ reproduces the abort in at least one `combined_constraints-02` trial; if it
 does not, the experiment is reported inconclusive and nothing is merged.
 Completions are reported, not used as the criterion.
 
+**Shelf-clearance experiment: the candidate is rejected (2026-10-31).** Both
+arms 16 of 16, one commit each (baseline `0215169`, campaign digest
+`879e4505...`; candidate `586ef95`, `07c07317...`); evidence
+`studies/engineering/shelf_clearance/` (summaries with log signatures,
+`gate1_audit`s, records restore-verified, sha256 `bda6d207...` base,
+`903f42cf...` candidate). The baseline reproduces the abort in both
+`combined_constraints-02` trials and also in both `reconfiguration_workspace-05`
+(4 "detected collision ahead" each, no contact). **Criterion 1 fails:**
+candidate `combined_constraints-02-r0` still aborts 4 times, so nothing is
+merged. Of the four abort trials the candidate clears three (`cc-02-r1`
+reaches its site; `rw-05` r0/r1 reach theirs and meet the manipulation), and
+the one it does not gets further, under the shelf at x = 2.33 against 1.96,
+with its projected footprint at y = 1.684: 1.6 cm inside the worst-case
+lethal cell edge (1.70) and 3 cm from the true shelf. So rasterization was
+part of the cause, and about 4 cm of tracking error is the rest, which no
+costmap resolution removes: a route at minimum clearance beside a transition
+obstacle needs about one tracking error of room, which only the plan or the
+generator can give.
+
+Two declared criteria were mis-specified, reported rather than reinterpreted
+(neither changes the verdict). Criterion 2, no evaluator contact, fails in
+both arms by design: in `reconfiguration_workspace` the geometry control does
+not sweep pod relocation, so `pod_4` strikes a raised obstacle mid-transition
+at its chosen site (6 baseline, 8 candidate trials; the candidate's two extra
+are the `rw-05` trials that now reach their site). Criterion 3 compared
+`planned_route_signature`, which concatenates replans and so differs whenever
+execution does (5 trials); the first plans were not separately compared.
+
+Item 2 therefore returns to a design decision, now to be taken together with
+the reverse-driving defect, since both make a plan executable by the
+controller as planned: a drive-obstacle traversal margin (0.03 m is the
+generator-3 ceiling and moves `geometry_coupled`'s site in 8 of 18 layouts),
+optionally with the finer keepout raster, or a generator change. One ADR,
+measured by planner-only sweeps before any campaign.
+
 **`pilot_v3b` frozen (2026-10-31), before any platform fix is decided.** The
 re-run pilot `pilot_v3` cannot supply: kind `pilot_v3` (generator 3), the same
 shape (6 layouts per family x 2 replicates x 4 methods, **144 trials**),

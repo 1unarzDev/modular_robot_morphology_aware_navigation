@@ -1,0 +1,145 @@
+{
+  "campaign_digests": {
+    "results/engineering/shelf_repro_cand_raw": "022602e6a2cdba6be7ee948bd4b6026ffcbe676b2d1d46e8bacc60a6b5e818e3"
+  },
+  "clean_records_per_required_class": {
+    "collision": 8,
+    "docking_failure": 7,
+    "localization_loss": 0,
+    "success": 0,
+    "timeout": 0
+  },
+  "controlled_cases": {},
+  "gate_passed": false,
+  "per_record": [
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_repro_v3-combined_constraints-01-r0-geometry_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_repro_v3-combined_constraints-01-r1-geometry_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_repro_v3-combined_constraints-02-r0-geometry_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_repro_v3-combined_constraints-02-r1-geometry_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_repro_v3-combined_constraints-03-r0-geometry_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_repro_v3-combined_constraints-03-r1-geometry_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_repro_v3-combined_constraints-05-r0-geometry_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_repro_v3-combined_constraints-05-r1-geometry_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "collision",
+      "trial_id": "engineering_repro_v3-reconfiguration_workspace-01-r0-geometry_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "collision",
+      "trial_id": "engineering_repro_v3-reconfiguration_workspace-01-r1-geometry_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "collision",
+      "trial_id": "engineering_repro_v3-reconfiguration_workspace-02-r0-geometry_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "collision",
+      "trial_id": "engineering_repro_v3-reconfiguration_workspace-02-r1-geometry_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "collision",
+      "trial_id": "engineering_repro_v3-reconfiguration_workspace-03-r0-geometry_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "collision",
+      "trial_id": "engineering_repro_v3-reconfiguration_workspace-03-r1-geometry_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "collision",
+      "trial_id": "engineering_repro_v3-reconfiguration_workspace-05-r0-geometry_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "collision",
+      "trial_id": "engineering_repro_v3-reconfiguration_workspace-05-r1-geometry_coupled"
+    }
+  ],
+  "problem_counts": {},
+  "purpose": "gate1_measured_outcome_coverage",
+  "record_digests": {
+    "engineering_repro_v3-combined_constraints-01-r0-geometry_coupled": "5df9539a56399d6de5dd3b72e0e5c181308552887991a9999e337b9f0b57f80c",
+    "engineering_repro_v3-combined_constraints-01-r1-geometry_coupled": "72a078c88364fca238f0870d66d82f26fc09b849dbb7886a0450fff68240917d",
+    "engineering_repro_v3-combined_constraints-02-r0-geometry_coupled": "73d92fa6e8c6c4d75919d963f1a55ffa11dbaa62d82c29a130d5b3b2b7673fa3",
+    "engineering_repro_v3-combined_constraints-02-r1-geometry_coupled": "86a5f4a8a611a240e6467405b602ca754bc94d1358b4f56f9f6f0bd98120c36f",
+    "engineering_repro_v3-combined_constraints-03-r0-geometry_coupled": "439c2897c36e59e8df970cc070defba252f1c1993dae14638e45f9a6a824c929",
+    "engineering_repro_v3-combined_constraints-03-r1-geometry_coupled": "68c4d24753d2b7246b27faee2ea46924656c650dd291b28f8a30df45d3540cc1",
+    "engineering_repro_v3-combined_constraints-05-r0-geometry_coupled": "1e9532aebe13d3270957eaf9b0fda1b2f5ba6736403536e190db2a4030adf441",
+    "engineering_repro_v3-combined_constraints-05-r1-geometry_coupled": "71003238d39c4c3f3d5ae48175b456f8d2a796044550581faa54a0680cfac183",
+    "engineering_repro_v3-reconfiguration_workspace-01-r0-geometry_coupled": "0f80cdc44e0cdcb5c3252699eda3f2e9442bdbfb4fdebc55500e35fd950a5af5",
+    "engineering_repro_v3-reconfiguration_workspace-01-r1-geometry_coupled": "ea03fa2361ef8d2b37d4cb6150349a87cfde72d46dfdd17201ab0c33d8d5a0e2",
+    "engineering_repro_v3-reconfiguration_workspace-02-r0-geometry_coupled": "dce61bfbf849c5e78bdffe446d6ee62bde5fccf59bbe6df7286418c93f9021c8",
+    "engineering_repro_v3-reconfiguration_workspace-02-r1-geometry_coupled": "342f3016e19330ec94ddd71585aa4cb9eb0bdaea676e4becb7d02f8a88c4e56f",
+    "engineering_repro_v3-reconfiguration_workspace-03-r0-geometry_coupled": "d80862fff938b442b9d43ab314b64f930cff025057493eae833d33cd0dd8d550",
+    "engineering_repro_v3-reconfiguration_workspace-03-r1-geometry_coupled": "d83c83fc2932c26cb89dab2842ce24b05ddd12cd87e1e1678a1d2959f4ebf0ea",
+    "engineering_repro_v3-reconfiguration_workspace-05-r0-geometry_coupled": "85608b6de594337dc068d586152cc7dcd4d4ed360e8b7ad568ad6c7ceb1318f4",
+    "engineering_repro_v3-reconfiguration_workspace-05-r1-geometry_coupled": "8f6048a7cdabdbc1b31fe2125db0eb94ac664f57d76800a6f10665d1748c0947"
+  },
+  "records": 16,
+  "records_without_problems": 16,
+  "required_classes_missing": [
+    "localization_loss",
+    "success",
+    "timeout"
+  ],
+  "schema_version": 1,
+  "terminal_statuses": {
+    "collision": 8,
+    "controller_failure": 1,
+    "unsafe_topology": 7
+  }
+}
