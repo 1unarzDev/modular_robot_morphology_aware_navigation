@@ -113,8 +113,9 @@ def failure_injection_for(design: StudyDesign, spec) -> str:
     return fault_case_for_run(spec.replicate).injection
 
 
-# The localization map is exported 4x finer than the planning grid (0.025 m);
-# see `export_occupancy_map`. The planner coarsens it back exactly.
+# The localization map and the keepout mask are exported 4x finer than the
+# planning grid (0.0125 m); see `export_occupancy_map` and `export_keepout_mask`.
+# The planner coarsens the map back exactly.
 MAP_UPSAMPLE = 4
 
 # Trial-independent parameters; the rest (seeds, disturbance, a Gate 1 case's
@@ -405,7 +406,8 @@ def run_batch(
         map_yaml, map_image = export_occupancy_map(
             scenario.grid, trial_artifacts / "map.yaml", MAP_UPSAMPLE)
         keepout_yaml, keepout_image = export_keepout_mask(
-            scenario.grid, scenario.transition_obstacles, trial_artifacts / "keepout.yaml")
+            scenario.grid, scenario.transition_obstacles, trial_artifacts / "keepout.yaml",
+            MAP_UPSAMPLE)
         disturbance = json.loads(
             scenario_manifest.read_text(encoding="utf-8"))["physical_disturbance"]
         start_x = nominal_start_x + disturbance["initial_dx_m"]
