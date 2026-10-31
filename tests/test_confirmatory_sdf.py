@@ -88,6 +88,53 @@ def test_keepout_mask_holds_the_shelf_but_not_the_elevated_screen_or_walls(tmp_p
     assert "mode: trinary" in yaml_path.read_text(encoding="utf-8")
 
 
+def test_an_upsampled_keepout_mask_holds_the_shelf_within_one_fine_cell(tmp_path):
+    """The overlap rule may grow an obstacle by under one mask cell, no more.
+
+    At 0.05 m that moved the shelf's edge toward a route laid beside it far
+    enough for RPP to abort on cells the shelf does not occupy.
+    """
+    from modular_robot_benchmarks.sdf_export import export_keepout_mask
+
+    scenario = make_confirmatory_scenario("combined_constraints", 1, 8196733574266853195)
+    shelf = next(b for b in scenario.transition_obstacles
+                 if b.name == "raised_transition_shelf")
+    grid, upsample = scenario.grid, 4
+    yaml_path, image_path = export_keepout_mask(
+        grid, [shelf], tmp_path / "keepout.yaml", upsample)
+    header, pixels = image_path.read_bytes().split(b"255\n", 1)
+    width, height = grid.width * upsample, grid.height * upsample
+    assert header.split()[1:3] == [str(width).encode(), str(height).encode()]
+    resolution = grid.resolution / upsample
+    assert f"resolution: {resolution}" in yaml_path.read_text(encoding="utf-8")
+    kept = [(x, y) for y in range(height) for x in range(width)
+            if pixels[(height - 1 - y) * width + x] == 0]
+    low_y = min(grid.origin_y + y * resolution for _, y in kept)
+    high_y = max(grid.origin_y + (y + 1) * resolution for _, y in kept)
+    low_x = min(grid.origin_x + x * resolution for x, _ in kept)
+    high_x = max(grid.origin_x + (x + 1) * resolution for x, _ in kept)
+    edges = (shelf.center[0] - shelf.size[0] / 2, shelf.center[1] - shelf.size[1] / 2,
+             shelf.center[0] + shelf.size[0] / 2, shelf.center[1] + shelf.size[1] / 2)
+    for kept_edge, true_edge, outward in zip(
+            (low_x, low_y, high_x, high_y), edges, (-1, -1, 1, 1)):
+        growth = (kept_edge - true_edge) * outward
+        assert -1e-9 <= growth < resolution
+
+
+def test_rpp_collision_checks_a_costmap_fine_enough_for_the_mask():
+    from pathlib import Path
+
+    import yaml
+
+    root = Path(__file__).resolve().parents[1]
+    nav2 = yaml.safe_load((root / "src/modular_robot_bringup/config/nav2.yaml")
+                          .read_text(encoding="utf-8"))
+    assert nav2["local_costmap"]["local_costmap"]["ros__parameters"]["resolution"] <= 0.025
+    batch = (root / "src/modular_robot_benchmarks/modular_robot_benchmarks/"
+             "mission_batch.py").read_text(encoding="utf-8")
+    assert "trial_artifacts / \"keepout.yaml\",\n            MAP_UPSAMPLE)" in batch
+
+
 def test_the_batch_serves_the_keepout_mask_and_both_costmaps_apply_it():
     from pathlib import Path
 

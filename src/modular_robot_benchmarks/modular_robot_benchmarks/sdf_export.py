@@ -65,13 +65,20 @@ def export_occupancy_map(grid, output_yaml: Path, upsample: int = 1) -> tuple[Pa
 DRIVE_OBSTACLE_MAX_UNDERSIDE_M = 0.30
 
 
-def export_keepout_mask(grid, obstacles, output_yaml: Path) -> tuple[Path, Path]:
+def export_keepout_mask(grid, obstacles, output_yaml: Path,
+                        upsample: int = 1) -> tuple[Path, Path]:
     """Nav2 keepout filter mask of the declared obstacles the robot cannot drive under.
 
     Same geometry and image conventions as `export_occupancy_map`; a cell is
     kept out when its square overlaps such an obstacle's footprint. The map AMCL
     localizes against is untouched: these obstacles are below the lidar, so
     cells for them there could only mislead it (ADR 0012).
+
+    `upsample` splits every planning cell into upsample x upsample mask cells,
+    so the overlap rule grows an obstacle by under one fine cell instead of one
+    planning cell. At 0.05 m the shelf's edge moved up to 5 cm toward a route
+    the planner laid beside it, and RPP aborted on cells the shelf does not
+    occupy (`docs/current_status.md`, shelf-clearance experiment).
     """
     blocked = [
         (box.center[0] - box.size[0] / 2.0, box.center[1] - box.size[1] / 2.0,
@@ -81,19 +88,22 @@ def export_keepout_mask(grid, obstacles, output_yaml: Path) -> tuple[Path, Path]
     output_yaml.parent.mkdir(parents=True, exist_ok=True)
     image_path = output_yaml.with_suffix(".pgm")
     pixels = bytearray()
-    half = grid.resolution / 2.0
-    for y in reversed(range(grid.height)):
-        for x in range(grid.width):
-            cx, cy = grid.cell_center(x, y)
+    resolution = grid.resolution / upsample
+    half = resolution / 2.0
+    width, height = grid.width * upsample, grid.height * upsample
+    for y in reversed(range(height)):
+        cy = grid.origin_y + (y + 0.5) * resolution
+        for x in range(width):
+            cx = grid.origin_x + (x + 0.5) * resolution
             kept_out = any(cx + half > left and cx - half < right
                            and cy + half > bottom and cy - half < top
                            for left, bottom, right, top in blocked)
             pixels.append(0 if kept_out else 254)
     image_path.write_bytes(
-        f"P5\n{grid.width} {grid.height}\n255\n".encode("ascii") + pixels)
+        f"P5\n{width} {height}\n255\n".encode("ascii") + pixels)
     output_yaml.write_text(
         f"image: {image_path.name}\n"
-        f"mode: trinary\nresolution: {grid.resolution}\n"
+        f"mode: trinary\nresolution: {resolution}\n"
         f"origin: [{grid.origin_x}, {grid.origin_y}, 0.0]\n"
         "negate: 0\noccupied_thresh: 0.65\nfree_thresh: 0.196\n",
         encoding="utf-8",
