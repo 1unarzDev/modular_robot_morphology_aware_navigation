@@ -1296,6 +1296,39 @@ baseline logs at least one such abort; otherwise inconclusive and nothing
 merges. Learned from the first shelf experiment: no criterion compares route
 signatures, and contacts are judged by phase.
 
+**Drive-margin candidate arm: 16 of 16 at `7ede10e` (campaign digest
+`ef3c5d22...`); its baseline was refused by the runner** (the chain named
+`0544d52` while `main` had moved to a docs-only `94046fe`, and
+`start_campaign.sh` fast-forwards first) **and is queued after it** at current
+`main`, guarded to refuse if `main` changes `src/` or `config/` since
+`0544d52`; the protocol fixed no arm order. Read against the declared
+criteria: (1) holds, **no RPP "detected collision ahead" in any trial** (the
+earlier baseline had them in 4); (3) fails in the 8 `reconfiguration_workspace`
+trials, and (2) fails as written there: every contact (pod_0, one per trial)
+falls in the post-transition verification maneuver, 0.5--0.9 s after
+`TRANSITIONING` ends, inside the motion-qualification window, after a
+successful transformation at the site the margin moved `geometry_coupled` to.
+`geometry_coupled` does not sweep that maneuver (rung iii of the ladder), so
+these are the manipulation, as its pod-relocation contacts were in the
+earlier baseline (rung ii); but the criterion said "outside a `TRANSITIONING`
+window", it is mis-specified a second time, and it is not reinterpreted after
+the fact. **Nothing is merged on this arm.** The 8 `combined_constraints` trials
+all reach their site and meet the manipulation (`unsafe_topology`).
+
+**Drive-margin follow-up: protocol declared before any run (2026-10-31).**
+The question the mis-specified criterion was meant to answer is whether the
+margin leaves the methods that do sweep their transitions executing cleanly
+beside the shelf. Design `config/engineering/drive_margin_checked_repro.json`
+(kind `engineering_repro_v3`, hash `8b6243a4...`, 32 trials):
+`feasibility_coupled` and `sensing_feasibility_coupled` in both `pilot_v3`
+replicates of the same 8 layouts, seeds copied. One arm at the candidate
+commit `7ede10e`. Accepted only if (1) no trial logs an RPP "detected
+collision ahead"; (2) **no trial has any evaluator contact**; (3) every
+recorded motion qualification passes. Planning failures, door holds and
+other non-contact outcomes are reported and not judged. If it passes and the
+queued baseline reproduces at least one abort, the margin and the finer
+raster are adopted as ADR 0014 decision 2.
+
 **Narrow lookahead experiment: protocol declared before any run
 (2026-10-31, while the forward-only arm runs).** Its first records already
 show the turnaround gone (largest narrow in-place turn 0.38--0.47 rad) and a
