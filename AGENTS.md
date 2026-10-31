@@ -23,6 +23,22 @@ decision** after exposing three platform defects; its records are engineering
 evidence only, never nuisance estimates, and its seeds are spent (a re-run
 pilot needs a new, disjoint design).
 
+**Update 2026-10-31 evening.** The overnight chain died with the WSL VM
+after 3 baseline trials (nothing kept the VM up once the session ended); a
+detached `wsl -e sleep 86400` started from Windows now keeps it up. The
+baseline was resumed at `664a742` and the candidate chained behind it. The
+estimator is now `modular_robot_benchmarks.turn_rate` (`6540154`; runs as a
+plain script outside ROS). Item 2 is re-diagnosed: the shelf aborts are
+keepout/costmap rasterization, not a missing planner margin, and a
+two-arm experiment is declared (`57b97c4`, candidate branch
+`engineering/keepout-fine-mask` at `5485f67`, scripts
+`run_shelf_{base,cand}.sh`); run it after the narrow decision is merged, the
+baseline at `main`, the candidate rebased onto it. `pilot_v3b` is frozen
+(`studies/pilot_v3b/design.json`, hash `482ccb77...`, master 20261107,
+disjoint from every design and a provisional 40x3 `confirmatory_v3`); its
+manipulation check is computed before any trial. Then Gate 0 again:
+`run_roundtrip_v3g.sh`, then `run_fm_v3.sh`, each at one commit.
+
 **Running unattended overnight (2026-10-31):** the narrow turn-rate
 experiment (protocol and acceptance criteria in `docs/current_status.md`,
 declared before any run). Baseline arm at `664a742` (scale 3.0) was 3 of 7 at

@@ -1187,6 +1187,19 @@ reproduces the abort in at least one `combined_constraints-02` trial; if it
 does not, the experiment is reported inconclusive and nothing is merged.
 Completions are reported, not used as the criterion.
 
+**`pilot_v3b` frozen (2026-10-31), before any platform fix is decided.** The
+re-run pilot `pilot_v3` cannot supply: kind `pilot_v3` (generator 3), the same
+shape (6 layouts per family x 2 replicates x 4 methods, **144 trials**),
+master seed 20261107, design hash `482ccb77...`,
+`studies/pilot_v3b/design.json`. `freeze-design --disjoint-from` confirmed it
+shares no seed with `pilot_v3`, the generator-2 pilot, the generator-1
+confirmatory design, the generator-3 round trip and fault matrix, the narrow
+repro, or a provisional 40-layout x 3-replicate `confirmatory_v3` at the
+declared confirmatory master 20260911. Seeds and layouts do not depend on the
+platform, so freezing now decides nothing an outcome could inform; it runs
+only after both fixes are decided and Gate 0 is re-qualified, read by the
+same rules as `pilot_v3` was to be.
+
 **A half-started stack was scored as a robot outcome (pilot_v3 at 56 of 144).**
 `docking_observability-00-r1-feasibility_coupled`, a neutral layout, ended
 `controller_failure` after 125 s simulated and four "Failed to make progress"
