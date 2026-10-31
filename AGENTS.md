@@ -21,8 +21,27 @@ placement-robust station prediction (`43255f7`), 4x finer localization map
 **Resume here (2026-10-31):** `pilot_v3` was **stopped at 100 of 144 by
 decision** after exposing three platform defects; its records are engineering
 evidence only, never nuisance estimates, and its seeds are spent (a re-run
-pilot needs a new, disjoint design). Work, in order (`docs/current_status.md`,
-generator-3 section):
+pilot needs a new, disjoint design).
+
+**Running unattended overnight (2026-10-31):** the narrow turn-rate
+experiment (protocol and acceptance criteria in `docs/current_status.md`,
+declared before any run). Baseline arm at `664a742` (scale 3.0) was 3 of 7 at
+handoff, all completed, narrow turns at a median 1.89--2.03x command; then
+`chain_narrow_cand.sh` starts the candidate arm at `622785f` (branch
+`engineering/narrow-yaw-scale-1.7`, scale 1.7). Read
+`results/run_narrow_{base,cand}.launch.log` and
+`results/engineering/narrow_repro_{base,cand}_raw` in the WSL clone; measure
+each arm with the turn-ratio estimator and judge only by the declared
+criteria. If interrupted, resume an arm at its own commit with
+`resume_campaign.sh <commit> run_narrow_<arm>`. The candidate leaves the clone
+detached: `git checkout -q main` there before the next normal campaign. Commit
+both arms' summaries and records as for the pilot. If the candidate passes,
+merge the scale into `main` with the evidence; if not, try closing the turn on
+a measured rate. Note: `docking_observability-01-r1` completed in the
+baseline though it failed in the pilot -- the overshoot only sometimes meets
+an obstacle, which is why completions are not the criterion.
+
+Work, in order (`docs/current_status.md`, generator-3 section):
 1. **Narrow in-place turns run at ~1.8x command** (`yaw_effort_scale: 3.0`,
    bimodal 0.7x--2.1x). Measure true rate vs command across the scale and
    friction range with `qualify_assembly_motion --yaw-rate` in Gazebo, then
