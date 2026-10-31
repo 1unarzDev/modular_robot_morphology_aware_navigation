@@ -1134,6 +1134,23 @@ ceiling the generator-3 population tolerates, and it moves the geometry
 control's sites in almost half the layouts: a change to the manipulation
 itself, requiring a new manipulation check and an ADR, not a tuning step.
 
+**Narrow turn-rate experiment: protocol declared before any run
+(2026-10-31).** Design `config/engineering/narrow_turn_repro.json` (kind
+`engineering_repro_v3`, hash `760cc21b...`): seven `pilot_v3` treatment trials
+copied with their seeds -- the five with the narrow stall signature
+(`docking_observability` 01-r1, 02-r0, 02-r1, 05-r0, 05-r1) and two completed
+ones that also turned the narrow body in place (`docking_observability-01-r0`,
+`combined_constraints-02-r0`). Two arms, each one campaign at one commit: the
+baseline at `main` as it stands, and the candidate, identical except
+`narrow_tandem.yaw_effort_scale` 3.0 -> 1.7 (3.0 / 1.8), run from a branch so
+`main` never carries an unvalidated calibration. Primary measure: true /
+commanded rate over every narrow in-place turn (the estimator in the table
+above). The candidate is accepted only if its median is within 0.8--1.25, its
+p10 is at least 0.5 (no new stall mode), and every post-transition motion
+qualification passes. Completions and failures are reported, not used as the
+criterion. The scale was set on 2026-09-12 against the pre-ADR-0007 plant,
+which is why it is suspected stale.
+
 **A half-started stack was scored as a robot outcome (pilot_v3 at 56 of 144).**
 `docking_observability-00-r1-feasibility_coupled`, a neutral layout, ended
 `controller_failure` after 125 s simulated and four "Failed to make progress"

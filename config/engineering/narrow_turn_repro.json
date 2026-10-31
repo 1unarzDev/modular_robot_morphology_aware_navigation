@@ -1,0 +1,103 @@
+{
+  "design": {
+    "design_kind": "engineering_repro_v3",
+    "families": [
+      "docking_observability",
+      "combined_constraints"
+    ],
+    "layouts_per_family": 4,
+    "master_seed": 20261103,
+    "methods": [
+      "sensing_feasibility_coupled"
+    ],
+    "replicates": 1,
+    "schema_version": 1,
+    "trials": [
+      {
+        "family": "docking_observability",
+        "fault_seed": 4751249367750443881,
+        "friction_seed": 9513411506746722072,
+        "layout_id": "docking_observability-01",
+        "method": "sensing_feasibility_coupled",
+        "method_order": 2,
+        "replicate": 1,
+        "sensing_seed": 1488090553100394923,
+        "trial_id": "engineering_repro_v3-docking_observability-01-r1-sensing_feasibility_coupled",
+        "world_seed": 3249246747345751582
+      },
+      {
+        "family": "docking_observability",
+        "fault_seed": 17378822922564123374,
+        "friction_seed": 1861061781334236933,
+        "layout_id": "docking_observability-02",
+        "method": "sensing_feasibility_coupled",
+        "method_order": 2,
+        "replicate": 0,
+        "sensing_seed": 4443107091245944704,
+        "trial_id": "engineering_repro_v3-docking_observability-02-r0-sensing_feasibility_coupled",
+        "world_seed": 7368252345134878399
+      },
+      {
+        "family": "docking_observability",
+        "fault_seed": 12345406384171168886,
+        "friction_seed": 14800571207706990696,
+        "layout_id": "docking_observability-02",
+        "method": "sensing_feasibility_coupled",
+        "method_order": 2,
+        "replicate": 1,
+        "sensing_seed": 2620791706881362817,
+        "trial_id": "engineering_repro_v3-docking_observability-02-r1-sensing_feasibility_coupled",
+        "world_seed": 7368252345134878399
+      },
+      {
+        "family": "docking_observability",
+        "fault_seed": 17898039856584395399,
+        "friction_seed": 12309701392829956428,
+        "layout_id": "docking_observability-05",
+        "method": "sensing_feasibility_coupled",
+        "method_order": 3,
+        "replicate": 0,
+        "sensing_seed": 14704329671651987149,
+        "trial_id": "engineering_repro_v3-docking_observability-05-r0-sensing_feasibility_coupled",
+        "world_seed": 9542782444570558504
+      },
+      {
+        "family": "docking_observability",
+        "fault_seed": 6164490390529018734,
+        "friction_seed": 6526823552742808117,
+        "layout_id": "docking_observability-05",
+        "method": "sensing_feasibility_coupled",
+        "method_order": 2,
+        "replicate": 1,
+        "sensing_seed": 6498980445629550307,
+        "trial_id": "engineering_repro_v3-docking_observability-05-r1-sensing_feasibility_coupled",
+        "world_seed": 9542782444570558504
+      },
+      {
+        "family": "docking_observability",
+        "fault_seed": 12346428063272506612,
+        "friction_seed": 5838489375061407823,
+        "layout_id": "docking_observability-01",
+        "method": "sensing_feasibility_coupled",
+        "method_order": 1,
+        "replicate": 0,
+        "sensing_seed": 18282162837366091142,
+        "trial_id": "engineering_repro_v3-docking_observability-01-r0-sensing_feasibility_coupled",
+        "world_seed": 3249246747345751582
+      },
+      {
+        "family": "combined_constraints",
+        "fault_seed": 18212041320718761227,
+        "friction_seed": 16974324939085870858,
+        "layout_id": "combined_constraints-02",
+        "method": "sensing_feasibility_coupled",
+        "method_order": 1,
+        "replicate": 0,
+        "sensing_seed": 1339873486669848327,
+        "trial_id": "engineering_repro_v3-combined_constraints-02-r0-sensing_feasibility_coupled",
+        "world_seed": 7716433860594642684
+      }
+    ]
+  },
+  "design_hash": "760cc21b84b5039a50ca9e07477250f4071f5a775435fe4dfd671e0587f03c73"
+}

@@ -252,3 +252,23 @@ def test_every_campaign_trial_maps_to_its_declared_injection():
     for spec in design.trials:
         assert (failure_injection_for(design, spec)
                 == fault_case_for_run(spec.replicate).injection)
+
+
+def test_repro_design_copies_generator3_trials_with_their_seeds():
+    from modular_robot_benchmarks.design import (
+        REPRO_V3_DESIGN_KIND, generate_repro_design, layout_generator_for)
+    source = StudyDesign.read_frozen(ROOT / "studies/pilot_v3/design.json")
+    chosen = [source.trials[3].trial_id, source.trials[0].trial_id]
+    repro = generate_repro_design(source, chosen)
+    assert repro.design_kind == REPRO_V3_DESIGN_KIND
+    assert layout_generator_for(repro.design_kind) == 3
+    for copy, trial_id in zip(repro.trials, chosen):
+        original = next(spec for spec in source.trials if spec.trial_id == trial_id)
+        assert copy.trial_id == f"{REPRO_V3_DESIGN_KIND}-{trial_id}"
+        assert replace(copy, trial_id=trial_id) == original
+    assert failure_injection_for(repro, repro.trials[0]) == ""
+    with pytest.raises(ValueError, match="generator-3"):
+        generate_repro_design(
+            StudyDesign.read_frozen(ROOT / "config/fault_matrix_campaign.json"), chosen)
+    with pytest.raises(ValueError, match="not in the source"):
+        generate_repro_design(source, ["nope"])

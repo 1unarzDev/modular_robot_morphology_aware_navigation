@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 import hashlib
 import json
 from pathlib import Path
@@ -39,9 +39,12 @@ ROUNDTRIP_V3_DESIGN_KIND = "engineering_roundtrip_v3"
 FAULT_MATRIX_V3_DESIGN_KIND = "engineering_fault_matrix_v3"
 FAULT_MATRIX_DESIGN_KINDS = frozenset({
     FAULT_MATRIX_DESIGN_KIND, FAULT_MATRIX_V3_DESIGN_KIND})
+# Engineering re-runs of chosen generator-3 trials, seeds copied verbatim, to
+# reproduce a failure and test a fix on the same worlds. Never study evidence.
+REPRO_V3_DESIGN_KIND = "engineering_repro_v3"
 LONG_ROOM_DESIGN_KINDS = frozenset({
     PILOT_V3_DESIGN_KIND, CONFIRMATORY_V3_DESIGN_KIND, ROUNDTRIP_V3_DESIGN_KIND,
-    FAULT_MATRIX_V3_DESIGN_KIND})
+    FAULT_MATRIX_V3_DESIGN_KIND, REPRO_V3_DESIGN_KIND})
 
 
 def layout_generator_for(design_kind: str) -> int:
@@ -238,6 +241,32 @@ def generate_workshop_design(
                 ))
     return StudyDesign(1, WORKSHOP_DESIGN_KIND, 1, replicates, master_seed,
                        WORKSHOP_METHODS, WORKSHOP_VARIANTS, tuple(trials))
+
+
+def generate_repro_design(source: StudyDesign, trial_ids: Sequence[str]) -> StudyDesign:
+    """Copy chosen generator-3 trials, with their seeds, into an engineering design.
+
+    The copies keep every seed so the worlds and plant realizations are the
+    ones the source ran; only the trial id and design kind change, so the
+    records can never be mistaken for the source study's.
+    """
+    if layout_generator_for(source.design_kind) != 3:
+        raise ValueError(f"{source.design_kind} is not a generator-3 design")
+    by_id = {spec.trial_id: spec for spec in source.trials}
+    missing = [trial_id for trial_id in trial_ids if trial_id not in by_id]
+    if missing:
+        raise ValueError(f"trials not in the source design: {missing}")
+    if len(set(trial_ids)) != len(trial_ids) or not trial_ids:
+        raise ValueError("trial ids must be distinct and non-empty")
+    trials = tuple(replace(by_id[trial_id],
+                           trial_id=f"{REPRO_V3_DESIGN_KIND}-{trial_id}")
+                   for trial_id in trial_ids)
+    return StudyDesign(1, REPRO_V3_DESIGN_KIND,
+                       len({spec.layout_id for spec in trials}), 1,
+                       source.master_seed,
+                       tuple(dict.fromkeys(spec.method for spec in trials)),
+                       tuple(dict.fromkeys(spec.family for spec in trials)),
+                       trials)
 
 
 def fault_case_for_run(run: int) -> FaultCase:
