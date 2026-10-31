@@ -309,8 +309,8 @@ def test_a_goal_behind_the_robot_is_reached_by_turning_not_reversing():
 
 
 def test_a_long_body_turns_onto_a_tight_passage_only_a_body_length_back():
-    """ADR 0014: the narrow body passed a 0.70 m door in all 26 runs with 2.35 m
-    or more of straight run-in, and failed 18 of 22 with 0.95 m."""
+    """ADR 0014: the narrow body passed a 0.70 m door in all 24 runs with 2.35 m
+    or more of straight run-in, and in 4 of 20 with 0.95 m."""
     catalog = load_catalog(CATALOG).supported_experiment_subset()
     grid = OccupancyGrid(85, 40, 0.1)
     for y in range(grid.height):

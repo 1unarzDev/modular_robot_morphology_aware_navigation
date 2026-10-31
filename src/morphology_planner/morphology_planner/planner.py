@@ -309,8 +309,8 @@ class MorphologyAStar:
         """No tight passage within one body length straight ahead (ADR 0014).
 
         A body settles onto a new heading only over distance: the narrow body
-        reached a 0.70 m doorway 0.95 m after a turn in 18 of 22 failed passes,
-        and passed in all 26 runs whose straight run-in was 2.35 m or more. With
+        passed a 0.70 m doorway in 4 of 20 runs whose last turn was 0.95 m before it,
+        and in all 24 runs whose straight run-in was 2.35 m or more. With
         forward-only traversal, everything between a plan's last heading change
         and a tight cell is straight along that heading, so it suffices that
         each newly taken heading has a body length of straight approach before
