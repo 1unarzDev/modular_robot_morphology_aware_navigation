@@ -1234,6 +1234,29 @@ experiment targets: maximum narrow route offset 0.11--0.28 m, each held by
 `collision_monitor` and failing after the replan limit (two end "no
 collision-free hybrid plan" on replanning from where the body was held).
 
+**Narrow lookahead experiment: the candidate is rejected (2026-10-31).** 7 of
+7 at `05d18f2`, campaign digest `0f28ed6b...`, evidence
+`studies/engineering/narrow_lookahead/` (records sha256 `26026a6d...`).
+Criterion 1 fails: maximum narrow route offset 0.040--0.114 m, six of seven
+above 0.08 (forward-only baseline 0.081--0.280). Criteria 2--4 hold (no
+contact, motion qualifications pass, turn rate 1.12, largest in-place turn
+0.86 rad). Completed 2 of 7, as the baseline. Nothing is merged.
+
+**What it shows: the narrow failures end at the doorway, not only off the
+route.** `docking_observability-01-r1` failed within 0.040 m of its route.
+Its door (y 1.20--1.90, centred on the route's 1.55, wall at x 3.85) is
+reached about 1.0 m after the plan's 45-degree dog-leg; the body arrives 4 cm
+high and 0.09 rad nose-up, so its nose edge, 0.81 m ahead with the 0.29 m
+navigation half-width, sits at y ~1.96 against the 1.90 jamb, and
+`collision_monitor` holds it (correctly: the physical body would touch too).
+A 0.70 m door leaves the narrow body about 5 cm per side in navigation terms:
+it must arrive with lateral offset plus 0.81 x heading error under ~5 cm, and
+a 1.0 m run-in after a turn does not settle a 1.76 m body that far. This is
+ADR 0008/0010's doorway limitation met by generator 3's off-line routes: the
+generator-1 sites lay on the door line, so the run-in was the whole route.
+Whether the plan needs a straight run-in before a tight passage is measured
+next from the retained records (run-in length against door passage).
+
 **Drive-margin experiment: protocol declared before any run (2026-10-31).**
 ADR 0014 decision 2. Design `config/engineering/shelf_clearance_repro.json`
 again (`85341383...`, the 16 `geometry_coupled` trials at minimum shelf
