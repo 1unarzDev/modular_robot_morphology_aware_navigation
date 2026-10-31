@@ -182,3 +182,33 @@ def goal_position_reached(current: PlanarPose, goal: PlanarPose,
                           tolerance: float) -> bool:
     """Independent mission completion check in the common map frame."""
     return tolerance > 0 and hypot(current.x - goal.x, current.y - goal.y) <= tolerance
+
+
+def path_pieces(poses: list[PlanarPose],
+                tolerance: float = 1e-3) -> list[tuple[int, int, float | None]]:
+    """Split a planned path into straight pieces and the turns between them.
+
+    Returns ``(start, end, turn_to)`` per piece: drive poses[start..end], then
+    turn in place at poses[end] to ``turn_to`` (``None`` after the last piece).
+    The planner's heading changes are in-place turns at a vertex, which pure
+    pursuit cuts by about its lookahead; executing them literally is what the
+    plan was checked against (ADR 0014). A run of poses at one position is one
+    in-place turn, to the run's last heading.
+    """
+    def same_place(a: int, b: int) -> bool:
+        return hypot(poses[a].x - poses[b].x, poses[a].y - poses[b].y) <= tolerance
+
+    pieces, start, index, count = [], 0, 0, len(poses)
+    while index < count - 1:
+        if abs(_wrap(poses[index + 1].yaw - poses[index].yaw)) <= tolerance:
+            index += 1
+            continue
+        last = index
+        while last + 1 < count and same_place(last + 1, index):
+            last += 1
+        turn_to = poses[last].yaw if last > index else poses[index + 1].yaw
+        pieces.append((start, index, turn_to))
+        start = last
+        index = last if last > index else index + 1
+    pieces.append((start, count - 1, None))
+    return pieces

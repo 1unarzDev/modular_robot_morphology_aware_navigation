@@ -1,0 +1,61 @@
+{
+  "morphology": "narrow_tandem",
+  "trials": [
+    {
+      "largest_in_place_turn_rad": 1.4514847588000004,
+      "route_offset_max_m": 0.04687200988343232,
+      "route_offset_median_m": 0.04004644888343245,
+      "route_offset_samples": 50,
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-combined_constraints-02-r0-sensing_feasibility_coupled"
+    },
+    {
+      "largest_in_place_turn_rad": 2.4894036914,
+      "route_offset_max_m": 0.11213312909679995,
+      "route_offset_median_m": 0.06971784009679993,
+      "route_offset_samples": 7,
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_repro_v3-docking_observability-01-r0-sensing_feasibility_coupled"
+    },
+    {
+      "largest_in_place_turn_rad": 2.4933308526,
+      "route_offset_max_m": 0.11368205509679985,
+      "route_offset_median_m": 0.08395328009679992,
+      "route_offset_samples": 7,
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_repro_v3-docking_observability-01-r1-sensing_feasibility_coupled"
+    },
+    {
+      "largest_in_place_turn_rad": 2.9877634731795855,
+      "route_offset_max_m": null,
+      "route_offset_median_m": null,
+      "route_offset_samples": 0,
+      "terminal_status": "timeout",
+      "trial_id": "engineering_repro_v3-docking_observability-02-r0-sensing_feasibility_coupled"
+    },
+    {
+      "largest_in_place_turn_rad": 3.0246853920000003,
+      "route_offset_max_m": null,
+      "route_offset_median_m": null,
+      "route_offset_samples": 0,
+      "terminal_status": "timeout",
+      "trial_id": "engineering_repro_v3-docking_observability-02-r1-sensing_feasibility_coupled"
+    },
+    {
+      "largest_in_place_turn_rad": 2.2868610121,
+      "route_offset_max_m": 0.0992269046429704,
+      "route_offset_median_m": 0.06447891602498633,
+      "route_offset_samples": 7,
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_repro_v3-docking_observability-05-r0-sensing_feasibility_coupled"
+    },
+    {
+      "largest_in_place_turn_rad": 2.2639061299999996,
+      "route_offset_max_m": 0.10138784972468805,
+      "route_offset_median_m": 0.06520002988440154,
+      "route_offset_samples": 7,
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_repro_v3-docking_observability-05-r1-sensing_feasibility_coupled"
+    }
+  ]
+}

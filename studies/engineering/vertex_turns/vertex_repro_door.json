@@ -1,0 +1,65 @@
+[
+ {
+  "trial": "engineering_repro_v3-combined_constraints-02-r0-sensing_feasibility_coupled",
+  "status": "completed",
+  "crossed": true,
+  "runin_m": 2.35,
+  "arrival_lateral_m": 0.022,
+  "arrival_heading_rad": 0.017,
+  "nose_offset_m": 0.036
+ },
+ {
+  "trial": "engineering_repro_v3-docking_observability-01-r0-sensing_feasibility_coupled",
+  "status": "completed",
+  "crossed": true,
+  "runin_m": 0.95,
+  "arrival_lateral_m": 0.016,
+  "arrival_heading_rad": 0.018,
+  "nose_offset_m": 0.03
+ },
+ {
+  "trial": "engineering_repro_v3-docking_observability-01-r1-sensing_feasibility_coupled",
+  "status": "completed",
+  "crossed": true,
+  "runin_m": 0.95,
+  "arrival_lateral_m": -0.019,
+  "arrival_heading_rad": 0.01,
+  "nose_offset_m": 0.011
+ },
+ {
+  "trial": "engineering_repro_v3-docking_observability-02-r0-sensing_feasibility_coupled",
+  "status": "completed",
+  "crossed": true,
+  "runin_m": 0.95,
+  "arrival_lateral_m": -0.039,
+  "arrival_heading_rad": 0.032,
+  "nose_offset_m": 0.013
+ },
+ {
+  "trial": "engineering_repro_v3-docking_observability-02-r1-sensing_feasibility_coupled",
+  "status": "completed",
+  "crossed": true,
+  "runin_m": 0.95,
+  "arrival_lateral_m": 0.001,
+  "arrival_heading_rad": 0.014,
+  "nose_offset_m": 0.013
+ },
+ {
+  "trial": "engineering_repro_v3-docking_observability-05-r0-sensing_feasibility_coupled",
+  "status": "completed",
+  "crossed": true,
+  "runin_m": 0.95,
+  "arrival_lateral_m": 0.009,
+  "arrival_heading_rad": -0.003,
+  "nose_offset_m": 0.006
+ },
+ {
+  "trial": "engineering_repro_v3-docking_observability-05-r1-sensing_feasibility_coupled",
+  "status": "completed",
+  "crossed": true,
+  "runin_m": 0.95,
+  "arrival_lateral_m": 0.011,
+  "arrival_heading_rad": 0.011,
+  "nose_offset_m": 0.02
+ }
+]

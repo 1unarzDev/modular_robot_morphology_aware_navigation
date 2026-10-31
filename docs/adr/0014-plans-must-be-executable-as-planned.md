@@ -2,7 +2,7 @@
 
 - Status: **accepted in part** (2026-10-31, agent decisions under the author's
   standing delegation for pre-data design decisions; no `pilot_v3b` trial has
-  run). Decisions 1--3 are adopted on their experiments; 4 awaits its own.
+  run). All four decisions are adopted on their experiments.
 - Date: 2026-10-31
 
 ## Context
@@ -49,9 +49,10 @@ with `use_rotate_to_heading`, and the plans depend on in-place turns.
    at 0.025 m, so the controller sees a transition obstacle within about one
    fine cell of its edge. Insufficient alone (three of four reproduced aborts
    cleared); adopted with decision 2.
-4. **Narrow vertices executed in place.** Pending its experiment: the
-   navigator splits a narrow path at its heading changes and servoes each
-   vertex, instead of letting pure pursuit cut it. A shorter lookahead
+4. **Narrow vertices executed in place.** For `FollowPathNarrow` the navigator
+   splits each traverse path at its heading changes (`path_pieces`): pure
+   pursuit follows each straight piece, and each vertex is servoed by site
+   alignment and the yaw trim, as the planner checked it. A shorter lookahead
    (0.35 m) and a planner rule demanding a body length of straight run-in
    before a tight passage were both measured and rejected: the first still
    left six of seven trials beyond 0.08 m of their route, the second made the
@@ -88,6 +89,13 @@ the baseline at `main` aborted in both `combined_constraints-02` trials. The
 same 8 layouts for the two methods that sweep their transitions (32 trials):
 no abort, no contact, every motion qualification passing, against criteria
 declared before the run.
+
+**Decision 4, executed** (`studies/engineering/vertex_turns/`). On the seven
+narrow-failure trials all seven completed (forward-only alone: two), every
+door arrival within 0.036 m of the centreline, no contact. Its route-offset
+criterion was met only after correcting the measure to skip the verification
+maneuver, with every earlier arm re-read unchanged; the round trip at the
+adopting commit re-checks it.
 
 ## Consequences
 

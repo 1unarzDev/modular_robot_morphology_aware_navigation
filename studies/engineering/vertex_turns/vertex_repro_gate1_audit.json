@@ -1,0 +1,81 @@
+{
+  "campaign_digests": {
+    "results/engineering/vertex_repro_raw": "96d8f69f040ea9ee54a9b5a4f42a3b9d2cf1afb1157294442f103e20439c198e"
+  },
+  "clean_records_per_required_class": {
+    "collision": 0,
+    "docking_failure": 0,
+    "localization_loss": 0,
+    "success": 7,
+    "timeout": 0
+  },
+  "controlled_cases": {},
+  "gate_passed": false,
+  "per_record": [
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-combined_constraints-02-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-docking_observability-01-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-docking_observability-01-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-docking_observability-02-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-docking_observability-02-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-docking_observability-05-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-docking_observability-05-r1-sensing_feasibility_coupled"
+    }
+  ],
+  "problem_counts": {},
+  "purpose": "gate1_measured_outcome_coverage",
+  "record_digests": {
+    "engineering_repro_v3-combined_constraints-02-r0-sensing_feasibility_coupled": "887856a28bce8238cdbe91b95627cd3a8dc7ea6f9af9323e3d03c731aef6ea6b",
+    "engineering_repro_v3-docking_observability-01-r0-sensing_feasibility_coupled": "eecac8a3a74d7c958c8974215b70ac7074bc2124d9ce846d6fbcb2b048440696",
+    "engineering_repro_v3-docking_observability-01-r1-sensing_feasibility_coupled": "ed712b60c54c47b86604a7888488b9182c64714c113cda891c711a057361756a",
+    "engineering_repro_v3-docking_observability-02-r0-sensing_feasibility_coupled": "e098514128b72bdc1403db0ad17f3a5bf279a50fd235eae766432212fa7cd811",
+    "engineering_repro_v3-docking_observability-02-r1-sensing_feasibility_coupled": "3bfde1059257829722fde8dcf9724270884f12e602194e216dda835058c1e878",
+    "engineering_repro_v3-docking_observability-05-r0-sensing_feasibility_coupled": "67ddb6956fcbc161d8af67350ffd08fc1c45783872bfc9b2d6ca9f1ea1d44df9",
+    "engineering_repro_v3-docking_observability-05-r1-sensing_feasibility_coupled": "f639db1771cf323f68f3efe0f0737b4b1e0ac9e5262c17625bc2467d8dc0dbff"
+  },
+  "records": 7,
+  "records_without_problems": 7,
+  "required_classes_missing": [
+    "collision",
+    "docking_failure",
+    "localization_loss",
+    "timeout"
+  ],
+  "schema_version": 1,
+  "terminal_statuses": {
+    "completed": 7
+  }
+}

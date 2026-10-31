@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from math import atan2, hypot
+from math import atan2, cos, hypot, sin
 import time
 
 import rclpy
@@ -10,7 +10,7 @@ from geometry_msgs.msg import PolygonStamped, PoseStamped, Twist
 from modular_robot_msgs.action import ComputeHybridPlan, ExecuteReconfiguration, NavigateHybrid
 from modular_robot_msgs.msg import HybridSegment, MorphologyState, RelativePoseEstimate
 from nav2_msgs.action import FollowPath
-from nav_msgs.msg import Odometry
+from nav_msgs.msg import Odometry, Path
 from rclpy.action import ActionClient, ActionServer
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.executors import SingleThreadedExecutor
@@ -22,8 +22,8 @@ from tf2_ros import Buffer, TransformException, TransformListener
 
 from .qualification import (
     VERIFICATION_SEQUENCE, CommandWindow, PlanarPose, RotationStallWatch,
-    goal_position_reached, motion_delta, qualification_pass, shortest_angle,
-    site_alignment_command,
+    goal_position_reached, motion_delta, path_pieces, qualification_pass,
+    shortest_angle, site_alignment_command,
 )
 
 
@@ -80,6 +80,11 @@ class HybridNavigator(Node):
         # pass. Trim the yaw the transition leaves before driving on.
         self.declare_parameter("post_transition_yaw_tolerance", 0.02)
         self.declare_parameter("post_transition_yaw_timeout_s", 15.0)
+        # ADR 0014: controllers whose paths are executed piecewise, turning in
+        # place at each planned vertex instead of letting pure pursuit cut it.
+        # The 1.76 m narrow body reached a 0.70 m door 0.95 m after a cut
+        # vertex too far off its line to pass, in 16 of 20 approaches.
+        self.declare_parameter("vertex_turn_controllers", ["FollowPathNarrow"])
         qos = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL,
                          reliability=ReliabilityPolicy.RELIABLE)
         self.morphology: MorphologyState | None = None
@@ -278,7 +283,7 @@ class HybridNavigator(Node):
                         await self._trim_transition_yaw(segment.execution_pose)
                     replan_requested = bool(success)
                 else:
-                    success = await self._follow(segment)
+                    success = await self._traverse(segment)
                 if not success:
                     if (segment.kind == HybridSegment.RECONFIGURE and self.morphology
                             and self.morphology.execution_state
@@ -467,12 +472,47 @@ class HybridNavigator(Node):
             return None
         return (await handle.get_result_async()).result
 
-    async def _follow(self, segment):
+    async def _traverse(self, segment) -> bool:
+        """Follow a traverse segment, executing planned vertices literally.
+
+        For controllers in ``vertex_turn_controllers`` the path is split at its
+        heading changes: pure pursuit follows each straight piece, and at each
+        vertex the body is servoed onto the vertex and the next heading (site
+        alignment, then the yaw trim), as the planner checked it.
+        """
+        controllers = list(self.get_parameter("vertex_turn_controllers").value)
+        if segment.controller_id not in controllers:
+            return await self._follow(segment.path, segment.controller_id)
+        poses = segment.path.poses
+        planar = [PlanarPose(p.pose.position.x, p.pose.position.y,
+                             2.0 * atan2(p.pose.orientation.z, p.pose.orientation.w))
+                  for p in poses]
+        for start, end, turn_to in path_pieces(planar):
+            if end > start:
+                piece = Path()
+                piece.header = segment.path.header
+                piece.poses = list(poses[start:end + 1])
+                if not await self._follow(piece, segment.controller_id):
+                    return False
+            if turn_to is None:
+                continue
+            vertex = PoseStamped()
+            vertex.header = segment.path.header
+            vertex.pose.position = poses[end].pose.position
+            vertex.pose.orientation.z = sin(turn_to / 2.0)
+            vertex.pose.orientation.w = cos(turn_to / 2.0)
+            if not await self._align_to_site(vertex):
+                self.get_logger().error("could not turn at a planned vertex; replanning")
+                return False
+            await self._trim_transition_yaw(vertex)
+        return True
+
+    async def _follow(self, path, controller_id):
         if not self.follower.wait_for_server(timeout_sec=3.0):
             return False
         request = FollowPath.Goal()
-        request.path = segment.path
-        request.controller_id = segment.controller_id
+        request.path = path
+        request.controller_id = controller_id
         handle = await self.follower.send_goal_async(request)
         if not handle.accepted:
             return False

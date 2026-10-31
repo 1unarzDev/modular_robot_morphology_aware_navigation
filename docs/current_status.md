@@ -1367,6 +1367,27 @@ other non-contact outcomes are reported and not judged. If it passes and the
 queued baseline reproduces at least one abort, the margin and the finer
 raster are adopted as ADR 0014 decision 2.
 
+**Vertex-turn experiment: accepted (2026-11-01); narrow vertices are executed
+in place (ADR 0014 decision 4).** 7 of 7 at `42b88ec`, campaign digest
+`4916a8d1...`, evidence `studies/engineering/vertex_turns/` (summary,
+execution measures, door arrivals, turn rate, `gate1_audit`, records sha256
+`b3930df3...`, and every earlier narrow arm re-read with the corrected
+measure). **All seven completed** (forward-only baseline 2 of 7); every door
+approach arrived with its nose 0.006--0.036 m from the centreline (criterion
+2 <= 0.05), no contact, every motion qualification passes, turn rate 1.11.
+**Criterion 1 failed as declared, on an instrument defect, disclosed:** the
+route-offset measure counted every forward-commanded narrow sample, so the
+post-transition verification maneuver's planned, swept forward stage (0.12 m/s
+at the site, here with the body at 90 degrees to its route) read 0.095 m in
+`combined_constraints-02-r0`, a run that otherwise followed its route to
+0.041 m. The measure was corrected to skip motion-qualification windows
+(`4bf38aa`, with a test) and **every narrow arm was re-read with it: no earlier
+verdict changes** (lookahead still 0.081--0.114 m, baselines 0.10--0.31 m),
+and this arm's maximum is 0.041 m. It is adopted on that disclosed reading,
+and the generator-3 round trip, re-collected next at the adopting commit,
+checks the corrected measure independently: its maximum narrow route offset
+must also stay at or below 0.08 m in all 20 runs.
+
 **Drive-margin follow-up: accepted (2026-11-01); the 0.03 m drive-obstacle
 margin and the finer keepout raster are adopted (ADR 0014 decisions 2 and
 3).** 32 of 32 at `ce540b7`, campaign digest `a78e55ce...`; evidence for all
