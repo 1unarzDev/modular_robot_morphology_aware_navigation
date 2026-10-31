@@ -279,3 +279,29 @@ def test_turning_keeps_a_tracking_margin_that_straight_motion_does_not_need():
     turn = (HybridState(40, 15, 0, "narrow_tandem"), HybridState(40, 15, 1, "narrow_tandem"))
     assert planner._traversal_is_free(*straight)
     assert not planner._traversal_is_free(*turn)
+
+
+@pytest.mark.parametrize("morphology", ["compact_diff", "narrow_tandem"])
+def test_traversal_never_moves_against_the_heading(morphology):
+    """ADR 0014: plans must be executable as planned, and no controller reverses."""
+    from math import cos, sin
+
+    catalog = load_catalog(CATALOG).supported_experiment_subset()
+    planner = MorphologyAStar(catalog, OccupancyGrid(60, 60, 0.1), heading_bins=8)
+    body = catalog.morphologies[morphology]
+    for heading in range(8):
+        state = HybridState(30, 30, heading, morphology)
+        yaw = planner._yaw(heading)
+        moves = [target for target, segment in planner._motion_neighbors(state, body)
+                 if (target.x, target.y) != (state.x, state.y)]
+        assert moves
+        for target in moves:
+            assert (target.x - state.x) * cos(yaw) + (target.y - state.y) * sin(yaw) > 0
+
+
+def test_a_goal_behind_the_robot_is_reached_by_turning_not_reversing():
+    catalog = load_catalog(CATALOG).supported_experiment_subset()
+    planner = MorphologyAStar(catalog, OccupancyGrid(60, 30, 0.1), heading_bins=8)
+    plan = planner.plan(HybridState(40, 15, 0, "compact_diff"), (20, 15), epsilon=2.5)
+    states = [plan.segments[0].source] + [segment.target for segment in plan.segments]
+    assert any(state.heading != 0 for state in states)

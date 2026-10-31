@@ -1222,6 +1222,18 @@ signature; it holds in 6 of 7 baseline trials); (2) no evaluator contact;
 (3) every recorded post-transition motion qualification passes; (4) the
 turn-rate criteria still hold. Completions are reported, not the criterion.
 
+**Forward-only experiment: accepted (2026-10-31); forward-only planning is
+adopted (ADR 0014).** 7 of 7 at `fc1eceb`, campaign digest `75bbfefb...`,
+evidence `studies/engineering/forward_only/` (summary, execution measures,
+turn rate, `gate1_audit`, records restore-verified, sha256 `96fe537f...`).
+Every declared criterion holds: largest narrow in-place turn 1.37 rad (none
+over 1.5; the baseline's six were 2.26--3.02), no contact, all 9 recorded
+motion qualifications pass, turn rate median 1.13 (p10 0.93). Completed 2 of
+7 (baseline 1). The five failures are all the chord-cutting mode the lookahead
+experiment targets: maximum narrow route offset 0.11--0.28 m, each held by
+`collision_monitor` and failing after the replan limit (two end "no
+collision-free hybrid plan" on replanning from where the body was held).
+
 **Narrow lookahead experiment: protocol declared before any run
 (2026-10-31, while the forward-only arm runs).** Its first records already
 show the turnaround gone (largest narrow in-place turn 0.38--0.47 rad) and a

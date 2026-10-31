@@ -1,0 +1,82 @@
+{
+  "campaign_digests": {
+    "results/engineering/fwd_only_repro_raw": "ac8a0a3538f63a8a8a7854356ed2345d2e3c40c08a537cf3765accf4c747c747"
+  },
+  "clean_records_per_required_class": {
+    "collision": 0,
+    "docking_failure": 0,
+    "localization_loss": 0,
+    "success": 2,
+    "timeout": 0
+  },
+  "controlled_cases": {},
+  "gate_passed": false,
+  "per_record": [
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-combined_constraints-02-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-docking_observability-01-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_repro_v3-docking_observability-01-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_repro_v3-docking_observability-02-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_repro_v3-docking_observability-02-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_repro_v3-docking_observability-05-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_repro_v3-docking_observability-05-r1-sensing_feasibility_coupled"
+    }
+  ],
+  "problem_counts": {},
+  "purpose": "gate1_measured_outcome_coverage",
+  "record_digests": {
+    "engineering_repro_v3-combined_constraints-02-r0-sensing_feasibility_coupled": "d67245a8cd19d3457b22d767eaf7a1ee1446f63c6b43d3e1e83daaa39dfb2db0",
+    "engineering_repro_v3-docking_observability-01-r0-sensing_feasibility_coupled": "58146fdedee58a2fe159468b4c48d1d97de9c75eb9bd01645763141e03f8dd12",
+    "engineering_repro_v3-docking_observability-01-r1-sensing_feasibility_coupled": "1319ce9c3565e6543a5be0a550bcf6258030b0db524898025cfc234da645e92f",
+    "engineering_repro_v3-docking_observability-02-r0-sensing_feasibility_coupled": "36723578b3e581a5d43c14f6bdcd257095f72733e77fe7d49eb999cad79858ab",
+    "engineering_repro_v3-docking_observability-02-r1-sensing_feasibility_coupled": "dc25f4ffa5cc2fdace73c2c8c7477248c13d8ebf7f206713a886f34d168aa363",
+    "engineering_repro_v3-docking_observability-05-r0-sensing_feasibility_coupled": "9150971a2ee0b506c33b78549e6beef41c1dbf742fa1be82542fc5928257977f",
+    "engineering_repro_v3-docking_observability-05-r1-sensing_feasibility_coupled": "5b0229b225fdad06c0846ac76c5407e5091218b98db1879f1dc4aea9f22b5000"
+  },
+  "records": 7,
+  "records_without_problems": 7,
+  "required_classes_missing": [
+    "collision",
+    "docking_failure",
+    "localization_loss",
+    "timeout"
+  ],
+  "schema_version": 1,
+  "terminal_statuses": {
+    "completed": 2,
+    "controller_failure": 5
+  }
+}

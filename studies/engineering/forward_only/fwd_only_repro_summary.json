@@ -1,0 +1,485 @@
+{
+ "by_status": {
+  "completed": 2,
+  "controller_failure": 5
+ },
+ "campaign_digest": "65b22e0bd82c78b75bbfefb8b983e89770579e011f9526da05266d391a0e4a18",
+ "commits": [
+  "fc1eceb"
+ ],
+ "design_hashes": [
+  "760cc21b84b5039a50ca9e07477250f4071f5a775435fe4dfd671e0587f03c73"
+ ],
+ "purpose": "forward_only",
+ "records": 7,
+ "schema_version": 1,
+ "trials": [
+  {
+   "collision_count": 0,
+   "commit": "fc1eceb",
+   "completed": true,
+   "contact_events": 0,
+   "design_hash": "760cc21b84b5039a50ca9e07477250f4071f5a775435fe4dfd671e0587f03c73",
+   "final_morphology": "compact_diff",
+   "first_transition_s": 26.084,
+   "infrastructure_attempts": 1,
+   "layout_id": "combined_constraints-02",
+   "log_counts": {
+    "collision_monitor_approach": 0,
+    "failed_to_make_progress": 0,
+    "rpp_collision_ahead": 0
+   },
+   "message": "hybrid navigation completed",
+   "method": "sensing_feasibility_coupled",
+   "minimum_clearance_m": 0.01059567519151594,
+   "planned_route_signature": "bcd82ed96b2a9bc2437214957e3c4f9b0ff94b96825fcd15e68c3f13f41c69bc",
+   "planned_transition_sites": [
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 1.2500000186264515,
+     "y": 1.3500000201165676,
+     "yaw": 1.5707963267948963
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.350000079721212,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.350000079721212,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.350000079721212,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    }
+   ],
+   "reconfiguration_attempts": 2,
+   "record_sha256": "d67245a8cd19d3457b22d767eaf7a1ee1446f63c6b43d3e1e83daaa39dfb2db0",
+   "recovery_actions": 0,
+   "replicate": 0,
+   "simulated_duration_s": 166.772,
+   "terminal_status": "completed",
+   "trial_id": "engineering_repro_v3-combined_constraints-02-r0-sensing_feasibility_coupled"
+  },
+  {
+   "collision_count": 0,
+   "commit": "fc1eceb",
+   "completed": true,
+   "contact_events": 0,
+   "design_hash": "760cc21b84b5039a50ca9e07477250f4071f5a775435fe4dfd671e0587f03c73",
+   "final_morphology": "compact_diff",
+   "first_transition_s": 52.756,
+   "infrastructure_attempts": 2,
+   "layout_id": "docking_observability-01",
+   "log_counts": {
+    "collision_monitor_approach": 0,
+    "failed_to_make_progress": 0,
+    "rpp_collision_ahead": 0
+   },
+   "message": "hybrid navigation completed",
+   "method": "sensing_feasibility_coupled",
+   "minimum_clearance_m": 0.013047415226164594,
+   "planned_route_signature": "657b187a2a91ccf7b4aa13a61d04d9c4ba5d590a19785d1608ce099d8fa0c1a0",
+   "planned_transition_sites": [
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.550000037997961,
+     "y": 1.3500000201165676,
+     "yaw": 0.7853981633974484
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.550000082701445,
+     "y": 1.5500000230967999,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.550000037997961,
+     "y": 1.3500000201165676,
+     "yaw": 0.7853981633974484
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.550000082701445,
+     "y": 1.5500000230967999,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.550000082701445,
+     "y": 1.5500000230967999,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.550000082701445,
+     "y": 1.5500000230967999,
+     "yaw": 0.0
+    }
+   ],
+   "reconfiguration_attempts": 2,
+   "record_sha256": "58146fdedee58a2fe159468b4c48d1d97de9c75eb9bd01645763141e03f8dd12",
+   "recovery_actions": 0,
+   "replicate": 0,
+   "simulated_duration_s": 185.068,
+   "terminal_status": "completed",
+   "trial_id": "engineering_repro_v3-docking_observability-01-r0-sensing_feasibility_coupled"
+  },
+  {
+   "collision_count": 0,
+   "commit": "fc1eceb",
+   "completed": false,
+   "contact_events": 0,
+   "design_hash": "760cc21b84b5039a50ca9e07477250f4071f5a775435fe4dfd671e0587f03c73",
+   "final_morphology": "narrow_tandem",
+   "first_transition_s": 53.394,
+   "infrastructure_attempts": 1,
+   "layout_id": "docking_observability-01",
+   "log_counts": {
+    "collision_monitor_approach": 4,
+    "failed_to_make_progress": 4,
+    "rpp_collision_ahead": 0
+   },
+   "message": "execution failed after replanning limit",
+   "method": "sensing_feasibility_coupled",
+   "minimum_clearance_m": 0.01357204723577708,
+   "planned_route_signature": "28100a359086ba2e90c621bfe39e59c1061432a8002beeb7c4a43ba9c1586ff4",
+   "planned_transition_sites": [
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.550000037997961,
+     "y": 1.3500000201165676,
+     "yaw": 0.7853981633974484
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.550000082701445,
+     "y": 1.5500000230967999,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.550000037997961,
+     "y": 1.3500000201165676,
+     "yaw": 0.7853981633974484
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.550000082701445,
+     "y": 1.5500000230967999,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.550000082701445,
+     "y": 1.5500000230967999,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.550000082701445,
+     "y": 1.5500000230967999,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.550000082701445,
+     "y": 1.5500000230967999,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.550000082701445,
+     "y": 1.5500000230967999,
+     "yaw": 0.0
+    }
+   ],
+   "reconfiguration_attempts": 1,
+   "record_sha256": "1319ce9c3565e6543a5be0a550bcf6258030b0db524898025cfc234da645e92f",
+   "recovery_actions": 4,
+   "replicate": 1,
+   "simulated_duration_s": 231.68,
+   "terminal_status": "controller_failure",
+   "trial_id": "engineering_repro_v3-docking_observability-01-r1-sensing_feasibility_coupled"
+  },
+  {
+   "collision_count": 0,
+   "commit": "fc1eceb",
+   "completed": false,
+   "contact_events": 0,
+   "design_hash": "760cc21b84b5039a50ca9e07477250f4071f5a775435fe4dfd671e0587f03c73",
+   "final_morphology": "narrow_tandem",
+   "first_transition_s": 55.9,
+   "infrastructure_attempts": 1,
+   "layout_id": "docking_observability-02",
+   "log_counts": {
+    "collision_monitor_approach": 4,
+    "failed_to_make_progress": 4,
+    "rpp_collision_ahead": 0
+   },
+   "message": "execution failed after replanning limit",
+   "method": "sensing_feasibility_coupled",
+   "minimum_clearance_m": 0.009991702259644075,
+   "planned_route_signature": "a28ee5904e75cad8a61be2dc2f9a93d08d70f87d214b19558fb8d8a3e3a1e08a",
+   "planned_transition_sites": [
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.350000035017729,
+     "y": 1.8500000275671482,
+     "yaw": 0.7853981633974484
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.15000007674098,
+     "y": 2.2500000335276127,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.350000035017729,
+     "y": 1.8500000275671482,
+     "yaw": 0.7853981633974484
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.15000007674098,
+     "y": 2.2500000335276127,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.15000007674098,
+     "y": 2.2500000335276127,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.15000007674098,
+     "y": 2.2500000335276127,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.15000007674098,
+     "y": 2.2500000335276127,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.15000007674098,
+     "y": 2.2500000335276127,
+     "yaw": 0.0
+    }
+   ],
+   "reconfiguration_attempts": 1,
+   "record_sha256": "36723578b3e581a5d43c14f6bdcd257095f72733e77fe7d49eb999cad79858ab",
+   "recovery_actions": 4,
+   "replicate": 0,
+   "simulated_duration_s": 240.952,
+   "terminal_status": "controller_failure",
+   "trial_id": "engineering_repro_v3-docking_observability-02-r0-sensing_feasibility_coupled"
+  },
+  {
+   "collision_count": 0,
+   "commit": "fc1eceb",
+   "completed": false,
+   "contact_events": 0,
+   "design_hash": "760cc21b84b5039a50ca9e07477250f4071f5a775435fe4dfd671e0587f03c73",
+   "final_morphology": "narrow_tandem",
+   "first_transition_s": 55.384,
+   "infrastructure_attempts": 1,
+   "layout_id": "docking_observability-02",
+   "log_counts": {
+    "collision_monitor_approach": 4,
+    "failed_to_make_progress": 4,
+    "rpp_collision_ahead": 0
+   },
+   "message": "execution failed after replanning limit",
+   "method": "sensing_feasibility_coupled",
+   "minimum_clearance_m": 0.019436463317136617,
+   "planned_route_signature": "a28ee5904e75cad8a61be2dc2f9a93d08d70f87d214b19558fb8d8a3e3a1e08a",
+   "planned_transition_sites": [
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.350000035017729,
+     "y": 1.8500000275671482,
+     "yaw": 0.7853981633974484
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.15000007674098,
+     "y": 2.2500000335276127,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.350000035017729,
+     "y": 1.8500000275671482,
+     "yaw": 0.7853981633974484
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.15000007674098,
+     "y": 2.2500000335276127,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.15000007674098,
+     "y": 2.2500000335276127,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.15000007674098,
+     "y": 2.2500000335276127,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.15000007674098,
+     "y": 2.2500000335276127,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.15000007674098,
+     "y": 2.2500000335276127,
+     "yaw": 0.0
+    }
+   ],
+   "reconfiguration_attempts": 1,
+   "record_sha256": "dc25f4ffa5cc2fdace73c2c8c7477248c13d8ebf7f206713a886f34d168aa363",
+   "recovery_actions": 4,
+   "replicate": 1,
+   "simulated_duration_s": 241.972,
+   "terminal_status": "controller_failure",
+   "trial_id": "engineering_repro_v3-docking_observability-02-r1-sensing_feasibility_coupled"
+  },
+  {
+   "collision_count": 0,
+   "commit": "fc1eceb",
+   "completed": false,
+   "contact_events": 0,
+   "design_hash": "760cc21b84b5039a50ca9e07477250f4071f5a775435fe4dfd671e0587f03c73",
+   "final_morphology": "narrow_tandem",
+   "first_transition_s": 69.11,
+   "infrastructure_attempts": 1,
+   "layout_id": "docking_observability-05",
+   "log_counts": {
+    "collision_monitor_approach": 1,
+    "failed_to_make_progress": 1,
+    "rpp_collision_ahead": 0
+   },
+   "message": "execution failed; replanning failed: no collision-free hybrid plan",
+   "method": "sensing_feasibility_coupled",
+   "minimum_clearance_m": 0.01754543246959721,
+   "planned_route_signature": "fd6f57dadb1edf52e4624c3c93a2b4a431558874fc3363b6c6f36da3eaf295d5",
+   "planned_transition_sites": [
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.450000036507845,
+     "y": 2.0500000305473804,
+     "yaw": 1.5707963267948963
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.850000087171793,
+     "y": 2.650000039488077,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.450000036507845,
+     "y": 2.0500000305473804,
+     "yaw": 1.5707963267948963
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.850000087171793,
+     "y": 2.650000039488077,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.850000087171793,
+     "y": 2.650000039488077,
+     "yaw": 0.0
+    }
+   ],
+   "reconfiguration_attempts": 1,
+   "record_sha256": "9150971a2ee0b506c33b78549e6beef41c1dbf742fa1be82542fc5928257977f",
+   "recovery_actions": 1,
+   "replicate": 0,
+   "simulated_duration_s": 162.518,
+   "terminal_status": "controller_failure",
+   "trial_id": "engineering_repro_v3-docking_observability-05-r0-sensing_feasibility_coupled"
+  },
+  {
+   "collision_count": 0,
+   "commit": "fc1eceb",
+   "completed": false,
+   "contact_events": 0,
+   "design_hash": "760cc21b84b5039a50ca9e07477250f4071f5a775435fe4dfd671e0587f03c73",
+   "final_morphology": "narrow_tandem",
+   "first_transition_s": 67.37,
+   "infrastructure_attempts": 1,
+   "layout_id": "docking_observability-05",
+   "log_counts": {
+    "collision_monitor_approach": 1,
+    "failed_to_make_progress": 1,
+    "rpp_collision_ahead": 0
+   },
+   "message": "execution failed; replanning failed: no collision-free hybrid plan",
+   "method": "sensing_feasibility_coupled",
+   "minimum_clearance_m": 0.020392843645994942,
+   "planned_route_signature": "fd6f57dadb1edf52e4624c3c93a2b4a431558874fc3363b6c6f36da3eaf295d5",
+   "planned_transition_sites": [
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.450000036507845,
+     "y": 2.0500000305473804,
+     "yaw": 1.5707963267948963
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.850000087171793,
+     "y": 2.650000039488077,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.450000036507845,
+     "y": 2.0500000305473804,
+     "yaw": 1.5707963267948963
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.850000087171793,
+     "y": 2.650000039488077,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.850000087171793,
+     "y": 2.650000039488077,
+     "yaw": 0.0
+    }
+   ],
+   "reconfiguration_attempts": 1,
+   "record_sha256": "5b0229b225fdad06c0846ac76c5407e5091218b98db1879f1dc4aea9f22b5000",
+   "recovery_actions": 1,
+   "replicate": 1,
+   "simulated_duration_s": 162.194,
+   "terminal_status": "controller_failure",
+   "trial_id": "engineering_repro_v3-docking_observability-05-r1-sensing_feasibility_coupled"
+  }
+ ]
+}

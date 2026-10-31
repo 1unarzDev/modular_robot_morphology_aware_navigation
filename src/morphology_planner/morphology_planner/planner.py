@@ -185,8 +185,11 @@ class MorphologyAStar:
         mode = morphology.locomotion_mode
         actions: list[tuple[int, int, int]] = []
         forward = self._quantized_direction(yaw)
+        # Forward only (ADR 0014). No controller in the stack reverses: RPP
+        # turns the body around in place and drives forward instead, a sweep
+        # nobody checked, which left the 1.76 m narrow body entering a bend from
+        # the wrong heading and transformations at the opposite heading.
         actions.append((forward[0], forward[1], 0))
-        actions.append((-forward[0], -forward[1], 0))
         actions.extend([(0, 0, 1), (0, 0, -1)])
         if mode == "omnidirectional":
             lateral = self._quantized_direction(yaw + pi / 2)
