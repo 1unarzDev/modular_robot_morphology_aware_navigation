@@ -1092,6 +1092,24 @@ fails a control for an execution reason rather than the manipulation, which
 would bias the comparison toward the treatment; it needs a diagnosis before
 the confirmatory freeze.
 
+**Diagnosed from the record and world manifest (same day, nothing changed):
+the planner approves compact routes that clear a transition obstacle by less
+than tracking error.** The route runs straight along y = 1.35 m beneath the
+raised shelf (x 2.35--2.95, lower edge y = 1.715, z 0.10--0.18, below the
+compact body's 0.30 m). The planner's compact footprint half-width is 0.36 m
+(physical envelope plus 0.08 m operational clearance), reaching y = 1.710:
+**0.5 cm** from the shelf. Nav2 sees the same shelf through the keepout mask
+rasterized outward to 0.05 m cells, lethal from y = 1.70. At the abort the
+robot tracked 6 cm off the route (y = 1.41), putting the 0.28 m navigation
+footprint at y = 1.69, so any yaw toward the shelf in RPP's 1 s projection
+touches lethal cells. The 0.08 m clearance band is consumed by tracking error
+plus rasterization. Method-agnostic: any route laid along a transition
+obstacle at minimum clearance fails the same way; `geometry_coupled` meets it
+because its site sits under the shelf. A traversal margin for transition
+obstacles in the shared planner model is the likely fix (as ADR 0013 did for
+turning). It changes plans, so it is a design decision taken after the pilot
+ends, and the pilot is then read knowing this control-failure mode is in it.
+
 ### The Gate 3 pilot is frozen (2026-10-30)
 
 `studies/pilot/design.json`: kind `pilot_v2` (layout generator 2, ADR 0011),
