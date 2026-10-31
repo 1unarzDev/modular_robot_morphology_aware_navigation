@@ -34,8 +34,14 @@ WIDE_LAYOUT_DESIGN_KINDS = frozenset({
 PILOT_V3_DESIGN_KIND = "pilot_v3"
 CONFIRMATORY_V3_DESIGN_KIND = "confirmatory_v3"
 ROUNDTRIP_V3_DESIGN_KIND = "engineering_roundtrip_v3"
+# Gate 0's fault matrix re-collected on generator 3: generator 1's manipulated
+# fault-matrix layouts no longer plan.
+FAULT_MATRIX_V3_DESIGN_KIND = "engineering_fault_matrix_v3"
+FAULT_MATRIX_DESIGN_KINDS = frozenset({
+    FAULT_MATRIX_DESIGN_KIND, FAULT_MATRIX_V3_DESIGN_KIND})
 LONG_ROOM_DESIGN_KINDS = frozenset({
-    PILOT_V3_DESIGN_KIND, CONFIRMATORY_V3_DESIGN_KIND, ROUNDTRIP_V3_DESIGN_KIND})
+    PILOT_V3_DESIGN_KIND, CONFIRMATORY_V3_DESIGN_KIND, ROUNDTRIP_V3_DESIGN_KIND,
+    FAULT_MATRIX_V3_DESIGN_KIND})
 
 
 def layout_generator_for(design_kind: str) -> int:
@@ -250,6 +256,7 @@ def generate_fault_matrix_campaign(
     method: str,
     realizations: int = 1,
     master_seed: int = 20260912,
+    design_kind: str = FAULT_MATRIX_DESIGN_KIND,
 ) -> StudyDesign:
     """Repeat the declared fault matrix across layouts and fault realizations.
 
@@ -257,7 +264,8 @@ def generate_fault_matrix_campaign(
     plant and fault seeds. Roadmap Gate 0 step 2 requires the matrix to hold
     across layouts, not only on the single engineering layout it first passed.
     """
-    design_kind = FAULT_MATRIX_DESIGN_KIND
+    if design_kind not in FAULT_MATRIX_DESIGN_KINDS:
+        raise ValueError(f"not a fault-matrix design kind: {design_kind}")
     if family not in CONFIRMATORY_FAMILIES:
         raise ValueError(f"unknown confirmatory family: {family}")
     if method not in METHODS:

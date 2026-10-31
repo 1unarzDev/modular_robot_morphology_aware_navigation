@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 from .design import (
-    FAULT_MATRIX, FAULT_MATRIX_DESIGN_KIND, FaultCase, StudyDesign,
+    FAULT_MATRIX, FAULT_MATRIX_DESIGN_KIND, FAULT_MATRIX_DESIGN_KINDS, FaultCase, StudyDesign,
     GATE1_OUTCOMES_DESIGN_KIND, fault_case_for_run,
     generate_fault_matrix_campaign, generate_gate1_outcome_campaign,
 )
@@ -75,8 +75,8 @@ def evaluate_fault_trial(record: TrialRecord, case: FaultCase) -> dict[str, Any]
 
 
 def summarize_fault_matrix(design: StudyDesign, records: list[TrialRecord]) -> dict[str, Any]:
-    if design.design_kind != FAULT_MATRIX_DESIGN_KIND:
-        raise ValueError(f"design kind {design.design_kind} is not {FAULT_MATRIX_DESIGN_KIND}")
+    if design.design_kind not in FAULT_MATRIX_DESIGN_KINDS:
+        raise ValueError(f"design kind {design.design_kind} is not a fault matrix")
     wrong_hash = sorted(record.spec.trial_id for record in records
                         if record.manifest.design_hash != design.design_hash)
     if wrong_hash:
@@ -152,6 +152,10 @@ def _parser() -> argparse.ArgumentParser:
         "--realizations", type=int, default=1,
         help="independent fault_seed realizations of every declared case")
     freeze.add_argument("--master-seed", type=int, default=20260912)
+    freeze.add_argument(
+        "--design-kind", choices=sorted(FAULT_MATRIX_DESIGN_KINDS),
+        default=FAULT_MATRIX_DESIGN_KIND,
+        help="the kind binds the layout generator (ADR 0011, 0013)")
     gate1 = commands.add_parser(
         "freeze-gate1-outcomes",
         help=f"write an immutable {GATE1_OUTCOMES_DESIGN_KIND} design")
@@ -174,7 +178,7 @@ def main() -> None:
         if args.command == "freeze-fault-matrix":
             design = generate_fault_matrix_campaign(
                 args.family, tuple(args.layout_index), args.method,
-                args.realizations, args.master_seed)
+                args.realizations, args.master_seed, args.design_kind)
         else:
             design = generate_gate1_outcome_campaign(
                 args.family, args.layout_index, args.method,

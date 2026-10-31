@@ -1047,6 +1047,17 @@ the fault matrix re-collected on generator 3 (generator 1's manipulated
 fault-matrix layouts no longer plan), the `pilot_v3` run, its nuisance read,
 and the layout count.
 
+**Generator-3 fault matrix: selection rule declared before any scan
+(2026-10-31).** Design kind `engineering_fault_matrix_v3` (bound to generator
+3), the same shape as the generator-1 campaign it replaces: the seven declared
+fault cases x two `fault_seed` realizations on three `reconfiguration_workspace`
+layouts under `sensing_feasibility_coupled`, 42 trials, master seed 20261105.
+Layouts, mirroring that campaign's one neutral and two manipulated: index 00,
+plus the first two manipulated indices (index % 4 != 0, ascending) where the
+method plans from its priors, a planner-only check (`method_decision`) on the
+design's own world seeds. If 00 does not plan, the next neutral index (04, 08)
+replaces it. No layout is chosen or dropped on any other ground.
+
 ### The Gate 3 pilot is frozen (2026-10-30)
 
 `studies/pilot/design.json`: kind `pilot_v2` (layout generator 2, ADR 0011),

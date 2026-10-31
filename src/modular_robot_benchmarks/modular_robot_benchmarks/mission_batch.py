@@ -16,7 +16,7 @@ from typing import Any
 
 from .confirmatory_scenarios import make_confirmatory_scenario
 from .design import (
-    FAULT_MATRIX_DESIGN_KIND, GATE1_OUTCOMES_DESIGN_KIND, OutcomeCase, StudyDesign,
+    FAULT_MATRIX_DESIGN_KINDS, GATE1_OUTCOMES_DESIGN_KIND, OutcomeCase, StudyDesign,
     fault_case_for_run, layout_generator_for, outcome_case_for_run,
 )
 from .evaluator_metrics import (
@@ -108,7 +108,7 @@ def evaluator_outcome(
 
 def failure_injection_for(design: StudyDesign, spec) -> str:
     """Declared executor fault for a trial; empty outside the fault matrix."""
-    if design.design_kind != FAULT_MATRIX_DESIGN_KIND:
+    if design.design_kind not in FAULT_MATRIX_DESIGN_KINDS:
         return ""
     return fault_case_for_run(spec.replicate).injection
 

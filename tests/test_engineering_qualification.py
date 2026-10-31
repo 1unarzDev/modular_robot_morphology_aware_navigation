@@ -32,6 +32,36 @@ def test_fault_matrix_design_freezes_with_one_method_and_independent_seeds(tmp_p
         generate_fault_matrix_design("unknown_family", 5, "geometry_coupled")
 
 
+def test_generator3_fault_matrix_is_bound_to_generator3_and_injects_faults():
+    from modular_robot_benchmarks.design import (
+        FAULT_MATRIX_V3_DESIGN_KIND, layout_generator_for)
+    design = generate_fault_matrix_campaign(
+        "reconfiguration_workspace", (1, 4), "sensing_feasibility_coupled", 2,
+        design_kind=FAULT_MATRIX_V3_DESIGN_KIND)
+    assert layout_generator_for(design.design_kind) == 3
+    assert design.expected_trials == 2 * 2 * len(FAULT_MATRIX)
+    assert [failure_injection_for(design, spec) for spec in design.trials[:len(FAULT_MATRIX)]] == [
+        case.injection for case in FAULT_MATRIX]
+    v1 = generate_fault_matrix_campaign(
+        "reconfiguration_workspace", (1, 4), "sensing_feasibility_coupled", 2)
+    assert layout_generator_for(v1.design_kind) == 1
+    assert {s.world_seed for s in v1.trials}.isdisjoint({s.world_seed for s in design.trials})
+    with pytest.raises(ValueError, match="fault-matrix design kind"):
+        generate_fault_matrix_campaign(
+            "reconfiguration_workspace", (1,), "sensing_feasibility_coupled",
+            design_kind="pilot_v3")
+
+
+def test_checked_in_fault_matrix_campaign_is_unchanged():
+    design = StudyDesign.read_frozen(ROOT / "config/fault_matrix_campaign.json")
+    rebuilt = generate_fault_matrix_campaign(
+        design.families[0],
+        tuple(int(layout.rsplit("-", 1)[1]) for layout in dict.fromkeys(
+            spec.layout_id for spec in design.trials)),
+        design.methods[0], design.replicates // len(FAULT_MATRIX), design.master_seed)
+    assert rebuilt == design
+
+
 def test_checked_in_confirmatory_design_is_unchanged():
     design = StudyDesign.read_frozen(ROOT / "studies/confirmatory/design.json")
     assert design.design_hash == (
