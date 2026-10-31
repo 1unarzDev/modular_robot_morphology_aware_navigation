@@ -1151,6 +1151,42 @@ qualification passes. Completions and failures are reported, not used as the
 criterion. The scale was set on 2026-09-12 against the pre-ADR-0007 plant,
 which is why it is suspected stale.
 
+**The shelf aborts are a rasterization artifact (2026-10-31, offline, from
+the two `pilot_v3` records).** Projecting the recorded compact command
+(0.35 m/s, -0.20 rad/s, turning *away* from the shelf) over RPP's 1.0 s
+collision horizon from the AMCL pose, the padded navigation footprint
+(+-0.34 x +-0.29 m) reaches y = 1.680 over the shelf's x-range in both
+replicates, against the shelf's true edge at 1.715: 3.5 cm of physical
+clearance. The keepout mask marks any 0.05 m cell the shelf overlaps (lethal
+from 1.70), and the 0.05 m local costmap, sampling it at its own cell centres
+in the odom frame, makes cells lethal down to 1.675 in the worst alignment, so
+the projection touches lethal cells that are not the shelf. The planner's
+5 mm is in its footprint, which already carries 0.07--0.08 m clearance per
+side; the controller then spends up to 4 cm of that on quantization. So the
+controller can be made to see the shelf at its true edge without changing any
+plan, site or the manipulation, which a planner margin cannot do.
+
+**Shelf-clearance experiment: protocol declared before any run
+(2026-10-31).** Design `config/engineering/shelf_clearance_repro.json` (kind
+`engineering_repro_v3`, hash `85341383...`, 16 trials): `geometry_coupled`
+in both `pilot_v3` replicates of the 8 layouts where a 0.03 m planner margin
+moves its site (the population sweep above), seeds copied, i.e. every layout
+where the geometry control's route or site sits at minimum clearance to a
+transition obstacle. Two arms, one campaign each at one commit, both after the
+narrow turn-rate decision so both carry the same narrow plant: the baseline at
+`main`, and the candidate, identical except the keepout mask exported 4x finer
+(0.0125 m, the same overlap rule) and the local costmap at 0.025 m instead of
+0.05 m (global costmap, footprints and every controller parameter unchanged),
+from a branch. The candidate is accepted only if (1) neither
+`combined_constraints-02` trial logs an RPP "detected collision ahead" abort
+while compact; (2) no trial has an evaluator contact; (3) every trial's
+planned route signature and planned sites equal the baseline's (the fix must
+not reach the plan); and (4) no trial ends `controller_failure` that does not
+in the baseline. The comparison is informative only if the baseline
+reproduces the abort in at least one `combined_constraints-02` trial; if it
+does not, the experiment is reported inconclusive and nothing is merged.
+Completions are reported, not used as the criterion.
+
 **A half-started stack was scored as a robot outcome (pilot_v3 at 56 of 144).**
 `docking_observability-00-r1-feasibility_coupled`, a neutral layout, ended
 `controller_failure` after 125 s simulated and four "Failed to make progress"
