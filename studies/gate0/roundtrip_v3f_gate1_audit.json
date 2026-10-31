@@ -1,0 +1,172 @@
+{
+  "campaign_digests": {
+    "results/qualification/roundtrip_v3f_raw": "189579f340b96926e5f37e32001ed4af716fa3621e17aab256fc4e3b13dae9db"
+  },
+  "clean_records_per_required_class": {
+    "collision": 0,
+    "docking_failure": 0,
+    "localization_loss": 0,
+    "success": 20,
+    "timeout": 0
+  },
+  "controlled_cases": {},
+  "gate_passed": false,
+  "per_record": [
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-01-r0"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-01-r1"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-01-r2"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-01-r3"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-02-r0"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-02-r1"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-02-r2"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-02-r3"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-05-r0"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-05-r1"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-05-r2"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-05-r3"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-06-r0"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-06-r1"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-06-r2"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-06-r3"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-09-r0"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-09-r1"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-09-r2"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-09-r3"
+    }
+  ],
+  "problem_counts": {},
+  "purpose": "gate1_measured_outcome_coverage",
+  "record_digests": {
+    "engineering_roundtrip_v3-combined_constraints-01-r0": "98a06342d5d124862dc656a2ab63e026e173d9ddf7a3e3d997e044ffd382d5fc",
+    "engineering_roundtrip_v3-combined_constraints-01-r1": "bd68f15d5087644444ecdc60bdb842f8c1d7daffb8dcf90468e37927d03d345c",
+    "engineering_roundtrip_v3-combined_constraints-01-r2": "dab4fa89b0bfb6e0d0f708b566c568607b8cca322cfd89de302ace4e3e48ad29",
+    "engineering_roundtrip_v3-combined_constraints-01-r3": "5241e3ed2992aef42dfbdd58e29d7856748fce0358b814af684827cc65c5621d",
+    "engineering_roundtrip_v3-combined_constraints-02-r0": "7fde19c9ac2542ce8f3db6109468ec3a582dd113308f1cd9b562c1e5366011cc",
+    "engineering_roundtrip_v3-combined_constraints-02-r1": "2a7b95660287267b5ae7616f96a45f1e6bd112c5d8c7ef11ead53aefcb767de6",
+    "engineering_roundtrip_v3-combined_constraints-02-r2": "f97c27d8cf7e61ab9bb923594f02a8244a4bbaae8e40e56fc4cb24206d8c2d7d",
+    "engineering_roundtrip_v3-combined_constraints-02-r3": "560678f8eecb7c8dfe0a1da46f0eee468cb2383b99f8e6c538a858a646938929",
+    "engineering_roundtrip_v3-combined_constraints-05-r0": "13b91c55301887f4dd1dee0ef0aef551791f5ee98e9abe3d40bb14dc3ce18987",
+    "engineering_roundtrip_v3-combined_constraints-05-r1": "9889126909571f57c2ce874d03c667493033449904ddd95a6042c187f14db182",
+    "engineering_roundtrip_v3-combined_constraints-05-r2": "417872c6f3f389664b973657b1ba567180dbf842aad360649cf12f13bb1a67e5",
+    "engineering_roundtrip_v3-combined_constraints-05-r3": "d1d3be61655c7677b6c00529f57f6d9bc7b6d74e27f0d1ec57c26b6a5f186d87",
+    "engineering_roundtrip_v3-combined_constraints-06-r0": "17bc4d3f81b9cbc7c41ce580428ba047438cdf844a62663fa1a7c20b1c9e1de4",
+    "engineering_roundtrip_v3-combined_constraints-06-r1": "74fcfa2baa2f310427cd2c8afcfd2146403fd13c5587063b3bd7df7874cba3c0",
+    "engineering_roundtrip_v3-combined_constraints-06-r2": "99877fbbb399764e4773db22f81b9677494513e01e1122c09a170341a0156cb4",
+    "engineering_roundtrip_v3-combined_constraints-06-r3": "c667cf0116f48c364515fe54c96deb961a4488352f8b629b5b167ef5192a6c06",
+    "engineering_roundtrip_v3-combined_constraints-09-r0": "0bbdc4dd04ed9b2ee950e679888e187dc5f5fd77398dea8de470b52d184f4af7",
+    "engineering_roundtrip_v3-combined_constraints-09-r1": "e023eb16d000ed02d7f2f5ccfb0ea26b6185f177a574f86bcf6bf0cbda9d37ba",
+    "engineering_roundtrip_v3-combined_constraints-09-r2": "e9b61000254d865ba4d01bfcfa327645689aea1220ca879dbc2f8a24f5727f2b",
+    "engineering_roundtrip_v3-combined_constraints-09-r3": "2a1bd537f90d5ca6e32e0d1aa7ca8b023ba1fb7995da37e8cb33378a7ad05384"
+  },
+  "records": 20,
+  "records_without_problems": 20,
+  "required_classes_missing": [
+    "collision",
+    "docking_failure",
+    "localization_loss",
+    "timeout"
+  ],
+  "schema_version": 1,
+  "terminal_statuses": {
+    "completed": 20
+  }
+}

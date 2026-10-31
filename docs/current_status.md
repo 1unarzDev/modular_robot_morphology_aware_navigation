@@ -1035,8 +1035,23 @@ in ~20 ms, and fell through to the replan-limit message. Fixed for every
 method: a stale-revision refusal now waits 0.1 s on the simulated clock and
 retries (up to 50 in a row) without spending a planning pass, and if the
 revisions never agree the mission ends "planner revisions did not settle",
-classified `infrastructure_failure`. The v3e record keeps its status; the round
-trip is re-collected at the fixing commit (`roundtrip_v3f`).
+classified `infrastructure_failure`. The v3e record keeps its status. The same
+signature (a replan-limit failure with under 1 s simulated and 0 expanded
+states) appears in no other retained record: 1 of 525 across 33 raw sets.
+
+**The generator-3 round trip passes: `roundtrip_v3f` at `d85c1f7`, 20 of 20
+(2026-10-31).** Same frozen design (hash `fa867641...`), re-executed
+unchanged at the fixing commit after the full container suite (306); campaign
+digest `189579f3...`, audit `studies/gate0/roundtrip_v3f_audit.json` (passed,
+no failures), `gate1_audit` clean on all 20 records, records retained and
+restore-verified at `studies/gate0/records/roundtrip_v3f_raw.tar.xz` (sha256
+`218feda4...`). Every run made both transitions and completed, 177--205 s
+simulated, including all four of the 45-degree layout 02 and of layout 06.
+All 40 post-transition motion qualifications pass; the narrowest margins are
+forward and reverse travel, 3.0 and 3.1 cm against their 8 cm bound. Real-time
+factor median 0.92, minimum 0.45. No simulator survived the campaign. This is
+the ADR 0013 qualification; with it, the treatment executes its round trip on
+manipulated generator-3 layouts.
 
 **Running (2026-10-30):** the generator-3 treatment round trip
 (`config/roundtrip_v3_design.json`, hash `fa867641...`, at `44683a7`), and the
@@ -1057,6 +1072,11 @@ plus the first two manipulated indices (index % 4 != 0, ascending) where the
 method plans from its priors, a planner-only check (`method_decision`) on the
 design's own world seeds. If 00 does not plan, the next neutral index (04, 08)
 replaces it. No layout is chosen or dropped on any other ground.
+**Scanned and frozen (2026-10-31, at `09b7cb3`):** the method plans in all 12
+indices, so the rule selects 00, 01 and 02. Scan
+`studies/gate0/fault_matrix_v3_layout_scan.json`; design
+`config/fault_matrix_v3_campaign.json`, hash `8f217c51...`, 42 trials. Not
+executed yet.
 
 ### The Gate 3 pilot is frozen (2026-10-30)
 

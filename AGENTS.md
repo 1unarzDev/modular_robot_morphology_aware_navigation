@@ -18,22 +18,19 @@ placement-robust station prediction (`43255f7`), 4x finer localization map
 (`9371593`), and RPP's narrow rotation no longer ratcheting on odometry
 (`971affb`; the narrow odometry over-reports ~0.2 rad/s, still unexplained).
 
-**Resume here (2026-10-31):** `roundtrip_v3e` at `971affb` finished 19 of 20
-(audit and records under `studies/gate0/`); its one failure was a navigator
-startup race that never moved the robot, now fixed (`docs/current_status.md`,
-generator-3 qualification). A fresh 20, `roundtrip_v3f`, runs at the fixing
-commit -- `results/run_roundtrip_v3f.launch.log` and
-`results/qualification/roundtrip_v3f_audit.json` in the WSL clone; it was
-started with `results/qualification/start_campaign.sh <commit>
-run_roundtrip_v3f`, and an interrupted run resumes at the same commit with
-`resume_campaign.sh <commit> run_roundtrip_v3f`. Do not move the WSL clone off
-the run commit until it is audited. If it passes, run `pilot_v3`
-(`studies/pilot_v3/design.json`, planner check committed) with
-`results/qualification/start_campaign.sh <commit> run_pilot` after pointing
-run_pilot.sh at the pilot_v3 design; then `pilot_nuisance --power`, Gate 0 on
-generator 3, and the `confirmatory_v3` freeze. If it fails, diagnose the
-records the same way the earlier v3 runs were (obstacle at first contact,
-localization against truth, commanded vs odometry rates). **The frozen clock is root-caused and
+**Resume here (2026-10-31):** the generator-3 round trip passed 20 of 20
+(`roundtrip_v3f` at `d85c1f7`, audit and records under `studies/gate0/`), and
+the generator-3 fault matrix is frozen (`config/fault_matrix_v3_campaign.json`,
+42 trials, not executed). `pilot_v3` (`studies/pilot_v3/design.json`, 144
+trials, ~12 h) runs at the commit that recorded v3f, launched with
+`results/qualification/start_campaign.sh <commit> run_pilot_v3`
+(`run_pilot_v3.sh` writes `results/pilot/pilot_v3_*`); progress in
+`results/run_pilot_v3.launch.log` and `results/pilot/pilot_v3.log`. An
+interrupted run resumes at the same commit with `resume_campaign.sh <commit>
+run_pilot_v3`; do not move the WSL clone off the run commit until it ends.
+Then: `pilot_nuisance --power` on the pilot (rules fixed in the analysis plan
+before any record is read), the fault matrix v3 (a `run_fm_r4.sh` copy pointed
+at the v3 design), and the `confirmatory_v3` freeze. **The frozen clock is root-caused and
 prevented** (2026-10-29): gz-transport dropped Gazebo's publishers from the
 bridge after 3 s of discovery silence; `GZ_IP=127.0.0.1` in
 `simulation.launch.py` took it from 3 of 13 loaded trials to 0 of 14, and a

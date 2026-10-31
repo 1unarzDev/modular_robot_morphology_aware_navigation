@@ -1,0 +1,145 @@
+{
+ "design_kind": "engineering_fault_matrix_v3",
+ "master_seed": 20261105,
+ "family": "reconfiguration_workspace",
+ "method": "sensing_feasibility_coupled",
+ "scan": [
+  {
+   "layout_index": 0,
+   "neutral": true,
+   "world_seed": 9377176500965080235,
+   "planned": true,
+   "transition_site": [
+    31,
+    19
+   ],
+   "route_signature": "ff835e25a286702bf6de6020ef898fcb5176876ccc96eac5666a071b6917cd12"
+  },
+  {
+   "layout_index": 1,
+   "neutral": false,
+   "world_seed": 15230040447146762485,
+   "planned": true,
+   "transition_site": [
+    21,
+    19
+   ],
+   "route_signature": "f331448505bf41bb26d87a90e8a0086bd9e4fda4ed5205f5cecdc8f8013d8562"
+  },
+  {
+   "layout_index": 2,
+   "neutral": false,
+   "world_seed": 8353897203702870413,
+   "planned": true,
+   "transition_site": [
+    15,
+    20
+   ],
+   "route_signature": "912b6df5414790c715b54794d5152af8978beb6e0e595e9cb8c5366e9b1d580b"
+  },
+  {
+   "layout_index": 3,
+   "neutral": false,
+   "world_seed": 6463433644903967032,
+   "planned": true,
+   "transition_site": [
+    13,
+    12
+   ],
+   "route_signature": "c674ba28f6c5b4363484eb3719903359d9e6450325f1a0834fae67f9a0860c55"
+  },
+  {
+   "layout_index": 4,
+   "neutral": true,
+   "world_seed": 9842024184352650726,
+   "planned": true,
+   "transition_site": [
+    30,
+    19
+   ],
+   "route_signature": "2fef479f806c1c6d82e746a7527398b72c5418bde4be75bd705d1b2dc42eb069"
+  },
+  {
+   "layout_index": 5,
+   "neutral": false,
+   "world_seed": 15143422746591393904,
+   "planned": true,
+   "transition_site": [
+    21,
+    11
+   ],
+   "route_signature": "133d1ea2a3d05647579b115b1dce780726f91d41def21839c6c9dcf240152d45"
+  },
+  {
+   "layout_index": 6,
+   "neutral": false,
+   "world_seed": 1024445124560308781,
+   "planned": true,
+   "transition_site": [
+    17,
+    25
+   ],
+   "route_signature": "b226bbb38078759394a71635e00aea77e285e552cc6f9076d551836e8687e89a"
+  },
+  {
+   "layout_index": 7,
+   "neutral": false,
+   "world_seed": 9656503405090033544,
+   "planned": true,
+   "transition_site": [
+    21,
+    17
+   ],
+   "route_signature": "664f2395629f4ebb6679ca14cac36b499dc8b167deccfa0f79781fadd4e65f29"
+  },
+  {
+   "layout_index": 8,
+   "neutral": true,
+   "world_seed": 4709427926850462809,
+   "planned": true,
+   "transition_site": [
+    31,
+    24
+   ],
+   "route_signature": "b88af20c7fe259946f8eb1e32508e1d6593c827bba0d08765d106492a83207fa"
+  },
+  {
+   "layout_index": 9,
+   "neutral": false,
+   "world_seed": 2061197636629067095,
+   "planned": true,
+   "transition_site": [
+    20,
+    16
+   ],
+   "route_signature": "3698f93adfcb4466242abcd28bd62bb0528054acde61f0e94ad03172ce3f8e32"
+  },
+  {
+   "layout_index": 10,
+   "neutral": false,
+   "world_seed": 4274358897810014792,
+   "planned": true,
+   "transition_site": [
+    16,
+    14
+   ],
+   "route_signature": "731f7bb05e1d23a1421ae655f725b8ab2d1c83263ca13cc0964513878100a2e3"
+  },
+  {
+   "layout_index": 11,
+   "neutral": false,
+   "world_seed": 5309388858937353070,
+   "planned": true,
+   "transition_site": [
+    13,
+    19
+   ],
+   "route_signature": "aea5ed5acfb197f0e4f899b0631ee44f94b9f1cbc8c87feb8bd1679f2fd825ff"
+  }
+ ],
+ "selected": [
+  0,
+  1,
+  2
+ ]
+}
