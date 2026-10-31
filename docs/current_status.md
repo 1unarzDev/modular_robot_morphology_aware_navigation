@@ -1078,6 +1078,20 @@ indices, so the rule selects 00, 01 and 02. Scan
 `config/fault_matrix_v3_campaign.json`, hash `8f217c51...`, 42 trials. Not
 executed yet.
 
+**`pilot_v3` running at `d73b596` (started 2026-10-31 02:38 UTC, 308 tests
+first).** Open engineering observation at 24 of 144, recorded mid-campaign and
+acted on only after it ends (nothing about the run changes): `geometry_coupled`
+on `combined_constraints-02` ended `controller_failure` in both replicates
+without reaching its site (2.75, 1.35). In each, RPP aborted with "detected
+collision ahead" four times in ~48 s while still compact, with no evaluator
+contact (minimum clearance 3.1 and 7.3 cm). Planner and controller disagree
+about a route the planner approved. The record cannot say what RPP saw: its
+collision arc is empty and the cost-cell snapshot is truncated at 512 cells
+with no lethal cell in it. If this is a planner/controller model mismatch it
+fails a control for an execution reason rather than the manipulation, which
+would bias the comparison toward the treatment; it needs a diagnosis before
+the confirmatory freeze.
+
 ### The Gate 3 pilot is frozen (2026-10-30)
 
 `studies/pilot/design.json`: kind `pilot_v2` (layout generator 2, ADR 0011),
