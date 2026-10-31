@@ -1179,6 +1179,33 @@ the scale (about 3.0 / 1.8), close the in-place turn on a measured rate, or
 both. Any of them changes the assembled motion that Gate 0 qualified, so the
 round trip and the fault matrix are re-collected after it.
 
+**`pilot_v3` stopped at 100 of 144 (2026-10-31 06:36 UTC), by decision.**
+Three platform defects were already established and fixing the narrow turn
+rate needs Gazebo, which cannot run beside a campaign; the pilot would have to
+be re-run on the fixed platform regardless. Its records are **engineering
+evidence only and are never read as nuisance estimates**. Stopped with the
+standard stop script, no ROS or Gazebo survivor, the interrupted trial wrote
+no record. One commit (`d73b596`) and one design hash throughout, no
+integrity errors; campaign digest `bd4f13fa...`. Committed: per-record summary
+with digests and log signatures `studies/pilot_v3/pilot_v3_stopped_summary.json`,
+the runner's `gate1_audit` and status, and the records
+`studies/pilot_v3/records/pilot_v3_stopped_raw.tar.xz` (sha256 `4f6b16da...`).
+
+| method | completed | robot failures | other |
+|---|---|---|---|
+| sensing_feasibility_coupled | 19 | 3 controller, 3 timeout | |
+| feasibility_coupled | 8 | 16 unsafe_topology, 1 controller | |
+| geometry_coupled | 9 | 14 unsafe_topology, 2 controller | |
+| route_first_adaptation | 4 | | 21 planning_failure |
+
+Every non-manipulation failure is attributed: both `geometry_coupled`
+controller failures are the shelf-clearance aborts; the `feasibility_coupled`
+one is the half-started stack; **5 of the treatment's 6 failures end in
+`narrow_tandem` held by `collision_monitor`'s approach zone at 1--2 cm** (the
+narrow over-rotation signature); the sixth,
+`docking_observability-04-r1`, is a 300 s timeout still compact with no
+abort in its log, **not yet explained**.
+
 ### The Gate 3 pilot is frozen (2026-10-30)
 
 `studies/pilot/design.json`: kind `pilot_v2` (layout generator 2, ADR 0011),

@@ -18,19 +18,28 @@ placement-robust station prediction (`43255f7`), 4x finer localization map
 (`9371593`), and RPP's narrow rotation no longer ratcheting on odometry
 (`971affb`; the narrow odometry over-reports ~0.2 rad/s, still unexplained).
 
-**Resume here (2026-10-31):** the generator-3 round trip passed 20 of 20
-(`roundtrip_v3f` at `d85c1f7`, audit and records under `studies/gate0/`), and
-the generator-3 fault matrix is frozen (`config/fault_matrix_v3_campaign.json`,
-42 trials, not executed). `pilot_v3` (`studies/pilot_v3/design.json`, 144
-trials, ~12 h) runs at the commit that recorded v3f, launched with
-`results/qualification/start_campaign.sh <commit> run_pilot_v3`
-(`run_pilot_v3.sh` writes `results/pilot/pilot_v3_*`); progress in
-`results/run_pilot_v3.launch.log` and `results/pilot/pilot_v3.log`. An
-interrupted run resumes at the same commit with `resume_campaign.sh <commit>
-run_pilot_v3`; do not move the WSL clone off the run commit until it ends.
-Then: `pilot_nuisance --power` on the pilot (rules fixed in the analysis plan
-before any record is read), the fault matrix v3 (a `run_fm_r4.sh` copy pointed
-at the v3 design), and the `confirmatory_v3` freeze. **The frozen clock is root-caused and
+**Resume here (2026-10-31):** `pilot_v3` was **stopped at 100 of 144 by
+decision** after exposing three platform defects; its records are engineering
+evidence only, never nuisance estimates, and its seeds are spent (a re-run
+pilot needs a new, disjoint design). Work, in order (`docs/current_status.md`,
+generator-3 section):
+1. **Narrow in-place turns run at ~1.8x command** (`yaw_effort_scale: 3.0`,
+   bimodal 0.7x--2.1x). Measure true rate vs command across the scale and
+   friction range with `qualify_assembly_motion --yaw-rate` in Gazebo, then
+   recalibrate and/or close the turn on a measured rate. This is the
+   treatment's dominant pilot failure (5 of 6).
+2. **Planned clearance to transition obstacles** (5 mm beside the shelf; a
+   planner margin above 0.03 m makes generator-3 manipulated layouts
+   unplannable). Decide margin vs generator change with the population sweep
+   in `studies/` once committed; needs an ADR.
+3. Explain the treatment's compact timeout `docking_observability-04-r1`.
+Readiness now requires `lifecycle_manager_navigation` active (`7914336`); the
+first campaign at that commit is its runtime check. After the fixes:
+re-qualify Gate 0 (round trip, then the frozen fault matrix
+`config/fault_matrix_v3_campaign.json`, whose layout scan must be re-run if
+the planner changes), a fresh disjoint pilot, `pilot_nuisance --power`, and
+the `confirmatory_v3` freeze. The container stops whenever the WSL VM does;
+`docker start morphology_navigation_dev` inside the same `wsl` call. **The frozen clock is root-caused and
 prevented** (2026-10-29): gz-transport dropped Gazebo's publishers from the
 bridge after 3 s of discovery silence; `GZ_IP=127.0.0.1` in
 `simulation.launch.py` took it from 3 of 13 loaded trials to 0 of 14, and a
