@@ -305,3 +305,28 @@ def test_a_goal_behind_the_robot_is_reached_by_turning_not_reversing():
     plan = planner.plan(HybridState(40, 15, 0, "compact_diff"), (20, 15), epsilon=2.5)
     states = [plan.segments[0].source] + [segment.target for segment in plan.segments]
     assert any(state.heading != 0 for state in states)
+
+
+def test_driving_keeps_a_margin_to_raised_obstacles_but_not_to_walls():
+    """ADR 0014: the compact body tracks a straight route ~4 cm off; a route
+    laid at zero margin beside the shelf made RPP abort on an approved plan."""
+    from morphology_planner.planner import DRIVE_OBSTACLE_CLEARANCE_M
+
+    catalog = load_catalog(CATALOG).supported_experiment_subset()
+    compact = catalog.morphologies["compact_diff"]
+    half_width = max(abs(y) for _, y in compact.footprint)
+    source = HybridState(10, 20, 0, "compact_diff")
+    forward = HybridState(11, 20, 0, "compact_diff")
+    centre_y = 20 * 0.1 + 0.05
+
+    def shelf_beside(gap):
+        low = centre_y + half_width + gap
+        return [Box3("shelf", (1.1, low + 0.25, 0.14), (2.0, 0.5, 0.08))]
+
+    def free(gap):
+        planner = MorphologyAStar(catalog, OccupancyGrid(40, 40, 0.1), heading_bins=4,
+                                  drive_obstacles=shelf_beside(gap))
+        return planner._traversal_is_free(source, forward)
+
+    assert not free(DRIVE_OBSTACLE_CLEARANCE_M / 2)
+    assert free(DRIVE_OBSTACLE_CLEARANCE_M * 1.5)
