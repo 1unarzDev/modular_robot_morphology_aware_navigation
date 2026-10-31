@@ -29,3 +29,16 @@ def test_readiness_requires_the_navigation_lifecycle_manager_active():
     assert 'f"/{name}/is_active"' in source
     assert '"lifecycle_managers_active"' in source
     assert "self._poll_lifecycle_managers" in source
+
+
+def test_pod_drive_diagnostics_cover_a_mission_run_to_its_deadline():
+    """Samples start at simulator start, before readiness and the goal, so a
+    cap of exactly 300 s at 6 pods x 2 Hz dropped the first 50 s of evaluator
+    truth from every timeout (narrow turn-rate experiment, 2026-10-31)."""
+    import re
+
+    source = (ROOT / "src/modular_robot_benchmarks/modular_robot_benchmarks/mission_trial.py").read_text()
+    cap = int(re.search(r"^POD_DRIVE_DIAGNOSTIC_CAP = (\d+)$", source, re.M).group(1))
+    pods, rate_hz, deadline_s, pre_mission_s = 6, 2, 300.0, 30.0
+    assert cap >= pods * rate_hz * (deadline_s + pre_mission_s)
+    assert "len(self.pod_drive_diagnostics) > POD_DRIVE_DIAGNOSTIC_CAP" in source

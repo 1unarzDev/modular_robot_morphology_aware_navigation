@@ -33,6 +33,12 @@ from .mission_batch import classify_terminal
 from .rigidity import POSE_FIELDS, qualify_pod_rigidity
 from .spin_pump import ExecutorPump
 
+# Six pods at 2 Hz for 400 simulated seconds. The samples start at simulator
+# start, before readiness and the goal, so a 300 s deadline spans ~305 s of
+# samples; the former 3600 (exactly 300 s) dropped the first 50 s of evaluator
+# truth from every mission that ran to its deadline (2026-10-31).
+POD_DRIVE_DIAGNOSTIC_CAP = 4800
+
 
 # The bridge publishes /clock many times per simulated second; consecutive
 # samples further apart than this mean the clock stopped reaching ROS while the
@@ -344,9 +350,9 @@ class MissionObserver(Node):
         sample["body_linear_command_mps"] = float(self.body_command.linear.x)
         sample["body_angular_command_radps"] = float(self.body_command.angular.z)
         self.pod_drive_diagnostics.append(sample)
-        # At 2 Hz per pod this covers a complete 300 s mission while preventing
-        # terminal records from growing with the simulator's update rate.
-        if len(self.pod_drive_diagnostics) > 3600:
+        # Bounded so records do not grow with the simulator's update rate, but
+        # sized to the whole run: see POD_DRIVE_DIAGNOSTIC_CAP.
+        if len(self.pod_drive_diagnostics) > POD_DRIVE_DIAGNOSTIC_CAP:
             del self.pod_drive_diagnostics[:600]
             self.pod_drive_diagnostics_dropped += 600
 

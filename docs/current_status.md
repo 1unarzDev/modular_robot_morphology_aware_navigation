@@ -1192,6 +1192,10 @@ or rotating to the path tangent rather than the carrot; it blocks the pilot.
 A capped diagnostic buffer keeps the latest samples, so exactly the trials
 that run to the deadline lose their start. Timeouts are an outcome the pilot
 measures; this must be fixed before it runs.
+**Fixed** (same day): the cap is `POD_DRIVE_DIAGNOSTIC_CAP` = 4800 (400 s),
+bound by a test to the 300 s deadline plus pre-mission time; the pose buffer
+(24000) already covered such a run (18282 samples, 0.1--304.7 s). Campaigns
+from the fixing commit on carry full truth.
 
 **The shelf aborts are a rasterization artifact (2026-10-31, offline, from
 the two `pilot_v3` records).** Projecting the recorded compact command
