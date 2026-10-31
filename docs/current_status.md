@@ -1125,6 +1125,25 @@ leaving a wider corridor beside the shelf (a new layout population, as ADR
 shelf outward. Each changes plans or worlds, so each needs its own ADR and a
 fresh pilot; none is taken while `pilot_v3` runs.
 
+**A half-started stack was scored as a robot outcome (pilot_v3 at 56 of 144).**
+`docking_observability-00-r1-feasibility_coupled`, a neutral layout, ended
+`controller_failure` after 125 s simulated and four "Failed to make progress"
+aborts. The robot never moved: all 252 command samples were exactly zero.
+During bring-up `lifecycle_manager_navigation` failed to activate
+`controller_server` ("get_state service client: async_send_request failed")
+and, as Nav2's manager does, stopped there, so the smoother, planner, route,
+behavior, `velocity_smoother`, `collision_monitor`, `bt_navigator`, waypoint
+and docking servers were configured but never activated. The readiness gate
+only asked whether `controller_server` was active, so the mission started.
+This is infrastructure, which `mission_batch` retries, not a control's
+failure. The record keeps its status in the running pilot; the pilot's reading
+must name it. Fixed for later campaigns (not the running one, whose clone stays
+at `d73b596`): readiness also requires `/lifecycle_manager_navigation/is_active`
+to report success, so a partial bring-up times out as infrastructure and is
+retried. The localization and costmap-filter managers are world-dependent and
+not required; localization stays gated by the map-to-base transform. The
+first campaign at the fixing commit is the runtime check of the gate.
+
 ### The Gate 3 pilot is frozen (2026-10-30)
 
 `studies/pilot/design.json`: kind `pilot_v2` (layout generator 2, ADR 0011),

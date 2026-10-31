@@ -24,6 +24,7 @@ from rclpy.qos import (
 )
 from rosgraph_msgs.msg import Clock
 from std_msgs.msg import String
+from std_srvs.srv import Trigger
 from tf2_ros import Buffer, TransformException, TransformListener
 
 from .evaluator_metrics import transition_calibration_pairs
@@ -37,6 +38,11 @@ from .spin_pump import ExecutorPump
 # samples further apart than this mean the clock stopped reaching ROS while the
 # simulator kept stepping.
 CLOCK_DISCONTINUITY_S = 2.0
+# Lifecycle managers that must report every managed node active before a
+# mission starts. Only Nav2's is launched unconditionally; the localization and
+# costmap-filter managers depend on the world, and localization is gated by
+# the map-to-base transform instead.
+LIFECYCLE_MANAGERS = ("lifecycle_manager_navigation",)
 
 @dataclass
 class MissionObservation:
@@ -101,6 +107,12 @@ class MissionObserver(Node):
         self.map_received = False
         self.controller_active = False
         self._controller_state_future = None
+        # A lifecycle manager that fails one transition stops bringing up the
+        # nodes after it; controller_server alone can still look active
+        # (pilot_v3, docking_observability-00-r1, 2026-10-31: velocity_smoother
+        # and collision_monitor never activated, no command reached a wheel).
+        self.lifecycle_managers_active = {name: False for name in LIFECYCLE_MANAGERS}
+        self._lifecycle_futures: dict[str, object] = {}
         self.latest_local_costmap: OccupancyGrid | None = None
         self.latest_local_costmap_wall_time: float | None = None
         self.latest_collision_arc: Path | None = None
@@ -166,7 +178,11 @@ class MissionObserver(Node):
             lambda message: self.fired_injections.append(json.loads(message.data)),
             QoSProfile(depth=16, durability=DurabilityPolicy.TRANSIENT_LOCAL,
                        reliability=ReliabilityPolicy.RELIABLE))
+        self.lifecycle_clients = {
+            name: self.create_client(Trigger, f"/{name}/is_active")
+            for name in LIFECYCLE_MANAGERS}
         self.create_timer(0.5, self._poll_controller_state)
+        self.create_timer(0.5, self._poll_lifecycle_managers)
 
     def _on_controller_transition(self, message: TransitionEvent) -> None:
         self.controller_active = (
@@ -182,6 +198,25 @@ class MissionObserver(Node):
         self._controller_state_future = self.controller_state_client.call_async(
             GetState.Request())
         self._controller_state_future.add_done_callback(self._on_controller_state)
+
+    def _poll_lifecycle_managers(self) -> None:
+        for name, client in self.lifecycle_clients.items():
+            pending = self._lifecycle_futures.get(name)
+            if pending is not None and not pending.done():
+                continue
+            if not client.service_is_ready():
+                self.lifecycle_managers_active[name] = False
+                continue
+            future = client.call_async(Trigger.Request())
+            future.add_done_callback(
+                lambda done, name=name: self._on_lifecycle_state(name, done))
+            self._lifecycle_futures[name] = future
+
+    def _on_lifecycle_state(self, name: str, future) -> None:
+        try:
+            self.lifecycle_managers_active[name] = bool(future.result().success)
+        except Exception:
+            self.lifecycle_managers_active[name] = False
 
     def _on_controller_state(self, future) -> None:
         try:
@@ -388,6 +423,7 @@ class MissionObserver(Node):
                 self.controller_active
                 or (self.latest_local_costmap_wall_time is not None
                     and now - self.latest_local_costmap_wall_time < 1.0)),
+            "lifecycle_managers_active": all(self.lifecycle_managers_active.values()),
             "recent_odom": (self.latest_odom_wall_time is not None
                             and now - self.latest_odom_wall_time < 1.0),
             "recent_scan": (self.latest_scan_wall_time is not None

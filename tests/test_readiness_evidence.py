@@ -18,3 +18,14 @@ def test_readiness_timeout_reports_each_gate():
                  "controller_active", "recent_odom", "recent_scan",
                  "map_to_base_transform"):
         assert f'"{gate}"' in source
+
+
+def test_readiness_requires_the_navigation_lifecycle_manager_active():
+    """A failed activation stops the manager before velocity_smoother and
+    collision_monitor; controller_server alone looked active and the mission
+    ran with no command reaching a wheel (pilot_v3, 2026-10-31)."""
+    source = (ROOT / "src/modular_robot_benchmarks/modular_robot_benchmarks/mission_trial.py").read_text()
+    assert 'LIFECYCLE_MANAGERS = ("lifecycle_manager_navigation",)' in source
+    assert 'f"/{name}/is_active"' in source
+    assert '"lifecycle_managers_active"' in source
+    assert "self._poll_lifecycle_managers" in source

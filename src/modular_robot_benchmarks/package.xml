@@ -9,6 +9,7 @@
   <exec_depend>morphology_planner</exec_depend>
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>lifecycle_msgs</exec_depend>
+  <exec_depend>std_srvs</exec_depend>
   <exec_depend>modular_robot_bringup</exec_depend>
   <exec_depend>modular_robot_msgs</exec_depend>
   <exec_depend>nav_msgs</exec_depend>
