@@ -1125,6 +1125,15 @@ leaving a wider corridor beside the shelf (a new layout population, as ADR
 shelf outward. Each changes plans or worlds, so each needs its own ADR and a
 fresh pilot; none is taken while `pilot_v3` runs.
 
+**Population sweep** (`studies/engineering/drive_obstacle_margin_sweep.json`,
+all 18 `pilot_v3` layouts, same protocol). At 0.03 m every method that plans
+at 0 still plans in all 12 manipulated and 6 neutral layouts, and the only
+sites that move are `geometry_coupled`'s, in **8 of 18** layouts. At 0.05 m only
+4 of 12 manipulated layouts plan for any coupled method. So 0.03 m is the
+ceiling the generator-3 population tolerates, and it moves the geometry
+control's sites in almost half the layouts: a change to the manipulation
+itself, requiring a new manipulation check and an ADR, not a tuning step.
+
 **A half-started stack was scored as a robot outcome (pilot_v3 at 56 of 144).**
 `docking_observability-00-r1-feasibility_coupled`, a neutral layout, ended
 `controller_failure` after 125 s simulated and four "Failed to make progress"

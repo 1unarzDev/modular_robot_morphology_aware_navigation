@@ -1,0 +1,889 @@
+{
+ "schema_version": 1,
+ "purpose": "drive_obstacle_traversal_margin_planner_sweep",
+ "protocol": "planner-only method_decision (heading_bins 8, epsilon 2.5) on every studies/pilot_v3/design.json layout and world seed; the drive-obstacle footprint check of every traversal primitive inflated by the margin via a scratch monkeypatch at commit 5fc16ca; repository planner unchanged",
+ "design": "studies/pilot_v3/design.json",
+ "margins_m": [
+  0.0,
+  0.03,
+  0.05
+ ],
+ "rows": [
+  {
+   "layout": "combined_constraints-00",
+   "margin": 0.0,
+   "route_first_adaptation": [
+    28,
+    16
+   ],
+   "geometry_coupled": [
+    28,
+    16
+   ],
+   "feasibility_coupled": [
+    28,
+    16
+   ],
+   "sensing_feasibility_coupled": [
+    28,
+    16
+   ]
+  },
+  {
+   "layout": "combined_constraints-00",
+   "margin": 0.03,
+   "route_first_adaptation": [
+    28,
+    16
+   ],
+   "geometry_coupled": [
+    28,
+    16
+   ],
+   "feasibility_coupled": [
+    28,
+    16
+   ],
+   "sensing_feasibility_coupled": [
+    28,
+    16
+   ]
+  },
+  {
+   "layout": "combined_constraints-00",
+   "margin": 0.05,
+   "route_first_adaptation": [
+    28,
+    16
+   ],
+   "geometry_coupled": [
+    28,
+    16
+   ],
+   "feasibility_coupled": [
+    28,
+    16
+   ],
+   "sensing_feasibility_coupled": [
+    28,
+    16
+   ]
+  },
+  {
+   "layout": "combined_constraints-01",
+   "margin": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    31,
+    24
+   ],
+   "feasibility_coupled": [
+    18,
+    24
+   ],
+   "sensing_feasibility_coupled": [
+    13,
+    24
+   ]
+  },
+  {
+   "layout": "combined_constraints-01",
+   "margin": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    22,
+    24
+   ],
+   "feasibility_coupled": [
+    18,
+    24
+   ],
+   "sensing_feasibility_coupled": [
+    13,
+    24
+   ]
+  },
+  {
+   "layout": "combined_constraints-01",
+   "margin": 0.05,
+   "route_first_adaptation": null,
+   "geometry_coupled": null,
+   "feasibility_coupled": null,
+   "sensing_feasibility_coupled": null
+  },
+  {
+   "layout": "combined_constraints-02",
+   "margin": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    27,
+    13
+   ],
+   "feasibility_coupled": [
+    14,
+    13
+   ],
+   "sensing_feasibility_coupled": [
+    12,
+    13
+   ]
+  },
+  {
+   "layout": "combined_constraints-02",
+   "margin": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    18,
+    13
+   ],
+   "feasibility_coupled": [
+    14,
+    13
+   ],
+   "sensing_feasibility_coupled": [
+    12,
+    13
+   ]
+  },
+  {
+   "layout": "combined_constraints-02",
+   "margin": 0.05,
+   "route_first_adaptation": null,
+   "geometry_coupled": null,
+   "feasibility_coupled": null,
+   "sensing_feasibility_coupled": null
+  },
+  {
+   "layout": "combined_constraints-03",
+   "margin": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    26,
+    26
+   ],
+   "feasibility_coupled": [
+    14,
+    26
+   ],
+   "sensing_feasibility_coupled": [
+    11,
+    27
+   ]
+  },
+  {
+   "layout": "combined_constraints-03",
+   "margin": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    19,
+    26
+   ],
+   "feasibility_coupled": [
+    14,
+    26
+   ],
+   "sensing_feasibility_coupled": [
+    11,
+    27
+   ]
+  },
+  {
+   "layout": "combined_constraints-03",
+   "margin": 0.05,
+   "route_first_adaptation": null,
+   "geometry_coupled": null,
+   "feasibility_coupled": null,
+   "sensing_feasibility_coupled": null
+  },
+  {
+   "layout": "combined_constraints-04",
+   "margin": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    30,
+    13
+   ],
+   "feasibility_coupled": [
+    30,
+    13
+   ],
+   "sensing_feasibility_coupled": [
+    30,
+    13
+   ]
+  },
+  {
+   "layout": "combined_constraints-04",
+   "margin": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    30,
+    13
+   ],
+   "feasibility_coupled": [
+    30,
+    13
+   ],
+   "sensing_feasibility_coupled": [
+    30,
+    13
+   ]
+  },
+  {
+   "layout": "combined_constraints-04",
+   "margin": 0.05,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    30,
+    13
+   ],
+   "feasibility_coupled": [
+    30,
+    13
+   ],
+   "sensing_feasibility_coupled": [
+    30,
+    13
+   ]
+  },
+  {
+   "layout": "combined_constraints-05",
+   "margin": 0.0,
+   "route_first_adaptation": [
+    16,
+    16
+   ],
+   "geometry_coupled": [
+    33,
+    16
+   ],
+   "feasibility_coupled": [
+    21,
+    16
+   ],
+   "sensing_feasibility_coupled": [
+    16,
+    16
+   ]
+  },
+  {
+   "layout": "combined_constraints-05",
+   "margin": 0.03,
+   "route_first_adaptation": [
+    16,
+    16
+   ],
+   "geometry_coupled": [
+    26,
+    16
+   ],
+   "feasibility_coupled": [
+    21,
+    16
+   ],
+   "sensing_feasibility_coupled": [
+    16,
+    16
+   ]
+  },
+  {
+   "layout": "combined_constraints-05",
+   "margin": 0.05,
+   "route_first_adaptation": null,
+   "geometry_coupled": null,
+   "feasibility_coupled": null,
+   "sensing_feasibility_coupled": null
+  },
+  {
+   "layout": "docking_observability-00",
+   "margin": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    26,
+    16
+   ],
+   "feasibility_coupled": [
+    26,
+    16
+   ],
+   "sensing_feasibility_coupled": [
+    26,
+    16
+   ]
+  },
+  {
+   "layout": "docking_observability-00",
+   "margin": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    26,
+    16
+   ],
+   "feasibility_coupled": [
+    26,
+    16
+   ],
+   "sensing_feasibility_coupled": [
+    26,
+    16
+   ]
+  },
+  {
+   "layout": "docking_observability-00",
+   "margin": 0.05,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    26,
+    16
+   ],
+   "feasibility_coupled": [
+    26,
+    16
+   ],
+   "sensing_feasibility_coupled": [
+    26,
+    16
+   ]
+  },
+  {
+   "layout": "docking_observability-01",
+   "margin": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    28,
+    15
+   ],
+   "feasibility_coupled": [
+    28,
+    15
+   ],
+   "sensing_feasibility_coupled": [
+    25,
+    13
+   ]
+  },
+  {
+   "layout": "docking_observability-01",
+   "margin": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    28,
+    15
+   ],
+   "feasibility_coupled": [
+    28,
+    15
+   ],
+   "sensing_feasibility_coupled": [
+    25,
+    13
+   ]
+  },
+  {
+   "layout": "docking_observability-01",
+   "margin": 0.05,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    28,
+    15
+   ],
+   "feasibility_coupled": [
+    28,
+    15
+   ],
+   "sensing_feasibility_coupled": [
+    25,
+    13
+   ]
+  },
+  {
+   "layout": "docking_observability-02",
+   "margin": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    26,
+    22
+   ],
+   "feasibility_coupled": [
+    26,
+    22
+   ],
+   "sensing_feasibility_coupled": [
+    23,
+    18
+   ]
+  },
+  {
+   "layout": "docking_observability-02",
+   "margin": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    26,
+    22
+   ],
+   "feasibility_coupled": [
+    26,
+    22
+   ],
+   "sensing_feasibility_coupled": [
+    23,
+    18
+   ]
+  },
+  {
+   "layout": "docking_observability-02",
+   "margin": 0.05,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    26,
+    22
+   ],
+   "feasibility_coupled": [
+    26,
+    22
+   ],
+   "sensing_feasibility_coupled": [
+    23,
+    18
+   ]
+  },
+  {
+   "layout": "docking_observability-03",
+   "margin": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    25,
+    13
+   ],
+   "feasibility_coupled": [
+    25,
+    13
+   ],
+   "sensing_feasibility_coupled": [
+    22,
+    11
+   ]
+  },
+  {
+   "layout": "docking_observability-03",
+   "margin": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    25,
+    13
+   ],
+   "feasibility_coupled": [
+    25,
+    13
+   ],
+   "sensing_feasibility_coupled": [
+    22,
+    11
+   ]
+  },
+  {
+   "layout": "docking_observability-03",
+   "margin": 0.05,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    25,
+    13
+   ],
+   "feasibility_coupled": [
+    25,
+    13
+   ],
+   "sensing_feasibility_coupled": [
+    22,
+    11
+   ]
+  },
+  {
+   "layout": "docking_observability-04",
+   "margin": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    27,
+    19
+   ],
+   "feasibility_coupled": [
+    27,
+    19
+   ],
+   "sensing_feasibility_coupled": [
+    27,
+    19
+   ]
+  },
+  {
+   "layout": "docking_observability-04",
+   "margin": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    27,
+    19
+   ],
+   "feasibility_coupled": [
+    27,
+    19
+   ],
+   "sensing_feasibility_coupled": [
+    27,
+    19
+   ]
+  },
+  {
+   "layout": "docking_observability-04",
+   "margin": 0.05,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    27,
+    19
+   ],
+   "feasibility_coupled": [
+    27,
+    19
+   ],
+   "sensing_feasibility_coupled": [
+    27,
+    19
+   ]
+  },
+  {
+   "layout": "docking_observability-05",
+   "margin": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    25,
+    26
+   ],
+   "feasibility_coupled": [
+    25,
+    26
+   ],
+   "sensing_feasibility_coupled": [
+    24,
+    20
+   ]
+  },
+  {
+   "layout": "docking_observability-05",
+   "margin": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    25,
+    26
+   ],
+   "feasibility_coupled": [
+    25,
+    26
+   ],
+   "sensing_feasibility_coupled": [
+    24,
+    20
+   ]
+  },
+  {
+   "layout": "docking_observability-05",
+   "margin": 0.05,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    25,
+    26
+   ],
+   "feasibility_coupled": [
+    25,
+    26
+   ],
+   "sensing_feasibility_coupled": [
+    24,
+    20
+   ]
+  },
+  {
+   "layout": "reconfiguration_workspace-00",
+   "margin": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    32,
+    16
+   ],
+   "feasibility_coupled": [
+    32,
+    16
+   ],
+   "sensing_feasibility_coupled": [
+    32,
+    16
+   ]
+  },
+  {
+   "layout": "reconfiguration_workspace-00",
+   "margin": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    32,
+    16
+   ],
+   "feasibility_coupled": [
+    32,
+    16
+   ],
+   "sensing_feasibility_coupled": [
+    32,
+    16
+   ]
+  },
+  {
+   "layout": "reconfiguration_workspace-00",
+   "margin": 0.05,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    32,
+    16
+   ],
+   "feasibility_coupled": [
+    32,
+    16
+   ],
+   "sensing_feasibility_coupled": [
+    32,
+    16
+   ]
+  },
+  {
+   "layout": "reconfiguration_workspace-01",
+   "margin": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    30,
+    13
+   ],
+   "feasibility_coupled": [
+    17,
+    13
+   ],
+   "sensing_feasibility_coupled": [
+    17,
+    13
+   ]
+  },
+  {
+   "layout": "reconfiguration_workspace-01",
+   "margin": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    21,
+    13
+   ],
+   "feasibility_coupled": [
+    17,
+    13
+   ],
+   "sensing_feasibility_coupled": [
+    17,
+    13
+   ]
+  },
+  {
+   "layout": "reconfiguration_workspace-01",
+   "margin": 0.05,
+   "route_first_adaptation": null,
+   "geometry_coupled": null,
+   "feasibility_coupled": null,
+   "sensing_feasibility_coupled": null
+  },
+  {
+   "layout": "reconfiguration_workspace-02",
+   "margin": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    25,
+    23
+   ],
+   "feasibility_coupled": [
+    13,
+    23
+   ],
+   "sensing_feasibility_coupled": [
+    13,
+    23
+   ]
+  },
+  {
+   "layout": "reconfiguration_workspace-02",
+   "margin": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    18,
+    23
+   ],
+   "feasibility_coupled": [
+    13,
+    23
+   ],
+   "sensing_feasibility_coupled": [
+    13,
+    23
+   ]
+  },
+  {
+   "layout": "reconfiguration_workspace-02",
+   "margin": 0.05,
+   "route_first_adaptation": null,
+   "geometry_coupled": null,
+   "feasibility_coupled": null,
+   "sensing_feasibility_coupled": null
+  },
+  {
+   "layout": "reconfiguration_workspace-03",
+   "margin": 0.0,
+   "route_first_adaptation": [
+    21,
+    15
+   ],
+   "geometry_coupled": [
+    33,
+    15
+   ],
+   "feasibility_coupled": [
+    21,
+    15
+   ],
+   "sensing_feasibility_coupled": [
+    21,
+    15
+   ]
+  },
+  {
+   "layout": "reconfiguration_workspace-03",
+   "margin": 0.03,
+   "route_first_adaptation": [
+    21,
+    15
+   ],
+   "geometry_coupled": [
+    25,
+    15
+   ],
+   "feasibility_coupled": [
+    21,
+    15
+   ],
+   "sensing_feasibility_coupled": [
+    21,
+    15
+   ]
+  },
+  {
+   "layout": "reconfiguration_workspace-03",
+   "margin": 0.05,
+   "route_first_adaptation": null,
+   "geometry_coupled": null,
+   "feasibility_coupled": null,
+   "sensing_feasibility_coupled": null
+  },
+  {
+   "layout": "reconfiguration_workspace-04",
+   "margin": 0.0,
+   "route_first_adaptation": [
+    28,
+    15
+   ],
+   "geometry_coupled": [
+    28,
+    15
+   ],
+   "feasibility_coupled": [
+    28,
+    15
+   ],
+   "sensing_feasibility_coupled": [
+    28,
+    15
+   ]
+  },
+  {
+   "layout": "reconfiguration_workspace-04",
+   "margin": 0.03,
+   "route_first_adaptation": [
+    28,
+    15
+   ],
+   "geometry_coupled": [
+    28,
+    15
+   ],
+   "feasibility_coupled": [
+    28,
+    15
+   ],
+   "sensing_feasibility_coupled": [
+    28,
+    15
+   ]
+  },
+  {
+   "layout": "reconfiguration_workspace-04",
+   "margin": 0.05,
+   "route_first_adaptation": [
+    28,
+    15
+   ],
+   "geometry_coupled": [
+    28,
+    15
+   ],
+   "feasibility_coupled": [
+    28,
+    15
+   ],
+   "sensing_feasibility_coupled": [
+    28,
+    15
+   ]
+  },
+  {
+   "layout": "reconfiguration_workspace-05",
+   "margin": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    26,
+    24
+   ],
+   "feasibility_coupled": [
+    14,
+    24
+   ],
+   "sensing_feasibility_coupled": [
+    14,
+    24
+   ]
+  },
+  {
+   "layout": "reconfiguration_workspace-05",
+   "margin": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    19,
+    24
+   ],
+   "feasibility_coupled": [
+    14,
+    24
+   ],
+   "sensing_feasibility_coupled": [
+    14,
+    24
+   ]
+  },
+  {
+   "layout": "reconfiguration_workspace-05",
+   "margin": 0.05,
+   "route_first_adaptation": null,
+   "geometry_coupled": null,
+   "feasibility_coupled": null,
+   "sensing_feasibility_coupled": null
+  }
+ ]
+}
