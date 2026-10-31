@@ -1321,8 +1321,9 @@ margin leaves the methods that do sweep their transitions executing cleanly
 beside the shelf. Design `config/engineering/drive_margin_checked_repro.json`
 (kind `engineering_repro_v3`, hash `8b6243a4...`, 32 trials):
 `feasibility_coupled` and `sensing_feasibility_coupled` in both `pilot_v3`
-replicates of the same 8 layouts, seeds copied. One arm at the candidate
-commit `7ede10e`. Accepted only if (1) no trial logs an RPP "detected
+replicates of the same 8 layouts, seeds copied. One arm at `ce540b7`, the
+candidate `7ede10e` with `main` merged in to carry this design (no `src/`
+difference). Accepted only if (1) no trial logs an RPP "detected
 collision ahead"; (2) **no trial has any evaluator contact**; (3) every
 recorded motion qualification passes. Planning failures, door holds and
 other non-contact outcomes are reported and not judged. If it passes and the
