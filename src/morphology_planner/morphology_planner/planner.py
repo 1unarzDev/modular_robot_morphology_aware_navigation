@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from heapq import heappop, heappush
 from itertools import count
-from math import ceil, cos, hypot, pi, sin
+from math import ceil, copysign, cos, hypot, pi, sin
 from typing import Callable, Literal
 
 from .catalog import Catalog, Morphology, Transition
@@ -103,6 +103,7 @@ class MorphologyAStar:
         }
         self._state_collision_cache: dict[HybridState, bool] = {}
         self._traversal_collision_cache: dict[tuple[HybridState, HybridState], bool] = {}
+        self._run_in_cache: dict[HybridState, bool] = {}
 
     def plan_anytime(
         self,
@@ -206,6 +207,8 @@ class MorphologyAStar:
             )
             if target == state or not self._traversal_is_free(state, target):
                 continue
+            if dheading and not self._has_straight_run_in(target):
+                continue
             distance = hypot(dx, dy) * self.grid.resolution
             angle = abs(dheading) * 2 * pi / self.heading_bins
             estimate = self.cost_model.traversal(morphology, distance, angle)
@@ -301,6 +304,49 @@ class MorphologyAStar:
                 return False
         self._traversal_collision_cache[cache_key] = True
         return True
+
+    def _has_straight_run_in(self, state: HybridState) -> bool:
+        """No tight passage within one body length straight ahead (ADR 0014).
+
+        A body settles onto a new heading only over distance: the narrow body
+        reached a 0.70 m doorway 0.95 m after a turn in 18 of 22 failed passes,
+        and passed in all 26 runs whose straight run-in was 2.35 m or more. With
+        forward-only traversal, everything between a plan's last heading change
+        and a tight cell is straight along that heading, so it suffices that
+        each newly taken heading has a body length of straight approach before
+        any cell where only the exact footprint fits (where the footprint widened
+        by TURN_CLEARANCE_M per side touches the map). A wall that stops the exact
+        footprint ends the ray: the plan cannot drive on through it anyway.
+        Applied to in-place turns, which RPP ends within 0.2 rad of its carrot;
+        not to a transformation, which site alignment and the yaw trim leave
+        within 0.03 m and 0.02 rad of the planned pose.
+        """
+        cached = self._run_in_cache.get(state)
+        if cached is not None:
+            return cached
+        morphology = self.catalog.morphologies[state.morphology]
+        length = 2.0 * max(abs(x) for x, _ in morphology.footprint)
+        # Widened only: a wall straight ahead would meet a lengthened nose one
+        # step before the exact one and read as a passage. A passage is tight
+        # because of its sides.
+        grown = tuple((x, y + copysign(TURN_CLEARANCE_M, y)) for x, y in morphology.footprint)
+        yaw = self._yaw(state.heading)
+        dx, dy = self._quantized_direction(yaw)
+        step = hypot(dx, dy) * self.grid.resolution
+        result = True
+        x, y, travelled = state.x, state.y, 0.0
+        while travelled < length:
+            x, y, travelled = x + dx, y + dy, travelled + step
+            if not self.grid.in_bounds(x, y):
+                break
+            wx, wy = self.grid.cell_center(x, y)
+            if not self.grid.footprint_is_free(wx, wy, yaw, morphology.footprint):
+                break
+            if not self.grid.footprint_is_free(wx, wy, yaw, grown):
+                result = False
+                break
+        self._run_in_cache[state] = result
+        return result
 
     def _footprint_hits_drive_obstacle(
         self, wx: float, wy: float, yaw: float, morphology: Morphology,

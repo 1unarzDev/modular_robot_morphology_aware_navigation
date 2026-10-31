@@ -143,22 +143,23 @@ def test_footprint_rejects_occupied_cell_corner_overlap():
 def test_route_first_baseline_does_not_revise_route_for_transition_feasibility():
     catalog = load_catalog(CATALOG).supported_experiment_subset()
     # A start room long enough to turn the narrow body in with the turning
-    # clearance (TURN_CLEARANCE_M); doorway_grid's 2.0 m room is not.
-    grid = OccupancyGrid(70, 25, 0.1)
+    # clearance (TURN_CLEARANCE_M) and to leave it a body length of straight
+    # run-in to the doorway (ADR 0014); doorway_grid's 2.0 m room is not.
+    grid = OccupancyGrid(85, 25, 0.1)
     for y in range(grid.height):
         if not 10 <= y <= 16:
-            grid.set_value(30, y, OCCUPIED)
+            grid.set_value(45, y, OCCUPIED)
     start = HybridState(7, 13, 0, "compact_diff")
     # The transition is feasible only after an in-place staging rotation. Joint
     # search can add it, while the frozen route contains only heading-zero poses.
     validator = lambda transition, state: state.heading == 1
     joint = MorphologyAStar(catalog, grid, heading_bins=4,
                             transition_validator=validator)
-    assert joint.plan(start, (55, 13)).segments
+    assert joint.plan(start, (70, 13)).segments
     sequential = RouteFirstAdaptationPlanner(
         catalog, grid, heading_bins=4, transition_validator=validator)
     with pytest.raises(NoPathError, match="fixed spatial route"):
-        sequential.plan(start, (55, 13))
+        sequential.plan(start, (70, 13))
 
 
 def test_indexed_footprint_check_matches_a_cell_by_cell_scan():
@@ -305,3 +306,24 @@ def test_a_goal_behind_the_robot_is_reached_by_turning_not_reversing():
     plan = planner.plan(HybridState(40, 15, 0, "compact_diff"), (20, 15), epsilon=2.5)
     states = [plan.segments[0].source] + [segment.target for segment in plan.segments]
     assert any(state.heading != 0 for state in states)
+
+
+def test_a_long_body_turns_onto_a_tight_passage_only_a_body_length_back():
+    """ADR 0014: the narrow body passed a 0.70 m door in all 26 runs with 2.35 m
+    or more of straight run-in, and failed 18 of 22 with 0.95 m."""
+    catalog = load_catalog(CATALOG).supported_experiment_subset()
+    grid = OccupancyGrid(85, 40, 0.1)
+    for y in range(grid.height):
+        if not 17 <= y <= 23:          # a 0.70 m door centred on y = 2.05 m
+            grid.set_value(60, y, OCCUPIED)
+    planner = MorphologyAStar(catalog, grid, heading_bins=4)
+    near = HybridState(50, 20, 0, "narrow_tandem")      # 1.0 m from the wall
+    far = HybridState(30, 20, 0, "narrow_tandem")       # 3.0 m from the wall
+    assert not planner._has_straight_run_in(near)
+    assert planner._has_straight_run_in(far)
+    # Facing a plain wall is not a passage: the sides are clear until the nose
+    # meets it, so the run-in holds.
+    wall = OccupancyGrid(85, 40, 0.1)
+    for y in range(wall.height):
+        wall.set_value(60, y, OCCUPIED)
+    assert MorphologyAStar(catalog, wall, heading_bins=4)._has_straight_run_in(near)
