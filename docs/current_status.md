@@ -1181,10 +1181,27 @@ carries the 1.76 m body 11 cm off the route, beyond ADR 0013's 0.10 m turning
 margin, and it is held at x = 3.07. The baseline completed both because the 2x
 overshoot happened to leave it nearly on the carrot heading (drive-off errors
 -0.02 and 0.00 rad against -0.33 in its two failures). **Open, and the
-treatment's dominant failure: narrow tracking of a bend right after the
-transition site.** Not yet diagnosed far enough to choose between a planner
-rule (a straight run-out from a transition site), narrow controller settings,
-or rotating to the path tangent rather than the carrot; it blocks the pilot.
+treatment's dominant failure.**
+
+**Root cause, same day: the planner plans reverse driving that the controller
+never executes.** `_motion_neighbors` offers the reverse step at the same cost
+as the forward one (`planner.py`, `actions.append((-forward[0], -forward[1],
+0))`), and no RPP controller sets `allow_reversing`. In candidate
+`docking_observability-01-r0` the plan reverses the compact body into its site
+(oriented +0.785 while moving toward -x,-y); RPP instead turns it around and
+drives in forward, so the replan transforms at the heading the robot holds
+(3.927, which site alignment then honours to 0.05 rad). The narrow plan after
+it is again reverse (oriented 3.927, then pi, while moving toward +x), so RPP
+turns the 1.76 m body ~2.5 rad in place, a sweep the planner never checked,
+onto its carrot, and pursues a diagonal-then-straight bend it was not planned
+to enter from; 11 cm off the route, `collision_monitor` holds it. Every narrow
+failure traced in both arms starts with such a 2.5--2.8 rad in-place turn at
+the site. This is ADR 0013's class of defect (a plan feasible but not
+executable as planned), now in the direction of travel; the fix changes the
+shared motion model and so needs an ADR. A planner-only sweep (reverse allowed
+/ forbidden for the narrow body / forbidden for all) over the `pilot_v3b`
+layouts is measuring what each option does to plannability and the
+manipulation before anything is chosen.
 
 **Open harness item: long missions lose early truth.** The two 300 s timeouts
 (`docking_observability-02`, both arms) are flagged by `gate1_audit`:
