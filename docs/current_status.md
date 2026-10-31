@@ -1257,6 +1257,25 @@ generator-1 sites lay on the door line, so the run-in was the whole route.
 Whether the plan needs a straight run-in before a tight passage is measured
 next from the retained records (run-in length against door passage).
 
+**Measured: the door is passed when the plan leaves a straight run-in, and not
+otherwise** (`studies/engineering/narrow_door_runin.json` and its script; all
+48 narrow approaches in `roundtrip_v3f` and the four repro arms; run-in is the
+first plan's straight distance from its last heading change to the wall). At
+2.35--3.05 m of run-in the body crossed in 24 of 24, arriving with its nose
+within 0.044 m of the door centreline; at 0.95 m (the `docking_observability`
+plans, which turn 1 m before the door) it crossed in 4 of 20, and the 4
+trials whose plan could not be read crossed in none. Candidate rule (branch
+`engineering/straight-run-in`, `1f4cdf1`): an in-place turn may land only
+where the straight ray ahead holds no tight cell (one where the footprint
+widened by the 0.10 m turning margin touches the map) within one body length
+(1.76 m narrow, 0.80 m compact). With forward-only traversal everything
+between a plan's last turn and a tight cell is straight along that heading,
+so this needs no new search state. Not applied to transformations, which site
+alignment and the yaw trim leave within 0.03 m and 0.02 rad of the plan. A
+planner-only sweep (with and without the 0.03 m drive margin) over
+`pilot_v3b` and both Gate 0 designs is measuring plannability and the
+manipulation before any protocol is declared.
+
 **Drive-margin experiment: protocol declared before any run (2026-10-31).**
 ADR 0014 decision 2. Design `config/engineering/shelf_clearance_repro.json`
 again (`85341383...`, the 16 `geometry_coupled` trials at minimum shelf
