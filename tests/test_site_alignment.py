@@ -100,3 +100,39 @@ def test_shortest_angle_wraps_to_the_nearer_direction():
     assert abs(shortest_angle(3 * pi / 2) + pi / 2) < 1e-9
     assert abs(shortest_angle(-3 * pi / 2) - pi / 2) < 1e-9
     assert abs(shortest_angle(0.02) - 0.02) < 1e-12
+
+
+def test_a_path_splits_at_each_planned_vertex():
+    """ADR 0014: the planner turns in place at vertices; pure pursuit cut them."""
+    from modular_robot_bringup.qualification import path_pieces
+
+    diagonal, east = 0.7853981633974483, 0.0
+    poses = [PlanarPose(2.55, 1.35, diagonal), PlanarPose(2.65, 1.45, diagonal),
+             PlanarPose(2.75, 1.55, diagonal), PlanarPose(2.85, 1.55, east),
+             PlanarPose(2.95, 1.55, east)]
+    assert path_pieces(poses) == [(0, 2, east), (2, 4, None)]
+
+
+def test_straight_paths_are_one_piece_and_turns_in_place_merge():
+    from modular_robot_bringup.qualification import path_pieces
+
+    straight = [PlanarPose(x / 10, 0.0, 0.0) for x in range(5)]
+    assert path_pieces(straight) == [(0, 4, None)]
+    north, west = pi / 2, pi
+    turning = [PlanarPose(0.0, 0.0, 0.0), PlanarPose(0.1, 0.0, 0.0),
+               PlanarPose(0.1, 0.0, north), PlanarPose(0.1, 0.0, west),
+               PlanarPose(0.0, 0.0, west)]
+    # Two quarter turns at (0.1, 0) are one stop, turning to west.
+    assert path_pieces(turning) == [(0, 1, west), (3, 4, None)]
+
+
+def test_the_navigator_executes_narrow_vertices_in_place():
+    """ADR 0014: binds the navigator to path_pieces for the narrow controller."""
+    from pathlib import Path
+
+    source = (Path(__file__).resolve().parents[1] / "src/modular_robot_bringup/"
+              "modular_robot_bringup/hybrid_navigator.py").read_text(encoding="utf-8")
+    assert 'self.declare_parameter("vertex_turn_controllers", ["FollowPathNarrow"])' in source
+    assert "success = await self._traverse(segment)" in source
+    assert "for start, end, turn_to in path_pieces(planar):" in source
+    assert "await self._align_to_site(vertex)" in source
