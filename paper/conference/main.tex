@@ -87,7 +87,7 @@ The planner searches hybrid states $s = (x, y, \theta, m)$ on a 0.1\,m occupancy
 \begin{equation}
 c = T + \lambda_E E + \lambda_R \bigl(-\log(1 - p)\bigr),
 \end{equation}
-with duration $T$, mechanical energy $E$, and failure probability $p$ (zero for traversal; a declared per-transition prior for reconfiguration), plus a risk charge on unknown space. The planner returns the route, the morphology sequence, and the transition sites, and reports a pre-action $p$ beside each attempted transition so that calibration can be scored against observed outcomes.
+with duration $T$, mechanical energy $E$, and failure probability $p$ (zero for traversal; a declared per-transition prior for reconfiguration), plus a risk charge on unknown space. Traversal edges must be executable by the shared controllers, not only collision-free: a long body tracks a straight line closely and a turn loosely, so primitives that change heading keep the footprint 0.10\,m clear of everything, about the site-placement and localization error observed in pilot records, while straight primitives keep the exact check so that the 0.70\,m doorway stays passable. The planner returns the route, the morphology sequence, and the transition sites, and reports a pre-action $p$ beside each attempted transition so that calibration can be scored against observed outcomes.
 
 \subsection{Transition-feasibility edges}
 A candidate site is tested in up to four stages, and each failure contributes a structured, per-module rejection reason that is retained in the trial record.
@@ -128,12 +128,12 @@ Method & joint & (i) & (ii)+(iii) & (iv) \\
 Three families target different rungs: \emph{reconfiguration workspace}, in which raised 3D obstacles near the attractive staging area constrain module trajectories; \emph{docking observability}, in which the station and elevated screen shadow part of the staging area; and \emph{combined constraints}, in which both act. Every layout has one interior wall with one 0.70\,m doorway, a start room in which the robot must transform to pass, and a goal room beyond. Every fourth layout of each family is a neutral control with walls and doorway only, in which the added constraints should not help and all methods are expected to agree.
 
 \subsection{Layout population}
-The layout is the independent sampling unit, so the estimand is only as broad as the generator. A first generator varied the wall and doorway by at most 0.1\,m and kept start and goal on the door line; it was replaced before any pilot data. Layouts are drawn from a second generator bound to the design kind, so the design hash covers it: arena 5.7--6.6\,m by 3.2--4.0\,m; interior wall at $x \in [2.6, 3.4]$\,m; doorway center anywhere leaving at least 0.7\,m of wall on either side; start $\pm 0.3$\,m and goal $\pm 0.6$\,m off the door line, so routes must turn toward the doorway; and five values each for the staging-band extent and half-height. Clutter was deliberately not added: it would vary navigation without interacting with the transition decision. A planner manipulation check on the drawn layouts, reporting each method's route, morphology, site, cost terms, and rejection reasons, must show separation in non-neutral layouts and agreement in neutral ones before the design is frozen. \pending{manipulation check on the generator-2 design.}
+The layout is the independent sampling unit, so the estimand is only as broad as the generator. A first generator varied the wall and doorway by at most 0.1\,m and kept start and goal on the door line; it was replaced before any pilot data. A second generator varied the arena, wall, doorway, start, and goal, and its pilot showed that its 2.6--3.4\,m start rooms left the long body no site from which it could both transform and turn onto the door line; that pilot is retained as the measurement-validation pilot that found this, and its estimates are not used. Layouts are drawn from a third generator bound to the design kind, so the design hash covers it: arena 7.1--8.0\,m by 3.2--4.0\,m; interior wall at $x \in [3.5, 4.3]$\,m; doorway center anywhere leaving at least 0.7\,m of wall on either side; start $\pm 0.3$\,m and goal $\pm 0.6$\,m off the door line, so routes must turn toward the doorway; and five values each for the staging-band extent and half-height. Clutter was deliberately not added: it would vary navigation without interacting with the transition decision. A planner manipulation check on the drawn layouts, reporting each method's route, morphology, site, cost terms, and rejection reasons, must show separation in non-neutral layouts and agreement in neutral ones before the design is frozen. On the 18 pilot layouts the treatment's site separates from \method{geometry\_coupled}'s in 11 of 12 manipulated layouts and from \method{feasibility\_coupled}'s in 7 of 8, every neutral control agrees, and the one exception is a layout in which the treatment itself finds no plan; it is kept and scores against the treatment, since screening it out would select the population in the treatment's favour. \pending{manipulation check on the confirmatory design.}
 
 \begin{figure*}[t]
   \centering
   \includegraphics[width=\textwidth]{figure_layouts}
-  \caption{Six pilot layouts from the second generator, one neutral control and
+  \caption{Six pilot layouts from the third generator, one neutral control and
   one manipulated layout per family, with the transition site each method's
   planner chose from its priors. In neutral controls all coupled methods choose
   one site; in manipulated layouts the information each method models moves it.
@@ -152,7 +152,7 @@ The layout is the independent sampling unit, so the estimand is only as broad as
   controls in which all coupled methods agree, and layouts a method could not
   plan.}
   \label{tab:manipulation}
-  \pending{Gate~2 report on the generator-2 confirmatory design}
+  \pending{Gate~2 report on the confirmatory design}
 \end{table}
 
 \subsection{Paired seeds and schedule}
@@ -187,7 +187,7 @@ Before any pilot, the platform must pass engineering qualification on the repair
 
 \begin{table}[t]
 \centering
-\caption{Gate 0 platform qualification on the repaired wheel model.}
+\caption{Gate 0 platform qualification on the repaired wheel model. \pending{re-qualification on the third generator after the executable-motion changes; the figures below are the generator-1 campaigns those changes supersede.}}
 \label{tab:gate0}
 \begin{tabular}{@{}p{0.52\columnwidth}r@{}}
 \toprule

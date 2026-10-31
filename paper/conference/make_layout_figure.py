@@ -1,10 +1,10 @@
-"""Figure: sampled generator-2 layouts and the transition site each method chose.
+"""Figure: sampled pilot layouts and the transition site each method chose.
 
 Reads only the committed planner manipulation check and regenerates each
 layout's geometry from its frozen seed, so the figure carries no outcome data.
 
     python paper/conference/make_layout_figure.py \
-        studies/pilot/manipulation_check.json paper/conference/figure_layouts.svg
+        studies/pilot_v3b/manipulation_check.json paper/conference/figure_layouts.svg
 """
 from __future__ import annotations
 
@@ -24,7 +24,6 @@ COLORS = ("#64748b", "#f59e0b", "#0ea5e9", "#16a34a")
 RADII = (9.0, 7.5, 5.5, 3.5)
 FAMILIES = ("reconfiguration_workspace", "docking_observability", "combined_constraints")
 SCALE = 36.0          # px per metre
-PANEL_W, PANEL_H = 6.8 * SCALE, 4.2 * SCALE
 
 
 def _panel(layout: dict, generator: int, ox: float, oy: float) -> list[str]:
@@ -88,13 +87,19 @@ def main() -> None:
                            and all(entry["decisions"][method]["planned"]
                                    for method in METHODS[1:]))
         chosen.append((neutral, manipulated))
-    width = 3 * (PANEL_W + 24) + 24
-    height = 2 * (PANEL_H + 34) + 104
+    # Panels fit the largest shown arena (generator 3 reaches 8.0 m by 4.0 m).
+    grids = [make_confirmatory_scenario(layout["family"], layout["layout_index"],
+                                        layout["world_seed"], generator=generator).grid
+             for pair in chosen for layout in pair]
+    panel_w = (max(grid.width * grid.resolution for grid in grids) + 0.2) * SCALE
+    panel_h = (max(grid.height * grid.resolution for grid in grids) + 0.2) * SCALE
+    width = 3 * (panel_w + 24) + 24
+    height = 2 * (panel_h + 34) + 104
     body = []
     for column, pair in enumerate(chosen):
         for row, layout in enumerate(pair):
-            body.extend(_panel(layout, generator, 24 + column * (PANEL_W + 24),
-                               40 + row * (PANEL_H + 34)))
+            body.extend(_panel(layout, generator, 24 + column * (panel_w + 24),
+                               40 + row * (panel_h + 34)))
     legend_y = height - 44
     for index, (label, color, radius) in enumerate(zip(LABELS, COLORS, RADII)):
         x = 30 + index * 190
