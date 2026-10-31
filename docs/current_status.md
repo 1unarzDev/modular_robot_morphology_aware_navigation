@@ -1110,6 +1110,21 @@ obstacles in the shared planner model is the likely fix (as ADR 0013 did for
 turning). It changes plans, so it is a design decision taken after the pilot
 ends, and the pilot is then read knowing this control-failure mode is in it.
 
+**A planner margin alone cannot be the fix** (planner-only probe on the
+pilot's own `combined_constraints-02` world seed, host venv, scratch
+monkeypatch of the drive-obstacle check on straight primitives, repository
+unchanged). The probe reproduces the pilot's sites exactly at margin 0. At
+0.03 m `geometry_coupled` moves its site to (1.85, 1.35), clear of the shelf,
+and the other plans are unchanged; at **0.05, 0.07 and 0.10 m no method plans
+at all**. Every route to the goal on this layout passes the shelf inside 5 cm
+of the planner footprint, the treatment's included (its recorded minimum
+clearance was 1.5--2 cm, and it completed). Options to weigh after the pilot:
+a small margin (~0.03 m, which may not cover 6 cm tracking error); generator 3
+leaving a wider corridor beside the shelf (a new layout population, as ADR
+0013 was); or tighter tracking / keepout rasterization that does not grow the
+shelf outward. Each changes plans or worlds, so each needs its own ADR and a
+fresh pilot; none is taken while `pilot_v3` runs.
+
 ### The Gate 3 pilot is frozen (2026-10-30)
 
 `studies/pilot/design.json`: kind `pilot_v2` (layout generator 2, ADR 0011),
