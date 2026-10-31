@@ -1142,7 +1142,42 @@ at `d73b596`): readiness also requires `/lifecycle_manager_navigation/is_active`
 to report success, so a partial bring-up times out as infrastructure and is
 retried. The localization and costmap-filter managers are world-dependent and
 not required; localization stays gated by the map-to-base transform. The
-first campaign at the fixing commit is the runtime check of the gate.
+first campaign at the fixing commit is the runtime check of the gate. The
+never-commanded signature appears in no other retained record set.
+
+**The treatment's first pilot failure: the narrow body turns at ~1.8x its
+command (pilot_v3 at 64 of 144).** `docking_observability-01-r1`,
+`sensing_feasibility_coupled`, ended `controller_failure` after transforming
+cleanly (site placement 4.0 cm, motion qualification passed). Evaluator truth:
+RPP's rotate-to-heading commanded a constant 0.40 rad/s, and the body turned
+at 0.35, 0.77, 0.85 rad/s, stopping at +0.32 rad against a path heading near
+0.03. Driving off at 0.18 m/s with that error, the 1.76 m body drifted 8 cm
+sideways in 0.55 m and stopped 4 mm from an obstacle (pod_0), where
+`collision_monitor`'s approach zone held every command at zero ("approach for
+0.5 s away from collision" before each of four "Failed to make progress").
+The cause is in actuation, not in RPP: `narrow_tandem` declares
+`yaw_effort_scale: 3.0` (the 0.20 m track overdriven to break DART contact
+stiction), so the adapter sends each pod +-0.24 m/s for 0.40 rad/s, and the
+true rate follows. Measured over every in-place turn in the 64 pilot records
+and the 20 `roundtrip_v3f` records (true yaw change over consecutive 0.5 s
+evaluator samples at constant command):
+
+| morphology | command | true / command, median | p10--p90 | n |
+|---|---|---|---|---|
+| compact_diff | 0.25 rad/s | 0.75 | 0.70--0.78 | 205 |
+| compact_diff | 0.60 rad/s | 0.72 | 0.61--0.73 | 22 |
+| narrow_tandem | 0.25 rad/s | **1.69** | 0.67--2.07 | 208 |
+| narrow_tandem | 0.40 rad/s | **1.80** | 0.82--2.12 | 26 |
+
+The narrow rate is bimodal: usually about twice the command, sometimes about
+0.7x (the stiction the scale was set against). The 0.2 rad/s "odometry
+over-report" left unexplained at `971affb` is likely part of the same
+mismatch and is to be re-read against these numbers. The completed treatment
+runs carry the same 2x; this run is where the overshoot met an obstacle.
+Fix candidates, all method-agnostic and all for after the pilot: recalibrate
+the scale (about 3.0 / 1.8), close the in-place turn on a measured rate, or
+both. Any of them changes the assembled motion that Gate 0 qualified, so the
+round trip and the fault matrix are re-collected after it.
 
 ### The Gate 3 pilot is frozen (2026-10-30)
 
