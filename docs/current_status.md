@@ -1234,6 +1234,101 @@ experiment targets: maximum narrow route offset 0.11--0.28 m, each held by
 `collision_monitor` and failing after the replan limit (two end "no
 collision-free hybrid plan" on replanning from where the body was held).
 
+**Narrow lookahead experiment: the candidate is rejected (2026-10-31).** 7 of
+7 at `05d18f2`, campaign digest `0f28ed6b...`, evidence
+`studies/engineering/narrow_lookahead/` (records sha256 `26026a6d...`).
+Criterion 1 fails: maximum narrow route offset 0.040--0.114 m, six of seven
+above 0.08 (forward-only baseline 0.081--0.280). Criteria 2--4 hold (no
+contact, motion qualifications pass, turn rate 1.12, largest in-place turn
+0.86 rad). Completed 2 of 7, as the baseline. Nothing is merged.
+
+**What it shows: the narrow failures end at the doorway, not only off the
+route.** `docking_observability-01-r1` failed within 0.040 m of its route.
+Its door (y 1.20--1.90, centred on the route's 1.55, wall at x 3.85) is
+reached about 1.0 m after the plan's 45-degree dog-leg; the body arrives 4 cm
+high and 0.09 rad nose-up, so its nose edge, 0.81 m ahead with the 0.29 m
+navigation half-width, sits at y ~1.96 against the 1.90 jamb, and
+`collision_monitor` holds it (correctly: the physical body would touch too).
+A 0.70 m door leaves the narrow body about 5 cm per side in navigation terms:
+it must arrive with lateral offset plus 0.81 x heading error under ~5 cm, and
+a 1.0 m run-in after a turn does not settle a 1.76 m body that far. This is
+ADR 0008/0010's doorway limitation met by generator 3's off-line routes: the
+generator-1 sites lay on the door line, so the run-in was the whole route.
+Whether the plan needs a straight run-in before a tight passage is measured
+next from the retained records (run-in length against door passage).
+
+**Measured: the door is passed when the plan leaves a straight run-in, and not
+otherwise** (`studies/engineering/narrow_door_runin.json` and its script; all
+48 narrow approaches in `roundtrip_v3f` and the four repro arms; run-in is the
+first plan's straight distance from its last heading change to the wall). At
+2.35--3.05 m of run-in the body crossed in 24 of 24, arriving with its nose
+within 0.044 m of the door centreline; at 0.95 m (the `docking_observability`
+plans, which turn 1 m before the door) it crossed in 4 of 20, and the 4
+trials whose plan could not be read crossed in none. Candidate rule (branch
+`engineering/straight-run-in`, `1f4cdf1`): an in-place turn may land only
+where the straight ray ahead holds no tight cell (one where the footprint
+widened by the 0.10 m turning margin touches the map) within one body length
+(1.76 m narrow, 0.80 m compact). With forward-only traversal everything
+between a plan's last turn and a tight cell is straight along that heading,
+so this needs no new search state. Not applied to transformations, which site
+alignment and the yaw trim leave within 0.03 m and 0.02 rad of the plan. A
+planner-only sweep (with and without the 0.03 m drive margin) over
+`pilot_v3b` and both Gate 0 designs is measuring plannability and the
+manipulation before any protocol is declared.
+
+**Drive-margin experiment: protocol declared before any run (2026-10-31).**
+ADR 0014 decision 2. Design `config/engineering/shelf_clearance_repro.json`
+again (`85341383...`, the 16 `geometry_coupled` trials at minimum shelf
+clearance). Two arms, one campaign each at one commit: the baseline at `main`
+(forward-only adopted, so re-run rather than reusing the earlier baseline,
+whose compact routes reversed), and the candidate, identical except a 0.03 m
+margin between every traversal footprint and raised drive obstacles
+(`DRIVE_OBSTACLE_CLEARANCE_M`, measured in the sweep as the generator-3
+ceiling) together with the finer keepout raster (branch
+`engineering/drive-margin`). The margin moves the geometry control's site in
+these layouts by construction; that is the decision being tested, and the
+manipulation check is recomputed if it is adopted. Accepted only if (1) no
+trial logs an RPP "detected collision ahead"; (2) no evaluator contact falls
+outside a `TRANSITIONING` window (contacts during the geometry control's
+unchecked pod relocation are the manipulation and are reported, not judged);
+(3) every recorded motion qualification passes. Informative only if the
+baseline logs at least one such abort; otherwise inconclusive and nothing
+merges. Learned from the first shelf experiment: no criterion compares route
+signatures, and contacts are judged by phase.
+
+**Drive-margin candidate arm: 16 of 16 at `7ede10e` (campaign digest
+`ef3c5d22...`); its baseline was refused by the runner** (the chain named
+`0544d52` while `main` had moved to a docs-only `94046fe`, and
+`start_campaign.sh` fast-forwards first) **and is queued after it** at current
+`main`, guarded to refuse if `main` changes `src/` or `config/` since
+`0544d52`; the protocol fixed no arm order. Read against the declared
+criteria: (1) holds, **no RPP "detected collision ahead" in any trial** (the
+earlier baseline had them in 4); (3) fails in the 8 `reconfiguration_workspace`
+trials, and (2) fails as written there: every contact (pod_0, one per trial)
+falls in the post-transition verification maneuver, 0.5--0.9 s after
+`TRANSITIONING` ends, inside the motion-qualification window, after a
+successful transformation at the site the margin moved `geometry_coupled` to.
+`geometry_coupled` does not sweep that maneuver (rung iii of the ladder), so
+these are the manipulation, as its pod-relocation contacts were in the
+earlier baseline (rung ii); but the criterion said "outside a `TRANSITIONING`
+window", it is mis-specified a second time, and it is not reinterpreted after
+the fact. **Nothing is merged on this arm.** The 8 `combined_constraints` trials
+all reach their site and meet the manipulation (`unsafe_topology`).
+
+**Drive-margin follow-up: protocol declared before any run (2026-10-31).**
+The question the mis-specified criterion was meant to answer is whether the
+margin leaves the methods that do sweep their transitions executing cleanly
+beside the shelf. Design `config/engineering/drive_margin_checked_repro.json`
+(kind `engineering_repro_v3`, hash `8b6243a4...`, 32 trials):
+`feasibility_coupled` and `sensing_feasibility_coupled` in both `pilot_v3`
+replicates of the same 8 layouts, seeds copied. One arm at the candidate
+commit `7ede10e`. Accepted only if (1) no trial logs an RPP "detected
+collision ahead"; (2) **no trial has any evaluator contact**; (3) every
+recorded motion qualification passes. Planning failures, door holds and
+other non-contact outcomes are reported and not judged. If it passes and the
+queued baseline reproduces at least one abort, the margin and the finer
+raster are adopted as ADR 0014 decision 2.
+
 **Narrow lookahead experiment: protocol declared before any run
 (2026-10-31, while the forward-only arm runs).** Its first records already
 show the turnaround gone (largest narrow in-place turn 0.38--0.47 rad) and a

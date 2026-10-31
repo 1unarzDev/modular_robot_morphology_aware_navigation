@@ -1,0 +1,1572 @@
+{
+ "schema_version": 1,
+ "purpose": "adr0014_planner_sweep",
+ "protocol": "planner-only method_decision (heading_bins 8, epsilon 2.5, generator 3) on each design's own world seeds; scratch monkeypatch at 0544d52-era main: reverse steps forbidden for all bodies ('all') or not ('none'), drive-obstacle footprint inflated by drive_margin_m; repository planner unchanged",
+ "designs": [
+  "studies/pilot_v3b/design.json",
+  "config/roundtrip_v3_design.json",
+  "config/fault_matrix_v3_campaign.json"
+ ],
+ "rows": [
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "combined_constraints-00",
+   "world_seed": 506284564803017966,
+   "forbid_reverse": "none",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    26,
+    15
+   ],
+   "feasibility_coupled": [
+    26,
+    15
+   ],
+   "sensing_feasibility_coupled": [
+    26,
+    15
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "combined_constraints-00",
+   "world_seed": 506284564803017966,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    26,
+    15
+   ],
+   "feasibility_coupled": [
+    26,
+    15
+   ],
+   "sensing_feasibility_coupled": [
+    26,
+    15
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "combined_constraints-00",
+   "world_seed": 506284564803017966,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    26,
+    15
+   ],
+   "feasibility_coupled": [
+    26,
+    15
+   ],
+   "sensing_feasibility_coupled": [
+    26,
+    15
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "combined_constraints-01",
+   "world_seed": 5392139205656562707,
+   "forbid_reverse": "none",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    25,
+    16
+   ],
+   "feasibility_coupled": [
+    13,
+    16
+   ],
+   "sensing_feasibility_coupled": [
+    12,
+    16
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "combined_constraints-01",
+   "world_seed": 5392139205656562707,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    25,
+    16
+   ],
+   "feasibility_coupled": [
+    13,
+    16
+   ],
+   "sensing_feasibility_coupled": [
+    12,
+    16
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "combined_constraints-01",
+   "world_seed": 5392139205656562707,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    18,
+    16
+   ],
+   "feasibility_coupled": [
+    13,
+    16
+   ],
+   "sensing_feasibility_coupled": [
+    12,
+    16
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "combined_constraints-02",
+   "world_seed": 12459851974317961615,
+   "forbid_reverse": "none",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    30,
+    18
+   ],
+   "feasibility_coupled": [
+    16,
+    18
+   ],
+   "sensing_feasibility_coupled": [
+    11,
+    18
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "combined_constraints-02",
+   "world_seed": 12459851974317961615,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    30,
+    18
+   ],
+   "feasibility_coupled": [
+    16,
+    18
+   ],
+   "sensing_feasibility_coupled": [
+    11,
+    18
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "combined_constraints-02",
+   "world_seed": 12459851974317961615,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    21,
+    18
+   ],
+   "feasibility_coupled": [
+    16,
+    18
+   ],
+   "sensing_feasibility_coupled": [
+    11,
+    18
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "combined_constraints-03",
+   "world_seed": 8959762373269364205,
+   "forbid_reverse": "none",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    26,
+    18
+   ],
+   "feasibility_coupled": [
+    12,
+    18
+   ],
+   "sensing_feasibility_coupled": null
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "combined_constraints-03",
+   "world_seed": 8959762373269364205,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    26,
+    18
+   ],
+   "feasibility_coupled": [
+    12,
+    18
+   ],
+   "sensing_feasibility_coupled": null
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "combined_constraints-03",
+   "world_seed": 8959762373269364205,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    17,
+    18
+   ],
+   "feasibility_coupled": [
+    12,
+    18
+   ],
+   "sensing_feasibility_coupled": null
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "combined_constraints-04",
+   "world_seed": 1841274248864033772,
+   "forbid_reverse": "none",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    28,
+    19
+   ],
+   "feasibility_coupled": [
+    28,
+    19
+   ],
+   "sensing_feasibility_coupled": [
+    28,
+    19
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "combined_constraints-04",
+   "world_seed": 1841274248864033772,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    28,
+    19
+   ],
+   "feasibility_coupled": [
+    28,
+    19
+   ],
+   "sensing_feasibility_coupled": [
+    28,
+    19
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "combined_constraints-04",
+   "world_seed": 1841274248864033772,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    28,
+    19
+   ],
+   "feasibility_coupled": [
+    28,
+    19
+   ],
+   "sensing_feasibility_coupled": [
+    28,
+    19
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "combined_constraints-05",
+   "world_seed": 17349021301846409392,
+   "forbid_reverse": "none",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": [
+    11,
+    13
+   ],
+   "geometry_coupled": [
+    30,
+    13
+   ],
+   "feasibility_coupled": [
+    16,
+    13
+   ],
+   "sensing_feasibility_coupled": [
+    11,
+    13
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "combined_constraints-05",
+   "world_seed": 17349021301846409392,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": [
+    11,
+    13
+   ],
+   "geometry_coupled": [
+    30,
+    13
+   ],
+   "feasibility_coupled": [
+    16,
+    13
+   ],
+   "sensing_feasibility_coupled": [
+    11,
+    13
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "combined_constraints-05",
+   "world_seed": 17349021301846409392,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.03,
+   "route_first_adaptation": [
+    11,
+    13
+   ],
+   "geometry_coupled": [
+    21,
+    13
+   ],
+   "feasibility_coupled": [
+    16,
+    13
+   ],
+   "sensing_feasibility_coupled": [
+    11,
+    13
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "docking_observability-00",
+   "world_seed": 7770345403414186131,
+   "forbid_reverse": "none",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    30,
+    14
+   ],
+   "feasibility_coupled": [
+    30,
+    14
+   ],
+   "sensing_feasibility_coupled": [
+    30,
+    14
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "docking_observability-00",
+   "world_seed": 7770345403414186131,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    30,
+    14
+   ],
+   "feasibility_coupled": [
+    30,
+    14
+   ],
+   "sensing_feasibility_coupled": [
+    30,
+    14
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "docking_observability-00",
+   "world_seed": 7770345403414186131,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    30,
+    14
+   ],
+   "feasibility_coupled": [
+    30,
+    14
+   ],
+   "sensing_feasibility_coupled": [
+    30,
+    14
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "docking_observability-01",
+   "world_seed": 18058814895912122679,
+   "forbid_reverse": "none",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    27,
+    18
+   ],
+   "feasibility_coupled": [
+    27,
+    18
+   ],
+   "sensing_feasibility_coupled": [
+    26,
+    11
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "docking_observability-01",
+   "world_seed": 18058814895912122679,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    27,
+    18
+   ],
+   "feasibility_coupled": [
+    27,
+    18
+   ],
+   "sensing_feasibility_coupled": [
+    24,
+    15
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "docking_observability-01",
+   "world_seed": 18058814895912122679,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    27,
+    18
+   ],
+   "feasibility_coupled": [
+    27,
+    18
+   ],
+   "sensing_feasibility_coupled": [
+    24,
+    15
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "docking_observability-02",
+   "world_seed": 271560892161085801,
+   "forbid_reverse": "none",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    26,
+    24
+   ],
+   "feasibility_coupled": [
+    26,
+    24
+   ],
+   "sensing_feasibility_coupled": [
+    25,
+    18
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "docking_observability-02",
+   "world_seed": 271560892161085801,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    26,
+    24
+   ],
+   "feasibility_coupled": [
+    26,
+    24
+   ],
+   "sensing_feasibility_coupled": [
+    25,
+    18
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "docking_observability-02",
+   "world_seed": 271560892161085801,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    26,
+    24
+   ],
+   "feasibility_coupled": [
+    26,
+    24
+   ],
+   "sensing_feasibility_coupled": [
+    25,
+    18
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "docking_observability-03",
+   "world_seed": 17758593553534250790,
+   "forbid_reverse": "none",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    32,
+    15
+   ],
+   "feasibility_coupled": [
+    32,
+    15
+   ],
+   "sensing_feasibility_coupled": [
+    29,
+    13
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "docking_observability-03",
+   "world_seed": 17758593553534250790,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    32,
+    15
+   ],
+   "feasibility_coupled": [
+    32,
+    15
+   ],
+   "sensing_feasibility_coupled": [
+    29,
+    13
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "docking_observability-03",
+   "world_seed": 17758593553534250790,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    32,
+    15
+   ],
+   "feasibility_coupled": [
+    32,
+    15
+   ],
+   "sensing_feasibility_coupled": [
+    29,
+    13
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "docking_observability-04",
+   "world_seed": 9409395258750428616,
+   "forbid_reverse": "none",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    31,
+    14
+   ],
+   "feasibility_coupled": [
+    31,
+    14
+   ],
+   "sensing_feasibility_coupled": [
+    31,
+    14
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "docking_observability-04",
+   "world_seed": 9409395258750428616,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    31,
+    14
+   ],
+   "feasibility_coupled": [
+    31,
+    14
+   ],
+   "sensing_feasibility_coupled": [
+    31,
+    14
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "docking_observability-04",
+   "world_seed": 9409395258750428616,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    31,
+    14
+   ],
+   "feasibility_coupled": [
+    31,
+    14
+   ],
+   "sensing_feasibility_coupled": [
+    31,
+    14
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "docking_observability-05",
+   "world_seed": 9057038805600400025,
+   "forbid_reverse": "none",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    26,
+    12
+   ],
+   "feasibility_coupled": [
+    26,
+    12
+   ],
+   "sensing_feasibility_coupled": [
+    24,
+    11
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "docking_observability-05",
+   "world_seed": 9057038805600400025,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    26,
+    12
+   ],
+   "feasibility_coupled": [
+    26,
+    12
+   ],
+   "sensing_feasibility_coupled": [
+    24,
+    11
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "docking_observability-05",
+   "world_seed": 9057038805600400025,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    26,
+    12
+   ],
+   "feasibility_coupled": [
+    26,
+    12
+   ],
+   "sensing_feasibility_coupled": [
+    24,
+    11
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "reconfiguration_workspace-00",
+   "world_seed": 7174141607240007677,
+   "forbid_reverse": "none",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    30,
+    11
+   ],
+   "feasibility_coupled": [
+    30,
+    11
+   ],
+   "sensing_feasibility_coupled": [
+    30,
+    11
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "reconfiguration_workspace-00",
+   "world_seed": 7174141607240007677,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    30,
+    11
+   ],
+   "feasibility_coupled": [
+    30,
+    11
+   ],
+   "sensing_feasibility_coupled": [
+    30,
+    11
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "reconfiguration_workspace-00",
+   "world_seed": 7174141607240007677,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    30,
+    11
+   ],
+   "feasibility_coupled": [
+    30,
+    11
+   ],
+   "sensing_feasibility_coupled": [
+    30,
+    11
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "reconfiguration_workspace-01",
+   "world_seed": 7911778631919671217,
+   "forbid_reverse": "none",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    28,
+    20
+   ],
+   "feasibility_coupled": [
+    15,
+    20
+   ],
+   "sensing_feasibility_coupled": [
+    15,
+    20
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "reconfiguration_workspace-01",
+   "world_seed": 7911778631919671217,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    28,
+    20
+   ],
+   "feasibility_coupled": [
+    15,
+    20
+   ],
+   "sensing_feasibility_coupled": [
+    15,
+    20
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "reconfiguration_workspace-01",
+   "world_seed": 7911778631919671217,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    20,
+    20
+   ],
+   "feasibility_coupled": [
+    15,
+    20
+   ],
+   "sensing_feasibility_coupled": [
+    15,
+    20
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "reconfiguration_workspace-02",
+   "world_seed": 15565262481464412106,
+   "forbid_reverse": "none",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    30,
+    17
+   ],
+   "feasibility_coupled": [
+    17,
+    17
+   ],
+   "sensing_feasibility_coupled": [
+    17,
+    17
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "reconfiguration_workspace-02",
+   "world_seed": 15565262481464412106,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    30,
+    17
+   ],
+   "feasibility_coupled": [
+    17,
+    17
+   ],
+   "sensing_feasibility_coupled": [
+    17,
+    17
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "reconfiguration_workspace-02",
+   "world_seed": 15565262481464412106,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    22,
+    17
+   ],
+   "feasibility_coupled": [
+    17,
+    17
+   ],
+   "sensing_feasibility_coupled": [
+    17,
+    17
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "reconfiguration_workspace-03",
+   "world_seed": 8273333987803867732,
+   "forbid_reverse": "none",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    30,
+    15
+   ],
+   "feasibility_coupled": [
+    18,
+    15
+   ],
+   "sensing_feasibility_coupled": [
+    18,
+    15
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "reconfiguration_workspace-03",
+   "world_seed": 8273333987803867732,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    30,
+    15
+   ],
+   "feasibility_coupled": [
+    18,
+    15
+   ],
+   "sensing_feasibility_coupled": [
+    18,
+    15
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "reconfiguration_workspace-03",
+   "world_seed": 8273333987803867732,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    22,
+    15
+   ],
+   "feasibility_coupled": [
+    18,
+    15
+   ],
+   "sensing_feasibility_coupled": [
+    18,
+    15
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "reconfiguration_workspace-04",
+   "world_seed": 4217894130456278096,
+   "forbid_reverse": "none",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    32,
+    15
+   ],
+   "feasibility_coupled": [
+    32,
+    15
+   ],
+   "sensing_feasibility_coupled": [
+    32,
+    15
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "reconfiguration_workspace-04",
+   "world_seed": 4217894130456278096,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    32,
+    15
+   ],
+   "feasibility_coupled": [
+    32,
+    15
+   ],
+   "sensing_feasibility_coupled": [
+    32,
+    15
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "reconfiguration_workspace-04",
+   "world_seed": 4217894130456278096,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    32,
+    15
+   ],
+   "feasibility_coupled": [
+    32,
+    15
+   ],
+   "sensing_feasibility_coupled": [
+    32,
+    15
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "reconfiguration_workspace-05",
+   "world_seed": 10085450394392979593,
+   "forbid_reverse": "none",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    27,
+    13
+   ],
+   "feasibility_coupled": [
+    13,
+    13
+   ],
+   "sensing_feasibility_coupled": [
+    13,
+    13
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "reconfiguration_workspace-05",
+   "world_seed": 10085450394392979593,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    27,
+    13
+   ],
+   "feasibility_coupled": [
+    13,
+    13
+   ],
+   "sensing_feasibility_coupled": [
+    13,
+    13
+   ]
+  },
+  {
+   "design": "studies/pilot_v3b/design.json",
+   "layout": "reconfiguration_workspace-05",
+   "world_seed": 10085450394392979593,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    18,
+    13
+   ],
+   "feasibility_coupled": [
+    13,
+    13
+   ],
+   "sensing_feasibility_coupled": [
+    13,
+    13
+   ]
+  },
+  {
+   "design": "config/roundtrip_v3_design.json",
+   "layout": "combined_constraints-01",
+   "world_seed": 16744542756543535297,
+   "forbid_reverse": "none",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    30,
+    14
+   ],
+   "feasibility_coupled": [
+    16,
+    14
+   ],
+   "sensing_feasibility_coupled": [
+    11,
+    14
+   ]
+  },
+  {
+   "design": "config/roundtrip_v3_design.json",
+   "layout": "combined_constraints-01",
+   "world_seed": 16744542756543535297,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    30,
+    14
+   ],
+   "feasibility_coupled": [
+    16,
+    14
+   ],
+   "sensing_feasibility_coupled": [
+    11,
+    14
+   ]
+  },
+  {
+   "design": "config/roundtrip_v3_design.json",
+   "layout": "combined_constraints-01",
+   "world_seed": 16744542756543535297,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    21,
+    14
+   ],
+   "feasibility_coupled": [
+    16,
+    14
+   ],
+   "sensing_feasibility_coupled": [
+    11,
+    14
+   ]
+  },
+  {
+   "design": "config/roundtrip_v3_design.json",
+   "layout": "combined_constraints-02",
+   "world_seed": 4914688265124534351,
+   "forbid_reverse": "none",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    27,
+    16
+   ],
+   "feasibility_coupled": [
+    15,
+    16
+   ],
+   "sensing_feasibility_coupled": [
+    11,
+    17
+   ]
+  },
+  {
+   "design": "config/roundtrip_v3_design.json",
+   "layout": "combined_constraints-02",
+   "world_seed": 4914688265124534351,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    27,
+    16
+   ],
+   "feasibility_coupled": [
+    15,
+    16
+   ],
+   "sensing_feasibility_coupled": [
+    11,
+    17
+   ]
+  },
+  {
+   "design": "config/roundtrip_v3_design.json",
+   "layout": "combined_constraints-02",
+   "world_seed": 4914688265124534351,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    19,
+    16
+   ],
+   "feasibility_coupled": [
+    15,
+    16
+   ],
+   "sensing_feasibility_coupled": [
+    11,
+    17
+   ]
+  },
+  {
+   "design": "config/roundtrip_v3_design.json",
+   "layout": "combined_constraints-05",
+   "world_seed": 9784479155597997355,
+   "forbid_reverse": "none",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    30,
+    27
+   ],
+   "feasibility_coupled": [
+    17,
+    27
+   ],
+   "sensing_feasibility_coupled": [
+    12,
+    27
+   ]
+  },
+  {
+   "design": "config/roundtrip_v3_design.json",
+   "layout": "combined_constraints-05",
+   "world_seed": 9784479155597997355,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    30,
+    27
+   ],
+   "feasibility_coupled": [
+    17,
+    27
+   ],
+   "sensing_feasibility_coupled": [
+    12,
+    27
+   ]
+  },
+  {
+   "design": "config/roundtrip_v3_design.json",
+   "layout": "combined_constraints-05",
+   "world_seed": 9784479155597997355,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    21,
+    27
+   ],
+   "feasibility_coupled": [
+    17,
+    27
+   ],
+   "sensing_feasibility_coupled": [
+    12,
+    27
+   ]
+  },
+  {
+   "design": "config/roundtrip_v3_design.json",
+   "layout": "combined_constraints-06",
+   "world_seed": 1227960803834055086,
+   "forbid_reverse": "none",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    27,
+    19
+   ],
+   "feasibility_coupled": [
+    15,
+    19
+   ],
+   "sensing_feasibility_coupled": [
+    12,
+    19
+   ]
+  },
+  {
+   "design": "config/roundtrip_v3_design.json",
+   "layout": "combined_constraints-06",
+   "world_seed": 1227960803834055086,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    27,
+    19
+   ],
+   "feasibility_coupled": [
+    15,
+    19
+   ],
+   "sensing_feasibility_coupled": [
+    12,
+    19
+   ]
+  },
+  {
+   "design": "config/roundtrip_v3_design.json",
+   "layout": "combined_constraints-06",
+   "world_seed": 1227960803834055086,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    20,
+    19
+   ],
+   "feasibility_coupled": [
+    15,
+    19
+   ],
+   "sensing_feasibility_coupled": [
+    12,
+    19
+   ]
+  },
+  {
+   "design": "config/roundtrip_v3_design.json",
+   "layout": "combined_constraints-09",
+   "world_seed": 16631091708341769219,
+   "forbid_reverse": "none",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    28,
+    17
+   ],
+   "feasibility_coupled": [
+    15,
+    17
+   ],
+   "sensing_feasibility_coupled": [
+    12,
+    17
+   ]
+  },
+  {
+   "design": "config/roundtrip_v3_design.json",
+   "layout": "combined_constraints-09",
+   "world_seed": 16631091708341769219,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    28,
+    17
+   ],
+   "feasibility_coupled": [
+    15,
+    17
+   ],
+   "sensing_feasibility_coupled": [
+    12,
+    17
+   ]
+  },
+  {
+   "design": "config/roundtrip_v3_design.json",
+   "layout": "combined_constraints-09",
+   "world_seed": 16631091708341769219,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    20,
+    17
+   ],
+   "feasibility_coupled": [
+    15,
+    17
+   ],
+   "sensing_feasibility_coupled": [
+    12,
+    17
+   ]
+  },
+  {
+   "design": "config/fault_matrix_v3_campaign.json",
+   "layout": "reconfiguration_workspace-00",
+   "world_seed": 9377176500965080235,
+   "forbid_reverse": "none",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    31,
+    19
+   ],
+   "feasibility_coupled": [
+    31,
+    19
+   ],
+   "sensing_feasibility_coupled": [
+    31,
+    19
+   ]
+  },
+  {
+   "design": "config/fault_matrix_v3_campaign.json",
+   "layout": "reconfiguration_workspace-00",
+   "world_seed": 9377176500965080235,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    31,
+    19
+   ],
+   "feasibility_coupled": [
+    31,
+    19
+   ],
+   "sensing_feasibility_coupled": [
+    31,
+    19
+   ]
+  },
+  {
+   "design": "config/fault_matrix_v3_campaign.json",
+   "layout": "reconfiguration_workspace-00",
+   "world_seed": 9377176500965080235,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    31,
+    19
+   ],
+   "feasibility_coupled": [
+    31,
+    19
+   ],
+   "sensing_feasibility_coupled": [
+    31,
+    19
+   ]
+  },
+  {
+   "design": "config/fault_matrix_v3_campaign.json",
+   "layout": "reconfiguration_workspace-01",
+   "world_seed": 15230040447146762485,
+   "forbid_reverse": "none",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    33,
+    19
+   ],
+   "feasibility_coupled": [
+    21,
+    19
+   ],
+   "sensing_feasibility_coupled": [
+    21,
+    19
+   ]
+  },
+  {
+   "design": "config/fault_matrix_v3_campaign.json",
+   "layout": "reconfiguration_workspace-01",
+   "world_seed": 15230040447146762485,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    33,
+    19
+   ],
+   "feasibility_coupled": [
+    21,
+    19
+   ],
+   "sensing_feasibility_coupled": [
+    21,
+    19
+   ]
+  },
+  {
+   "design": "config/fault_matrix_v3_campaign.json",
+   "layout": "reconfiguration_workspace-01",
+   "world_seed": 15230040447146762485,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    25,
+    19
+   ],
+   "feasibility_coupled": [
+    21,
+    19
+   ],
+   "sensing_feasibility_coupled": [
+    21,
+    19
+   ]
+  },
+  {
+   "design": "config/fault_matrix_v3_campaign.json",
+   "layout": "reconfiguration_workspace-02",
+   "world_seed": 8353897203702870413,
+   "forbid_reverse": "none",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    29,
+    20
+   ],
+   "feasibility_coupled": [
+    15,
+    20
+   ],
+   "sensing_feasibility_coupled": [
+    15,
+    20
+   ]
+  },
+  {
+   "design": "config/fault_matrix_v3_campaign.json",
+   "layout": "reconfiguration_workspace-02",
+   "world_seed": 8353897203702870413,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.0,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    29,
+    20
+   ],
+   "feasibility_coupled": [
+    15,
+    20
+   ],
+   "sensing_feasibility_coupled": [
+    15,
+    20
+   ]
+  },
+  {
+   "design": "config/fault_matrix_v3_campaign.json",
+   "layout": "reconfiguration_workspace-02",
+   "world_seed": 8353897203702870413,
+   "forbid_reverse": "all",
+   "drive_margin_m": 0.03,
+   "route_first_adaptation": null,
+   "geometry_coupled": [
+    20,
+    20
+   ],
+   "feasibility_coupled": [
+    15,
+    20
+   ],
+   "sensing_feasibility_coupled": [
+    15,
+    20
+   ]
+  }
+ ]
+}

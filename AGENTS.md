@@ -23,6 +23,23 @@ decision** after exposing three platform defects; its records are engineering
 evidence only, never nuisance estimates, and its seeds are spent (a re-run
 pilot needs a new, disjoint design).
 
+**Resume here (2026-10-31 late).** ADR 0014 "plans must be executable as
+planned" is in progress; the narrow scale 1.7 and forward-only primitives are
+adopted on `main`. Running, each judged by its protocol in
+`docs/current_status.md`: the narrow lookahead arm (`05d18f2`, branch
+`engineering/narrow-lookahead`, judged by `execution_metrics` max route offset
+<= 0.08 m), then the drive-margin arms (base at `0544d52`, candidate
+`7ede10e` on `engineering/drive-margin`), chained in one wsl call; and a
+planner sweep (scratch `adr14_sweep.py`) over `pilot_v3b` + the generator-3
+round-trip and fault-matrix layouts, forward-only with and without the 0.03 m
+margin. After the decisions: merge what passes, finish ADR 0014, recompute and
+commit `pilot_v3b`'s manipulation check, re-render `figure_layouts.svg`, check
+the fault matrix's frozen selection rule still picks 00/01/02, then Gate 0
+(`run_roundtrip_v3g.sh`, `run_fm_v3.sh`) and the pilot
+(`run_pilot_v3b.sh`). Campaigns longer than 2 h use
+`start_campaign_detached.sh` (docker exec -d), kept up by a Windows-side
+`wsl -e sleep 86400`; restart that keepalive before it lapses.
+
 **Update 2026-10-31 evening.** The overnight chain died with the WSL VM
 after 3 baseline trials (nothing kept the VM up once the session ended); a
 detached `wsl -e sleep 86400` started from Windows now keeps it up. The

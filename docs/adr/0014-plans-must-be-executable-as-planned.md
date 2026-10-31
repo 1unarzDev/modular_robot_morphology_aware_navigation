@@ -63,6 +63,17 @@ turn fell from 2.26--3.02 rad in six trials to at most 1.37 rad in all seven,
 with no contact and every motion qualification passing, against criteria
 declared before the run.
 
+**Decision 2, planning side** (`studies/engineering/adr0014_planner_sweep.json`).
+With forward-only and a 0.03 m drive-obstacle margin, every method plans in
+every layout it planned before, in `pilot_v3b` and both generator-3 Gate 0
+designs; treatment-vs-geometry separation stays 11 of 12 manipulated
+`pilot_v3b` layouts with all 6 neutral layouts agreeing; and only
+`geometry_coupled`'s site moves (8 of 18 `pilot_v3b`, 5 of 5 round-trip, 2 of 3
+fault-matrix layouts), away from the shelf. The treatment still plans in the
+fault matrix's layouts 00, 01, 02, so its frozen selection rule is unchanged.
+A 0.05 m margin, measured earlier, leaves only 4 of 12 manipulated layouts
+plannable for any coupled method, so 0.03 m is the ceiling.
+
 ## Consequences
 
 - Plans change (routes, not the manipulation, for item 1), so the manipulation
