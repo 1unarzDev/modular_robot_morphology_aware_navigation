@@ -50,9 +50,12 @@ controller_server:
     FollowPathNarrow:
       plugin: nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController
       desired_linear_vel: 0.18
-      lookahead_dist: 0.8
-      min_lookahead_dist: 0.8
-      max_lookahead_dist: 0.8
+      # Short enough that the carrot swings past rotate_to_heading_min_angle
+      # near each planned vertex, so RPP turns in place there as the planner
+      # assumes instead of cutting the chord (narrow lookahead experiment).
+      lookahead_dist: 0.35
+      min_lookahead_dist: 0.35
+      max_lookahead_dist: 0.35
       lookahead_time: 1.5
       rotate_to_heading_angular_vel: 0.4
       transform_tolerance: 0.2
