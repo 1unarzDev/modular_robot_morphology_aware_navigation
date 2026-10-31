@@ -1151,6 +1151,48 @@ qualification passes. Completions and failures are reported, not used as the
 criterion. The scale was set on 2026-09-12 against the pre-ADR-0007 plant,
 which is why it is suspected stale.
 
+**Narrow turn-rate experiment: the candidate passes and 1.7 is adopted
+(2026-10-31).** Both arms ran 7 of 7 at one commit each (baseline `664a742`,
+campaign digest `0d970810...`; candidate `622785f`, `f2e9703b...`), measured
+by `modular_robot_benchmarks.turn_rate` (`6540154`, the table's estimator
+committed unchanged). Evidence `studies/engineering/narrow_turn_rate/`
+(per-arm summaries, estimates, `gate1_audit`s, records restore-verified,
+sha256 `f35e0b63...` base, `7c169034...` candidate).
+
+| arm | scale | median true/command | p10 | p90 | n | completed |
+|---|---|---|---|---|---|---|
+| baseline | 3.0 | 2.00 | 0.88 | 2.15 | 69 | 3/7 |
+| candidate | 1.7 | **1.17** | **0.85** | 1.22 | 96 | 1/7 |
+
+Every declared criterion holds for the candidate: median inside 0.8--1.25,
+p10 at least 0.5, and every recorded post-transition motion qualification
+passes (8 of 8; the two timeouts record none in either arm, see below); no
+collision in either arm. `yaw_effort_scale` 1.7 is merged into `main`.
+
+**Fewer completions, and why that does not reverse it: a second narrow defect
+the over-rotation was hiding.** Completions were declared not to be the
+criterion, and the records show why. In every narrow failure of both arms the
+body is held by `collision_monitor`'s approach zone 1--2 cm from an obstacle
+with no RPP abort and no contact. Candidate `docking_observability-01-r0` and
+`-r1` fail identically: at the site the body turns in place 2.5 rad at the
+correct rate onto RPP's 0.8 m carrot (+0.20 rad) while the route beside it
+heads +0.6--0.8 rad and bends back to 0.0 within ~0.4 m; pure pursuit then
+carries the 1.76 m body 11 cm off the route, beyond ADR 0013's 0.10 m turning
+margin, and it is held at x = 3.07. The baseline completed both because the 2x
+overshoot happened to leave it nearly on the carrot heading (drive-off errors
+-0.02 and 0.00 rad against -0.33 in its two failures). **Open, and the
+treatment's dominant failure: narrow tracking of a bend right after the
+transition site.** Not yet diagnosed far enough to choose between a planner
+rule (a straight run-out from a transition site), narrow controller settings,
+or rotating to the path tangent rather than the carrot; it blocks the pilot.
+
+**Open harness item: long missions lose early truth.** The two 300 s timeouts
+(`docking_observability-02`, both arms) are flagged by `gate1_audit`:
+"evaluator diagnostics dropped 600 samples", evaluator truth only from 50.4 s.
+A capped diagnostic buffer keeps the latest samples, so exactly the trials
+that run to the deadline lose their start. Timeouts are an outcome the pilot
+measures; this must be fixed before it runs.
+
 **The shelf aborts are a rasterization artifact (2026-10-31, offline, from
 the two `pilot_v3` records).** Projecting the recorded compact command
 (0.35 m/s, -0.20 rad/s, turning *away* from the shelf) over RPP's 1.0 s

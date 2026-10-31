@@ -1,0 +1,97 @@
+{
+  "campaign_digests": {
+    "results/engineering/narrow_repro_cand_raw": "6d7412c068b6e7bec198a0207007486e42fee61eab009002d3412b98358bc227"
+  },
+  "clean_records_per_required_class": {
+    "collision": 0,
+    "docking_failure": 0,
+    "localization_loss": 0,
+    "success": 1,
+    "timeout": 0
+  },
+  "controlled_cases": {},
+  "gate_passed": false,
+  "per_record": [
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-combined_constraints-02-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_repro_v3-docking_observability-01-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_repro_v3-docking_observability-01-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "evaluator diagnostics dropped 600 samples",
+        "only 509/609 localization samples have synchronized truth",
+        "truth spans 50.4-304.5 s but estimates span 0.5-304.5 s"
+      ],
+      "terminal_status": "timeout",
+      "trial_id": "engineering_repro_v3-docking_observability-02-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "evaluator diagnostics dropped 600 samples",
+        "only 505/605 localization samples have synchronized truth",
+        "truth spans 50.4-302.5 s but estimates span 0.5-302.5 s"
+      ],
+      "terminal_status": "timeout",
+      "trial_id": "engineering_repro_v3-docking_observability-02-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_repro_v3-docking_observability-05-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "controller_failure",
+      "trial_id": "engineering_repro_v3-docking_observability-05-r1-sensing_feasibility_coupled"
+    }
+  ],
+  "problem_counts": {
+    "evaluator diagnostics dropped 600 samples": 2,
+    "only 505/605 localization samples have synchronized truth": 1,
+    "only 509/609 localization samples have synchronized truth": 1,
+    "truth spans 50.4-302.5 s but estimates span 0.5-302.5 s": 1,
+    "truth spans 50.4-304.5 s but estimates span 0.5-304.5 s": 1
+  },
+  "purpose": "gate1_measured_outcome_coverage",
+  "record_digests": {
+    "engineering_repro_v3-combined_constraints-02-r0-sensing_feasibility_coupled": "20c2b0da8659a4b2b9aa25e070a0a7e2fef9959306008884c31e91f96e6a6ae6",
+    "engineering_repro_v3-docking_observability-01-r0-sensing_feasibility_coupled": "90e40b24948bbeea4973b67cd194b5761c25b099ad9a6b5b9041cac8f3c83f22",
+    "engineering_repro_v3-docking_observability-01-r1-sensing_feasibility_coupled": "ea05aca9289729617fe38a9344e08abcac193ff162eea76d5fea852b1b316db1",
+    "engineering_repro_v3-docking_observability-02-r0-sensing_feasibility_coupled": "c6e9cf042b53e1b5986c87ae9c7d403e0a5a4481fd03d4b99831d1d505be0847",
+    "engineering_repro_v3-docking_observability-02-r1-sensing_feasibility_coupled": "fcb4a4d90089f783b4719159451b67c756491219b14cc502cad099970c219a0b",
+    "engineering_repro_v3-docking_observability-05-r0-sensing_feasibility_coupled": "a6e73b5b92f9b5febbfc24f0fae2b0640559f64f0b8b770e9619d21a5a6aa50c",
+    "engineering_repro_v3-docking_observability-05-r1-sensing_feasibility_coupled": "afa9525b921927e38b25493e4e5e02ac7b46e33cffd523fec2be5cd7bed8bb6d"
+  },
+  "records": 7,
+  "records_without_problems": 5,
+  "required_classes_missing": [
+    "collision",
+    "docking_failure",
+    "localization_loss",
+    "timeout"
+  ],
+  "schema_version": 1,
+  "terminal_statuses": {
+    "completed": 1,
+    "controller_failure": 4,
+    "timeout": 2
+  }
+}

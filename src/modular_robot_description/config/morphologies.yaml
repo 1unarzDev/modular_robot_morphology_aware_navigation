@@ -126,7 +126,11 @@ morphologies:
     # The 0.20 m track requires higher opposing wheel speed to overcome the
     # DART contact/stiction threshold. Calibrated by the post-transition motion
     # qualification; this affects actuator allocation, not planner geometry.
-    yaw_effort_scale: 3.0
+    # 3.0 was set on 2026-09-12 against the pre-ADR-0007 plant and drove
+    # in-place turns at a median 2.0x command on the repaired one; 1.7 gives
+    # 1.17x (p10 0.85) with every motion qualification passing
+    # (studies/engineering/narrow_turn_rate, protocol declared first).
+    yaw_effort_scale: 1.7
     controller_id: FollowPathNarrow
     pods:
       pod_0: [0.71, 0.20, 0.0]
