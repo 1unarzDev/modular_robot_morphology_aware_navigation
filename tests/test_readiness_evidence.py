@@ -42,3 +42,12 @@ def test_pod_drive_diagnostics_cover_a_mission_run_to_its_deadline():
     pods, rate_hz, deadline_s, pre_mission_s = 6, 2, 300.0, 30.0
     assert cap >= pods * rate_hz * (deadline_s + pre_mission_s)
     assert "len(self.pod_drive_diagnostics) > POD_DRIVE_DIAGNOSTIC_CAP" in source
+
+
+def test_a_lost_lifecycle_request_is_asked_again():
+    """A request lost during discovery never completes; waiting on it forever
+    read an active stack as inactive for the whole readiness window."""
+    source = (ROOT / "src/modular_robot_benchmarks/modular_robot_benchmarks/mission_trial.py").read_text()
+    assert "LIFECYCLE_REQUEST_TIMEOUT_S = 2.0" in source
+    assert "if time.monotonic() - sent_at < LIFECYCLE_REQUEST_TIMEOUT_S:" in source
+    assert "client.remove_pending_request(pending)" in source

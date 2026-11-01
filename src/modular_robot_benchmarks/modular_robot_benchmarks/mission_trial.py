@@ -49,6 +49,11 @@ CLOCK_DISCONTINUITY_S = 2.0
 # costmap-filter managers depend on the world, and localization is gated by
 # the map-to-base transform instead.
 LIFECYCLE_MANAGERS = ("lifecycle_manager_navigation",)
+# A service request sent while discovery is still settling can be lost, and
+# its future then never completes. Waiting on it forever read an active stack
+# as inactive for the whole readiness window, three attempts running
+# (fault matrix v3, reconfiguration_workspace-02-r09, 2026-11-01): re-ask.
+LIFECYCLE_REQUEST_TIMEOUT_S = 2.0
 
 @dataclass
 class MissionObservation:
@@ -118,7 +123,7 @@ class MissionObserver(Node):
         # (pilot_v3, docking_observability-00-r1, 2026-10-31: velocity_smoother
         # and collision_monitor never activated, no command reached a wheel).
         self.lifecycle_managers_active = {name: False for name in LIFECYCLE_MANAGERS}
-        self._lifecycle_futures: dict[str, object] = {}
+        self._lifecycle_futures: dict[str, tuple[object, float]] = {}
         self.latest_local_costmap: OccupancyGrid | None = None
         self.latest_local_costmap_wall_time: float | None = None
         self.latest_collision_arc: Path | None = None
@@ -207,16 +212,18 @@ class MissionObserver(Node):
 
     def _poll_lifecycle_managers(self) -> None:
         for name, client in self.lifecycle_clients.items():
-            pending = self._lifecycle_futures.get(name)
+            pending, sent_at = self._lifecycle_futures.get(name, (None, 0.0))
             if pending is not None and not pending.done():
-                continue
+                if time.monotonic() - sent_at < LIFECYCLE_REQUEST_TIMEOUT_S:
+                    continue
+                client.remove_pending_request(pending)
             if not client.service_is_ready():
                 self.lifecycle_managers_active[name] = False
                 continue
             future = client.call_async(Trigger.Request())
             future.add_done_callback(
                 lambda done, name=name: self._on_lifecycle_state(name, done))
-            self._lifecycle_futures[name] = future
+            self._lifecycle_futures[name] = (future, time.monotonic())
 
     def _on_lifecycle_state(self, name: str, future) -> None:
         try:

@@ -1383,6 +1383,28 @@ independent check of the corrected route-offset measure holds:** maximum narrow
 route offset 0.058 m over all 20 runs (`studies/gate0/roundtrip_v3g_execution.json`),
 within the declared 0.08 m. The fault matrix runs next at the same commit.
 
+**Gate 0 fault matrix after ADR 0014, first execution: 41 of 42, the 42nd an
+infrastructure failure, so the gate is not passed and the matrix is
+re-executed (2026-11-01).** At `76dcb6b` (design `8f217c51...`, layouts 00,
+01, 02 under the unchanged selection rule): every exercised case passes every
+check (fired, drive inhibited, fail-closed terminal, `RECOVERY_REQUIRED`,
+reconciliation to the observed topology), `gate1_audit` clean on all 42,
+campaign digest `ce765a59...`. `reconfiguration_workspace-02-r09`
+(`cancellation:pod_0`) never started: all three attempts timed out at readiness
+with `lifecycle_managers_active` false and 0.0 s simulated, while the
+navigation lifecycle manager had logged "Managed nodes are active" 6 s after
+launch. **Harness defect, fixed:** the readiness poller sent one `is_active`
+request and waited on its future forever; a request lost while discovery
+settles never completes, so an active stack read as inactive for the whole
+window. The poller now re-issues a request unanswered after 2 s
+(`LIFECYCLE_REQUEST_TIMEOUT_S`, with a test). This gate was added at `7914336`
+and this is its first false negative in 62 trials at the adopting commit. The
+attempt is retained, not re-scored: `studies/gate0/fault_matrix_v3_attempt1_audit.json`
+and its records (`fault_matrix_v3_attempt1_raw.tar.xz`, sha256 `13877411...`).
+The matrix is re-executed unchanged at the fixing commit into a new raw
+directory (`fault_matrix_v3b`); the round trip at `76dcb6b` stands, since the
+fix touches only readiness, which that campaign passed in all 20 runs.
+
 **Vertex-turn experiment: accepted (2026-11-01); narrow vertices are executed
 in place (ADR 0014 decision 4).** 7 of 7 at `42b88ec`, campaign digest
 `4916a8d1...`, evidence `studies/engineering/vertex_turns/` (summary,
