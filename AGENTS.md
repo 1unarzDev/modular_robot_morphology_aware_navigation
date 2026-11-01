@@ -18,7 +18,20 @@ placement-robust station prediction (`43255f7`), 4x finer localization map
 (`9371593`), and RPP's narrow rotation no longer ratcheting on odometry
 (`971affb`; the narrow odometry over-reports ~0.2 rad/s, still unexplained).
 
-**Resume here (2026-11-01, pilot running).** ADR 0014 is adopted and Gate 0
+**Resume here (2026-11-01 evening, pilot at 96/144).** After the "done"
+marker: `results/qualification/post_pilot_v3b.sh` in the container (WSL clone
+still at `672b2f0`) retains the records against the gate1 audit and runs
+`pilot_nuisance --power`; copy the audit, status, nuisance JSON and archive
+into `studies/pilot_v3b/` and fill the PENDING sections of
+`studies/pilot_v3b/decision_record.md`, whose confirmatory-freeze section
+(master 20260911, disjointness set, prefix-stable manipulation check on a
+40-per-family superset) was decided before the pilot was read. Only then
+`git reset --hard` the clone to `main`. New since `672b2f0`, none of it
+platform: `analysis.secondary_measures`, `paper/conference/
+make_results_tables.py`, Fig. 1 (`make_site_map_figure.py`), `build.sh`
+(the paper is 8 pages before results and must be compressed).
+
+**Earlier (2026-11-01, pilot running).** ADR 0014 is adopted and Gate 0
 is satisfied on its platform (round trip `roundtrip_v3g` 20/20 at `76dcb6b`,
 fault matrix `fault_matrix_v3b` 42/42 at `3e6016f`; audits and verified records
 in `studies/gate0/`). **`pilot_v3b` is running detached at `672b2f0`** since
