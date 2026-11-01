@@ -78,6 +78,30 @@ retry rate.
 retained and restore-verified with `retain_campaign_records` at
 `studies/pilot_v3b/records/pilot_v3b_raw.tar.xz`.
 
+## Confirmatory freeze, decided before the pilot is read (2026-11-01)
+
+Taken under the author's standing delegation at 96 of 144 records, with no
+pilot outcome read; none of it depends on the layout count.
+
+- `confirmatory_v3`: kind `confirmatory_v3` (layout generator 3), 3
+  replicates, all four methods, the declared confirmatory master seed
+  20260911, layouts per family = the grid's total / 3.
+- **Disjointness set:** every committed frozen design (`studies/*/design.json`,
+  `config/*design*.json`, `config/*campaign*.json`, `config/engineering/*.json`)
+  except the superseded generator-1 `studies/confirmatory/design.json`
+  (`e9115d54...`). A dry freeze in a scratch directory showed it shares
+  sensing, friction and fault seeds with any design at the same master seed.
+  Disjointness exists so that no confirmatory seed has an observed outcome, and
+  that design never ran a trial (confirmatory evidence 0/432; only the planner
+  manipulation check, Gate 2, ran on it, which observes no outcome). Keeping
+  the declared master seed is preferred to choosing a new one. Every other
+  design passes at 12 and at 40 layouts per family.
+- **Manipulation check:** layouts are prefix-stable in the count (the first 12
+  per family at 40 per family equal the 12-per-family design's), so
+  `check_planner_manipulation` is run once on a 40-per-family superset and
+  reported for the frozen prefix. It runs after the pilot ends so that it
+  adds no load beside it, and it is committed before any confirmatory trial.
+
 ## Sign-off
 
 **PENDING:** the decisions above, dated, under the author's standing
