@@ -1367,6 +1367,22 @@ other non-contact outcomes are reported and not judged. If it passes and the
 queued baseline reproduces at least one abort, the margin and the finer
 raster are adopted as ADR 0014 decision 2.
 
+**Gate 0 re-qualification after ADR 0014: the generator-3 round trip passes,
+20 of 20 (`roundtrip_v3g`, 2026-11-01).** Same frozen design (hash
+`fa867641...`) re-executed unchanged at the adopting commit `76dcb6b` after the
+full container suite (330); campaign digest `649a7a6c...`, audit
+`studies/gate0/roundtrip_v3g_audit.json` (passed, no failures), `gate1_audit`
+20 of 20 records without a problem, records retained and verified against the
+audit at `studies/gate0/records/roundtrip_v3g_raw.tar.xz` (sha256
+`90d509e8...`). Every run made both transitions and completed, 163--193 s
+simulated, minimum clearance 0.026--0.057 m. All 40 post-transition motion
+qualifications pass; the narrowest margins are forward and reverse travel,
+3.05 and 3.14 cm against their 8 cm bound. Real-time factor median 0.95,
+minimum 0.46. One run needed one pre-mission infrastructure retry. **The
+independent check of the corrected route-offset measure holds:** maximum narrow
+route offset 0.058 m over all 20 runs (`studies/gate0/roundtrip_v3g_execution.json`),
+within the declared 0.08 m. The fault matrix runs next at the same commit.
+
 **Vertex-turn experiment: accepted (2026-11-01); narrow vertices are executed
 in place (ADR 0014 decision 4).** 7 of 7 at `42b88ec`, campaign digest
 `4916a8d1...`, evidence `studies/engineering/vertex_turns/` (summary,

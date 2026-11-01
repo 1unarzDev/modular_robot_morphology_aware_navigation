@@ -1,0 +1,165 @@
+{
+  "morphology": "narrow_tandem",
+  "trials": [
+    {
+      "largest_in_place_turn_rad": 0.3698142564600002,
+      "route_offset_max_m": 0.024435576393316172,
+      "route_offset_median_m": 0.017099015393316375,
+      "route_offset_samples": 63,
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-01-r0"
+    },
+    {
+      "largest_in_place_turn_rad": 0.3773236123400001,
+      "route_offset_max_m": 0.025205067393316183,
+      "route_offset_median_m": 0.016539240393316224,
+      "route_offset_samples": 63,
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-01-r1"
+    },
+    {
+      "largest_in_place_turn_rad": 0.36379014229000006,
+      "route_offset_max_m": 0.020957233393316343,
+      "route_offset_median_m": 0.018278560393316212,
+      "route_offset_samples": 62,
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-01-r2"
+    },
+    {
+      "largest_in_place_turn_rad": 0.3863007326800001,
+      "route_offset_max_m": 0.028557152393316354,
+      "route_offset_median_m": 0.015640888393316343,
+      "route_offset_samples": 63,
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-01-r3"
+    },
+    {
+      "largest_in_place_turn_rad": 0.5308220492999998,
+      "route_offset_max_m": 0.02103495258691601,
+      "route_offset_median_m": 0.015308116413083939,
+      "route_offset_samples": 63,
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-02-r0"
+    },
+    {
+      "largest_in_place_turn_rad": 1.2670707198000004,
+      "route_offset_max_m": 0.04323591358691603,
+      "route_offset_median_m": 0.01628247041308395,
+      "route_offset_samples": 62,
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-02-r1"
+    },
+    {
+      "largest_in_place_turn_rad": 0.41456708949999976,
+      "route_offset_max_m": 0.03126944429748071,
+      "route_offset_median_m": 0.013449374586915974,
+      "route_offset_samples": 63,
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-02-r2"
+    },
+    {
+      "largest_in_place_turn_rad": 2.0595875044199996,
+      "route_offset_max_m": 0.058058177586916004,
+      "route_offset_median_m": 0.012194555413084007,
+      "route_offset_samples": 65,
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-02-r3"
+    },
+    {
+      "largest_in_place_turn_rad": 0.36468275994,
+      "route_offset_max_m": 0.023795206978193484,
+      "route_offset_median_m": 0.016081104978193483,
+      "route_offset_samples": 53,
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-05-r0"
+    },
+    {
+      "largest_in_place_turn_rad": 0.4176964058200001,
+      "route_offset_max_m": 0.030202808978193385,
+      "route_offset_median_m": 0.01020816102180655,
+      "route_offset_samples": 54,
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-05-r1"
+    },
+    {
+      "largest_in_place_turn_rad": 0.39205206928,
+      "route_offset_max_m": 0.031461313978193406,
+      "route_offset_median_m": 0.02238556497819344,
+      "route_offset_samples": 54,
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-05-r2"
+    },
+    {
+      "largest_in_place_turn_rad": 0.3747584798800001,
+      "route_offset_max_m": 0.028286145978193122,
+      "route_offset_median_m": 0.007100748978193128,
+      "route_offset_samples": 55,
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-05-r3"
+    },
+    {
+      "largest_in_place_turn_rad": 0.3802585401699998,
+      "route_offset_max_m": 0.013263406057264282,
+      "route_offset_median_m": 0.011776373057264422,
+      "route_offset_samples": 63,
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-06-r0"
+    },
+    {
+      "largest_in_place_turn_rad": 0.3788074950799998,
+      "route_offset_max_m": 0.01141446994273565,
+      "route_offset_median_m": 0.010372929942735754,
+      "route_offset_samples": 62,
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-06-r1"
+    },
+    {
+      "largest_in_place_turn_rad": 0.3997192034699997,
+      "route_offset_max_m": 0.007111705942735691,
+      "route_offset_median_m": 0.0015427290572642693,
+      "route_offset_samples": 62,
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-06-r2"
+    },
+    {
+      "largest_in_place_turn_rad": 0.36889888779000035,
+      "route_offset_max_m": 0.009154664057264394,
+      "route_offset_median_m": 0.007907889057264361,
+      "route_offset_samples": 63,
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-06-r3"
+    },
+    {
+      "largest_in_place_turn_rad": 0.3848270291800002,
+      "route_offset_max_m": 0.020221076922967818,
+      "route_offset_median_m": 0.007105451922967854,
+      "route_offset_samples": 69,
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-09-r0"
+    },
+    {
+      "largest_in_place_turn_rad": 0.36020304528,
+      "route_offset_max_m": 0.03180857492296796,
+      "route_offset_median_m": 0.028422390922967944,
+      "route_offset_samples": 69,
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-09-r1"
+    },
+    {
+      "largest_in_place_turn_rad": 0.39719170657000014,
+      "route_offset_max_m": 0.017299353922967997,
+      "route_offset_median_m": 0.007811934922967945,
+      "route_offset_samples": 68,
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-09-r2"
+    },
+    {
+      "largest_in_place_turn_rad": 0.38824361584,
+      "route_offset_max_m": 0.021987167922967954,
+      "route_offset_median_m": 0.01655018992296786,
+      "route_offset_samples": 68,
+      "terminal_status": "completed",
+      "trial_id": "engineering_roundtrip_v3-combined_constraints-09-r3"
+    }
+  ]
+}

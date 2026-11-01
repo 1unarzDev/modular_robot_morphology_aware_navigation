@@ -194,7 +194,7 @@ Before any pilot, the platform must pass engineering qualification on the repair
 Item & Result \\
 \midrule
 Signed motion, detached pod and compact assembly, incl.\ imposed headings of $0, 45, \pm 90^\circ$ & 10/10 \\
-Randomized compact$\to$narrow$\to$compact round trips & 20/20 \\
+Randomized compact$\to$narrow$\to$compact round trips (third generator) & 20/20 \\
 Fail-closed fault matrix (7 faults $\times$ 3 layouts $\times$ 2 realizations) & 42/42 \\
 \bottomrule
 \end{tabular}
@@ -202,7 +202,7 @@ Fail-closed fault matrix (7 faults $\times$ 3 layouts $\times$ 2 realizations) &
 
 \emph{Signed motion.} Across imposed headings, assembled rotation spans 1.0196--1.0254\,rad and straight travel 0.7381--0.7429\,m, a 0.6\% and 0.7\% spread, so heading invariance is inside the gate.
 
-\emph{Round trip.} Each of 20 randomized missions made both transitions with no reconfiguration failure, passed both post-transition motion qualifications including all-pod rigidity (40/40), ended \texttt{READY} in \method{compact\_diff} with no unrecovered fault and no evaluator collision (minimum clearance 0.015--0.051\,m), and finished in 154--159\,s of the 300\,s deadline. Forward travel is the binding motion gate, with a worst margin of $+0.0301$\,m over its 0.08\,m floor. Real-time factor ranged 0.488--0.974 without degrading travel or yaw.
+\emph{Round trip.} Re-collected on the third generator after the executable-motion changes, at the commit that adopted them: each of 20 randomized missions on manipulated layouts made both transitions with no reconfiguration failure, passed both post-transition motion qualifications including all-pod rigidity (40/40), ended \texttt{READY} in \method{compact\_diff} with no unrecovered fault and no evaluator collision (minimum clearance 0.026--0.057\,m), and finished in 163--193\,s of the 300\,s deadline. Forward and reverse travel are the binding motion gates, with worst margins of 0.031\,m over their 0.08\,m floors, and the long body stayed within 0.058\,m of its planned route. Real-time factor ranged 0.46--0.96 without degrading travel or yaw.
 
 \emph{Fault matrix.} Detach, relocation, latch, stale-observation, cancellation, commit, and partial-topology faults were each injected six times into the first transition. Every case recorded its injection as fired, ended with drive inhibited under a post-terminal motion stimulus and \texttt{RECOVERY\_REQUIRED}, and reconciled only to the observed topology.
 
