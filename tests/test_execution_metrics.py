@@ -51,3 +51,13 @@ def test_in_place_turns_split_on_direction_and_wrap():
     assert [round(turn, 6) for turn in turns] == [0.6, -0.3]
     summary = summarize_record(_record(samples, [(0, 0), (0.1, 0)]))
     assert abs(summary["largest_in_place_turn_rad"] - 0.6) < 1e-9
+
+
+def test_the_verification_maneuver_is_not_route_following():
+    route = [(x / 10, 0.0) for x in range(11)]
+    samples = [(0.5 * i, 0.1 * i, 0.02, 0.0, 0.18, 0.0) for i in range(10)]
+    samples.append((5.2, 0.3, 0.30, 0.0, 0.12, 0.0))     # forward stage at the site
+    record = _record(samples, route)
+    assert max(route_offsets(record)) > 0.2
+    record["motion_qualifications"] = [{"start_time_s": 5.0, "end_time_s": 6.0}]
+    assert abs(max(route_offsets(record)) - 0.02) < 1e-9

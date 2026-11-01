@@ -49,18 +49,26 @@ def _segment_distance(px, py, a, b):
 
 def route_offsets(record, morphology="narrow_tandem"):
     """Distance of the true core from the nearest planned route segment, at each
-    sample while in `morphology` and commanded forward."""
+    sample while in `morphology`, commanded forward, and not in a
+    post-transition motion qualification."""
     route = record.get("planned_route", [])
     segments = [(a, b) for a, b in zip(route, route[1:])
                 if math.hypot(b["x"] - a["x"], b["y"] - a["y"]) < MAX_PRIMITIVE_M]
     if not segments:
         return []
     history = sorted(record.get("topology_history", []), key=lambda e: e["time_s"])
+    # The post-transition verification maneuver drives forward at the site on
+    # purpose (planned and swept, ADR 0003); it is not route following, and
+    # counting it read 0.095 m in a run that followed its route to 0.041 m.
+    qualifying = [(q["start_time_s"], q["end_time_s"])
+                  for q in record.get("motion_qualifications", [])
+                  if "start_time_s" in q and "end_time_s" in q]
     return [min(_segment_distance(s["core_world_x"], s["core_world_y"], a, b)
                 for a, b in segments)
             for s in _samples(record)
             if s["body_linear_command_mps"] > FORWARD_MPS
-            and _morphology_at(history, s["time_s"]) == morphology]
+            and _morphology_at(history, s["time_s"]) == morphology
+            and not any(start <= s["time_s"] <= end for start, end in qualifying)]
 
 
 def in_place_turns(record, morphology="narrow_tandem"):
