@@ -1344,6 +1344,14 @@ window", it is mis-specified a second time, and it is not reinterpreted after
 the fact. **Nothing is merged on this arm.** The 8 `combined_constraints` trials
 all reach their site and meet the manipulation (`unsafe_topology`).
 
+**Drive-margin baseline: 16 of 16 at `bdf0b36`** (no `src/` or `config/`
+change since `0544d52`; campaign digest `cc125f59...`). It reproduces the
+abort, so the comparison is informative: both `combined_constraints-02`
+trials log 4 "detected collision ahead" each and end `controller_failure`,
+against none in the candidate. Its `reconfiguration_workspace` contacts all
+fall inside `TRANSITIONING` (pod relocation, rung ii), as before; under
+forward-only planning `rw-05` now reaches its site instead of aborting.
+
 **Drive-margin follow-up: protocol declared before any run (2026-10-31).**
 The question the mis-specified criterion was meant to answer is whether the
 margin leaves the methods that do sweep their transitions executing cleanly
