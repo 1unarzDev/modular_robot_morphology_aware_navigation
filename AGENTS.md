@@ -23,22 +23,24 @@ decision** after exposing three platform defects; its records are engineering
 evidence only, never nuisance estimates, and its seeds are spent (a re-run
 pilot needs a new, disjoint design).
 
-**Resume here (2026-10-31 late).** ADR 0014 "plans must be executable as
-planned" is in progress; the narrow scale 1.7 and forward-only primitives are
-adopted on `main`. Running, each judged by its protocol in
-`docs/current_status.md`: the narrow lookahead arm (`05d18f2`, branch
-`engineering/narrow-lookahead`, judged by `execution_metrics` max route offset
-<= 0.08 m), then the drive-margin arms (base at `0544d52`, candidate
-`7ede10e` on `engineering/drive-margin`), chained in one wsl call; and a
-planner sweep (scratch `adr14_sweep.py`) over `pilot_v3b` + the generator-3
-round-trip and fault-matrix layouts, forward-only with and without the 0.03 m
-margin. After the decisions: merge what passes, finish ADR 0014, recompute and
-commit `pilot_v3b`'s manipulation check, re-render `figure_layouts.svg`, check
-the fault matrix's frozen selection rule still picks 00/01/02, then Gate 0
-(`run_roundtrip_v3g.sh`, `run_fm_v3.sh`) and the pilot
-(`run_pilot_v3b.sh`). Campaigns longer than 2 h use
-`start_campaign_detached.sh` (docker exec -d), kept up by a Windows-side
-`wsl -e sleep 86400`; restart that keepalive before it lapses.
+**Resume here (2026-11-01).** ADR 0014 is fully adopted on `main`: narrow
+scale 1.7, forward-only primitives, a 0.03 m drive-obstacle margin with the
+finer keepout raster, and narrow vertices executed in place; each on an
+experiment with criteria declared first (`studies/engineering/`). `pilot_v3b`'s
+manipulation check is recomputed on this planner and the layout figure
+re-rendered. **Running: Gate 0 re-qualification at `76dcb6b`**, detached
+(`run_gate0_v3g.sh`: `run_roundtrip_v3g.sh` then `run_fm_v3.sh`, logs
+`results/run_gate0_v3g.launch.log`, `results/qualification/roundtrip_v3g*`,
+`fault_matrix_v3*`). Read each with its audit (`roundtrip_qualification
+audit`, `engineering_qualification fault-matrix`) and `gate1_audit`; the round
+trip must also keep its maximum narrow route offset (`execution_metrics`,
+corrected measure) at or below 0.08 m in all 20 runs. Retain both record sets
+(`retain_campaign_records`), commit audits under `studies/gate0/`, update the
+paper's Gate 0 table. If both pass, launch the pilot detached
+(`start_campaign_detached.sh <commit> run_pilot_v3b`, ~12 h; keepalive
+`wsl -e sleep 172800` started 2026-11-01 ~03:00 UTC). Long campaigns: never a
+foreground `docker exec` past 2 h; wait with one `until grep` on the
+launcher's "done" marker.
 
 **Update 2026-10-31 evening.** The overnight chain died with the WSL VM
 after 3 baseline trials (nothing kept the VM up once the session ended); a
