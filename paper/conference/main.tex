@@ -77,6 +77,8 @@ ROS integration and typed module graphs support the study but are not themselves
 
 \textbf{Reconfiguration planning and control.} Yoshida et al.\ generate module motions along a supplied trajectory~\cite{yoshida2002reconfig}; distributed SMORES planning transforms to a specified target~\cite{liu2019distributed}. Graph-structured policies generalize locomotion across module graphs~\cite{whitman2023modular}, and QP control adapts to changing kinematics~\cite{liu2020qp}. In each, the target morphology or route is an input. Freeform connectors such as FreeBOT~\cite{liang2020freebot} relax where modules may attach but do not decide where a mobile robot should transform.
 
+\textbf{Multi-modal and task-and-motion planning.} Search over $(x, y, \theta, m)$ is an instance of multi-modal planning, in which the configuration space is a union of modes connected only at transition configurations that must themselves be found~\cite{hauser2010multimodal}, and integrated task and motion planning likewise interleaves discrete choices with geometric feasibility tests~\cite{garrett2021tamp}. We use no new search machinery from these fields. What we vary is the transition test: whether a mode switch is admitted on the two end configurations alone, or only after sweeping the physical events that realize it and predicting the sensing it relies on at that site. The study measures what each added condition is worth on executed missions, not planner completeness or speed.
+
 % ---------------------------------------------------------------------------
 \section{System}
 
@@ -294,6 +296,8 @@ Analysis refuses incomplete blocks, changed trial specifications, unpaired seeds
 \bibitem{yoshida2002reconfig} E. Yoshida \emph{et al.}, ``A self-reconfigurable modular robot: Reconfiguration planning and experiments,'' \emph{Int. J. Robot. Res.}, vol. 21, no. 10--11, 2002, doi:10.1177/0278364902021010835.
 \bibitem{liu2019distributed} C. Liu, M. Whitzer, and M. Yim, ``A distributed reconfiguration planning algorithm for modular robots,'' \emph{IEEE Robot. Autom. Lett.}, vol. 4, no. 4, 2019, doi:10.1109/LRA.2019.2930432.
 \bibitem{liang2020freebot} G. Liang, H. Luo, M. Li, H. Qian, and T. L. Lam, ``FreeBOT: A freeform modular self-reconfigurable robot with arbitrary connection point -- design and implementation,'' in \emph{Proc. IEEE/RSJ IROS}, 2020, pp. 6506--6513, doi:10.1109/IROS45743.2020.9341129.
+\bibitem{hauser2010multimodal} K. Hauser and J.-C. Latombe, ``Multi-modal motion planning in non-expansive spaces,'' \emph{Int. J. Robot. Res.}, vol. 29, no. 7, pp. 897--915, 2010, doi:10.1177/0278364909352098.
+\bibitem{garrett2021tamp} C. R. Garrett, R. Chitnis, R. Holladay, B. Kim, T. Silver, L. P. Kaelbling, and T. Lozano-P\'erez, ``Integrated task and motion planning,'' \emph{Annu. Rev. Control Robot. Auton. Syst.}, vol. 4, pp. 265--293, 2021, doi:10.1146/annurev-control-091420-084139.
 \end{thebibliography}
 
 \end{document}
