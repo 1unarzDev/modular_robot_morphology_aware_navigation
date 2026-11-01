@@ -131,6 +131,39 @@ def test_analysis_retains_failures_and_computes_paired_contrasts():
         "different_route_or_transition_fraction"] == 1.0
 
 
+def test_secondary_measures_keep_denominators_and_separate_infrastructure():
+    design = generate_design(layouts_per_family=2, replicates=2)
+    records = _records(design)
+    target = next(i for i, r in enumerate(records)
+                  if r.spec.method == "geometry_coupled" and not r.completed)
+    records[target] = replace(
+        records[target],
+        reconfiguration_attempts=1, reconfiguration_failures=1,
+        infrastructure_attempts=[
+            {"attempt": 1, "terminal_status": "infrastructure_failure"},
+            {"attempt": 2, "terminal_status": "docking_failure"},
+        ],
+        controller_diagnostics={
+            "evaluator_clearance": {"contact_events": [{"module": "pod_1", "time_s": 4.0}]},
+            "evaluator_localization_loss": [],
+            "evaluator_site_placement": [{"true_distance_m": 0.02}, {"true_distance_m": 0.06}],
+        })
+    result = analyze(records, design, bootstrap_draws=100, permutation_draws=200)
+    measures = result["secondary_measures"]
+    row = measures["by_method"]["geometry_coupled"]
+    assert row["trials"] == 12
+    assert (row["launch_attempts"], row["infrastructure_attempts"], row["trials_retried"]) == (13, 1, 1)
+    assert row["trials_ending_infrastructure_failure"] == 0
+    assert (row["trials_with_contact"], row["trials_with_contact_evaluated"]) == (1, 1)
+    assert (row["trials_with_localization_loss"], row["trials_with_localization_loss_evaluated"]) == (0, 1)
+    assert (row["transition_failures"], row["transitions_begun"]) == (1, 1)
+    assert row["site_placements"] == 2 and row["site_placements_beyond_nominal"] == 1
+    assert row["site_placement_median_m"] == pytest.approx(0.04)
+    assert row["site_placement_max_m"] == 0.06
+    assert measures["by_method"]["feasibility_coupled"]["site_placement_median_m"] is None
+    assert measures["launch_attempts"] == 49 and measures["infrastructure_attempts"] == 1
+
+
 def test_large_contrast_reports_randomization_monte_carlo_error():
     design = generate_design(layouts_per_family=8, replicates=1)
     result = analyze(_records(design), design, bootstrap_draws=100, permutation_draws=200)
@@ -302,3 +335,18 @@ def test_stratified_power_puts_the_whole_effect_in_the_manipulated_layouts():
     assert result["simulated_mean_effect"] == pytest.approx(0.18, abs=0.03)
     with pytest.raises(ValueError):
         StratifiedPowerAssumptions(36, 3, 0.9, 0.8, 0.18, 0.5, 0.3).validate()
+
+
+def test_paper_results_tables_render_from_the_analysis_artifact():
+    import importlib.util
+    from pathlib import Path
+    path = Path(__file__).resolve().parents[1] / "paper" / "conference" / "make_results_tables.py"
+    spec = importlib.util.spec_from_file_location("make_results_tables", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    design = generate_design(layouts_per_family=2, replicates=2)
+    result = analyze(_records(design), design, bootstrap_draws=100, permutation_draws=200)
+    tex = module.render(result)
+    assert tex.count(r"\begin{table}") == 3 and tex.count(r"\end{table}") == 3
+    assert r"\method{sensing\_feasibility\_coupled} & 12/12" in tex
+    assert "Holm $p$" in tex and "nan" not in tex

@@ -212,6 +212,76 @@ def _contrast(records: list[TrialRecord], treatment: str, control: str,
     return row
 
 
+NOMINAL_SITE_TOLERANCE_M = 0.03
+
+
+def _quantile(values: list[float], q: float) -> float:
+    ordered = sorted(values)
+    position = q * (len(ordered) - 1)
+    low = int(position)
+    high = min(low + 1, len(ordered) - 1)
+    return ordered[low] + (ordered[high] - ordered[low]) * (position - low)
+
+
+def secondary_measures(records: Iterable[TrialRecord]) -> dict:
+    """Descriptive secondary measures with explicit denominators, by method.
+
+    Infrastructure attempts are counted apart from mission outcomes; contact
+    and localization loss come from the evaluator-only diagnostics, so a trial
+    is counted whatever its terminal status; achieved site placement is the
+    ADR 0010 evaluator-truth distance beside the nominal 0.03 m target. No
+    p value is attached to any of these.
+    """
+    by_method: dict[str, list[TrialRecord]] = defaultdict(list)
+    for record in records:
+        by_method[record.spec.method].append(record)
+    rows = {}
+    for method in METHODS:
+        values = by_method.get(method, [])
+        attempts = [attempt for record in values for attempt in record.infrastructure_attempts]
+        infrastructure = [attempt for attempt in attempts
+                          if attempt.get("terminal_status") == "infrastructure_failure"]
+        placements = [float(entry["true_distance_m"]) for record in values
+                      for entry in record.controller_diagnostics.get(
+                          "evaluator_site_placement", [])]
+        clearance = [record.controller_diagnostics.get("evaluator_clearance") for record in values]
+        losses = [record.controller_diagnostics.get("evaluator_localization_loss") for record in values]
+        transitions_begun = sum(record.reconfiguration_attempts for record in values)
+        rows[method] = {
+            "trials": len(values),
+            "launch_attempts": len(attempts),
+            "infrastructure_attempts": len(infrastructure),
+            "infrastructure_attempt_rate": len(infrastructure) / len(attempts) if attempts else None,
+            "trials_retried": sum(len(record.infrastructure_attempts) > 1 for record in values),
+            "trials_ending_infrastructure_failure": sum(
+                record.terminal_status == "infrastructure_failure" for record in values),
+            "trials_with_contact_evaluated": sum(value is not None for value in clearance),
+            "trials_with_contact": sum(bool(value and value.get("contact_events"))
+                                       for value in clearance),
+            "trials_with_localization_loss_evaluated": sum(value is not None for value in losses),
+            "trials_with_localization_loss": sum(bool(value) for value in losses),
+            "transitions_begun": transitions_begun,
+            "transitions_with_logged_prediction": sum(
+                len(record.predicted_transition_probabilities) for record in values),
+            "transition_failures": sum(record.reconfiguration_failures for record in values),
+            "site_placements": len(placements),
+            "site_placement_median_m": median(placements) if placements else None,
+            "site_placement_p95_m": _quantile(placements, 0.95) if placements else None,
+            "site_placement_max_m": max(placements) if placements else None,
+            "site_placements_beyond_nominal": sum(
+                value > NOMINAL_SITE_TOLERANCE_M for value in placements),
+        }
+    launch = sum(row["launch_attempts"] for row in rows.values())
+    infrastructure = sum(row["infrastructure_attempts"] for row in rows.values())
+    return {
+        "nominal_site_tolerance_m": NOMINAL_SITE_TOLERANCE_M,
+        "by_method": rows,
+        "launch_attempts": launch,
+        "infrastructure_attempts": infrastructure,
+        "infrastructure_attempt_rate": infrastructure / launch if launch else None,
+    }
+
+
 def analyze(records: list[TrialRecord], design: StudyDesign,
             bootstrap_draws: int = 10000, permutation_draws: int = 100000,
             hierarchical_bootstrap_draws: int = 40) -> dict:
@@ -333,6 +403,7 @@ def analyze(records: list[TrialRecord], design: StudyDesign,
             for method, counts in sorted(rejection_by_method.items())
         },
         "route_decision_disagreement_vs_full": route_disagreement,
+        "secondary_measures": secondary_measures(records),
     }
 
 
@@ -399,6 +470,24 @@ def write_artifacts(result: dict, output: str | Path) -> None:
     for row in result["hierarchical_logistic_sensitivity"]:
         low, high = row["ci95_layout_bootstrap"]
         lines.append(f"| {row['treatment']} − {row['control']} | {row['marginal_probability_difference']:.3f} [{low:.3f}, {high:.3f}] | {row['layout_random_intercept_sd']:.3f} |")
+    measures = result["secondary_measures"]
+    lines.extend(["", "## Secondary measures", "",
+                  "Counts carry their denominators; no p value is attached. Infrastructure attempts are launch attempts that failed before the mission and are not mission outcomes.", "",
+                  "| Method | Infrastructure attempts | Contact | Localization loss | Transition failures | Site placement median / p95 / max (m) |",
+                  "|---|---:|---:|---:|---:|---:|"])
+
+    def _metres(value):
+        return "NA" if value is None else f"{value:.3f}"
+
+    for method, row in measures["by_method"].items():
+        lines.append(
+            f"| {method} | {row['infrastructure_attempts']}/{row['launch_attempts']}"
+            f" | {row['trials_with_contact']}/{row['trials_with_contact_evaluated']}"
+            f" | {row['trials_with_localization_loss']}/{row['trials_with_localization_loss_evaluated']}"
+            f" | {row['transition_failures']}/{row['transitions_begun']}"
+            f" | {_metres(row['site_placement_median_m'])} / {_metres(row['site_placement_p95_m'])}"
+            f" / {_metres(row['site_placement_max_m'])} (n={row['site_placements']},"
+            f" {row['site_placements_beyond_nominal']} beyond {measures['nominal_site_tolerance_m']} m) |")
     lines.extend(["", "Structured transition rejection counts are retained in `analysis.json`."])
     (output / "results.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
