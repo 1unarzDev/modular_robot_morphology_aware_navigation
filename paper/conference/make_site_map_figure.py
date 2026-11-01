@@ -144,42 +144,42 @@ def main() -> None:
         cx_, cy_ = px(*grid.cell_center(site.x, site.y))
         body.append(f'<circle cx="{cx_:.1f}" cy="{cy_:.1f}" r="9" fill="white" '
                     f'stroke="{color}" stroke-width="3"/>')
-        # Neighbouring sites are about 0.5 m apart: alternate labels above and below.
-        label_y = cy_ + 28 if offset % 2 else cy_ - 16
-        body.append(f'<text x="{cx_:.1f}" y="{label_y:.1f}" text-anchor="middle" '
+        # Sites sit about 0.5 m apart: geometry labelled up-right, feasibility below,
+        # the treatment above, so no two labels overlap.
+        anchor, label_y = (("start", cy_ - 18), ("middle", cy_ + 34), ("middle", cy_ - 18))[offset]
+        body.append(f'<text x="{cx_:.1f}" y="{label_y:.1f}" text-anchor="{anchor}" '
                     f'class="small" style="fill:{color};font-weight:700">'
                     f'{escape(LABELS[offset])}</text>')
 
-    width = ox * 2 + shown_w * res * SCALE + 230
-    legend_x = ox + shown_w * res * SCALE + 20
-    body.append(f'<text x="{ox}" y="24" class="label">{escape(family.replace("_", " "))} '
-                f'{index}, start room: compact &#8594; narrow at heading {heading * 45}&#176;'
+    # Legend under the map, one column, so the figure keeps column width.
+    map_w = shown_w * res * SCALE
+    width = ox * 2 + map_w
+    body.append(f'<text x="{ox}" y="26" class="label">{escape(family.replace("_", " "))} '
+                f'{index}: compact &#8594; narrow, heading {heading * 45}&#176;'
                 f'</text>')
-    for row, (key, label, color) in enumerate(STAGES):
-        y = oy + 10 + row * 24
-        body.append(f'<rect x="{legend_x}" y="{y}" width="16" height="16" fill="{color}" '
-                    f'stroke="#94a3b8"/>')
-        body.append(f'<text x="{legend_x+22}" y="{y+13}" class="small">{label} '
-                    f'({counts[key]})</text>')
-    y = oy + 10 + len(STAGES) * 24 + 10
-    for row, (label, extra) in enumerate((
-            ("raised shelf (drive + sweep obstacle)", 'fill="#b45309"'),
-            ("elevated sight screen", 'fill="none" stroke="#7c3aed" stroke-dasharray="5 3"'),
-    )):
-        body.append(f'<rect x="{legend_x}" y="{y + row*24}" width="16" height="16" {extra}/>')
-        body.append(f'<text x="{legend_x+22}" y="{y + row*24 + 13}" class="small">{label}</text>')
-    y += 2 * 24
-    body.append(f'<path d="M{legend_x},{y+15} L{legend_x+16},{y+15} L{legend_x+8},{y} Z" '
-                f'fill="#7c3aed"/>')
-    body.append(f'<text x="{legend_x+22}" y="{y+13}" class="small">fiducial station</text>')
-    height = max(oy + height_px + 20, y + 40)
+    swatches = [(f'fill="{color}" stroke="#94a3b8"', f"{label} ({counts[key]})")
+                for key, label, color in STAGES]
+    swatches += [('fill="#b45309"', "raised shelf"),
+                 ('fill="none" stroke="#7c3aed" stroke-dasharray="5 3" stroke-width="2"',
+                  "elevated sight screen"),
+                 (None, "fiducial station")]
+    top = oy + height_px + 20
+    for item, (style, label) in enumerate(swatches):
+        x = ox
+        y = top + item * 28
+        if style is None:
+            body.append(f'<path d="M{x},{y+20} L{x+20},{y+20} L{x+10},{y} Z" fill="#7c3aed"/>')
+        else:
+            body.append(f'<rect x="{x}" y="{y}" width="20" height="20" {style}/>')
+        body.append(f'<text x="{x+28}" y="{y+16}" class="small">{label}</text>')
+    height = top + len(swatches) * 28 + 6
     svg = "\n".join([
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width:.0f}" height="{height:.0f}" '
         f'viewBox="0 0 {width:.0f} {height:.0f}">',
         "<title>Where the robot can change shape</title>",
         '<rect width="100%" height="100%" fill="white"/>',
         "<style>text{font-family:system-ui,sans-serif;fill:#172033}"
-        ".label{font-size:13px}.small{font-size:12px}.mark{font-size:15px;font-weight:700}</style>",
+        ".label{font-size:20px}.small{font-size:19px}.mark{font-size:20px;font-weight:700}</style>",
         *body, "</svg>", ""])
     destination.write_text(svg, encoding="utf-8")
     print(json.dumps({"heading_bin": heading, "cells": counts,
