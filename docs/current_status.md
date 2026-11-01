@@ -1383,6 +1383,14 @@ independent check of the corrected route-offset measure holds:** maximum narrow
 route offset 0.058 m over all 20 runs (`studies/gate0/roundtrip_v3g_execution.json`),
 within the declared 0.08 m. The fault matrix runs next at the same commit.
 
+**`pilot_v3b` running at `672b2f0` (started 2026-11-01 06:39 UTC, the full
+container suite, 331, passing first).** Design `482ccb77...` (144 trials,
+master seed 20261107), manipulation check committed on this planner before any
+trial, read by the frozen rules of `pilot_nuisance` (`76ffe6e`) and the
+stratified model (`7e24508`). Nothing about the platform, the design or the
+reading changes while it runs; observations are recorded and acted on only
+after it ends, as with `pilot_v3`.
+
 **Gate 0 is satisfied on the ADR 0014 platform (2026-11-01): the fault matrix
 passes 42 of 42** (`fault_matrix_v3b`, re-executed unchanged at the fixing
 commit `3e6016f` after the full container suite, 331). Design `8f217c51...`,

@@ -23,24 +23,20 @@ decision** after exposing three platform defects; its records are engineering
 evidence only, never nuisance estimates, and its seeds are spent (a re-run
 pilot needs a new, disjoint design).
 
-**Resume here (2026-11-01).** ADR 0014 is fully adopted on `main`: narrow
-scale 1.7, forward-only primitives, a 0.03 m drive-obstacle margin with the
-finer keepout raster, and narrow vertices executed in place; each on an
-experiment with criteria declared first (`studies/engineering/`). `pilot_v3b`'s
-manipulation check is recomputed on this planner and the layout figure
-re-rendered. **Running: Gate 0 re-qualification at `76dcb6b`**, detached
-(`run_gate0_v3g.sh`: `run_roundtrip_v3g.sh` then `run_fm_v3.sh`, logs
-`results/run_gate0_v3g.launch.log`, `results/qualification/roundtrip_v3g*`,
-`fault_matrix_v3*`). Read each with its audit (`roundtrip_qualification
-audit`, `engineering_qualification fault-matrix`) and `gate1_audit`; the round
-trip must also keep its maximum narrow route offset (`execution_metrics`,
-corrected measure) at or below 0.08 m in all 20 runs. Retain both record sets
-(`retain_campaign_records`), commit audits under `studies/gate0/`, update the
-paper's Gate 0 table. If both pass, launch the pilot detached
-(`start_campaign_detached.sh <commit> run_pilot_v3b`, ~12 h; keepalive
-`wsl -e sleep 172800` started 2026-11-01 ~03:00 UTC). Long campaigns: never a
-foreground `docker exec` past 2 h; wait with one `until grep` on the
-launcher's "done" marker.
+**Resume here (2026-11-01, pilot running).** ADR 0014 is adopted and Gate 0
+is satisfied on its platform (round trip `roundtrip_v3g` 20/20 at `76dcb6b`,
+fault matrix `fault_matrix_v3b` 42/42 at `3e6016f`; audits and verified records
+in `studies/gate0/`). **`pilot_v3b` is running detached at `672b2f0`** since
+06:39 UTC (~12 h; log `results/run_pilot_v3b.launch.log`, records
+`results/pilot/pilot_v3b_raw`; it ends with "start_campaign run_pilot_v3b
+done"). Do not change the platform, design or reading while it runs. When it
+ends: `study status`, `gate1_audit`, retain the records
+(`retain_campaign_records`), then `pilot_nuisance --design
+studies/pilot_v3b/design.json --raw ... --power`, which sets the confirmatory
+layout count (Gate 4); then freeze `confirmatory_v3` disjoint from every
+design at master 20260911, with its own manipulation check. Keepalive
+`wsl -e sleep 172800` from ~03:00 UTC 2026-11-01. Never a foreground
+`docker exec` past 2 h; wait with one `until grep` on the "done" marker.
 
 **Update 2026-10-31 evening.** The overnight chain died with the WSL VM
 after 3 baseline trials (nothing kept the VM up once the session ended); a
