@@ -50,11 +50,36 @@ infrastructure attempts, trials retried).
 
 ## Measurement-validation findings
 
-**PENDING:** read after the pilot ends, by tracing every robot failure against
-evaluator truth to its earliest cause, as for `pilot_v3`. A finding that is a
-defect shared by all methods goes to an ADR and Gate 0; a finding that is the
-manipulation working (for example docking refused at a shadowed site) is
-recorded as such and changes nothing.
+Read 2026-11-01 after the pilot ended (144/144 at `672b2f0`, `study status`
+analysis-ready, no integrity error), by tracing every robot failure to its
+earliest cause. A finding that is a defect shared by all methods would go to an
+ADR and Gate 0; a finding that is the manipulation working is recorded as such
+and changes nothing. **No platform defect was found: every robot failure is the
+mechanism its layout was built to exercise.**
+
+| Method | Family | Outcome | Cause |
+|---|---|---|---|
+| `geometry_coupled` | `reconfiguration_workspace` | 8 `collision` | the 4 manipulated layouts x 2 replicates; the post-transition verification maneuver it does not sweep met the shelf (contact 69--83 s), drive inhibited |
+| `geometry_coupled`, `feasibility_coupled` | `docking_observability`, `combined_constraints` | 8 `unsafe_topology` each per family | the 4 manipulated layouts x 2 replicates; docking refused at a site the station cannot see |
+| `sensing_feasibility_coupled` | `combined_constraints` | 2 `planning_failure` | layout 03, the one the committed manipulation check showed it cannot plan, kept and scored against it |
+| `route_first_adaptation` | all | 34 `planning_failure`, 2 completed | its fixed route admits no feasible transition, in neutral controls too |
+
+Every neutral control completed under all three coupled methods (12 of 12
+each), and the two replicates of every layout agree. `gate1_audit` flags the
+treatment's two planning failures for "mechanical work not measured", which is
+how it reads a trial that never moved, not a missing measurement; its
+`gate_passed` is false only because no localization-loss or timeout outcome
+occurred, a Gate 1 coverage criterion that is not a pilot criterion.
+
+Finding for the paper, changing nothing in the design: `route_first_adaptation`
+fails to plan in neutral controls as well, because the fixed shortest route
+reaches the doorway with no site that admits the transition. It is in neither
+primary contrast; the paper must report it as a weak rung in this population
+rather than let its failures read as an effect of the information it lacks.
+
+The pilot's effect estimates (treatment 34/36 completed against
+`geometry_coupled` 12/36 and `feasibility_coupled` 20/36) are recorded for
+measurement validation only and never enter the power grid.
 
 ## Nuisance parameters and layout count
 

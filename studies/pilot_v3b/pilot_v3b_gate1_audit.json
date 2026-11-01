@@ -1,0 +1,1047 @@
+{
+  "campaign_digests": {
+    "results/pilot/pilot_v3b_raw": "dc9b590fe6eefe5a6b4b723e4a0a35772bac696dac549c409e0f9bc803e55c8c"
+  },
+  "clean_records_per_required_class": {
+    "collision": 8,
+    "docking_failure": 32,
+    "localization_loss": 0,
+    "success": 68,
+    "timeout": 0
+  },
+  "controlled_cases": {},
+  "gate_passed": false,
+  "per_record": [
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-00-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-00-r0-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "combined_constraints-00-r0-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-00-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-00-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-00-r1-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "combined_constraints-00-r1-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-00-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "combined_constraints-01-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "combined_constraints-01-r0-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "combined_constraints-01-r0-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-01-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "combined_constraints-01-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "combined_constraints-01-r1-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "combined_constraints-01-r1-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-01-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "combined_constraints-02-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "combined_constraints-02-r0-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "combined_constraints-02-r0-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-02-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "combined_constraints-02-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "combined_constraints-02-r1-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "combined_constraints-02-r1-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-02-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "combined_constraints-03-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "combined_constraints-03-r0-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "combined_constraints-03-r0-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "mechanical work not measured"
+      ],
+      "terminal_status": "planning_failure",
+      "trial_id": "combined_constraints-03-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "combined_constraints-03-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "combined_constraints-03-r1-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "combined_constraints-03-r1-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [
+        "mechanical work not measured"
+      ],
+      "terminal_status": "planning_failure",
+      "trial_id": "combined_constraints-03-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-04-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-04-r0-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "combined_constraints-04-r0-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-04-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-04-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-04-r1-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "combined_constraints-04-r1-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-04-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "combined_constraints-05-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "combined_constraints-05-r0-geometry_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-05-r0-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-05-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "combined_constraints-05-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "combined_constraints-05-r1-geometry_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-05-r1-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "combined_constraints-05-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "docking_observability-00-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "docking_observability-00-r0-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "docking_observability-00-r0-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "docking_observability-00-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "docking_observability-00-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "docking_observability-00-r1-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "docking_observability-00-r1-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "docking_observability-00-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "docking_observability-01-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "docking_observability-01-r0-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "docking_observability-01-r0-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "docking_observability-01-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "docking_observability-01-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "docking_observability-01-r1-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "docking_observability-01-r1-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "docking_observability-01-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "docking_observability-02-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "docking_observability-02-r0-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "docking_observability-02-r0-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "docking_observability-02-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "docking_observability-02-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "docking_observability-02-r1-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "docking_observability-02-r1-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "docking_observability-02-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "docking_observability-03-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "docking_observability-03-r0-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "docking_observability-03-r0-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "docking_observability-03-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "docking_observability-03-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "docking_observability-03-r1-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "docking_observability-03-r1-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "docking_observability-03-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "docking_observability-04-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "docking_observability-04-r0-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "docking_observability-04-r0-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "docking_observability-04-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "docking_observability-04-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "docking_observability-04-r1-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "docking_observability-04-r1-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "docking_observability-04-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "docking_observability-05-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "docking_observability-05-r0-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "docking_observability-05-r0-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "docking_observability-05-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "docking_observability-05-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "docking_observability-05-r1-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "docking_observability-05-r1-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "docking_observability-05-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-00-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-00-r0-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "reconfiguration_workspace-00-r0-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-00-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-00-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-00-r1-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "reconfiguration_workspace-00-r1-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-00-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-01-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "collision",
+      "trial_id": "reconfiguration_workspace-01-r0-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "reconfiguration_workspace-01-r0-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-01-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-01-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "collision",
+      "trial_id": "reconfiguration_workspace-01-r1-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "reconfiguration_workspace-01-r1-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-01-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-02-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "collision",
+      "trial_id": "reconfiguration_workspace-02-r0-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "reconfiguration_workspace-02-r0-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-02-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-02-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "collision",
+      "trial_id": "reconfiguration_workspace-02-r1-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "reconfiguration_workspace-02-r1-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-02-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-03-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "collision",
+      "trial_id": "reconfiguration_workspace-03-r0-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "reconfiguration_workspace-03-r0-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-03-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-03-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "collision",
+      "trial_id": "reconfiguration_workspace-03-r1-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "reconfiguration_workspace-03-r1-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-03-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-04-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-04-r0-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "reconfiguration_workspace-04-r0-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-04-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-04-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-04-r1-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "reconfiguration_workspace-04-r1-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-04-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-05-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "collision",
+      "trial_id": "reconfiguration_workspace-05-r0-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "reconfiguration_workspace-05-r0-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-05-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-05-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "collision",
+      "trial_id": "reconfiguration_workspace-05-r1-geometry_coupled"
+    },
+    {
+      "has_mission": false,
+      "problems": [],
+      "terminal_status": "planning_failure",
+      "trial_id": "reconfiguration_workspace-05-r1-route_first_adaptation"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "reconfiguration_workspace-05-r1-sensing_feasibility_coupled"
+    }
+  ],
+  "problem_counts": {
+    "mechanical work not measured": 2
+  },
+  "purpose": "gate1_measured_outcome_coverage",
+  "record_digests": {
+    "combined_constraints-00-r0-feasibility_coupled": "5e1410fba99352f5eb7de483a01c41e6c12408bacda2a347aafcd56f0fc2ac2e",
+    "combined_constraints-00-r0-geometry_coupled": "e843ed5401798dfa970ec5bcd2079348da2f3d29076763332ec96d8d499d316b",
+    "combined_constraints-00-r0-route_first_adaptation": "af61a988b064aaa2ebde68275b9f7a34ef8cda4397c467cc4d25c277a4d4b726",
+    "combined_constraints-00-r0-sensing_feasibility_coupled": "e6854a7012472b318580d5008002bec136784744eb3665529985983df4e5b07f",
+    "combined_constraints-00-r1-feasibility_coupled": "bb32f3be48a1b2ec98d00c45d46862f53a70e3e895696764192fde65d7cd75fa",
+    "combined_constraints-00-r1-geometry_coupled": "4d05facbe54895ade18d04629e58ed45d3bc821c6889590d2907581652877990",
+    "combined_constraints-00-r1-route_first_adaptation": "db03f61cbdd30d164b0b1f9d35d1ac4cf56400304cf38cba9bcd448dff2312c3",
+    "combined_constraints-00-r1-sensing_feasibility_coupled": "aedc97e680e68d592c800c3fed833db4639f61a3efe4c606b61695dbf26e958d",
+    "combined_constraints-01-r0-feasibility_coupled": "384764a7d438a478d3f24b8278733538adc65a7ead2805bbca6f9aa45d7dd24a",
+    "combined_constraints-01-r0-geometry_coupled": "20604cee0c4e2fdc8e5c0e90c017230ffebdac48d749bcd5b59b99d23af3ad2e",
+    "combined_constraints-01-r0-route_first_adaptation": "6d7fcda9fc9e84d449f8e89a010e383ace33d88a98ab37bf88ddd7ee0510f3f8",
+    "combined_constraints-01-r0-sensing_feasibility_coupled": "b7f3f141dc25934cd666588ea9de3a29982a8eaefd3cb5dd653f7b00f357ad68",
+    "combined_constraints-01-r1-feasibility_coupled": "a83c64015cb45a793d031dae362830a1861358632f58c972572945168b143d80",
+    "combined_constraints-01-r1-geometry_coupled": "502fa96103c8b1fb6e86110afa3b2650e7e70565a4ae2b660457741418bbd0b9",
+    "combined_constraints-01-r1-route_first_adaptation": "becd92e90719fcf13ec98c6c2ed4d6b59872f5dc804ad2989b1f2f191106c3a3",
+    "combined_constraints-01-r1-sensing_feasibility_coupled": "7358bde8a0fbeef1aa0105dbf4cc9f856189c7b68323362f194065ed396ed3a6",
+    "combined_constraints-02-r0-feasibility_coupled": "3cefe80870a12fbb3b75b093ab6ab833e4b075e6f4f6d2ac0e5723802609afca",
+    "combined_constraints-02-r0-geometry_coupled": "4b612f29f3ae6211fc1a9247b8e49f1c16517af90f9a8983f3eb951b301e239b",
+    "combined_constraints-02-r0-route_first_adaptation": "45f16e39c8276377eb520422450a7db30832fcc8cb86182e5a249a0bd071892d",
+    "combined_constraints-02-r0-sensing_feasibility_coupled": "1ca5e0f35041fcac61b608d36dbfa8816ebac172cc642f11bed5bdc5259a3036",
+    "combined_constraints-02-r1-feasibility_coupled": "17029d88dc27f87cdba8db071c50d0fcbbb1c0e8a318786544c104c50cf0967e",
+    "combined_constraints-02-r1-geometry_coupled": "c4491fdab2da6a2db0f20ee365fdb55936d843fc6579a3db92bdb8edc17a091e",
+    "combined_constraints-02-r1-route_first_adaptation": "80ec17200d1b7f1398ce382ef2b0dacec5fc49882c06a1c70cf66e6100a59b57",
+    "combined_constraints-02-r1-sensing_feasibility_coupled": "123f153dd2d13975c60d17e26ebce15c55c560403c1bedd3f01fd4c425eefb46",
+    "combined_constraints-03-r0-feasibility_coupled": "6cb0bc924429b0ea73ace5d7c549b846f101d26441bce65040100126b7024b3e",
+    "combined_constraints-03-r0-geometry_coupled": "e0c1b27bc9eab5bf8d0ab020cfbe4e7f9d67dd9d3811f37437c6e549d5d0526d",
+    "combined_constraints-03-r0-route_first_adaptation": "fa18dd7bbf9293c2d6b1ecee3e647c0b00c72395626ef921f6db43a8f92c2031",
+    "combined_constraints-03-r0-sensing_feasibility_coupled": "1168024ed3a7dae6edbe41a092f03eb1e456670067f0f838c2002ecd0d2fef0b",
+    "combined_constraints-03-r1-feasibility_coupled": "8f6659fd01850ca9054c74195029e7cede68be82088981df6525c6aaec45ff30",
+    "combined_constraints-03-r1-geometry_coupled": "e8acaf5d470bc66446ee665bd63200281793ac906e5cded12b1107bb4fbddc01",
+    "combined_constraints-03-r1-route_first_adaptation": "e8ea2ccb1662a4b58a21ed08fd4a854fa8aa9f94e07dd8e5624fc3e91ef4c83f",
+    "combined_constraints-03-r1-sensing_feasibility_coupled": "c76cf0526009881d0bdbd4e09f9d7c4660b31dbd8890f4187224effca7db1291",
+    "combined_constraints-04-r0-feasibility_coupled": "3670fed367dc466c2aa026d8fdf76b93f9256600935335085e70e47385505797",
+    "combined_constraints-04-r0-geometry_coupled": "e7b5052050ef7d28725da1e5c6450f7d5ad9fd17f784770fc06c66b9a69b8c25",
+    "combined_constraints-04-r0-route_first_adaptation": "6bc1d4c8361d9d88e8d3f1ef635605a09ab39dbd44012ce2c31ab6b05d9fa43d",
+    "combined_constraints-04-r0-sensing_feasibility_coupled": "5986f5d7a3b5544542319122b0bffa0681acddc9f963027a5d701785e2bb2445",
+    "combined_constraints-04-r1-feasibility_coupled": "c2d1450574441d0c9b9eb038799145519de9f19a6e0731ba2d87816912b45676",
+    "combined_constraints-04-r1-geometry_coupled": "a31624fe2a2f0d14999098553ad4b3978e16cfcb721cc65b3454939f29392958",
+    "combined_constraints-04-r1-route_first_adaptation": "d8483e7864a72177bf231ea2d8984ccb980cc37a62725967388806130bab4aa0",
+    "combined_constraints-04-r1-sensing_feasibility_coupled": "86e7b094d3d49068bfb76535e74bf7a42af7cac55687d925411e91a035dd1af0",
+    "combined_constraints-05-r0-feasibility_coupled": "934736e4f2821492f786ac21664b58f3e965caf495cdcc7cef252cab18235c08",
+    "combined_constraints-05-r0-geometry_coupled": "09c3978d8a768793e1171b22ee96f57f3b59c886af12c0ab290d5791444daad3",
+    "combined_constraints-05-r0-route_first_adaptation": "080d12704c694ee994180d1a0d9c6bb2fd67bf34f04858ac11b200f27f92b0df",
+    "combined_constraints-05-r0-sensing_feasibility_coupled": "c1b6f9eb8cb56eea6c3d0c81ffd39f782ca106cd7f49aaa38d5a39282bebeb92",
+    "combined_constraints-05-r1-feasibility_coupled": "cbd32668ae618f9d94b1b2a481980921beff80da325104741fe87f6adbdf43d1",
+    "combined_constraints-05-r1-geometry_coupled": "9663c5123d18e0bd639b4a6cfbd26542191e825ce65251895e475df31e81e876",
+    "combined_constraints-05-r1-route_first_adaptation": "d324dba9b6424680c2c159d74e5fff4a1d26ca8e2d99cc4607087bf146844737",
+    "combined_constraints-05-r1-sensing_feasibility_coupled": "8a74fa57af518ea54750b45b4827f5164255bd9b2efb6e77415555bc7c7295cc",
+    "docking_observability-00-r0-feasibility_coupled": "186dd53d66867afc93c7959aa2052b189f14fa8269e848f4be50879f9f611da9",
+    "docking_observability-00-r0-geometry_coupled": "66163011060252b7bbf0a0aafb2109b2e9e6b71b4b12ce7ab5db0775d7117483",
+    "docking_observability-00-r0-route_first_adaptation": "7abd13e126b898bd50eda49fbda4f26ecd67141eeae161b36b5246fa8fc891fb",
+    "docking_observability-00-r0-sensing_feasibility_coupled": "360cddaf7416ed7c8675b5921e419f233ebdb43045326249f6e63a75bba2102c",
+    "docking_observability-00-r1-feasibility_coupled": "ca2137747d7d39a389f6540245b5ffa49c5d89ce2c4bf07f4c1e57202c89ac91",
+    "docking_observability-00-r1-geometry_coupled": "fbd8e414eb91760a9a3ed328d2addf144e426ac3557f38d6b5d8fcca6891f40e",
+    "docking_observability-00-r1-route_first_adaptation": "55fa4e10d09ece73d468a3b867daa7e5bd87390e6e0cd3450ee77441bef2ce06",
+    "docking_observability-00-r1-sensing_feasibility_coupled": "e6d9b1dafea5176d4c01da4b033c5668147d403154c82af19849c8a09a0dab77",
+    "docking_observability-01-r0-feasibility_coupled": "11c622c35134395ec37b90df6502d50ac2960ec77d16a0f0059178a4cb30f225",
+    "docking_observability-01-r0-geometry_coupled": "55c62846aa21b51353233d7cac84c2facff66d0a1cd0f81566b33ef5a33fe69e",
+    "docking_observability-01-r0-route_first_adaptation": "0675c15198c7a2273e86e856ecd096b94113a9e323024989e8322d72ae8c6a27",
+    "docking_observability-01-r0-sensing_feasibility_coupled": "66a51a53f0dc5bd2fb80a03603e51058088c28746d01d1e5c42639e34cd58f85",
+    "docking_observability-01-r1-feasibility_coupled": "c136eac09b32b9626c536a342d11e9da390448f8c96a0fe89796de8e83ee82af",
+    "docking_observability-01-r1-geometry_coupled": "85f57b11688e27b6d98872f39bc2536db3de1f934be00c2351685f01792d012f",
+    "docking_observability-01-r1-route_first_adaptation": "885457b70360ee809a6107b695c71202c13d8b0236c291b79dd1e2c6c86364d2",
+    "docking_observability-01-r1-sensing_feasibility_coupled": "858bf0f834815b414517bd6f1dae2224554e05455ff1fb5ccffaa3817a51df9d",
+    "docking_observability-02-r0-feasibility_coupled": "8e8428c2f5bdb6db8fe0219fae02299313f56e96358191ee06603793a30883f1",
+    "docking_observability-02-r0-geometry_coupled": "662b15c6aa93da43f8c6384c6ae8c34fb198fee955ae03117da6f32aa9d0c381",
+    "docking_observability-02-r0-route_first_adaptation": "e02fcfd8a6c5b3c064730a05cf34cb53a3119d53ecb1c9e0acf6ea4a15e2b290",
+    "docking_observability-02-r0-sensing_feasibility_coupled": "065a3e08e8d181d963ad37643bf855a6933306dabbc691b74fee6e3a94c8cc77",
+    "docking_observability-02-r1-feasibility_coupled": "73eb81af02db7b8be1b1b4ab716137305c63d03feac2a101aa7f32b122035be2",
+    "docking_observability-02-r1-geometry_coupled": "d768fdea9614e65a9dc2a5a25d9885e687bbf79b138ab84910f892ffdc7e1476",
+    "docking_observability-02-r1-route_first_adaptation": "cf3814b19a12d41b5034412d6c7f474d04d489ccfa39c42c37c33a6e8ac1af59",
+    "docking_observability-02-r1-sensing_feasibility_coupled": "f3f28928bc1e965dfac79766fecde7edc0c322336de9ba77cbab377d81014dbe",
+    "docking_observability-03-r0-feasibility_coupled": "0850d5b2bcf0a64576a5859afad91b8c41c8d239e49f86dab0069af9b6756de9",
+    "docking_observability-03-r0-geometry_coupled": "af2548aade1be950f9c04f334c8440a1ffacad9ab483a61d6a66083e9e38f735",
+    "docking_observability-03-r0-route_first_adaptation": "4443684519238d16512e60fb761a1b53494237e2f6bd994120fc96d50a363899",
+    "docking_observability-03-r0-sensing_feasibility_coupled": "1955d3b4de50426e1be80afef01111d3aa1ebb8c00b65c541501c5f3d94decf3",
+    "docking_observability-03-r1-feasibility_coupled": "56cb3d2ffb8a0d80adda67297339a572b289fed81f349c0b9b4d200b46b4d997",
+    "docking_observability-03-r1-geometry_coupled": "5ed83e508e8b6f4e2111734b814fa584ed102be9abc5ce4d86a79e4ca4d6e70c",
+    "docking_observability-03-r1-route_first_adaptation": "4286ef5b7474c652a84540cf87c0d9392dc55fbe784aa1bfe90e4652b79c608d",
+    "docking_observability-03-r1-sensing_feasibility_coupled": "9375282e91fd0de7200a37de82a76dab8fe1d8e667f079b7194b7d9834cb31ad",
+    "docking_observability-04-r0-feasibility_coupled": "dffe9e8375ab8cc34b8d3147e399e41c16027d7a9b05e15393132b6849a1d914",
+    "docking_observability-04-r0-geometry_coupled": "169ef6f55f7b9689a7e49c6af2b83316a663d6aef45a93f007664f17616605f7",
+    "docking_observability-04-r0-route_first_adaptation": "b063d0525aa06bb20e18757fad61954e1bfed54db60490d3594e7ef711cc7851",
+    "docking_observability-04-r0-sensing_feasibility_coupled": "edf08b27f9a2284108e94fadfe5ea35f922d09ccc552d92131316ccf9a653d0c",
+    "docking_observability-04-r1-feasibility_coupled": "695a5ef55c9ab7d711e74ca396d199d427a4ada02acafd8821de092c8d4d4ec4",
+    "docking_observability-04-r1-geometry_coupled": "b0f7211c161f9f069acf445f4462b6a6b05716a9e79e51ac69890bfe04425a86",
+    "docking_observability-04-r1-route_first_adaptation": "33f4b069f01790cb434d88352ab5b684f54bfdccff861ccccaeabd123203572e",
+    "docking_observability-04-r1-sensing_feasibility_coupled": "de54651de873f81dd522f03819f5b6ddebce828bcf2e3798da92d9d373b43120",
+    "docking_observability-05-r0-feasibility_coupled": "fcd8ab2a0cdb27f3d5a212682517fc831fe32341c6b95b2d1332cea6aadae21c",
+    "docking_observability-05-r0-geometry_coupled": "483ee3b32761b181fc88866262a3a9c0893600e0c14be9bc3a8b087139b4eb58",
+    "docking_observability-05-r0-route_first_adaptation": "7149c5e8d23315675f36832a5f2c7ca9e123a3c91bde318d917541ad9373e099",
+    "docking_observability-05-r0-sensing_feasibility_coupled": "1fd1436ec6f98b8a554def8495633cf7bdf2eedb7dd9c2fcd081ed9a70046231",
+    "docking_observability-05-r1-feasibility_coupled": "caf48d6b3da35482783eb28574b2e7a809261f57078d5afa2b555b0577e40b44",
+    "docking_observability-05-r1-geometry_coupled": "aa36b6596baef80708802bc00bb7450e833a6d40297a06abec5497dcf979691e",
+    "docking_observability-05-r1-route_first_adaptation": "eec67110cc87891eada96d245df30fbb6af9fe8086b2b1af2a070a4999a05d23",
+    "docking_observability-05-r1-sensing_feasibility_coupled": "79f577fb0c50cb61b74d2ac7d193e91266eb26e4c24625d44fe170af0579f3df",
+    "reconfiguration_workspace-00-r0-feasibility_coupled": "4b08c8b79ceef4bab6aeb7f64c1b61d6c15cbb180b4af29e30e76a1cd01a0276",
+    "reconfiguration_workspace-00-r0-geometry_coupled": "8c4309b4db93157c61f03bc6ceb9230df7141fa3b306dd5442196dc0516c5443",
+    "reconfiguration_workspace-00-r0-route_first_adaptation": "cb68b217bdd6778a028594a3f2bb8bcf7798600a43e723a0cae0d7e9d1baffbd",
+    "reconfiguration_workspace-00-r0-sensing_feasibility_coupled": "abb81563a93c659c46c99675a9ea0a04cd294b0168e8df1c49762d1368fc3f37",
+    "reconfiguration_workspace-00-r1-feasibility_coupled": "c35035a3f4619a5f7014bb8151302f99c87a9c2b27914f4fcefb66d82d1f92d9",
+    "reconfiguration_workspace-00-r1-geometry_coupled": "f2e26386bc5136613c522a3898405174d4d28eac05575240d018dc26b47a142a",
+    "reconfiguration_workspace-00-r1-route_first_adaptation": "3e259420c4d53535db68f305d68a9a08ce728fe98a397c08789ddb490235328b",
+    "reconfiguration_workspace-00-r1-sensing_feasibility_coupled": "011538da743f2f8b8bc20f630fb101144497517989e93eb5f39b2171ced703c1",
+    "reconfiguration_workspace-01-r0-feasibility_coupled": "fc1bb303d78c3718ea7930addc9d8728f757c5c4833a849346069fc4b9195bf7",
+    "reconfiguration_workspace-01-r0-geometry_coupled": "65841983b1106b4d11c15e7aae79f25d83b1c6a690f454349e982495ea81eb9a",
+    "reconfiguration_workspace-01-r0-route_first_adaptation": "c15a74532e83132d12a512671379769e8ee49d02adba453ee0e7d00076ce3a63",
+    "reconfiguration_workspace-01-r0-sensing_feasibility_coupled": "8f654d9c889ddda6df0598d9ad16f43bf8fa85b582c6879d6ae60724f65424be",
+    "reconfiguration_workspace-01-r1-feasibility_coupled": "6947136a649e18fb50065a9565e74e5909a4f9a76d928d5e46a3b4811d8d9ef4",
+    "reconfiguration_workspace-01-r1-geometry_coupled": "2a6397f1db43cdd24e7264d4b37fae7c1c9d62276dcf55ffaf602932a1d62ff5",
+    "reconfiguration_workspace-01-r1-route_first_adaptation": "d741c28283cf36afde757810361d391019e3f7e76c627ff06b828949e6647226",
+    "reconfiguration_workspace-01-r1-sensing_feasibility_coupled": "6834ca6f1b466e647fa2c261ca28fa9d3b48f314fd2c5763baa76312898964e3",
+    "reconfiguration_workspace-02-r0-feasibility_coupled": "9823d7d14ff64be3d9be8c2faadbd16d39555a676f89f9914c027172e26e4fbc",
+    "reconfiguration_workspace-02-r0-geometry_coupled": "619d7b62444aa99515fe95194e47b21b57604c77f8d09781c4735cf4a1369e0c",
+    "reconfiguration_workspace-02-r0-route_first_adaptation": "3ef8449d53f74132f3499e51bab0d7479491ca8ddb386ae8ba5726a2349c76a4",
+    "reconfiguration_workspace-02-r0-sensing_feasibility_coupled": "7365a7b566ff8ec4f7fa3bd125c5aa8e27884af44d130ac3aa1571a5a9ba938b",
+    "reconfiguration_workspace-02-r1-feasibility_coupled": "b29850446a305cfe849eb98e3cb1985580820b114f104ee57a877ee8a7a17bbc",
+    "reconfiguration_workspace-02-r1-geometry_coupled": "e5fa75abfc24ebad57594afd2e237b67796e76f41afa392f95ae74ce553cc059",
+    "reconfiguration_workspace-02-r1-route_first_adaptation": "23ca97c48c2305788fa9ed4ac9f65ec6ee34ef9568cf4c7b1e65385f522b04fd",
+    "reconfiguration_workspace-02-r1-sensing_feasibility_coupled": "f8c26b58784e1ddde577d4d1e39aff300ac75425edc6fed97e202d997f8fb5f5",
+    "reconfiguration_workspace-03-r0-feasibility_coupled": "ebc7aff5999568addd5b873a8415bf4fe3d93b263b38a16f22381b40418e5c9a",
+    "reconfiguration_workspace-03-r0-geometry_coupled": "2ea20bd43f1c8b7f4f695c86526519608b97f15d130aaf0a59127c9ba782f74f",
+    "reconfiguration_workspace-03-r0-route_first_adaptation": "0616e19c1cb249913bb8934900f8ba37a7f8f3ce45968e1bdd260f1bbd402f79",
+    "reconfiguration_workspace-03-r0-sensing_feasibility_coupled": "5ac6e725b1c2236c9cee78925d6a699d28d2676c72136eb8a3a5a04b55aa41a0",
+    "reconfiguration_workspace-03-r1-feasibility_coupled": "5991104e369d3b613ec0595bbc70dc7bc3b9c05048fd6e7ab07d73ab80a1d679",
+    "reconfiguration_workspace-03-r1-geometry_coupled": "1d16ade6a890c3622a0fd3392d70f39a3ea1684f56d6a376fa3e3c3e629b6682",
+    "reconfiguration_workspace-03-r1-route_first_adaptation": "258cb538d4f11e83c8bb75cf912c660c9789324df34ecfd84bc8a472ee4d7909",
+    "reconfiguration_workspace-03-r1-sensing_feasibility_coupled": "9d5dd84708e10063f85251b17e3573d452977c94e9df830124d905eecb5770c5",
+    "reconfiguration_workspace-04-r0-feasibility_coupled": "6aa2277acc2726a49d2c3044c7bc361aeb9f879b2bb0a71626b5d629cd5b51ac",
+    "reconfiguration_workspace-04-r0-geometry_coupled": "7622d1f414c4179054c7f7c2d7e5968cb333a24119d3c7c1dec51251e89f91e6",
+    "reconfiguration_workspace-04-r0-route_first_adaptation": "08f0235e9780d71c5fd3e8cafc32c374f1bff75b14abe54994b17f59ac6407dc",
+    "reconfiguration_workspace-04-r0-sensing_feasibility_coupled": "1b732c4b9badf4da048121cda5523f92f631df79975a13998d6ae83c2fad5f3b",
+    "reconfiguration_workspace-04-r1-feasibility_coupled": "41ed03d8d859fe3cb998ac012832fd5aaf4981ab09000ffdd1348d881d720c38",
+    "reconfiguration_workspace-04-r1-geometry_coupled": "246da6d88a259fdfa08cf796778c9d354b9cb085683521d166b24199f4267a24",
+    "reconfiguration_workspace-04-r1-route_first_adaptation": "be9b53b7ea0403b68c69e7121ae3b116349247864f172458ee8fccb0f18eabf2",
+    "reconfiguration_workspace-04-r1-sensing_feasibility_coupled": "89baea960da91dbc8c8b0295311f7cfeb405f831c29fd5455e14dc661fd251a2",
+    "reconfiguration_workspace-05-r0-feasibility_coupled": "514342bd491dbd716a74fc5f14899d3e8d1e4da901d2997b6cfe5098db7a2b7c",
+    "reconfiguration_workspace-05-r0-geometry_coupled": "8f148249f8b93dd47d6e97c8ae9b796fcf7ad99e9bf95c44cdae424c25c4701f",
+    "reconfiguration_workspace-05-r0-route_first_adaptation": "cc9f9f637d0944ab9c955e81365466a48328ec273da8ca60ba660b4d67e70182",
+    "reconfiguration_workspace-05-r0-sensing_feasibility_coupled": "e6f5d862a309de3607ab26fbb4abdef4b02203f19107592c0b2f7054c40b370d",
+    "reconfiguration_workspace-05-r1-feasibility_coupled": "fa78704dfa13ecd2d5ce5f75dfe001c778d353f520b53fa091e95734a51b89cb",
+    "reconfiguration_workspace-05-r1-geometry_coupled": "b7f7432abe67ac07ca81b6b220848197e70d8a8e1816c1670b60171dfc9076c3",
+    "reconfiguration_workspace-05-r1-route_first_adaptation": "0a18cd89b81fe03f5217c83e462261bba2991bf7bee6adfe90650ea5b3552af5",
+    "reconfiguration_workspace-05-r1-sensing_feasibility_coupled": "18a08100d120dc0a96769945e3c3278c9659f71d18957eca8dc34483f7322b2d"
+  },
+  "records": 144,
+  "records_without_problems": 142,
+  "required_classes_missing": [
+    "localization_loss",
+    "timeout"
+  ],
+  "schema_version": 1,
+  "terminal_statuses": {
+    "collision": 8,
+    "completed": 68,
+    "planning_failure": 36,
+    "unsafe_topology": 32
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "analysis_ready": true,
+  "design_hash": "482ccb771dcb5bf9198357d425e97c3c71b35cf264d7684484e4222491f82614",
+  "expected_records": 144,
+  "integrity_errors": [],
+  "method_counts": {
+    "feasibility_coupled": 36,
+    "geometry_coupled": 36,
+    "route_first_adaptation": 36,
+    "sensing_feasibility_coupled": 36
+  },
+  "observed_records": 144,
+  "pending_records": 0,
+  "records_with_wrong_design_hash": [],
+  "terminal_status_counts": {
+    "collision": 8,
+    "completed": 68,
+    "planning_failure": 36,
+    "unsafe_topology": 32
+  },
+  "unexpected_records": []
+}
