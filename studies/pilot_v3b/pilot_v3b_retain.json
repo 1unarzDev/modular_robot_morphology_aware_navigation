@@ -1,0 +1,11 @@
+{
+  "bytes": 22245500,
+  "campaign_digest": "dc9b590fe6eefe5a6b4b723e4a0a35772bac696dac549c409e0f9bc803e55c8c",
+  "campaign_digest_checked": false,
+  "parts": [
+    "pilot_v3b_raw.tar.xz"
+  ],
+  "records": 144,
+  "unaudited_files_retained": 0,
+  "verified": true
+}

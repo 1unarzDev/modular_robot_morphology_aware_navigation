@@ -83,6 +83,27 @@ measurement validation only and never enter the power grid.
 
 ## Nuisance parameters and layout count
 
+**A defect in the power tool, found by its first reading and fixed before the
+count was taken (2026-11-01).** The frozen reading at `672b2f0`
+(`pilot_v3b_nuisance_672b2f0.json`) found no passing count: the worst cell's
+lower bound was 0.04 at 36 layouts and 0.49 at 120 (all families), 0.004 and
+0.19 (sensing families). The pilot's outcomes are all-or-nothing by layout
+(neutral 1.0, manipulated control 0.0, replicates identical), so the layout SD
+fit ran to 5.0 and its adverse value to 10. The stratified power model applied
+the smallest effect of interest as a fixed logit gap at the median manipulated
+layout; at those spreads its simulated layout-averaged effect was 0.075 and
+0.041, not the declared 0.18, so the grid measured power for a fraction of the
+effect the analysis plan defines (a layout-balanced difference in completion
+probability). The model's docstring and its test both state the averaged
+effect as the intent; the test checked it only at SD 0.5, where the defect does
+not show. Fixed at `2d3df12`: the gap is solved so the averaged effect equals
+0.18 at every spread (test at SD 0, 2, 5 and 10). The effect, the grid's
+values, alpha, the target and the search are unchanged, and the fix depends on
+the layout spread alone, never on the pilot's effect estimate. The paired-noise
+estimate is 0.0 because the estimator is unidentified when layouts are
+deterministic (shared and independent agreement both 0.48); it is kept as
+declared, and at these spreads pairing has little effect on power.
+
 **PENDING:** `pilot_nuisance --design studies/pilot_v3b/design.json --raw
 results/pilot/pilot_v3b_raw --power`, committed as
 `studies/pilot_v3b/nuisance.json`. For each scope: the estimates, the declared
@@ -99,9 +120,10 @@ retry rate.
 
 ## Records
 
-**PENDING:** `gate1_audit` committed as `pilot_v3b_gate1_audit.json`, records
-retained and restore-verified with `retain_campaign_records` at
-`studies/pilot_v3b/records/pilot_v3b_raw.tar.xz`.
+`gate1_audit` committed as `pilot_v3b_gate1_audit.json`; all 144 records
+retained and restore-verified against its digests with
+`retain_campaign_records` at `studies/pilot_v3b/records/pilot_v3b_raw.tar.xz`
+(22.2 MB, campaign digest `dc9b590f...`, `pilot_v3b_retain.json`).
 
 ## Confirmatory freeze, decided before the pilot is read (2026-11-01)
 
