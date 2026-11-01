@@ -1383,6 +1383,18 @@ independent check of the corrected route-offset measure holds:** maximum narrow
 route offset 0.058 m over all 20 runs (`studies/gate0/roundtrip_v3g_execution.json`),
 within the declared 0.08 m. The fault matrix runs next at the same commit.
 
+**Gate 0 is satisfied on the ADR 0014 platform (2026-11-01): the fault matrix
+passes 42 of 42** (`fault_matrix_v3b`, re-executed unchanged at the fixing
+commit `3e6016f` after the full container suite, 331). Design `8f217c51...`,
+campaign digest `021a563f...`, audit `studies/gate0/fault_matrix_v3b_audit.json`
+(`gate_passed` true): 14 of 14 in each of `reconfiguration_workspace-00`,
+`-01` and `-02`, all seven fault types twice per layout, every injection fired,
+no failed checks, distinct fault seeds; `gate1_audit` clean on all 42; **no
+trial needed an infrastructure retry**. Records retained and verified at
+`studies/gate0/records/fault_matrix_v3b_raw.tar.xz` (sha256 `5964038a...`).
+With the round trip (`roundtrip_v3g`, 20 of 20), every generator-3 Gate 0 item
+now has an audit on the platform the pilot will run on. **Next: `pilot_v3b`.**
+
 **Gate 0 fault matrix after ADR 0014, first execution: 41 of 42, the 42nd an
 infrastructure failure, so the gate is not passed and the matrix is
 re-executed (2026-11-01).** At `76dcb6b` (design `8f217c51...`, layouts 00,
