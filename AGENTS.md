@@ -18,11 +18,6 @@ placement-robust station prediction (`43255f7`), 4x finer localization map
 (`9371593`), and RPP's narrow rotation no longer ratcheting on odometry
 (`971affb`; the narrow odometry over-reports ~0.2 rad/s, still unexplained).
 
-**Resume here (2026-10-31):** `pilot_v3` was **stopped at 100 of 144 by
-decision** after exposing three platform defects; its records are engineering
-evidence only, never nuisance estimates, and its seeds are spent (a re-run
-pilot needs a new, disjoint design).
-
 **Resume here (2026-11-01, pilot running).** ADR 0014 is adopted and Gate 0
 is satisfied on its platform (round trip `roundtrip_v3g` 20/20 at `76dcb6b`,
 fault matrix `fault_matrix_v3b` 42/42 at `3e6016f`; audits and verified records
@@ -37,6 +32,11 @@ layout count (Gate 4); then freeze `confirmatory_v3` disjoint from every
 design at master 20260911, with its own manipulation check. Keepalive
 `wsl -e sleep 172800` from ~03:00 UTC 2026-11-01. Never a foreground
 `docker exec` past 2 h; wait with one `until grep` on the "done" marker.
+
+**Resume here (2026-10-31):** `pilot_v3` was **stopped at 100 of 144 by
+decision** after exposing three platform defects; its records are engineering
+evidence only, never nuisance estimates, and its seeds are spent (a re-run
+pilot needs a new, disjoint design).
 
 **Update 2026-10-31 evening.** The overnight chain died with the WSL VM
 after 3 baseline trials (nothing kept the VM up once the session ended); a
