@@ -115,7 +115,6 @@
             "pod_3:post_transition_collision",
             "pod_4:environment_collision",
             "pod_4:post_transition_collision",
-            "pod_5:environment_collision",
             "pod_5:post_transition_collision",
             "target_footprint"
           ],
@@ -132,9 +131,9 @@
             "planar_clearance",
             "target_footprint"
           ],
-          "route_signature": "f1bbb8e729903bbf1fd08d6c27b7ad14cabece3b17efbbc6b89edf9831f02e65",
+          "route_signature": "cffda1542d28c97db9bc49413f3fd7ccc527353b33f646a072c75b60df3b9539",
           "transition_site": [
-            28,
+            20,
             20
           ]
         },
@@ -157,17 +156,12 @@
             "pod_1:covariance_too_large",
             "pod_1:environment_collision",
             "pod_1:post_transition_collision",
-            "pod_2:connector_not_visible",
-            "pod_2:covariance_too_large",
             "pod_2:environment_collision",
             "pod_2:post_transition_collision",
-            "pod_3:connector_not_visible",
-            "pod_3:covariance_too_large",
             "pod_3:environment_collision",
             "pod_3:post_transition_collision",
             "pod_4:environment_collision",
             "pod_4:post_transition_collision",
-            "pod_5:environment_collision",
             "pod_5:post_transition_collision",
             "target_footprint"
           ],
@@ -223,9 +217,9 @@
             "planar_clearance",
             "target_footprint"
           ],
-          "route_signature": "c446c9fa45b68fb89860d878f19aa75c7ab288c6ee73c0c99d0e020d9eadf72f",
+          "route_signature": "b27b99c4e2f2a7323efc63dd34d7ded9f866941a8091c2d6ec31d110a579d416",
           "transition_site": [
-            30,
+            22,
             17
           ]
         },
@@ -248,8 +242,6 @@
             "pod_1:covariance_too_large",
             "pod_1:environment_collision",
             "pod_1:post_transition_collision",
-            "pod_2:connector_not_visible",
-            "pod_2:covariance_too_large",
             "pod_2:environment_collision",
             "pod_2:post_transition_collision",
             "pod_3:connector_not_visible",
@@ -313,9 +305,9 @@
             "planar_clearance",
             "target_footprint"
           ],
-          "route_signature": "a2e78b9b4ffc9d346355c3f21573be56d6d095d975dc64c1eeaab2ac8009580b",
+          "route_signature": "b001d532881bbd860e6218aa112fa03b6114f2ff909e41e6ec312e76267ad864",
           "transition_site": [
-            30,
+            22,
             15
           ]
         },
@@ -345,12 +337,8 @@
             "pod_3:covariance_too_large",
             "pod_3:environment_collision",
             "pod_3:post_transition_collision",
-            "pod_4:connector_not_visible",
-            "pod_4:covariance_too_large",
             "pod_4:environment_collision",
             "pod_4:post_transition_collision",
-            "pod_5:connector_not_visible",
-            "pod_5:covariance_too_large",
             "pod_5:environment_collision",
             "pod_5:post_transition_collision",
             "target_footprint"
@@ -435,7 +423,6 @@
           "method": "feasibility_coupled",
           "planned": true,
           "rejection_reasons": [
-            "core:post_transition_collision",
             "planar_clearance",
             "pod_0:environment_collision",
             "pod_0:post_transition_collision",
@@ -464,9 +451,9 @@
             "planar_clearance",
             "target_footprint"
           ],
-          "route_signature": "f582647a2710a4ca32e7f8afe2b71f30f247c5ef7162562089a720ce61ed8043",
+          "route_signature": "cf985528178a14b95478046fa067cff7e1897ff980b82a7f81be9401e51c2e7c",
           "transition_site": [
-            27,
+            18,
             13
           ]
         },
@@ -479,7 +466,6 @@
           "method": "sensing_feasibility_coupled",
           "planned": true,
           "rejection_reasons": [
-            "core:post_transition_collision",
             "planar_clearance",
             "pod_0:connector_not_visible",
             "pod_0:covariance_too_large",
@@ -501,8 +487,6 @@
             "pod_4:covariance_too_large",
             "pod_4:environment_collision",
             "pod_4:post_transition_collision",
-            "pod_5:connector_not_visible",
-            "pod_5:covariance_too_large",
             "pod_5:environment_collision",
             "pod_5:post_transition_collision",
             "target_footprint"
@@ -637,10 +621,10 @@
             "pod_5:covariance_too_large",
             "target_footprint"
           ],
-          "route_signature": "a15f72d9ee08ccff90fa410ee7214aaa89bf046fb452b6452a31bdaa65db3fb7",
+          "route_signature": "7ad50459bb140e536fe63b160f7f73b7ec87c009a9ba5f229aaf3329be7fc2e5",
           "transition_site": [
-            26,
-            11
+            24,
+            15
           ]
         }
       },
@@ -710,7 +694,7 @@
             "pod_5:covariance_too_large",
             "target_footprint"
           ],
-          "route_signature": "39174c1c7189ae3792c5b9baae6ddac3c2b65235db2c66ff01b275371df8015a",
+          "route_signature": "b53e1c7af5125f3b9f6fcf6d254420fb0eeb5a2c2f6d9a84353db43f946f79e5",
           "transition_site": [
             25,
             18
@@ -917,7 +901,7 @@
             "pod_5:covariance_too_large",
             "target_footprint"
           ],
-          "route_signature": "cf293b1ce870e46f4cf890bf051e7525bee58b488cbd6e3f97fea8422d8cf624",
+          "route_signature": "9c39b09acab8bf59c8c4abdb7d5167fae0d2b16746e92e683e763d0c674e32ea",
           "transition_site": [
             24,
             11
@@ -1034,9 +1018,9 @@
             "planar_clearance",
             "target_footprint"
           ],
-          "route_signature": "2b10cfb96698d9fc00193063c1bc955dcc53c6d44e4c072a14140e554574bfd2",
+          "route_signature": "c5a1ff51e8700970734f2a73326d8f7e88ff22700b077db8d03d6c1b1dd22af5",
           "transition_site": [
-            25,
+            18,
             16
           ]
         },
@@ -1049,7 +1033,6 @@
           "method": "sensing_feasibility_coupled",
           "planned": true,
           "rejection_reasons": [
-            "core:post_transition_collision",
             "planar_clearance",
             "pod_0:connector_not_visible",
             "pod_0:covariance_too_large",
@@ -1077,7 +1060,7 @@
             "pod_5:post_transition_collision",
             "target_footprint"
           ],
-          "route_signature": "1313f6b434ac753880d4c05d5205563507a34161947925c64ae27937b3fb6133",
+          "route_signature": "c40c301e4d2e9caededf6902a3be980940a13a660b95ab80c70e0cf0a3c05045",
           "transition_site": [
             12,
             16
@@ -1133,9 +1116,9 @@
             "planar_clearance",
             "target_footprint"
           ],
-          "route_signature": "7b2057cb4a32f62e32a277cced8e38c1bd06101034dad608598062a7eef27ee8",
+          "route_signature": "5a4957b32df4260614374a6024ee163999471c44369351668431b4bdef9d9dbc",
           "transition_site": [
-            30,
+            21,
             18
           ]
         },
@@ -1148,7 +1131,6 @@
           "method": "sensing_feasibility_coupled",
           "planned": true,
           "rejection_reasons": [
-            "core:post_transition_collision",
             "planar_clearance",
             "pod_0:connector_not_visible",
             "pod_0:covariance_too_large",
@@ -1232,9 +1214,9 @@
             "planar_clearance",
             "target_footprint"
           ],
-          "route_signature": "abc47d362dd86d22fd58cca40e52da1ae0c2d539dfa7a5e3ea348337197b34c9",
+          "route_signature": "eefa58c759d0593477ac305066900234184f38cffbfbf45135d17b3b1ab53fe6",
           "transition_site": [
-            26,
+            17,
             18
           ]
         },
@@ -1324,7 +1306,6 @@
           "method": "feasibility_coupled",
           "planned": true,
           "rejection_reasons": [
-            "core:post_transition_collision",
             "planar_clearance",
             "pod_0:environment_collision",
             "pod_0:post_transition_collision",
@@ -1353,9 +1334,9 @@
             "planar_clearance",
             "target_footprint"
           ],
-          "route_signature": "6a46f737f243f52231199e160e1b7228cc3314d04058cd073bd6a18d4230332a",
+          "route_signature": "78f4856802ad794cc2e899b7edb4a7b22f37cd084e4fefab5f3db665da6234a8",
           "transition_site": [
-            30,
+            21,
             13
           ]
         },
@@ -1391,7 +1372,6 @@
           "method": "sensing_feasibility_coupled",
           "planned": true,
           "rejection_reasons": [
-            "core:post_transition_collision",
             "planar_clearance",
             "pod_0:connector_not_visible",
             "pod_0:covariance_too_large",

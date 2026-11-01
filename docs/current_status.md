@@ -1367,6 +1367,25 @@ other non-contact outcomes are reported and not judged. If it passes and the
 queued baseline reproduces at least one abort, the margin and the finer
 raster are adopted as ADR 0014 decision 2.
 
+**Drive-margin follow-up: accepted (2026-11-01); the 0.03 m drive-obstacle
+margin and the finer keepout raster are adopted (ADR 0014 decisions 2 and
+3).** 32 of 32 at `ce540b7`, campaign digest `a78e55ce...`; evidence for all
+three arms in `studies/engineering/drive_margin/` (summaries, `gate1_audit`s,
+records restore-verified: base `94dc4f4c...`, candidate `77f14f1f...`,
+follow-up `58d547a8...`). Every criterion holds: no RPP "detected collision
+ahead", **no evaluator contact in any of 32 trials**, every motion
+qualification passes. The treatment completed 16 of 16; `feasibility_coupled`
+completed its 8 `reconfiguration_workspace` trials and met the observability
+manipulation (`unsafe_topology`) in its 8 `combined_constraints` trials. The
+treatment's narrowest pass beside the shelf was 2 mm (`combined_constraints-02-r0`),
+without contact. With the baseline reproducing the abort, both changes merge
+into `main` (code identical to `ce540b7`). `pilot_v3b`'s manipulation check is
+recomputed on this planner and recommitted before any trial: every contrast
+count is unchanged (11 of 12, 7 of 8, neutrals 6 of 6); eight
+`geometry_coupled` sites move off the shelf and one treatment site moves
+(forward-only). The layout figure is re-rendered from it. The generator-3
+round trip and fault matrix are re-collected after the vertex-turn decision.
+
 **Narrow lookahead experiment: protocol declared before any run
 (2026-10-31, while the forward-only arm runs).** Its first records already
 show the turnaround gone (largest narrow in-place turn 0.38--0.47 rad) and a

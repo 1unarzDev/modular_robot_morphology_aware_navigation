@@ -2,7 +2,7 @@
 
 - Status: **accepted in part** (2026-10-31, agent decisions under the author's
   standing delegation for pre-data design decisions; no `pilot_v3b` trial has
-  run). Decision 1 is adopted on its experiment; 2 and 3 await theirs.
+  run). Decisions 1--3 are adopted on their experiments; 4 awaits its own.
 - Date: 2026-10-31
 
 ## Context
@@ -42,13 +42,21 @@ with `use_rotate_to_heading`, and the plans depend on in-place turns.
    against it; heading changes stay in-place turns, which ADR 0013 already
    checks with its turning margin. It is the shared motion model, so every
    method and the route-first baseline get it alike.
-2. **A traversal margin to drive obstacles.** Pending its planner sweep and
-   experiment.
-3. **The finer keepout raster** (mask 0.0125 m, local costmap 0.025 m):
-   rejected on its own (it cleared three of four reproduced shelf aborts, not
-   all); pending as a companion to decision 2.
-4. **The narrow lookahead.** Pending its experiment (a fixed 0.35 m, so pure
-   pursuit turns at planned vertices rather than cutting them).
+2. **A traversal margin to drive obstacles.** Every traversal footprint keeps
+   `DRIVE_OBSTACLE_CLEARANCE_M` = 0.03 m from raised drive obstacles, the most
+   the generator-3 population tolerates; walls keep the exact check.
+3. **The finer keepout raster**: the mask at 0.0125 m and the local costmap
+   at 0.025 m, so the controller sees a transition obstacle within about one
+   fine cell of its edge. Insufficient alone (three of four reproduced aborts
+   cleared); adopted with decision 2.
+4. **Narrow vertices executed in place.** Pending its experiment: the
+   navigator splits a narrow path at its heading changes and servoes each
+   vertex, instead of letting pure pursuit cut it. A shorter lookahead
+   (0.35 m) and a planner rule demanding a body length of straight run-in
+   before a tight passage were both measured and rejected: the first still
+   left six of seven trials beyond 0.08 m of their route, the second made the
+   treatment unplannable in 4 of 12 manipulated layouts where every control
+   planned.
 
 ## Measurement before deciding
 
@@ -73,6 +81,13 @@ fault-matrix layouts), away from the shelf. The treatment still plans in the
 fault matrix's layouts 00, 01, 02, so its frozen selection rule is unchanged.
 A 0.05 m margin, measured earlier, leaves only 4 of 12 manipulated layouts
 plannable for any coupled method, so 0.03 m is the ceiling.
+
+**Decisions 2 and 3, executed** (`studies/engineering/drive_margin/`). The
+16 minimum-clearance `geometry_coupled` trials: with both, no RPP abort, where
+the baseline at `main` aborted in both `combined_constraints-02` trials. The
+same 8 layouts for the two methods that sweep their transitions (32 trials):
+no abort, no contact, every motion qualification passing, against criteria
+declared before the run.
 
 ## Consequences
 

@@ -1,0 +1,883 @@
+{
+ "by_status": {
+  "collision": 8,
+  "controller_failure": 2,
+  "unsafe_topology": 6
+ },
+ "campaign_digest": "cc125f5935db0962a6f490fd75d3f383d6a65f329a2eff715b7dc5b86a618d8b",
+ "commits": [
+  "bdf0b36"
+ ],
+ "design_hashes": [
+  "85341383548551f1da13b0de3714e19223a2036a8bc50c765710c069e169dde4"
+ ],
+ "purpose": "drive_margin_base",
+ "records": 16,
+ "schema_version": 1,
+ "trials": [
+  {
+   "collision_count": 0,
+   "commit": "bdf0b36",
+   "completed": false,
+   "contact_events": 0,
+   "contacts_outside_transition": 0,
+   "design_hash": "85341383548551f1da13b0de3714e19223a2036a8bc50c765710c069e169dde4",
+   "final_morphology": "compact_diff",
+   "first_transition_s": 28.156,
+   "infrastructure_attempts": 1,
+   "layout_id": "combined_constraints-01",
+   "log_counts": {
+    "collision_monitor_approach": 0,
+    "failed_to_make_progress": 0,
+    "rpp_collision_ahead": 0
+   },
+   "message": "reconfiguration failed; observed topology requires recovery",
+   "method": "geometry_coupled",
+   "minimum_clearance_m": 0.0477387589554268,
+   "planned_route_signature": "f1a9ea9611d5ffa6f4bb9fe97fd0a9197f9156b5adcffdbd45b7653658888301",
+   "planned_transition_sites": [
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 3.1500000469386578,
+     "y": 2.450000036507845,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.650000084191561,
+     "y": 2.450000036507845,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 3.1500000469386578,
+     "y": 2.450000036507845,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.650000084191561,
+     "y": 2.450000036507845,
+     "yaw": 0.0
+    }
+   ],
+   "reconfiguration_attempts": 1,
+   "record_sha256": "5a6997686baf3559ea70b584cd5a7997fee791981850fb26b05d700db15ad73e",
+   "recovery_actions": 0,
+   "replicate": 0,
+   "simulated_duration_s": 36.238,
+   "terminal_status": "unsafe_topology",
+   "trial_id": "engineering_repro_v3-combined_constraints-01-r0-geometry_coupled"
+  },
+  {
+   "collision_count": 0,
+   "commit": "bdf0b36",
+   "completed": false,
+   "contact_events": 0,
+   "contacts_outside_transition": 0,
+   "design_hash": "85341383548551f1da13b0de3714e19223a2036a8bc50c765710c069e169dde4",
+   "final_morphology": "compact_diff",
+   "first_transition_s": 29.006,
+   "infrastructure_attempts": 1,
+   "layout_id": "combined_constraints-01",
+   "log_counts": {
+    "collision_monitor_approach": 0,
+    "failed_to_make_progress": 0,
+    "rpp_collision_ahead": 0
+   },
+   "message": "reconfiguration failed; observed topology requires recovery",
+   "method": "geometry_coupled",
+   "minimum_clearance_m": 0.06008749121413159,
+   "planned_route_signature": "f1a9ea9611d5ffa6f4bb9fe97fd0a9197f9156b5adcffdbd45b7653658888301",
+   "planned_transition_sites": [
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 3.1500000469386578,
+     "y": 2.450000036507845,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.650000084191561,
+     "y": 2.450000036507845,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 3.1500000469386578,
+     "y": 2.450000036507845,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.650000084191561,
+     "y": 2.450000036507845,
+     "yaw": 0.0
+    }
+   ],
+   "reconfiguration_attempts": 1,
+   "record_sha256": "eefe1d374932255e6e94cce3b21158a4f2ff08d25227f6e1adcaf2337e5a2470",
+   "recovery_actions": 0,
+   "replicate": 1,
+   "simulated_duration_s": 37.13,
+   "terminal_status": "unsafe_topology",
+   "trial_id": "engineering_repro_v3-combined_constraints-01-r1-geometry_coupled"
+  },
+  {
+   "collision_count": 0,
+   "commit": "bdf0b36",
+   "completed": false,
+   "contact_events": 0,
+   "contacts_outside_transition": 0,
+   "design_hash": "85341383548551f1da13b0de3714e19223a2036a8bc50c765710c069e169dde4",
+   "final_morphology": "compact_diff",
+   "first_transition_s": null,
+   "infrastructure_attempts": 1,
+   "layout_id": "combined_constraints-02",
+   "log_counts": {
+    "collision_monitor_approach": 0,
+    "failed_to_make_progress": 0,
+    "rpp_collision_ahead": 4
+   },
+   "message": "execution failed after replanning limit",
+   "method": "geometry_coupled",
+   "minimum_clearance_m": 0.024872413267769244,
+   "planned_route_signature": "bd3dbf89d4a89e4b901ab86b5752074e571128064aaaae99b6d8520a58f30969",
+   "planned_transition_sites": [
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.7500000409781933,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.350000079721212,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.7500000409781933,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.350000079721212,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.7500000409781933,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.350000079721212,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.7500000409781933,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.350000079721212,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.7500000409781933,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.350000079721212,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    }
+   ],
+   "reconfiguration_attempts": 0,
+   "record_sha256": "bd0565dae950a18cab4916c898d7ca53075171ae52847a49a95c0b002ab3504c",
+   "recovery_actions": 4,
+   "replicate": 0,
+   "simulated_duration_s": 27.28,
+   "terminal_status": "controller_failure",
+   "trial_id": "engineering_repro_v3-combined_constraints-02-r0-geometry_coupled"
+  },
+  {
+   "collision_count": 0,
+   "commit": "bdf0b36",
+   "completed": false,
+   "contact_events": 0,
+   "contacts_outside_transition": 0,
+   "design_hash": "85341383548551f1da13b0de3714e19223a2036a8bc50c765710c069e169dde4",
+   "final_morphology": "compact_diff",
+   "first_transition_s": null,
+   "infrastructure_attempts": 1,
+   "layout_id": "combined_constraints-02",
+   "log_counts": {
+    "collision_monitor_approach": 0,
+    "failed_to_make_progress": 0,
+    "rpp_collision_ahead": 4
+   },
+   "message": "execution failed after replanning limit",
+   "method": "geometry_coupled",
+   "minimum_clearance_m": 0.022813620290246434,
+   "planned_route_signature": "edbb3a7dc170e23de5616cdba7a8ee94993ceb6ac4959ec63bec065fcf6bab65",
+   "planned_transition_sites": [
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.7500000409781933,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.350000079721212,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.7500000409781933,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.350000079721212,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.7500000409781933,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.350000079721212,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.7500000409781933,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.350000079721212,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.7500000409781933,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.350000079721212,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.7500000409781933,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.350000079721212,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.7500000409781933,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.350000079721212,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    }
+   ],
+   "reconfiguration_attempts": 0,
+   "record_sha256": "119f65f221f21debb978601cd2040212e4386fc8608c9f56724984d277d2691a",
+   "recovery_actions": 4,
+   "replicate": 1,
+   "simulated_duration_s": 35.404,
+   "terminal_status": "controller_failure",
+   "trial_id": "engineering_repro_v3-combined_constraints-02-r1-geometry_coupled"
+  },
+  {
+   "collision_count": 0,
+   "commit": "bdf0b36",
+   "completed": false,
+   "contact_events": 0,
+   "contacts_outside_transition": 0,
+   "design_hash": "85341383548551f1da13b0de3714e19223a2036a8bc50c765710c069e169dde4",
+   "final_morphology": "compact_diff",
+   "first_transition_s": 30.176,
+   "infrastructure_attempts": 1,
+   "layout_id": "combined_constraints-03",
+   "log_counts": {
+    "collision_monitor_approach": 0,
+    "failed_to_make_progress": 0,
+    "rpp_collision_ahead": 0
+   },
+   "message": "reconfiguration failed; observed topology requires recovery",
+   "method": "geometry_coupled",
+   "minimum_clearance_m": 0.054811810619015106,
+   "planned_route_signature": "bdef2db8e953805b9f1d44f99559f53bf7c7258cbac9be41fe14c466e0fc80c6",
+   "planned_transition_sites": [
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.650000039488077,
+     "y": 2.650000039488077,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.4500000812113285,
+     "y": 2.650000039488077,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.650000039488077,
+     "y": 2.650000039488077,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.4500000812113285,
+     "y": 2.650000039488077,
+     "yaw": 0.0
+    }
+   ],
+   "reconfiguration_attempts": 1,
+   "record_sha256": "60774992792a078fb699dc281b1353fdb6284cb594f354e93c07f473ebe21d48",
+   "recovery_actions": 0,
+   "replicate": 0,
+   "simulated_duration_s": 38.06,
+   "terminal_status": "unsafe_topology",
+   "trial_id": "engineering_repro_v3-combined_constraints-03-r0-geometry_coupled"
+  },
+  {
+   "collision_count": 0,
+   "commit": "bdf0b36",
+   "completed": false,
+   "contact_events": 0,
+   "contacts_outside_transition": 0,
+   "design_hash": "85341383548551f1da13b0de3714e19223a2036a8bc50c765710c069e169dde4",
+   "final_morphology": "compact_diff",
+   "first_transition_s": 30.88,
+   "infrastructure_attempts": 1,
+   "layout_id": "combined_constraints-03",
+   "log_counts": {
+    "collision_monitor_approach": 0,
+    "failed_to_make_progress": 0,
+    "rpp_collision_ahead": 0
+   },
+   "message": "reconfiguration failed; observed topology requires recovery",
+   "method": "geometry_coupled",
+   "minimum_clearance_m": 0.03366184533395928,
+   "planned_route_signature": "bdef2db8e953805b9f1d44f99559f53bf7c7258cbac9be41fe14c466e0fc80c6",
+   "planned_transition_sites": [
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.650000039488077,
+     "y": 2.650000039488077,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.4500000812113285,
+     "y": 2.650000039488077,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.650000039488077,
+     "y": 2.650000039488077,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.4500000812113285,
+     "y": 2.650000039488077,
+     "yaw": 0.0
+    }
+   ],
+   "reconfiguration_attempts": 1,
+   "record_sha256": "e34e404c17e03a559647a6fc9e335382243ada858c00aa26cf8909810cd119d3",
+   "recovery_actions": 0,
+   "replicate": 1,
+   "simulated_duration_s": 38.39,
+   "terminal_status": "unsafe_topology",
+   "trial_id": "engineering_repro_v3-combined_constraints-03-r1-geometry_coupled"
+  },
+  {
+   "collision_count": 0,
+   "commit": "bdf0b36",
+   "completed": false,
+   "contact_events": 0,
+   "contacts_outside_transition": 0,
+   "design_hash": "85341383548551f1da13b0de3714e19223a2036a8bc50c765710c069e169dde4",
+   "final_morphology": "compact_diff",
+   "first_transition_s": 26.1,
+   "infrastructure_attempts": 1,
+   "layout_id": "combined_constraints-05",
+   "log_counts": {
+    "collision_monitor_approach": 0,
+    "failed_to_make_progress": 0,
+    "rpp_collision_ahead": 0
+   },
+   "message": "reconfiguration failed; observed topology requires recovery",
+   "method": "geometry_coupled",
+   "minimum_clearance_m": 0.05926731713630694,
+   "planned_route_signature": "78c754ff4ccedfeaa2f3697a078cebad7ccd83075c63ed83f517a5a92d47e575",
+   "planned_transition_sites": [
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 3.35000004991889,
+     "y": 1.650000024586916,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.950000088661909,
+     "y": 1.650000024586916,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 3.35000004991889,
+     "y": 1.650000024586916,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.950000088661909,
+     "y": 1.650000024586916,
+     "yaw": 0.0
+    }
+   ],
+   "reconfiguration_attempts": 1,
+   "record_sha256": "c88aec21a7ac62fd06db97f7b6aac7cf193b54412cbcd6218704b080ec47c317",
+   "recovery_actions": 0,
+   "replicate": 0,
+   "simulated_duration_s": 34.19,
+   "terminal_status": "unsafe_topology",
+   "trial_id": "engineering_repro_v3-combined_constraints-05-r0-geometry_coupled"
+  },
+  {
+   "collision_count": 0,
+   "commit": "bdf0b36",
+   "completed": false,
+   "contact_events": 0,
+   "contacts_outside_transition": 0,
+   "design_hash": "85341383548551f1da13b0de3714e19223a2036a8bc50c765710c069e169dde4",
+   "final_morphology": "compact_diff",
+   "first_transition_s": 26.148,
+   "infrastructure_attempts": 1,
+   "layout_id": "combined_constraints-05",
+   "log_counts": {
+    "collision_monitor_approach": 0,
+    "failed_to_make_progress": 0,
+    "rpp_collision_ahead": 0
+   },
+   "message": "reconfiguration failed; observed topology requires recovery",
+   "method": "geometry_coupled",
+   "minimum_clearance_m": 0.06926028608997022,
+   "planned_route_signature": "78c754ff4ccedfeaa2f3697a078cebad7ccd83075c63ed83f517a5a92d47e575",
+   "planned_transition_sites": [
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 3.35000004991889,
+     "y": 1.650000024586916,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.950000088661909,
+     "y": 1.650000024586916,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 3.35000004991889,
+     "y": 1.650000024586916,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.950000088661909,
+     "y": 1.650000024586916,
+     "yaw": 0.0
+    }
+   ],
+   "reconfiguration_attempts": 1,
+   "record_sha256": "51e665fbb4db7a70409ca772cf4afa7a6def8ffcbf5fb826e297ea28f17cbb19",
+   "recovery_actions": 0,
+   "replicate": 1,
+   "simulated_duration_s": 34.264,
+   "terminal_status": "unsafe_topology",
+   "trial_id": "engineering_repro_v3-combined_constraints-05-r1-geometry_coupled"
+  },
+  {
+   "collision_count": 1,
+   "commit": "bdf0b36",
+   "completed": false,
+   "contact_events": 1,
+   "contacts_outside_transition": 0,
+   "design_hash": "85341383548551f1da13b0de3714e19223a2036a8bc50c765710c069e169dde4",
+   "final_morphology": "compact_diff",
+   "first_transition_s": 23.946,
+   "infrastructure_attempts": 1,
+   "layout_id": "reconfiguration_workspace-01",
+   "log_counts": {
+    "collision_monitor_approach": 0,
+    "failed_to_make_progress": 0,
+    "rpp_collision_ahead": 0
+   },
+   "message": "reconfiguration failed; observed topology requires recovery; evaluator detected obstacle contact at 49.4 s, before the unsafe_topology",
+   "method": "geometry_coupled",
+   "minimum_clearance_m": 0.0,
+   "planned_route_signature": "511c549149babc5a94e365f52af864e3db678af4e46e746df24bbf1d9b8c1ba7",
+   "planned_transition_sites": [
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 3.0500000454485416,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.950000088661909,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    }
+   ],
+   "reconfiguration_attempts": 1,
+   "record_sha256": "fca3c16964f7a730ef2c8c36837f0d0cac4d4aa847bf5cdef355450e598136ec",
+   "recovery_actions": 0,
+   "replicate": 0,
+   "simulated_duration_s": 88.672,
+   "terminal_status": "collision",
+   "trial_id": "engineering_repro_v3-reconfiguration_workspace-01-r0-geometry_coupled"
+  },
+  {
+   "collision_count": 1,
+   "commit": "bdf0b36",
+   "completed": false,
+   "contact_events": 1,
+   "contacts_outside_transition": 0,
+   "design_hash": "85341383548551f1da13b0de3714e19223a2036a8bc50c765710c069e169dde4",
+   "final_morphology": "compact_diff",
+   "first_transition_s": 23.602,
+   "infrastructure_attempts": 1,
+   "layout_id": "reconfiguration_workspace-01",
+   "log_counts": {
+    "collision_monitor_approach": 0,
+    "failed_to_make_progress": 0,
+    "rpp_collision_ahead": 0
+   },
+   "message": "reconfiguration failed; observed topology requires recovery; evaluator detected obstacle contact at 48.8 s, before the unsafe_topology",
+   "method": "geometry_coupled",
+   "minimum_clearance_m": 0.0,
+   "planned_route_signature": "511c549149babc5a94e365f52af864e3db678af4e46e746df24bbf1d9b8c1ba7",
+   "planned_transition_sites": [
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 3.0500000454485416,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.950000088661909,
+     "y": 1.3500000201165676,
+     "yaw": 0.0
+    }
+   ],
+   "reconfiguration_attempts": 1,
+   "record_sha256": "44e2e05251cda9c57f36da6332e427d123ea21bfd271f12ea52d6858cff3ae91",
+   "recovery_actions": 0,
+   "replicate": 1,
+   "simulated_duration_s": 89.062,
+   "terminal_status": "collision",
+   "trial_id": "engineering_repro_v3-reconfiguration_workspace-01-r1-geometry_coupled"
+  },
+  {
+   "collision_count": 1,
+   "commit": "bdf0b36",
+   "completed": false,
+   "contact_events": 1,
+   "contacts_outside_transition": 0,
+   "design_hash": "85341383548551f1da13b0de3714e19223a2036a8bc50c765710c069e169dde4",
+   "final_morphology": "compact_diff",
+   "first_transition_s": 21.46,
+   "infrastructure_attempts": 1,
+   "layout_id": "reconfiguration_workspace-02",
+   "log_counts": {
+    "collision_monitor_approach": 0,
+    "failed_to_make_progress": 0,
+    "rpp_collision_ahead": 0
+   },
+   "message": "reconfiguration failed; observed topology requires recovery; evaluator detected obstacle contact at 46.7 s, before the unsafe_topology",
+   "method": "geometry_coupled",
+   "minimum_clearance_m": 0.0,
+   "planned_route_signature": "b01d287730e67f4b037e105bf5f5710a0ded4a17f2743c8e92777bb41b7c363d",
+   "planned_transition_sites": [
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.550000037997961,
+     "y": 2.350000035017729,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.4500000812113285,
+     "y": 2.350000035017729,
+     "yaw": 0.0
+    }
+   ],
+   "reconfiguration_attempts": 1,
+   "record_sha256": "e462c80fb976c05797275625605d36bd65022fc157f71cabed2f35bb0961d2db",
+   "recovery_actions": 0,
+   "replicate": 0,
+   "simulated_duration_s": 87.138,
+   "terminal_status": "collision",
+   "trial_id": "engineering_repro_v3-reconfiguration_workspace-02-r0-geometry_coupled"
+  },
+  {
+   "collision_count": 1,
+   "commit": "bdf0b36",
+   "completed": false,
+   "contact_events": 1,
+   "contacts_outside_transition": 0,
+   "design_hash": "85341383548551f1da13b0de3714e19223a2036a8bc50c765710c069e169dde4",
+   "final_morphology": "compact_diff",
+   "first_transition_s": 21.772,
+   "infrastructure_attempts": 1,
+   "layout_id": "reconfiguration_workspace-02",
+   "log_counts": {
+    "collision_monitor_approach": 0,
+    "failed_to_make_progress": 0,
+    "rpp_collision_ahead": 0
+   },
+   "message": "reconfiguration failed; observed topology requires recovery; evaluator detected obstacle contact at 47.0 s, before the unsafe_topology",
+   "method": "geometry_coupled",
+   "minimum_clearance_m": 0.0,
+   "planned_route_signature": "b01d287730e67f4b037e105bf5f5710a0ded4a17f2743c8e92777bb41b7c363d",
+   "planned_transition_sites": [
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.550000037997961,
+     "y": 2.350000035017729,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.4500000812113285,
+     "y": 2.350000035017729,
+     "yaw": 0.0
+    }
+   ],
+   "reconfiguration_attempts": 1,
+   "record_sha256": "341f30c20d3034a51b24c0e12e078a6067fcec960de4164835cc18497547583c",
+   "recovery_actions": 0,
+   "replicate": 1,
+   "simulated_duration_s": 87.264,
+   "terminal_status": "collision",
+   "trial_id": "engineering_repro_v3-reconfiguration_workspace-02-r1-geometry_coupled"
+  },
+  {
+   "collision_count": 1,
+   "commit": "bdf0b36",
+   "completed": false,
+   "contact_events": 1,
+   "contacts_outside_transition": 0,
+   "design_hash": "85341383548551f1da13b0de3714e19223a2036a8bc50c765710c069e169dde4",
+   "final_morphology": "compact_diff",
+   "first_transition_s": 22.968,
+   "infrastructure_attempts": 1,
+   "layout_id": "reconfiguration_workspace-03",
+   "log_counts": {
+    "collision_monitor_approach": 0,
+    "failed_to_make_progress": 0,
+    "rpp_collision_ahead": 0
+   },
+   "message": "reconfiguration failed; observed topology requires recovery; evaluator detected obstacle contact at 48.4 s, before the unsafe_topology",
+   "method": "geometry_coupled",
+   "minimum_clearance_m": 0.0,
+   "planned_route_signature": "89c95bfce518c6d279ee98d9cf6099eae54b3f04aa6e19aa9837a7d7a0f3405f",
+   "planned_transition_sites": [
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 3.35000004991889,
+     "y": 1.5500000230967999,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 6.2500000931322575,
+     "y": 1.5500000230967999,
+     "yaw": 0.0
+    }
+   ],
+   "reconfiguration_attempts": 1,
+   "record_sha256": "7a0b7e8f084350e27e266b818c5756ede1f42df8905af5bef7f3caa2ddb9e03d",
+   "recovery_actions": 0,
+   "replicate": 0,
+   "simulated_duration_s": 88.752,
+   "terminal_status": "collision",
+   "trial_id": "engineering_repro_v3-reconfiguration_workspace-03-r0-geometry_coupled"
+  },
+  {
+   "collision_count": 1,
+   "commit": "bdf0b36",
+   "completed": false,
+   "contact_events": 1,
+   "contacts_outside_transition": 0,
+   "design_hash": "85341383548551f1da13b0de3714e19223a2036a8bc50c765710c069e169dde4",
+   "final_morphology": "compact_diff",
+   "first_transition_s": 23.108,
+   "infrastructure_attempts": 2,
+   "layout_id": "reconfiguration_workspace-03",
+   "log_counts": {
+    "collision_monitor_approach": 0,
+    "failed_to_make_progress": 0,
+    "rpp_collision_ahead": 0
+   },
+   "message": "reconfiguration failed; observed topology requires recovery; evaluator detected obstacle contact at 48.2 s, before the unsafe_topology",
+   "method": "geometry_coupled",
+   "minimum_clearance_m": 0.0,
+   "planned_route_signature": "89c95bfce518c6d279ee98d9cf6099eae54b3f04aa6e19aa9837a7d7a0f3405f",
+   "planned_transition_sites": [
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 3.35000004991889,
+     "y": 1.5500000230967999,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 6.2500000931322575,
+     "y": 1.5500000230967999,
+     "yaw": 0.0
+    }
+   ],
+   "reconfiguration_attempts": 1,
+   "record_sha256": "f0a06718cc6a46f702ac107a4ba6af4fa8427397969754cb90c3649042e3cd95",
+   "recovery_actions": 0,
+   "replicate": 1,
+   "simulated_duration_s": 88.89,
+   "terminal_status": "collision",
+   "trial_id": "engineering_repro_v3-reconfiguration_workspace-03-r1-geometry_coupled"
+  },
+  {
+   "collision_count": 1,
+   "commit": "bdf0b36",
+   "completed": false,
+   "contact_events": 1,
+   "contacts_outside_transition": 0,
+   "design_hash": "85341383548551f1da13b0de3714e19223a2036a8bc50c765710c069e169dde4",
+   "final_morphology": "compact_diff",
+   "first_transition_s": 24.076,
+   "infrastructure_attempts": 1,
+   "layout_id": "reconfiguration_workspace-05",
+   "log_counts": {
+    "collision_monitor_approach": 0,
+    "failed_to_make_progress": 0,
+    "rpp_collision_ahead": 0
+   },
+   "message": "reconfiguration failed; observed topology requires recovery; evaluator detected obstacle contact at 50.3 s, before the unsafe_topology",
+   "method": "geometry_coupled",
+   "minimum_clearance_m": 0.0,
+   "planned_route_signature": "5fca263039c6b40590459d4610ae72c81e369bb8f8d05b830149495c180ae2d0",
+   "planned_transition_sites": [
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.650000039488077,
+     "y": 2.450000036507845,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.850000087171793,
+     "y": 2.450000036507845,
+     "yaw": 0.0
+    }
+   ],
+   "reconfiguration_attempts": 1,
+   "record_sha256": "065290e86bac052cd0af7fdaf7ff7c7c5355fe9df8e7c2f1e4a90173d929bd9f",
+   "recovery_actions": 0,
+   "replicate": 0,
+   "simulated_duration_s": 89.956,
+   "terminal_status": "collision",
+   "trial_id": "engineering_repro_v3-reconfiguration_workspace-05-r0-geometry_coupled"
+  },
+  {
+   "collision_count": 1,
+   "commit": "bdf0b36",
+   "completed": false,
+   "contact_events": 1,
+   "contacts_outside_transition": 0,
+   "design_hash": "85341383548551f1da13b0de3714e19223a2036a8bc50c765710c069e169dde4",
+   "final_morphology": "compact_diff",
+   "first_transition_s": 23.656,
+   "infrastructure_attempts": 1,
+   "layout_id": "reconfiguration_workspace-05",
+   "log_counts": {
+    "collision_monitor_approach": 0,
+    "failed_to_make_progress": 0,
+    "rpp_collision_ahead": 0
+   },
+   "message": "reconfiguration failed; observed topology requires recovery; evaluator detected obstacle contact at 49.6 s, before the unsafe_topology",
+   "method": "geometry_coupled",
+   "minimum_clearance_m": 0.0,
+   "planned_route_signature": "5fca263039c6b40590459d4610ae72c81e369bb8f8d05b830149495c180ae2d0",
+   "planned_transition_sites": [
+    {
+     "transition_id": "compact_to_narrow",
+     "x": 2.650000039488077,
+     "y": 2.450000036507845,
+     "yaw": 0.0
+    },
+    {
+     "transition_id": "narrow_to_compact",
+     "x": 5.850000087171793,
+     "y": 2.450000036507845,
+     "yaw": 0.0
+    }
+   ],
+   "reconfiguration_attempts": 1,
+   "record_sha256": "46b949a2e0e767dc728ee89eea36c0763f91c824ed48775a253ccbdbced94452",
+   "recovery_actions": 0,
+   "replicate": 1,
+   "simulated_duration_s": 89.692,
+   "terminal_status": "collision",
+   "trial_id": "engineering_repro_v3-reconfiguration_workspace-05-r1-geometry_coupled"
+  }
+ ]
+}

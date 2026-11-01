@@ -45,6 +45,11 @@ class HybridPlan:
 # Tracking margin demanded of turning motion primitives (2026-10-30, pilot):
 # about the site-placement and localization error the pilot records show.
 TURN_CLEARANCE_M = 0.10
+# Margin to raised drive obstacles on every primitive (ADR 0014): the compact
+# body tracks a straight route ~4 cm off, so a route laid at zero margin
+# beside the shelf made RPP abort on a plan the planner approved. 0.03 m is
+# the most the generator-3 population tolerates.
+DRIVE_OBSTACLE_CLEARANCE_M = 0.03
 
 
 def inflated_footprint(footprint, margin: float) -> tuple[tuple[float, float], ...]:
@@ -296,7 +301,9 @@ class MorphologyAStar:
             wy = source_y + fraction * (target_y - source_y)
             yaw = source_yaw + fraction * delta_yaw
             if (not self.grid.footprint_is_free(wx, wy, yaw, footprint)
-                    or self._footprint_hits_drive_obstacle(wx, wy, yaw, morphology, footprint)):
+                    or self._footprint_hits_drive_obstacle(
+                        wx, wy, yaw, morphology,
+                        inflated_footprint(footprint, DRIVE_OBSTACLE_CLEARANCE_M))):
                 self._traversal_collision_cache[cache_key] = False
                 return False
         self._traversal_collision_cache[cache_key] = True

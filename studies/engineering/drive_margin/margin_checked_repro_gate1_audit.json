@@ -1,0 +1,256 @@
+{
+  "campaign_digests": {
+    "results/engineering/margin_checked_repro_raw": "54b748bc192cfeacf081390a8ea43f25f5179ff255d5fe906badba637343386b"
+  },
+  "clean_records_per_required_class": {
+    "collision": 0,
+    "docking_failure": 8,
+    "localization_loss": 0,
+    "success": 24,
+    "timeout": 0
+  },
+  "controlled_cases": {},
+  "gate_passed": false,
+  "per_record": [
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_repro_v3-combined_constraints-01-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-combined_constraints-01-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_repro_v3-combined_constraints-01-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-combined_constraints-01-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_repro_v3-combined_constraints-02-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-combined_constraints-02-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_repro_v3-combined_constraints-02-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-combined_constraints-02-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_repro_v3-combined_constraints-03-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-combined_constraints-03-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_repro_v3-combined_constraints-03-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-combined_constraints-03-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_repro_v3-combined_constraints-05-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-combined_constraints-05-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "unsafe_topology",
+      "trial_id": "engineering_repro_v3-combined_constraints-05-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-combined_constraints-05-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-reconfiguration_workspace-01-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-reconfiguration_workspace-01-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-reconfiguration_workspace-01-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-reconfiguration_workspace-01-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-reconfiguration_workspace-02-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-reconfiguration_workspace-02-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-reconfiguration_workspace-02-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-reconfiguration_workspace-02-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-reconfiguration_workspace-03-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-reconfiguration_workspace-03-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-reconfiguration_workspace-03-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-reconfiguration_workspace-03-r1-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-reconfiguration_workspace-05-r0-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-reconfiguration_workspace-05-r0-sensing_feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-reconfiguration_workspace-05-r1-feasibility_coupled"
+    },
+    {
+      "has_mission": true,
+      "problems": [],
+      "terminal_status": "completed",
+      "trial_id": "engineering_repro_v3-reconfiguration_workspace-05-r1-sensing_feasibility_coupled"
+    }
+  ],
+  "problem_counts": {},
+  "purpose": "gate1_measured_outcome_coverage",
+  "record_digests": {
+    "engineering_repro_v3-combined_constraints-01-r0-feasibility_coupled": "88b63f74090ffa3932d1ded8848a4c679f39811421a6b1204d9b9fd48105fe8f",
+    "engineering_repro_v3-combined_constraints-01-r0-sensing_feasibility_coupled": "2f266bfeca3f3b98d7a02a1f1fa714bbd6be47f9e6f178c37b24443f0715b77e",
+    "engineering_repro_v3-combined_constraints-01-r1-feasibility_coupled": "c2b96b28fe3e957dccc64f91aa8b205709bbb957b679e266f56d3d2803fae7ab",
+    "engineering_repro_v3-combined_constraints-01-r1-sensing_feasibility_coupled": "bf5e2720972f4289a5a9e7f9a3d73443a84bfa1c924dfe9a3d5affb1192c7ff2",
+    "engineering_repro_v3-combined_constraints-02-r0-feasibility_coupled": "c3284674de9d26d141f9e462f23145c392b75f3fa0baa9ab54aee6469675e275",
+    "engineering_repro_v3-combined_constraints-02-r0-sensing_feasibility_coupled": "0b09d2f58f9739ca3479363eaeacf1c5021d4eba69c785e9c2d98f3762fc2b98",
+    "engineering_repro_v3-combined_constraints-02-r1-feasibility_coupled": "13937c482b43718e05146652a65312ea6f6c9a31b732903a0d571364c758aa8a",
+    "engineering_repro_v3-combined_constraints-02-r1-sensing_feasibility_coupled": "2c76113e3227d210a9c52b7e5a5b7690503de00db337bfebf06146325f19a65d",
+    "engineering_repro_v3-combined_constraints-03-r0-feasibility_coupled": "b4bfc6175d2e451e4fb6f57e1b8c70ce81a51201aef897f7d90d3f19fcdef391",
+    "engineering_repro_v3-combined_constraints-03-r0-sensing_feasibility_coupled": "fbb8243d568292b05bb269d2afeb5b263af8f277f9c9f8145ac3e5e23b7f104c",
+    "engineering_repro_v3-combined_constraints-03-r1-feasibility_coupled": "ad2a89cca4b36bee1e117ffcb8cb6c916767bce3db7a622028860d9497aa9c00",
+    "engineering_repro_v3-combined_constraints-03-r1-sensing_feasibility_coupled": "56a80faaba25c8b95da1f09fe7899f5be7d79afdbd9364ab0bd57480ff6de144",
+    "engineering_repro_v3-combined_constraints-05-r0-feasibility_coupled": "1f90b505d2da60868ae2317686853a452601c875a69078303cf832751d0e38d5",
+    "engineering_repro_v3-combined_constraints-05-r0-sensing_feasibility_coupled": "9bb3fa0b7d1f471d00cfcd0e729651cfd6978e3c23b1a520e61a55131ef17b0c",
+    "engineering_repro_v3-combined_constraints-05-r1-feasibility_coupled": "d4a40dd609a52f58a6d6affd2532cf203a87e9c9028128849ea5330a2912ebad",
+    "engineering_repro_v3-combined_constraints-05-r1-sensing_feasibility_coupled": "8f578dcc4c72c16bc88c0325bf02c29af637768b424aea72b4ef4e29506582ce",
+    "engineering_repro_v3-reconfiguration_workspace-01-r0-feasibility_coupled": "667768ddf7ca8e76cbbf15a5c3dd5c29114ece928a4cd4c4007215f857f83a89",
+    "engineering_repro_v3-reconfiguration_workspace-01-r0-sensing_feasibility_coupled": "07d1a1b852ec9b9ac14e960f0e4a6139b63fc8e75baee0d223a53d942e6372d8",
+    "engineering_repro_v3-reconfiguration_workspace-01-r1-feasibility_coupled": "f98567b25c8972132edacce58ee7b524418bddfa672b8ce66ae53c840e0f4ca3",
+    "engineering_repro_v3-reconfiguration_workspace-01-r1-sensing_feasibility_coupled": "ee3661a647723419a93c4c7658ebeb1587415df29bb8380ba096d7d53d9577aa",
+    "engineering_repro_v3-reconfiguration_workspace-02-r0-feasibility_coupled": "41c325beb11675592de9cc08f7e2eccfbcb97d18911528ae35f3db17978f42db",
+    "engineering_repro_v3-reconfiguration_workspace-02-r0-sensing_feasibility_coupled": "9283974c86962065b55afdcaf02a242f6298aa936f8031087bcecc661801d903",
+    "engineering_repro_v3-reconfiguration_workspace-02-r1-feasibility_coupled": "94378343b0c38b45b4f25b9960f60bb78f8623e58b0e6c2258acf9fa6f46b157",
+    "engineering_repro_v3-reconfiguration_workspace-02-r1-sensing_feasibility_coupled": "a52775e54312daa2049de2ef1c0c6c525c5b4a4954e78097406ccaf320e1527d",
+    "engineering_repro_v3-reconfiguration_workspace-03-r0-feasibility_coupled": "e9f704ab7ef7ba7dd756cdd781e9dd0a931a68e675426545cbe5fbdad02d197e",
+    "engineering_repro_v3-reconfiguration_workspace-03-r0-sensing_feasibility_coupled": "008f35a9b539c0c11d3c48c241961934e4a3a15e4b78d91fff0607722b5a6464",
+    "engineering_repro_v3-reconfiguration_workspace-03-r1-feasibility_coupled": "efcdfe259780cdd97f6d02840e3b39067f3f2c709b774b006e5807da1cf899eb",
+    "engineering_repro_v3-reconfiguration_workspace-03-r1-sensing_feasibility_coupled": "c7727304e31456c6ce3de89d9c60fd019eb3d08dabf826fa74438c71699c4ff6",
+    "engineering_repro_v3-reconfiguration_workspace-05-r0-feasibility_coupled": "0987e497f1daf38f3da7545eb723dffb75e07ea2de0055af2bad4e0d0a46f665",
+    "engineering_repro_v3-reconfiguration_workspace-05-r0-sensing_feasibility_coupled": "072f43ee9c420888350490a708625555e462fd3a05feac3777df63a21fe8f8f6",
+    "engineering_repro_v3-reconfiguration_workspace-05-r1-feasibility_coupled": "f0ecf3a3b816f4d9d6eebfadf7e9e587eeed7b361b9da3a6483cdac6033ec7d4",
+    "engineering_repro_v3-reconfiguration_workspace-05-r1-sensing_feasibility_coupled": "3c2c3abe92e3272ddf715b0ecd6cbac41f7f93a2e24250efe1d6d39a65027dd0"
+  },
+  "records": 32,
+  "records_without_problems": 32,
+  "required_classes_missing": [
+    "collision",
+    "localization_loss",
+    "timeout"
+  ],
+  "schema_version": 1,
+  "terminal_statuses": {
+    "completed": 24,
+    "unsafe_topology": 8
+  }
+}
