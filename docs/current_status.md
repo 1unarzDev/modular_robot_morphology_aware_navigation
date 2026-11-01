@@ -1276,8 +1276,10 @@ planner-only sweep (with and without the 0.03 m drive margin) over
 `pilot_v3b` and both Gate 0 designs is measuring plannability and the
 manipulation before any protocol is declared.
 
-**Its interim result rules the rule out:** in the first 14 `pilot_v3b` layouts
-it makes the treatment unplannable in 4 manipulated layouts
+**Its result rules the rule out** (`studies/engineering/straight_run_in_planner_sweep.json`;
+complete: the treatment plans in 13 of 18 `pilot_v3b` layouts against 17,
+separation 7 of 12 against 11, round trip 2 of 5 against 5; controls
+unaffected). In the first 14 layouts alone it makes the treatment unplannable in 4 manipulated layouts
 (`combined_constraints-01`, `docking_observability-01`, `-02`, `-05`) where
 every control still plans, because there every observable site lies within a
 body length of the door. Adopting it would score the treatment as failing
