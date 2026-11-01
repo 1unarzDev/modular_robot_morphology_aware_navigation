@@ -205,6 +205,35 @@ class StratifiedPowerAssumptions:
             raise ValueError("invalid variance or pairing assumption")
 
 
+# Quantile nodes of the layout shift distribution, for layout-averaged rates.
+_SHIFT_NODES = tuple(NormalDist().inv_cdf((index + 0.5) / 400) for index in range(400))
+
+
+def _layout_averaged_gap(control_logit: float, layout_sd: float, effect: float) -> float:
+    """Logit gap whose completion difference, averaged over layouts, is `effect`.
+
+    The smallest effect of interest is a layout-balanced difference in
+    completion probability. Applied as a fixed logit gap at the median layout,
+    it shrinks once layouts differ: at a layout SD of 10 the simulated average
+    effect was under a quarter of it, so the grid measured power for a smaller
+    effect than the one declared. The gap is therefore solved so that the
+    average over the shift distribution equals the declared effect; with no
+    layout spread it is the plain logit difference, as before.
+    """
+    def averaged(gap: float) -> float:
+        return fmean(_logistic(control_logit + gap + layout_sd * z)
+                     - _logistic(control_logit + layout_sd * z) for z in _SHIFT_NODES)
+
+    if averaged(60.0) <= effect:
+        raise ValueError("the manipulated stratum cannot carry the average effect "
+                         "at this layout spread")
+    low, high = 0.0, 60.0
+    for _ in range(80):
+        middle = (low + high) / 2
+        low, high = (middle, high) if averaged(middle) < effect else (low, middle)
+    return (low + high) / 2
+
+
 def estimate_stratified_power(assumptions: StratifiedPowerAssumptions,
                               simulations: int = 2000, randomization_draws: int = 1999,
                               seed: int = 20261030) -> dict:
@@ -214,8 +243,8 @@ def estimate_stratified_power(assumptions: StratifiedPowerAssumptions,
     clip = lambda value: min(1 - RATE_FLOOR, max(RATE_FLOOR, value))
     neutral = _logit(clip(assumptions.neutral_rate))
     control = _logit(clip(assumptions.manipulated_control_rate))
-    treatment = _logit(clip(assumptions.manipulated_control_rate
-                            + assumptions.manipulated_effect))
+    treatment = control + _layout_averaged_gap(
+        control, assumptions.layout_logit_sd, assumptions.manipulated_effect)
     rejected, means = 0, []
     for _ in range(simulations):
         effects = []

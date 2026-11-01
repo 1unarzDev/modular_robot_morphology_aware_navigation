@@ -337,6 +337,19 @@ def test_stratified_power_puts_the_whole_effect_in_the_manipulated_layouts():
         StratifiedPowerAssumptions(36, 3, 0.9, 0.8, 0.18, 0.5, 0.3).validate()
 
 
+@pytest.mark.parametrize("layout_sd", [0.0, 2.0, 5.0, 10.0])
+def test_stratified_power_simulates_the_declared_effect_at_any_layout_spread(layout_sd):
+    # pilot_v3b: a fixed logit gap at the median layout simulated an average
+    # effect of 0.04 at SD 10, so the grid tested power for a quarter of the
+    # declared smallest effect of interest.
+    from modular_robot_benchmarks.power import (
+        StratifiedPowerAssumptions, estimate_stratified_power)
+
+    assumptions = StratifiedPowerAssumptions(120, 3, 0.862, 0.138, 0.18, layout_sd, 0.0)
+    result = estimate_stratified_power(assumptions, simulations=200, randomization_draws=99)
+    assert result["simulated_mean_effect"] == pytest.approx(0.18, abs=0.015)
+
+
 def test_paper_results_tables_render_from_the_analysis_artifact():
     import importlib.util
     from pathlib import Path
