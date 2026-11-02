@@ -363,3 +363,18 @@ def test_paper_results_tables_render_from_the_analysis_artifact():
     assert tex.count(r"\begin{table}") == 3 and tex.count(r"\end{table}") == 3
     assert r"\method{sensing\_feasibility\_coupled} & 12/12" in tex
     assert "Holm $p$" in tex and "nan" not in tex
+
+
+def test_paper_results_figure_renders_from_the_analysis_artifact():
+    import importlib.util
+    from pathlib import Path
+    path = Path(__file__).resolve().parents[1] / "paper" / "conference" / "make_results_figure.py"
+    spec = importlib.util.spec_from_file_location("make_results_figure", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    design = generate_design(layouts_per_family=2, replicates=2)
+    result = analyze(_records(design), design, bootstrap_draws=100, permutation_draws=200)
+    svg = module.render(result)
+    assert svg.startswith("<svg") and svg.rstrip().endswith("</svg>")
+    assert "sensing + feasibility" in svg and "vs. geometry" in svg and "Holm" in svg
+    assert "nan" not in svg
