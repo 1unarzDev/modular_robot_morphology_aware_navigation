@@ -10,6 +10,7 @@ out="$here/build"
 edge="${EDGE:-/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe}"
 mkdir -p "$out"
 cp "$here/main.tex" "$out/"
+[ -f "$here/results_tables.tex" ] && cp "$here/results_tables.tex" "$out/"
 for svg in "$here"/figure_*.svg; do
   name="$(basename "$svg" .svg)"
   read -r width height < <(head -c 400 "$svg" |
