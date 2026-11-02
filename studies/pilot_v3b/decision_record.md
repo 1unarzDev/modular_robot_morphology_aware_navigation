@@ -44,9 +44,9 @@ flagged for a DDS transport failure on a launch whose planner had already
 reported no feasible adaptation of its fixed route; the retry reproduced the
 same planning failure, so the flag changed no outcome. As the analysis plan
 requires for a transport-flagged trial, that retry is read by hand here before
-it is accepted. **PENDING:** final counts
-from `gate1_audit` and the analysis' `secondary_measures` (launch attempts,
-infrastructure attempts, trials retried).
+it is accepted. Final: 3 of 144 trials needed one
+infrastructure retry (`nuisance.json` runtime), none ended as an
+infrastructure failure, and no stack process survived the batch.
 
 ## Measurement-validation findings
 
@@ -104,19 +104,22 @@ estimate is 0.0 because the estimator is unidentified when layouts are
 deterministic (shared and independent agreement both 0.48); it is kept as
 declared, and at these spreads pairing has little effect on power.
 
-**PENDING:** `pilot_nuisance --design studies/pilot_v3b/design.json --raw
-results/pilot/pilot_v3b_raw --power`, committed as
-`studies/pilot_v3b/nuisance.json`. For each scope: the estimates, the declared
-adverse values, and the smallest total layout count in 36, 48, ..., 120 whose
-every grid cell meets 80% power on its Wilson lower bound. If no candidate
-passes, the count is raised in steps of 12 until one does; the threshold never
-moves.
+Read on the fixed tool at `2d3df12` (`nuisance.json`, the frozen procedure
+otherwise unchanged): in both scopes the neutral rate is 1.0, the manipulated
+control rate 0.0, the layout logit SD 5.0 and the paired-noise fraction 0.0
+(unidentified, see above). Frozen grids: neutral {0.862, 1.0} and manipulated
+control {0.0, 0.138} for all families, {0.806, 1.0} and {0.0, 0.194} for the
+sensing families; layout SD {5, 10}; pairing {0}. The all-family scope passes
+at the floor, 36 layouts (worst-cell lower bound 0.814); the sensing scope
+needs 40 of its own (24: 0.423, 32: 0.727, 40: 0.873), which is two thirds of
+a 60-layout total. **Confirmatory layout count: 60, 20 per family, 720
+trials.**
 
 ## Runtime projection
 
-**PENDING:** mean wall time per trial from `nuisance.json`, times
-4 methods x 3 replicates x the chosen layout count, with the infrastructure
-retry rate.
+Mean mission wall time 114 s (max 354 s) excludes launch and teardown; the
+pilot ran about 15 trials an hour end to end while its host was awake, so 720
+trials take about 48 hours, plus about 2% infrastructure retries.
 
 ## Records
 
@@ -151,5 +154,13 @@ pilot outcome read; none of it depends on the layout count.
 
 ## Sign-off
 
-**PENDING:** the decisions above, dated, under the author's standing
-delegation, before `confirmatory_v3` is frozen.
+2026-11-01, under the author's standing delegation: no platform fix is
+needed; the power-tool defect is fixed with a test and disclosed; the layout
+count is 60. `confirmatory_v3` is frozen at `studies/confirmatory_v3/
+design.json` (hash `c939f126...`, 720 trials, master 20260911, disjoint from
+the set above), and its manipulation check (`studies/confirmatory_v3/
+manipulation_check.json`) passes before any trial: the treatment's site
+separates from `geometry_coupled`'s in 41 of 45 manipulated layouts and from
+`feasibility_coupled`'s in 26 of 30, every non-separating layout is one the
+treatment cannot plan (4, kept and scored against it), and all 15 neutral
+controls agree.
