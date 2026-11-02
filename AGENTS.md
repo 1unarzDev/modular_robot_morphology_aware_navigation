@@ -27,10 +27,22 @@ run_confirmatory_v3 done"); expect ~48 h. Its manipulation check passed before
 any trial; the pilot decision record (`studies/pilot_v3b/decision_record.md`)
 is signed off, including the power-tool defect fixed at `2d3df12`. Do not
 change the platform, design or analysis while it runs, and do not move the
-WSL clone off `8a53344`. If interrupted: `resume_campaign.sh 8a53344
-run_confirmatory_v3` (finished trials are kept). Keepalive `wsl -e sleep
-604800` from 2026-11-01 ~23:59 UTC. When done: `gate1_audit`, retain records,
-`morphology_study analyze`, `make_results_tables.py`, then Results.
+WSL clone off `8a53344`. If interrupted: first check the newest record in
+`confirmatory_v3_raw` parses as JSON (records are written in place, so a
+shutdown mid-write can leave one truncated; delete it so the trial reruns),
+then `resume_campaign.sh 8a53344 run_confirmatory_v3` (finished trials are
+kept). Keepalive `wsl -e sleep 604800` from 2026-11-01 ~23:59 UTC. At 05:13
+UTC 2026-11-02: 170/720, ~30-35 trials an hour, one pre-mission retry, ETA
+~21:00 UTC 2026-11-02. When done (the run script already writes the gate1
+audit and status): `results/qualification/post_confirmatory_v3.sh` in the
+container retains the records and runs `morphology_study analyze` into
+`results/confirmatory/analysis/`; commit audit, status, archive and
+`analysis.json` under `studies/confirmatory_v3/`; then
+`make_results_tables.py` -> `paper/conference/results_tables.tex` and
+`make_results_figure.py` -> `figure_results.svg` (the paper includes both
+automatically), then write Results and Discussion into the ~2 free pages
+(the paper is 6 of 8). Afterwards, not before: make `TrialStore.write_terminal`
+atomic (temp file + rename).
 
 **Earlier (2026-11-01 evening, pilot at 96/144).** After the "done"
 marker: `results/qualification/post_pilot_v3b.sh` in the container (WSL clone
