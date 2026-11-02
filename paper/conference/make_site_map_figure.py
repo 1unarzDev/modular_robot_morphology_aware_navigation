@@ -30,11 +30,11 @@ LABELS = ("geometry", "feasibility", "sensing + feasibility")
 COLORS = ("#f59e0b", "#0ea5e9", "#16a34a")
 # First failing stage, in the order the ladder adds them.
 STAGES = (
-    ("fit", "no 1.0 m planar clearance", "#e2e8f0"),
-    ("relocation", "pod relocation collides", "#fdba74"),
-    ("verification", "verification maneuver collides", "#fca5a5"),
-    ("observability", "dock not observable", "#c4b5fd"),
-    ("feasible", "transition feasible", "#bbf7d0"),
+    ("fit", "no planar clearance", "#e2e8f0"),
+    ("relocation", "relocation collides", "#fdba74"),
+    ("verification", "verification collides", "#fca5a5"),
+    ("observability", "dock unobservable", "#c4b5fd"),
+    ("feasible", "feasible", "#bbf7d0"),
 )
 SCALE = 120.0         # px per metre
 
@@ -151,7 +151,7 @@ def main() -> None:
                     f'class="small" style="fill:{color};font-weight:700">'
                     f'{escape(LABELS[offset])}</text>')
 
-    # Legend under the map, one column, so the figure keeps column width.
+    # Legend under the map, two columns, so the figure keeps column width.
     map_w = shown_w * res * SCALE
     width = ox * 2 + map_w
     body.append(f'<text x="{ox}" y="26" class="label">{escape(family.replace("_", " "))} '
@@ -161,18 +161,18 @@ def main() -> None:
                 for key, label, color in STAGES]
     swatches += [('fill="#b45309"', "raised shelf"),
                  ('fill="none" stroke="#7c3aed" stroke-dasharray="5 3" stroke-width="2"',
-                  "elevated sight screen"),
+                  "sight screen"),
                  (None, "fiducial station")]
     top = oy + height_px + 20
     for item, (style, label) in enumerate(swatches):
-        x = ox
-        y = top + item * 28
+        x = ox + (item % 2) * map_w / 2
+        y = top + (item // 2) * 28
         if style is None:
             body.append(f'<path d="M{x},{y+20} L{x+20},{y+20} L{x+10},{y} Z" fill="#7c3aed"/>')
         else:
             body.append(f'<rect x="{x}" y="{y}" width="20" height="20" {style}/>')
         body.append(f'<text x="{x+28}" y="{y+16}" class="small">{label}</text>')
-    height = top + len(swatches) * 28 + 6
+    height = top + ((len(swatches) + 1) // 2) * 28 + 6
     svg = "\n".join([
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width:.0f}" height="{height:.0f}" '
         f'viewBox="0 0 {width:.0f} {height:.0f}">',

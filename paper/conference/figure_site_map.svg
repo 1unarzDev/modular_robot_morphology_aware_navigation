@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="544" height="698" viewBox="0 0 544 698">
+<svg xmlns="http://www.w3.org/2000/svg" width="544" height="586" viewBox="0 0 544 586">
 <title>Where the robot can change shape</title>
 <rect width="100%" height="100%" fill="white"/>
 <style>text{font-family:system-ui,sans-serif;fill:#172033}.label{font-size:20px}.small{font-size:19px}.mark{font-size:20px;font-weight:700}</style>
@@ -1445,19 +1445,19 @@
 <text x="158.0" y="208.0" text-anchor="middle" class="small" style="fill:#16a34a;font-weight:700">sensing + feasibility</text>
 <text x="20.0" y="26" class="label">combined constraints 2: compact &#8594; narrow, heading 0&#176;</text>
 <rect x="20.0" y="468.00000000000006" width="20" height="20" fill="#e2e8f0" stroke="#94a3b8"/>
-<text x="48.0" y="484.00000000000006" class="small">no 1.0 m planar clearance (1052)</text>
-<rect x="20.0" y="496.00000000000006" width="20" height="20" fill="#fdba74" stroke="#94a3b8"/>
-<text x="48.0" y="512.0" class="small">pod relocation collides (49)</text>
-<rect x="20.0" y="524.0" width="20" height="20" fill="#fca5a5" stroke="#94a3b8"/>
-<text x="48.0" y="540.0" class="small">verification maneuver collides (47)</text>
-<rect x="20.0" y="552.0" width="20" height="20" fill="#c4b5fd" stroke="#94a3b8"/>
-<text x="48.0" y="568.0" class="small">dock not observable (111)</text>
-<rect x="20.0" y="580.0" width="20" height="20" fill="#bbf7d0" stroke="#94a3b8"/>
-<text x="48.0" y="596.0" class="small">transition feasible (28)</text>
-<rect x="20.0" y="608.0" width="20" height="20" fill="#b45309"/>
-<text x="48.0" y="624.0" class="small">raised shelf</text>
-<rect x="20.0" y="636.0" width="20" height="20" fill="none" stroke="#7c3aed" stroke-dasharray="5 3" stroke-width="2"/>
-<text x="48.0" y="652.0" class="small">elevated sight screen</text>
-<path d="M20.0,684.0 L40.0,684.0 L30.0,664.0 Z" fill="#7c3aed"/>
-<text x="48.0" y="680.0" class="small">fiducial station</text>
+<text x="48.0" y="484.00000000000006" class="small">no planar clearance (1052)</text>
+<rect x="272.0" y="468.00000000000006" width="20" height="20" fill="#fdba74" stroke="#94a3b8"/>
+<text x="300.0" y="484.00000000000006" class="small">relocation collides (49)</text>
+<rect x="20.0" y="496.00000000000006" width="20" height="20" fill="#fca5a5" stroke="#94a3b8"/>
+<text x="48.0" y="512.0" class="small">verification collides (47)</text>
+<rect x="272.0" y="496.00000000000006" width="20" height="20" fill="#c4b5fd" stroke="#94a3b8"/>
+<text x="300.0" y="512.0" class="small">dock unobservable (111)</text>
+<rect x="20.0" y="524.0" width="20" height="20" fill="#bbf7d0" stroke="#94a3b8"/>
+<text x="48.0" y="540.0" class="small">feasible (28)</text>
+<rect x="272.0" y="524.0" width="20" height="20" fill="#b45309"/>
+<text x="300.0" y="540.0" class="small">raised shelf</text>
+<rect x="20.0" y="552.0" width="20" height="20" fill="none" stroke="#7c3aed" stroke-dasharray="5 3" stroke-width="2"/>
+<text x="48.0" y="568.0" class="small">sight screen</text>
+<path d="M272.0,572.0 L292.0,572.0 L282.0,552.0 Z" fill="#7c3aed"/>
+<text x="300.0" y="568.0" class="small">fiducial station</text>
 </svg>
