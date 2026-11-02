@@ -18,7 +18,21 @@ placement-robust station prediction (`43255f7`), 4x finer localization map
 (`9371593`), and RPP's narrow rotation no longer ratcheting on odometry
 (`971affb`; the narrow odometry over-reports ~0.2 rad/s, still unexplained).
 
-**Resume here (2026-11-01 evening, pilot at 96/144).** After the "done"
+**Resume here (2026-11-02, CONFIRMATORY RUNNING).** `confirmatory_v3`
+(`studies/confirmatory_v3/design.json`, hash `c939f126...`, 720 trials, 60
+layouts) runs detached at `8a53344` since 00:09 UTC 2026-11-02 (log
+`results/run_confirmatory_v3.launch.log`, records
+`results/confirmatory/confirmatory_v3_raw`, ends with "start_campaign
+run_confirmatory_v3 done"); expect ~48 h. Its manipulation check passed before
+any trial; the pilot decision record (`studies/pilot_v3b/decision_record.md`)
+is signed off, including the power-tool defect fixed at `2d3df12`. Do not
+change the platform, design or analysis while it runs, and do not move the
+WSL clone off `8a53344`. If interrupted: `resume_campaign.sh 8a53344
+run_confirmatory_v3` (finished trials are kept). Keepalive `wsl -e sleep
+604800` from 2026-11-01 ~23:59 UTC. When done: `gate1_audit`, retain records,
+`morphology_study analyze`, `make_results_tables.py`, then Results.
+
+**Earlier (2026-11-01 evening, pilot at 96/144).** After the "done"
 marker: `results/qualification/post_pilot_v3b.sh` in the container (WSL clone
 still at `672b2f0`) retains the records against the gate1 audit and runs
 `pilot_nuisance --power`; copy the audit, status, nuisance JSON and archive
