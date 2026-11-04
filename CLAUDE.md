@@ -109,10 +109,10 @@ These are the rules that have actually been violated here, with the cost.
 lost by default.** Nine cited Gate 0 record sets were destroyed this way, and
 every number computed from them became unauditable prose. Commit the
 machine-readable audit summary for every campaign (`studies/gate0/` is the
-precedent) so a set stays identifiable after its bulk is gone. The retention
-mechanism itself — git-lfs, external archive by content hash, or a reduced
-record schema — is an **open ADR decision** blocking the confirmatory set;
-do not improvise one.
+precedent) so a set stays identifiable after its bulk is gone. The raw records
+themselves are retained by ADR 0005 (accepted 2026-09-30): a `tar.xz` committed
+in git, written by `modular_robot_benchmarks.record_archive` against the audit
+and split below 45 MB. Use it; do not improvise another.
 
 **Figures in a paper are frozen; the evidence behind them is not.** When a
 recorded claim is withdrawn, correct `docs/current_status.md` and never edit a
