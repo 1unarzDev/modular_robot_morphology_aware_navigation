@@ -17,6 +17,10 @@
 
 \newcommand{\pending}[1]{\textbf{[PENDING: #1]}}
 \newcommand{\method}[1]{\texttt{#1}}
+% Confirmatory numbers come only from generated macros (make_results_tables.py);
+% \withresults{text}{fallback} sets text once they exist.
+\IfFileExists{results_macros.tex}{\input{results_macros}}{}
+\newcommand{\withresults}[2]{\ifdefined\resTrials #1\else #2\fi}
 
 \begin{document}
 
@@ -210,7 +214,7 @@ Fail-closed fault matrix (7 faults $\times$ 3 layouts $\times$ 2 realizations, t
 A comparison is only as fair as the execution layer the methods share: if a control fails because the controller executes its plan differently from how it was checked, the treatment is credited for an execution artifact. Each pilot failure was therefore traced against evaluator truth to the motion that diverged from the plan, and each fix was confirmed on reproduction trials copying the failing seeds, against acceptance criteria committed before the run, in an engineering design whose records cannot pass for study data. Five divergences were fixed: (i) the long body tracked turns loosely and swung into a shelf, so turns keep 0.10\,m; (ii) planned reverse steps were executed as unswept in-place turnarounds, so traversal is forward-only (largest narrow in-place turn 2.26--3.02\,rad before, at most 1.37\,rad after); (iii) a wheel allocation tuned before the friction repair turned the narrow body at $2.00\times$ command, now $1.17\times$; (iv) the controller aborted routes beside raised obstacles at zero margin, cleared by a finer obstacle raster with a 0.03\,m margin (32 trials beside the obstacle, no abort or contact); and (v) pure pursuit cut planned vertices so the long body met the 0.70\,m door off its line in 16 of 20 approaches, so the narrow body now servos each vertex (7 of 7 reproductions completed, nose within 0.036\,m of the door centreline). A shorter lookahead and a straight-approach planner rule were rejected on measurement, the latter because it made the treatment unplannable in a third of manipulated layouts where every control still planned. Each fix applies to all four methods through shared models or controllers and changes no method's information.
 
 \subsection{Infrastructure failures and retries}
-Robot failures are never retried or excluded. The runner retries a trial at most twice, only when the stack fails before the mission begins (e.g., a Nav2 lifecycle timeout); each attempt keeps an immutable log and an fsync'd audit entry embedded in the terminal record. A wedged observer process or a DDS transport failure is classified as infrastructure by a parent watchdog, never as a robot outcome. One harness defect is disclosed with its fix: under host load the ROS clock occasionally stopped at mission start while Gazebo kept stepping (4 of 78 qualification trials), because the bridge's discovery dropped the simulator's publishers; loopback discovery removed it under the same load (0 of 14 against 3 of 13), and any recurrence is detected as a clock discontinuity. In the pilot, 3 of 144 trials needed one retry and none ended as an infrastructure failure. \pending{confirmatory infrastructure-attempt rates.}
+Robot failures are never retried or excluded. The runner retries a trial at most twice, only when the stack fails before the mission begins (e.g., a Nav2 lifecycle timeout); each attempt keeps an immutable log and an fsync'd audit entry embedded in the terminal record. A wedged observer process or a DDS transport failure is classified as infrastructure by a parent watchdog, never as a robot outcome. One harness defect is disclosed with its fix: under host load the ROS clock occasionally stopped at mission start while Gazebo kept stepping (4 of 78 qualification trials), because the bridge's discovery dropped the simulator's publishers; loopback discovery removed it under the same load (0 of 14 against 3 of 13), and any recurrence is detected as a clock discontinuity. In the pilot, 3 of 144 trials needed one retry and none ended as an infrastructure failure. \withresults{In the confirmatory study, \resInfraAttempts{} of \resLaunchAttempts{} launch attempts were lost to infrastructure before a mission began, \resTrialsRetried{} trials were retried, and \resInfraFailures{} ended as an infrastructure failure.}{\pending{confirmatory infrastructure-attempt rates.}}
 
 \subsection{Timing, truth isolation, and provenance}
 \textbf{Timing.} Every window that paces robot motion advances on the simulated clock, the wall clock only a stall backstop, and validation rejects any stage that ran less simulated time than it commanded; a wall-clock window would make travel scale with host load and pass a measurement artifact off as a mechanical fault.
@@ -239,17 +243,21 @@ Robot failures are never retried or excluded. The runner retries a trial at most
 \end{figure}}{}
 \pending{confirmatory data}
 
+% Outcome-neutral sentences drafted before any confirmatory outcome was read;
+% every number and every claim word is a generated macro (claim words by the
+% analysis plan's interpretation rules). Prose that depends on the outcome is
+% written only after unblinding, where \pending remains.
 \subsection{Manipulation checks}
-\pending{confirmatory data}
+\withresults{Beyond the pre-trial check (Table~\ref{tab:manipulation}), the executed plans differ from the treatment's in route or transition site in a fraction \resDisagreeGeometry{} of the \resDisagreeBlocksGeometry{} paired blocks for \method{geometry\_coupled}, \resDisagreeFeasibility{} for \method{feasibility\_coupled}, and \resDisagreeRouteFirst{} for \method{route\_first\_adaptation}; neutral controls are included in these fractions.}{\pending{confirmatory data}}
 
 \subsection{Primary contrasts}
-\pending{confirmatory data}
+\withresults{Over all \resLayoutsVsGeometry{} layouts, the layout-balanced completion difference between the treatment and \method{geometry\_coupled} is \resDeltaVsGeometry{} (95\% CI [\resCILowVsGeometry, \resCIHighVsGeometry], Holm \resHolmPVsGeometry): \resClaimVsGeometry. Over the \resLayoutsVsFeasibility{} layouts of the two sensing families, the difference against \method{feasibility\_coupled} is \resDeltaVsFeasibility{} (95\% CI [\resCILowVsFeasibility, \resCIHighVsFeasibility], Holm \resHolmPVsFeasibility): \resClaimVsFeasibility. Family means, heterogeneity diagnostics without tests, are \resFamilyVsGeometryWorkspace{} (reconfiguration workspace), \resFamilyVsGeometryDocking{} (docking observability), and \resFamilyVsGeometryCombined{} (combined) against \method{geometry\_coupled}, and \resFamilyVsFeasibilityDocking{} and \resFamilyVsFeasibilityCombined{} against \method{feasibility\_coupled} (Fig.~\ref{fig:results}b).}{\pending{confirmatory data}}
 
 \subsection{Secondary outcomes, sensitivity analyses, and failure taxonomy}
-\pending{confirmatory data}
+\withresults{Deadline-penalized time differs by \resTimeDeltaVsGeometry\,s (95\% CI [\resTimeCILowVsGeometry, \resTimeCIHighVsGeometry]) against \method{geometry\_coupled} and \resTimeDeltaVsFeasibility\,s ([\resTimeCILowVsFeasibility, \resTimeCIHighVsFeasibility]) against \method{feasibility\_coupled}; negative values favor the treatment. The hierarchical logistic sensitivity model gives marginal differences of \resHierDeltaVsGeometry{} ([\resHierCILowVsGeometry, \resHierCIHighVsGeometry]) and \resHierDeltaVsFeasibility{} ([\resHierCILowVsFeasibility, \resHierCIHighVsFeasibility]), its refits converging in \resHierConvergedVsGeometry{} and \resHierConvergedVsFeasibility{} of \resHierRequestedVsGeometry. \pending{mechanism counts from Table~\ref{tab:failures}, by the declared rule}}{\pending{confirmatory data}}
 
 \subsection{Transition-risk calibration and site placement}
-\pending{confirmatory data}
+\withresults{The logged transition probability is a per-transition constant shared by all methods, so its Brier score (\resBrier{} pooled; \resBrierGeometry, \resBrierFeasibility, and \resBrierSensing{} for \method{geometry\_coupled}, \method{feasibility\_coupled}, and the treatment) measures how well that constant matches observed transition success, not the sensing gate. The treatment's core began its transitions a median \resPlacementMedianSensing\,m (maximum \resPlacementMaxSensing\,m) from the planned site, against the nominal \resNominalSiteTolerance\,m; \resPlacementsBeyondSensing{} of \resPlacementsSensing{} placements exceeded it (Table~\ref{tab:secondary}).}{\pending{confirmatory data}}
 
 % ---------------------------------------------------------------------------
 \section{Discussion}

@@ -364,13 +364,15 @@ def test_paper_results_tables_render_from_the_analysis_artifact():
     assert r"sensing + feasibility & 12/12" in tex
     assert "Holm $p$" in tex and "nan" not in tex
     import re
+    tex = module.render_macros(result)
     defined = re.findall(r"\\newcommand\{\\(res[A-Za-z]+)\}", tex)
-    assert len(defined) == len(set(defined))
+    assert len(defined) == len(set(defined)) and "nan" not in tex
     assert r"\newcommand{\resCompletedSensing}{12}" in tex
     assert r"\newcommand{\resTrialsSensing}{12}" in tex
     assert {"resDeltaVsGeometry", "resHolmPVsFeasibility", "resHierConvergedVsGeometry",
             "resFamilyVsGeometryWorkspace", "resFailDockingFailure", "resInfraAttempts",
-            "resClaimVsGeometry", "resClaimVsFeasibility"} <= set(defined)
+            "resClaimVsGeometry", "resClaimVsFeasibility", "resDisagreeGeometry",
+            "resPlacementMedianSensing", "resNominalSiteTolerance"} <= set(defined)
 
 
 def test_paper_failure_table_counts_status_by_method_and_family(tmp_path):
