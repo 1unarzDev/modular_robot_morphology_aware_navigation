@@ -211,13 +211,28 @@ def main() -> None:
     generator = layout_generator_for(design.design_kind)
     seeds = tuning_seeds() if args.sample == "tuning" else design_seeds(design)
     catalog = load_catalog(str(args.catalog)).supported_experiment_subset()
+    # A per-layout checkpoint beside the output, so an interrupted run resumes.
+    checkpoint = args.output.with_name(args.output.name + ".partial.jsonl")
+    done = {}
+    if checkpoint.exists():
+        for line in checkpoint.read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                entry = json.loads(line)
+                done[(entry["family"], entry["layout_index"])] = entry
+    args.output.parent.mkdir(parents=True, exist_ok=True)
     records = []
-    for number, (family, index, seed) in enumerate(seeds, 1):
-        records.append(layout_record(
-            family, index, seed, catalog, generator, args.heading_bins,
-            args.epsilon, args.max_routes, args.penalty_radius,
-            args.penalty_weight))
-        print(f"layout {number}/{len(seeds)}", flush=True)
+    with checkpoint.open("a", encoding="utf-8") as sink:
+        for number, (family, index, seed) in enumerate(seeds, 1):
+            record = done.get((family, index))
+            if record is None:
+                record = layout_record(
+                    family, index, seed, catalog, generator, args.heading_bins,
+                    args.epsilon, args.max_routes, args.penalty_radius,
+                    args.penalty_weight)
+                sink.write(json.dumps(record, sort_keys=True) + "\n")
+                sink.flush()
+            records.append(record)
+            print(f"layout {number}/{len(seeds)}", flush=True)
     output = {
         "schema_version": 1,
         "purpose": "exploratory_route_first_retry",
@@ -231,9 +246,9 @@ def main() -> None:
         "summary": report(records, args.max_routes),
         "layouts": records,
     }
-    args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(output, indent=2, sort_keys=True) + "\n",
                            encoding="utf-8")
+    checkpoint.unlink()
     print(json.dumps(output["summary"], indent=2))
 
 
