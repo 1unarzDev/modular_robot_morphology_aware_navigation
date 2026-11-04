@@ -369,7 +369,27 @@ def test_paper_results_tables_render_from_the_analysis_artifact():
     assert r"\newcommand{\resCompletedSensing}{12}" in tex
     assert r"\newcommand{\resTrialsSensing}{12}" in tex
     assert {"resDeltaVsGeometry", "resHolmPVsFeasibility", "resHierConvergedVsGeometry",
-            "resFamilyVsGeometryWorkspace", "resFailDockingFailure", "resInfraAttempts"} <= set(defined)
+            "resFamilyVsGeometryWorkspace", "resFailDockingFailure", "resInfraAttempts",
+            "resClaimVsGeometry", "resClaimVsFeasibility"} <= set(defined)
+
+
+def test_paper_claim_words_follow_the_declared_interpretation_rules():
+    import importlib.util
+    from pathlib import Path
+    path = Path(__file__).resolve().parents[1] / "paper" / "conference" / "make_results_tables.py"
+    spec = importlib.util.spec_from_file_location("make_results_tables", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    claim = module.claim
+    assert claim(0.4, 0.001, 0.25, 0.55).startswith("an improvement of at least")
+    assert claim(0.2, 0.01, 0.05, 0.35).startswith("an improvement, not shown")
+    assert claim(0.08, 0.01, 0.02, 0.15).startswith("an improvement smaller")
+    assert claim(-0.2, 0.01, -0.3, -0.1).startswith("a deficit")
+    # The test and the interval disagree: not established.
+    assert claim(0.2, 0.01, -0.01, 0.4) == "inconclusive at this sample size"
+    assert claim(0.1, 0.03, -0.01, 0.17).startswith("no improvement established")
+    assert claim(0.0, 0.9, -0.1, 0.12).startswith("no improvement established")
+    assert claim(0.1, 0.2, -0.05, 0.25) == "inconclusive at this sample size"
 
 
 def test_paper_results_figure_renders_from_the_analysis_artifact():

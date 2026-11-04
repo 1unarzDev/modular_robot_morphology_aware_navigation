@@ -57,6 +57,31 @@ def _camel(name: str) -> str:
     return "".join(part.capitalize() for part in name.split("_"))
 
 
+SMALLEST_EFFECT = 0.18
+
+
+def claim(estimate: float, holm_p: float, low: float, high: float,
+          delta: float = SMALLEST_EFFECT) -> str:
+    """The claim words the analysis plan's interpretation rules assign.
+
+    Declared 2026-11-04 before any confirmatory outcome was read
+    (docs/research/statistical_analysis_plan.md, "Interpretation rules"). An
+    effect is established only when the Holm test and the interval agree.
+    """
+    if holm_p < 0.05 and low > 0:
+        if low >= delta:
+            return "an improvement of at least the smallest effect of interest"
+        if high >= delta:
+            return "an improvement, not shown to reach the smallest effect of interest"
+        return "an improvement smaller than the smallest effect of interest"
+    if holm_p < 0.05 and high < 0:
+        return "a deficit: the treatment is worse"
+    if high < delta:
+        return ("no improvement established; an effect as large as the smallest"
+                " effect of interest is excluded")
+    return "inconclusive at this sample size"
+
+
 def macros(result: dict) -> str:
     """Inline numbers for the Results prose, so none is transcribed by hand.
 
@@ -92,6 +117,8 @@ def macros(result: dict) -> str:
             f"Delta{key}": _signed(row["estimate_treatment_minus_control"], 3),
             f"CILow{key}": _signed(low, 3), f"CIHigh{key}": _signed(high, 3),
             f"RawP{key}": _p(row["permutation_p"]), f"HolmP{key}": _p(row["holm_adjusted_p"]),
+            f"Claim{key}": claim(row["estimate_treatment_minus_control"],
+                                 row["holm_adjusted_p"], low, high),
             f"TimeDelta{key}": _signed(time_row["estimate_treatment_minus_control"], 1),
             f"TimeCILow{key}": _signed(time_low, 1), f"TimeCIHigh{key}": _signed(time_high, 1),
             f"HierDelta{key}": _signed(model["marginal_probability_difference"], 3),

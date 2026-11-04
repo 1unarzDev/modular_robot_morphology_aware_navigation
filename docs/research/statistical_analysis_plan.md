@@ -150,6 +150,10 @@ and 95% layout-bootstrap interval `[L, U]`, with δ = 0.18:
 | otherwise, `U` < δ | no improvement established; an effect of δ or more is excluded |
 | otherwise | inconclusive at this sample size |
 
+The table is implemented, with a test per row, as `claim()` in
+`paper/conference/make_results_tables.py`, which emits each contrast's words as
+`\resClaimVsGeometry` / `\resClaimVsFeasibility`.
+
 - An effect counts as established only when the test and the interval agree
   (`p` < 0.05 and the interval excludes 0 on the same side). If they disagree,
   the result is "not established", and the paper states the disagreement.
