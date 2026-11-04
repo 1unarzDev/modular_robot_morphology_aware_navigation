@@ -31,9 +31,11 @@ WSL clone off `8a53344`. If interrupted: first check the newest record in
 `confirmatory_v3_raw` parses as JSON (records are written in place, so a
 shutdown mid-write can leave one truncated; delete it so the trial reruns),
 then `resume_campaign.sh 8a53344 run_confirmatory_v3` (finished trials are
-kept). Keepalive `wsl -e sleep 604800` from 2026-11-01 ~23:59 UTC. At 05:13
-UTC 2026-11-02: 170/720, ~30-35 trials an hour, one pre-mission retry, ETA
-~21:00 UTC 2026-11-02. When done (the run script already writes the gate1
+kept). **Interrupted by host idle sleep at 200/720 (~06:02 UTC 2026-11-02);
+resumed unchanged 02:47 UTC 2026-11-04** as a hidden Windows `wsl` process
+running `resume_campaign.sh` (it ends with "start_campaign run_confirmatory_v3
+done" in the same log), with `tools/keep_awake.ps1` blocking idle sleep for its
+life; ~30-35 trials an hour, ETA ~19:00 UTC 2026-11-04. When done (the run script already writes the gate1
 audit and status): `results/qualification/post_confirmatory_v3.sh` in the
 container retains the records and runs `morphology_study analyze` into
 `results/confirmatory/analysis/`; commit audit, status, archive and

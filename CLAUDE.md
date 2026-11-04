@@ -41,6 +41,14 @@ wsl -e bash -lc '
 '
 ```
 
+**Windows idle sleep stops the VM too, and a `wsl -e sleep` keepalive does not
+prevent it** (`confirmatory_v3` lost 45 h this way from 2026-11-02).
+Launch a long campaign as a hidden Windows process (`Start-Process -PassThru
+wsl -ArgumentList '-e','bash','.../resume_campaign.sh',...`), which also keeps
+the VM up, and hold off idle sleep for its lifetime with
+`tools/keep_awake.ps1 -WatchPid <pid>` (usage in the script). The lid or a
+manual sleep still wins.
+
 WSL runs in `networkingMode=mirrored`, and inter-process UDP inside the VM can
 stop working (seen 2026-09-21 after a VM restart): separate ROS processes then
 cannot discover each other, so tools time out waiting for `/clock` while
