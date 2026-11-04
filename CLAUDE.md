@@ -50,7 +50,9 @@ for its lifetime with `tools/keep_awake.ps1 -WatchPid <pid>`, launched the same
 way. **Do not use `Start-Process`**: its children belong to the Claude session
 and die when the session ends, which stopped `confirmatory_v3` at 407/720 and
 the prevalence run at 4/300 on 2026-11-04 09:20 UTC. The lid or a manual sleep
-still wins.
+still wins. Run any host-side job beside a campaign at Idle priority
+(`cmd.exe /c start "" /b /low ...`): three such jobs halved `confirmatory_v3`'s
+trial rate and raised its pre-mission retries (2026-11-04).
 
 WSL runs in `networkingMode=mirrored`, and inter-process UDP inside the VM can
 stop working (seen 2026-09-21 after a VM restart): separate ROS processes then
