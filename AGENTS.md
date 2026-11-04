@@ -35,7 +35,12 @@ kept). **Interrupted by host idle sleep at 200/720 (~06:02 UTC 2026-11-02);
 resumed unchanged 02:47 UTC 2026-11-04** as a hidden Windows `wsl` process
 running `resume_campaign.sh` (it ends with "start_campaign run_confirmatory_v3
 done" in the same log), with `tools/keep_awake.ps1` blocking idle sleep for its
-life; ~30-35 trials an hour, ETA ~19:00 UTC 2026-11-04. When done (the run script already writes the gate1
+life; ~30-35 trials an hour, ETA ~19:00 UTC 2026-11-04. **When done, run
+`tools/finish_confirmatory_v3.sh`** (usage in its header; it does all of the
+steps below except committing and writing prose), then build the paper: the
+drafted Results sentences fill themselves from the generated macros, and
+what remains is the mechanism paragraph (Table `tab:failures`, by the analysis
+plan's interpretation rules) and the Discussion in about half a page. When done (the run script already writes the gate1
 audit and status): `results/qualification/post_confirmatory_v3.sh` in the
 container retains the records and runs `morphology_study analyze` into
 `results/confirmatory/analysis/`; commit audit, status, archive and

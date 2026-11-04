@@ -23,7 +23,7 @@ fi
 echo "records: $(ls $R/confirmatory_v3_raw | wc -l) of 720"
 cat $R/confirmatory_v3_status.json | head -40
 # Retain (archive + verify against the gate1 audit), then the frozen analysis
-# (~30 min, almost all of it the hierarchical refits).
+# (~20 min, almost all of it the hierarchical refits).
 docker exec $C bash /home/roboboat/morphology_ws/results/qualification/post_confirmatory_v3.sh
 cat $R/confirmatory_v3_retain.json
 mkdir -p $DEST/records $DEST/analysis
