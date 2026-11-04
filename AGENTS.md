@@ -18,6 +18,13 @@ placement-robust station prediction (`43255f7`), 4x finer localization map
 (`9371593`), and RPP's narrow rotation no longer ratcheting on odometry
 (`971affb`; the narrow odometry over-reports ~0.2 rad/s, still unexplained).
 
+**2026-11-04 21:50 UTC: both runs were killed at ~09:20 UTC when the launching
+Claude session ended** (`Start-Process` children die with it; last record
+09:18 UTC, 407/720, the newest five parse as JSON; prevalence at 4/300). Both
+were resumed unchanged at 21:47 UTC as WMI-created processes (CLAUDE.md), with
+`keep_awake.ps1` watching the campaign's `wsl.exe`. New ETA for the
+confirmatory: ~11 h after resume, ~09:00 UTC 2026-11-05.
+
 **Resume here (2026-11-04 09:20 UTC): two runs going, nothing to decide.**
 (1) `confirmatory_v3` at 406/720, every record valid by
 `tools/check_confirmatory_v3_blind.py` (run it in WSL; it tabulates no outcome
