@@ -115,8 +115,10 @@ def render(result: dict) -> str:
                         f'vs. {LABELS[control]}</text>')
             body += _interval(x, y, entry["estimate_treatment_minus_control"], low, high,
                               COLORS["sensing_feasibility_coupled"])
+            # A white halo keeps the note legible over gridlines and intervals.
             body.append(f'<text x="{LEFT + PLOT_W:.0f}" y="{y - 8}" text-anchor="end" '
-                        f'class="tick">{entry["layout_count"]} layouts, Holm '
+                        f'class="tick" paint-order="stroke" stroke="white" stroke-width="4">'
+                        f'{entry["layout_count"]} layouts, Holm '
                         f'{_p(entry["holm_adjusted_p"])}</text>')
         else:
             family, value = entry
