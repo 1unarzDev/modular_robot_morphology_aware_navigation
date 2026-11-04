@@ -131,6 +131,54 @@ and converged bootstrap counts, and failed/nonconverged refit counts. Use at lea
 400 bootstrap draws for the final sensitivity artifact; increase this if interval
 endpoints are too coarse. This model receives no additional confirmatory p value.
 
+### Interpretation rules (declared 2026-11-04, before any confirmatory outcome is read)
+
+Declared while `confirmatory_v3` was running (about 210 of 720 records
+written) under the author's standing delegation. Nothing from those records
+had been read except record counts, JSON validity, and the infrastructure-retry
+log; no outcome, status, or contrast. The rules fix the words the paper may use
+for each result, so the wording cannot be chosen after the numbers are seen.
+For a primary contrast with estimate `d`, Holm-adjusted sign-flip p value `p`,
+and 95% layout-bootstrap interval `[L, U]`, with δ = 0.18:
+
+| Condition | Claim |
+|---|---|
+| `p` < 0.05, `L` > 0, `L` ≥ δ | improvement of at least the smallest effect of interest |
+| `p` < 0.05, `L` > 0, `L` < δ ≤ `U` | improvement, not shown to reach δ |
+| `p` < 0.05, `L` > 0, `U` < δ | improvement smaller than δ |
+| `p` < 0.05, `U` < 0 | the treatment is worse |
+| otherwise, `U` < δ | no improvement established; an effect of δ or more is excluded |
+| otherwise | inconclusive at this sample size |
+
+- An effect counts as established only when the test and the interval agree
+  (`p` < 0.05 and the interval excludes 0 on the same side). If they disagree,
+  the result is "not established", and the paper states the disagreement.
+- The ladder is read only through its two declared contrasts. If both are
+  established, the paper may claim the full increment over all families and
+  the observability increment in the sensing families. If only the vs-geometry
+  contrast is established, the observability term's own contribution is not
+  established, and the paper may not credit the gain to sensing. If only
+  vs-feasibility is established, the claim is confined to the sensing
+  families. Feasibility-minus-geometry, and every contrast against
+  `route_first_adaptation` (a weak rung in this population, see the pilot
+  decision record), are described and receive no p value or claim word.
+- The sensitivity analyses neither upgrade nor downgrade a claim. The paper
+  reports them beside the primary contrasts and states in the text any
+  hierarchical interval whose sign disagrees with the primary interval, and any
+  model that failed to converge on more than 10% of its refits.
+- Family effects are heterogeneity diagnostics. A sign that differs across
+  families is stated; no family receives its own claim word.
+- Layouts the treatment cannot plan stay scored against it. The paper gives a
+  descriptive split of each method's failures into planning and execution, never
+  as a second estimand.
+- Mechanism statements are descriptive counts from the failure taxonomy by
+  method and family. Saying a control failed "for the reason it does not model"
+  requires that those records' earliest cause is that mechanism: contact for
+  `geometry_coupled` in the workspace family, refused docking for
+  `feasibility_coupled` at sites the station cannot see. Every exception is
+  given.
+- Every claim is about the generator-3 layout population in simulation.
+
 ## Sample-size gate
 
 The current 12-layout-per-family target is a resource-based starting point, not
