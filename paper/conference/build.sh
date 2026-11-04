@@ -10,7 +10,7 @@ out="$here/build"
 edge="${EDGE:-/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe}"
 mkdir -p "$out"
 cp "$here/main.tex" "$out/"
-for generated in results_tables.tex results_macros.tex failure_table.tex; do
+for generated in results_tables.tex results_macros.tex failure_table.tex exploratory_macros.tex; do
   if [ -f "$here/$generated" ]; then cp "$here/$generated" "$out/"; fi
 done
 for svg in "$here"/figure_*.svg; do

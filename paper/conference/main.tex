@@ -21,6 +21,10 @@
 % \withresults{text}{fallback} sets text once they exist.
 \IfFileExists{results_macros.tex}{\input{results_macros}}{}
 \newcommand{\withresults}[2]{\ifdefined\resTrials #1\else #2\fi}
+% The two exploratory planner-only studies, from make_exploratory_macros.py.
+\IfFileExists{exploratory_macros.tex}{\input{exploratory_macros}}{}
+\newcommand{\withprevalence}[2]{\ifdefined\prevLayouts #1\else #2\fi}
+\newcommand{\withretry}[2]{\ifdefined\retryLayouts #1\else #2\fi}
 
 \begin{document}
 
@@ -264,6 +268,10 @@ Robot failures are never retried or excluded. The runner retries a trial at most
 \pending{confirmatory data: what the two contrasts establish, by the declared rules}
 
 \textbf{What the layouts license.} The families are built so that a specific omitted condition can matter, so any effect is conditional on that construction: the study measures what each added condition is worth \emph{when} a raised obstacle, a verification sweep, or an occluded station constrains the staging area, not how often such constraints arise in practice. Three features keep this from being a test the controls were bound to fail. Layouts are drawn by a seeded generator over arena size, wall position, doorway, start, goal, and staging-band geometry, frozen with the design hash before any trial, so no layout was chosen for its outcome; the manipulation check, run before any trial, also exposed the layouts in which the treatment itself cannot plan, and they stay in the sample scored against it; and every fourth layout is a neutral control, in which all coupled methods plan the same site, so a completion difference there would expose the shared execution stack rather than the information a method uses.
+
+\textbf{How often an omitted condition binds (exploratory).} To estimate how often such a constraint arises where no layout is built to produce it, a planner-only study, declared before its sample, draws \withprevalence{\prevLayouts}{300} rooms from the same arena generator with randomly placed wall-backed tall and raised furniture and a randomly placed station, and re-tests each control's chosen site under the full transition test. \withprevalence{The full test rejects \method{geometry\_coupled}'s site in \prevGeomRejected{} of the \prevGeomSited{} rooms where it plans a transition (\prevGeomPct, 95\% Wilson interval \prevGeomCI; failing stages: \prevGeomStages) and \method{feasibility\_coupled}'s in \prevFeasRejected{} of \prevFeasSited{} (\prevFeasPct, \prevFeasCI; \prevFeasStages); the treatment plans \prevGeomTreatPlans{} and \prevFeasTreatPlans{} of those rooms, and cannot plan \prevTreatUnplanned{} of all \prevLayouts.}{\pending{prevalence rates}} It is a rate of planner decisions on one generator, not of robot failures or of real buildings.
+
+\textbf{Is the route-first rung a strawman? (exploratory)} A sequential planner that replans its route after a failed adaptation is the natural repair. A declared planner-only variant keeps the morphology-agnostic route and the fixed-route adaptation, and after each failure multiplies the cost of entering every cell within \withretry{\retryRadius}{$r$} cells of the failed route by $1 + wn$, $n$ being the number of failed routes passing near it and $w = \withretry{\retryWeight}{w}$, for up to \withretry{\retryK}{$K$} routes; its parameters were chosen by a declared rule on layouts outside the design. \withretry{On the \retryLayouts{} confirmatory layouts it plans \retryPlannedK{} (\retryPlannedOne{} with one route), against the treatment's \retryTreatPlanned; where both plan, its median plan cost is \retryCostMedian{} times the treatment's, and it uses the treatment's transition site in \retrySameSite{} of \retryBoth.}{\pending{route-first retry counts}}
 
 % ---------------------------------------------------------------------------
 \section{Limitations}
