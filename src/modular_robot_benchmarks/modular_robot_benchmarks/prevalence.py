@@ -232,13 +232,32 @@ def main() -> None:
     parser.add_argument("--workers", type=int, default=1)
     args = parser.parse_args()
     seeds = world_seeds(args.master_seed, args.layouts)
-    jobs = [(seed, args.catalog) for seed in seeds]
-    if args.workers > 1:
-        from multiprocessing import Pool
-        with Pool(args.workers) as pool:
-            results = pool.map(_worker, jobs, chunksize=1)
-    else:
-        results = [_worker(job) for job in jobs]
+    # Each finished layout is appended to a checkpoint, so an interrupted run
+    # resumes without redoing (or reordering) any layout.
+    checkpoint = args.output.with_name(args.output.name + ".partial.jsonl")
+    done = {}
+    if checkpoint.exists():
+        for line in checkpoint.read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                entry = json.loads(line)
+                done[entry["world_seed"]] = entry
+    jobs = [(seed, args.catalog) for seed in seeds if seed not in done]
+    checkpoint.parent.mkdir(parents=True, exist_ok=True)
+    with checkpoint.open("a", encoding="utf-8") as stream:
+        def keep(entry):
+            done[entry["world_seed"]] = entry
+            stream.write(json.dumps(entry, sort_keys=True) + "\n")
+            stream.flush()
+            print(f"layout {len(done)}/{len(seeds)}", flush=True)
+        if args.workers > 1:
+            from multiprocessing import Pool
+            with Pool(args.workers) as pool:
+                for entry in pool.imap_unordered(_worker, jobs, chunksize=1):
+                    keep(entry)
+        else:
+            for job in jobs:
+                keep(_worker(job))
+    results = [done[seed] for seed in seeds]
     report = {"schema_version": 1, "purpose": "exploratory_prevalence",
               "master_seed": args.master_seed, "layouts": args.layouts,
               "summary": summarize(results), "results": results}
