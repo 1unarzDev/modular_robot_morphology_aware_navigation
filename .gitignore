@@ -11,3 +11,8 @@ results/
 .venv-host/
 paper/**/*.aux
 paper/**/*.log
+
+# In-progress prevalence run (the final JSON is committed)
+studies/prevalence/*.partial.jsonl
+studies/prevalence/run.log
+studies/prevalence/run.err

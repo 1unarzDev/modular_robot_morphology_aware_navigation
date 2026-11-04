@@ -18,7 +18,26 @@ placement-robust station prediction (`43255f7`), 4x finer localization map
 (`9371593`), and RPP's narrow rotation no longer ratcheting on odometry
 (`971affb`; the narrow odometry over-reports ~0.2 rad/s, still unexplained).
 
-**Resume here (2026-11-02, CONFIRMATORY RUNNING).** `confirmatory_v3`
+**Resume here (2026-11-04 09:20 UTC): two runs going, nothing to decide.**
+(1) `confirmatory_v3` at 406/720, every record valid by
+`tools/check_confirmatory_v3_blind.py` (run it in WSL; it tabulates no outcome
+by method): one commit, design, stack hash and image across the resume, 6 trials
+with one pre-mission retry, no infrastructure failure. ~28-30 trials an hour,
+ETA ~20:00 UTC 2026-11-04 (later if the host is loaded); details below.
+(2) The exploratory prevalence study (`studies/prevalence/declaration.md`,
+declared and committed before its sample) runs detached on the Windows host:
+`tools/run_prevalence_host.py`, 300 layouts, 3 workers, ~2-3 h, log
+`studies/prevalence/run.log`, per-layout checkpoint
+`prevalence_20261104.json.partial.jsonl` (do not commit the partial). If it was
+interrupted, rerun the command in the script's docstring; it resumes. When it
+writes `prevalence_20261104.json`, commit it and report exactly the declared
+rates (nothing else), as a short exploratory paragraph in the Discussion
+answering "how often does an omitted condition bind" (the outcome-neutral
+paragraph "What the layouts license" is already drafted). Then, if time allows,
+a planner-only check of a multi-route `route_first_adaptation` variant, declared
+first in the same way.
+
+**Earlier (2026-11-02, CONFIRMATORY RUNNING).** `confirmatory_v3`
 (`studies/confirmatory_v3/design.json`, hash `c939f126...`, 720 trials, 60
 layouts) runs detached at `8a53344` since 00:09 UTC 2026-11-02 (log
 `results/run_confirmatory_v3.launch.log`, records
