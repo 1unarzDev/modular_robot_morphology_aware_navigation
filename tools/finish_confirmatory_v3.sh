@@ -37,5 +37,8 @@ for g in tables:results_tables.tex figure:figure_results.svg; do
   tr -d '\r' < $REPO/paper/conference/make_results_${g%%:*}.py > /tmp/make_results_${g%%:*}.py
   python3 /tmp/make_results_${g%%:*}.py $DEST/analysis/analysis.json $REPO/paper/conference/${g#*:}
 done
+tr -d '\r' < $REPO/paper/conference/make_failure_table.py > /tmp/make_failure_table.py
+python3 /tmp/make_failure_table.py $R/confirmatory_v3_raw \
+  $REPO/paper/conference/failure_table.tex $DEST/failure_table.json
 ls -l $DEST $DEST/records $DEST/analysis
 echo "=== finish_confirmatory_v3 done; build the paper with paper/conference/build.sh on Windows"

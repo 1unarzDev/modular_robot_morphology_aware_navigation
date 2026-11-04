@@ -373,6 +373,31 @@ def test_paper_results_tables_render_from_the_analysis_artifact():
             "resClaimVsGeometry", "resClaimVsFeasibility"} <= set(defined)
 
 
+def test_paper_failure_table_counts_status_by_method_and_family(tmp_path):
+    import importlib.util
+    from pathlib import Path
+    path = Path(__file__).resolve().parents[1] / "paper" / "conference" / "make_failure_table.py"
+    spec = importlib.util.spec_from_file_location("make_failure_table", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    design = generate_design(layouts_per_family=2, replicates=2)
+    store = TrialStore(tmp_path)
+    for record in _records(design):
+        store.write_terminal(record)
+    table = module.tabulate(tmp_path)
+    counts = table["counts"]
+    # Layout 00 of each family is neutral and completes; layout 01 is manipulated.
+    assert counts["neutral"]["geometry_coupled"] == {"trials": 6, "Completed": 6}
+    assert counts["docking_observability"]["geometry_coupled"] == {"trials": 2, "Docking": 2}
+    assert counts["docking_observability"]["sensing_feasibility_coupled"] == {
+        "trials": 2, "Completed": 2}
+    tex = module.render(table)
+    assert "(2 trials per cell)" in tex
+    assert r"Neutral controls completed & 6/6 & 6/6 & 6/6 & 6/6" in tex
+    assert r"\newcommand{\resTaxGeometryDockingDocking}{2}" in tex
+    assert r"\newcommand{\resTrialsSensingNeutral}{6}" in tex
+
+
 def test_paper_claim_words_follow_the_declared_interpretation_rules():
     import importlib.util
     from pathlib import Path

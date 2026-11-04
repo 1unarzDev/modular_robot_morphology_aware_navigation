@@ -222,8 +222,10 @@ Robot failures are never retried or excluded. The runner retries a trial at most
 % ---------------------------------------------------------------------------
 \section{Results}
 % Tables and Fig. 3 come from make_results_tables.py and make_results_figure.py
-% run on the confirmatory analysis.json; no result is transcribed by hand.
+% run on the confirmatory analysis.json, and the failure table from
+% make_failure_table.py on the raw records; no result is transcribed by hand.
 \IfFileExists{results_tables.tex}{\input{results_tables}}{}
+\IfFileExists{failure_table.tex}{\input{failure_table}}{}
 \IfFileExists{figure_results.pdf}{%
 \begin{figure}[t]
   \centering
