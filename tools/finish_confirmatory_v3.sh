@@ -40,5 +40,10 @@ done
 tr -d '\r' < $REPO/paper/conference/make_failure_table.py > /tmp/make_failure_table.py
 python3 /tmp/make_failure_table.py $R/confirmatory_v3_raw \
   $REPO/paper/conference/failure_table.tex $DEST/failure_table.json
+# The exploratory studies are independent of this campaign; regenerating their
+# macros here only keeps the paper's inputs in one place.
+tr -d '\r' < $REPO/paper/conference/make_exploratory_macros.py > /tmp/make_exploratory_macros.py
+python3 /tmp/make_exploratory_macros.py $REPO/studies/prevalence/prevalence_20261104.json \
+  $REPO/studies/route_first_retry/design.json $REPO/paper/conference/exploratory_macros.tex
 ls -l $DEST $DEST/records $DEST/analysis
 echo "=== finish_confirmatory_v3 done; build the paper with paper/conference/build.sh on Windows"
