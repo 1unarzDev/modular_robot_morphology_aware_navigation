@@ -17,12 +17,22 @@ METHODS = ("route_first_adaptation", "geometry_coupled",
            "feasibility_coupled", "sensing_feasibility_coupled")
 
 
+# The short labels of the results figure; the full names would overflow a column.
+LABELS = {"route_first_adaptation": "route first", "geometry_coupled": "geometry",
+          "feasibility_coupled": "feasibility",
+          "sensing_feasibility_coupled": "sensing + feasibility"}
+
+
 def _method(name: str) -> str:
-    return r"\method{" + name.replace("_", r"\_") + "}"
+    return LABELS[name]
+
+
+def _number(value: float, digits: int) -> str:
+    return ("$-$" if value < 0 else "") + f"{abs(value):.{digits}f}"
 
 
 def _ci(low: float, high: float, digits: int) -> str:
-    return f"[{low:.{digits}f}, {high:.{digits}f}]"
+    return f"[{_number(low, digits)}, {_number(high, digits)}]"
 
 
 def _p(value: float) -> str:
@@ -31,6 +41,76 @@ def _p(value: float) -> str:
 
 def _metres(value: float | None) -> str:
     return "--" if value is None else f"{value:.3f}"
+
+
+def _signed(value: float, digits: int) -> str:
+    return ("$-$" if value < 0 else "$+$") + f"{abs(value):.{digits}f}"
+
+
+MACRO_METHODS = {"route_first_adaptation": "RouteFirst", "geometry_coupled": "Geometry",
+                 "feasibility_coupled": "Feasibility", "sensing_feasibility_coupled": "Sensing"}
+MACRO_FAMILIES = {"reconfiguration_workspace": "Workspace",
+                  "docking_observability": "Docking", "combined_constraints": "Combined"}
+
+
+def _camel(name: str) -> str:
+    return "".join(part.capitalize() for part in name.split("_"))
+
+
+def macros(result: dict) -> str:
+    """Inline numbers for the Results prose, so none is transcribed by hand.
+
+    Every macro is `\\res...`; contrasts are keyed `VsGeometry` / `VsFeasibility`
+    by their control, methods by `MACRO_METHODS`, families by `MACRO_FAMILIES`.
+    """
+    values: dict[str, str] = {
+        "Trials": str(result["trial_count"]), "Layouts": str(result["layout_count"]),
+        "Brier": f"{result['transition_brier_score']:.3f}",
+    }
+    for row in result["methods"]:
+        key = MACRO_METHODS[row["method"]]
+        low, high = row["completion_rate_ci95"]
+        values.update({
+            f"Completed{key}": str(row["completed"]), f"Trials{key}": str(row["trials"]),
+            f"Rate{key}": f"{row['completion_rate']:.2f}",
+            f"RateLow{key}": f"{low:.2f}", f"RateHigh{key}": f"{high:.2f}",
+            f"Time{key}": f"{row['deadline_penalized_time_s']:.1f}",
+            f"Brier{key}": f"{result['transition_brier_by_method'][row['method']]:.3f}",
+        })
+    secondary = {row["control"]: row for row in result["secondary_contrasts"]
+                 if row["treatment"] == "sensing_feasibility_coupled"}
+    hierarchical = {row["control"]: row for row in result["hierarchical_logistic_sensitivity"]
+                    if row["treatment"] == "sensing_feasibility_coupled"}
+    for row in result["primary_contrasts"]:
+        key = "Vs" + MACRO_METHODS[row["control"]]
+        low, high = row["ci95_layout_bootstrap"]
+        time_row, model = secondary[row["control"]], hierarchical[row["control"]]
+        time_low, time_high = time_row["ci95_layout_bootstrap"]
+        model_low, model_high = model["ci95_layout_bootstrap"]
+        values.update({
+            f"Layouts{key}": str(row["layout_count"]),
+            f"Delta{key}": _signed(row["estimate_treatment_minus_control"], 3),
+            f"CILow{key}": _signed(low, 3), f"CIHigh{key}": _signed(high, 3),
+            f"RawP{key}": _p(row["permutation_p"]), f"HolmP{key}": _p(row["holm_adjusted_p"]),
+            f"TimeDelta{key}": _signed(time_row["estimate_treatment_minus_control"], 1),
+            f"TimeCILow{key}": _signed(time_low, 1), f"TimeCIHigh{key}": _signed(time_high, 1),
+            f"HierDelta{key}": _signed(model["marginal_probability_difference"], 3),
+            f"HierCILow{key}": _signed(model_low, 3), f"HierCIHigh{key}": _signed(model_high, 3),
+            f"HierConverged{key}": str(model["bootstrap_draws_converged"]),
+            f"HierRequested{key}": str(model["bootstrap_draws_requested"]),
+        })
+        for family, effect in row["family_effects"].items():
+            values[f"Family{key}{MACRO_FAMILIES[family]}"] = _signed(effect, 3)
+    for status, count in result["failure_taxonomy"].items():
+        values[f"Fail{_camel(status)}"] = str(count)
+    by_method = result["secondary_measures"]["by_method"].values()
+    for field, name in (("launch_attempts", "LaunchAttempts"),
+                        ("infrastructure_attempts", "InfraAttempts"),
+                        ("trials_retried", "TrialsRetried"),
+                        ("trials_ending_infrastructure_failure", "InfraFailures")):
+        values[name] = str(sum(row[field] for row in by_method))
+    return "\n".join(rf"\newcommand{{\res{name}}}{{{value}}}"
+                     for name, value in sorted(values.items()))
 
 
 def method_table(result: dict) -> str:
@@ -42,13 +122,13 @@ def method_table(result: dict) -> str:
         r" intervals resample whole layouts within family; failures are scored at 300\,s"
         r" in deadline-penalized time.}",
         r"\label{tab:methods_results}",
-        r"\begin{tabular}{@{}lrrr@{}}", r"\toprule",
-        r"Method & Completion (95\% CI) & Penalized time (s) & Work (J) \\", r"\midrule",
+        r"\begin{tabular}{@{}lrrrr@{}}", r"\toprule",
+        r"Method & Completed & 95\% CI & Pen.\ time (s) & Work (J) \\", r"\midrule",
     ]
     for method in METHODS:
         row = rows[method]
         lines.append(
-            f"{_method(method)} & {row['completed']}/{row['trials']} "
+            f"{_method(method)} & {row['completed']}/{row['trials']} & "
             f"{_ci(*row['completion_rate_ci95'], 2)} & "
             f"{row['deadline_penalized_time_s']:.1f} & {row['mechanical_work_j']:.0f} \\\\")
     lines += [r"\bottomrule", r"\end{tabular}", r"\end{table}"]
@@ -67,23 +147,27 @@ def contrast_table(result: dict) -> str:
         r" hierarchical logistic model is a frozen sensitivity analysis.}",
         r"\label{tab:contrasts}",
         r"\begin{tabular}{@{}lrr@{}}", r"\toprule",
-        r" & vs.\ \method{geometry\_coupled} & vs.\ \method{feasibility\_coupled} \\", r"\midrule",
+        r" & vs.\ geometry & vs.\ feasibility \\", r"\midrule",
     ]
     primary = result["primary_contrasts"]
     keys = [(row["treatment"], row["control"]) for row in primary]
-    cells = {
-        "Layouts": [str(row["layout_count"]) for row in primary],
-        r"$\Delta$ completion": [f"{row['estimate_treatment_minus_control']:+.3f}" for row in primary],
-        r"\quad 95\% CI": [_ci(*row["ci95_layout_bootstrap"], 3) for row in primary],
-        r"\quad Holm $p$": [_p(row["holm_adjusted_p"]) for row in primary],
-        r"$\Delta$ penalized time (s)": [
-            f"{secondary[key]['estimate_treatment_minus_control']:+.1f} "
-            f"{_ci(*secondary[key]['ci95_layout_bootstrap'], 1)}" for key in keys],
-        r"Hierarchical $\Delta$": [
-            f"{hierarchical[key]['marginal_probability_difference']:+.3f} "
-            f"{_ci(*hierarchical[key]['ci95_layout_bootstrap'], 3)}" for key in keys],
-    }
-    for label, values in cells.items():
+    cells = [
+        ("Layouts", [str(row["layout_count"]) for row in primary]),
+        (r"$\Delta$ completion", [_signed(row["estimate_treatment_minus_control"], 3)
+                                  for row in primary]),
+        (r"\quad 95\% CI", [_ci(*row["ci95_layout_bootstrap"], 3) for row in primary]),
+        (r"\quad Holm $p$", [_p(row["holm_adjusted_p"]) for row in primary]),
+        (r"$\Delta$ pen.\ time (s)", [
+            _signed(secondary[key]["estimate_treatment_minus_control"], 1) for key in keys]),
+        (r"\quad 95\% CI", [_ci(*secondary[key]["ci95_layout_bootstrap"], 1) for key in keys]),
+        (r"Hierarchical $\Delta$", [
+            _signed(hierarchical[key]["marginal_probability_difference"], 3) for key in keys]),
+        (r"\quad 95\% CI", [_ci(*hierarchical[key]["ci95_layout_bootstrap"], 3) for key in keys]),
+        (r"\quad converged refits", [
+            f"{hierarchical[key]['bootstrap_draws_converged']}/"
+            f"{hierarchical[key]['bootstrap_draws_requested']}" for key in keys]),
+    ]
+    for label, values in cells:
         lines.append(f"{label} & " + " & ".join(values) + r" \\")
     lines += [r"\bottomrule", r"\end{tabular}", r"\end{table}"]
     return "\n".join(lines)
@@ -118,7 +202,7 @@ def secondary_table(result: dict) -> str:
 def render(result: dict) -> str:
     header = (f"% Generated by make_results_tables.py from analysis.json "
               f"(design {result['design_hash'][:12]}); do not edit by hand.")
-    return "\n\n".join((header, method_table(result), contrast_table(result),
+    return "\n\n".join((header, macros(result), method_table(result), contrast_table(result),
                         secondary_table(result))) + "\n"
 
 

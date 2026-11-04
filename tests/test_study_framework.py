@@ -361,8 +361,15 @@ def test_paper_results_tables_render_from_the_analysis_artifact():
     result = analyze(_records(design), design, bootstrap_draws=100, permutation_draws=200)
     tex = module.render(result)
     assert tex.count(r"\begin{table}") == 3 and tex.count(r"\end{table}") == 3
-    assert r"\method{sensing\_feasibility\_coupled} & 12/12" in tex
+    assert r"sensing + feasibility & 12/12" in tex
     assert "Holm $p$" in tex and "nan" not in tex
+    import re
+    defined = re.findall(r"\\newcommand\{\\(res[A-Za-z]+)\}", tex)
+    assert len(defined) == len(set(defined))
+    assert r"\newcommand{\resCompletedSensing}{12}" in tex
+    assert r"\newcommand{\resTrialsSensing}{12}" in tex
+    assert {"resDeltaVsGeometry", "resHolmPVsFeasibility", "resHierConvergedVsGeometry",
+            "resFamilyVsGeometryWorkspace", "resFailDockingFailure", "resInfraAttempts"} <= set(defined)
 
 
 def test_paper_results_figure_renders_from_the_analysis_artifact():
