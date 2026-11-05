@@ -32,7 +32,7 @@ def _macro(name: str, value) -> str:
 
 
 def _percent(value: float) -> str:
-    return f"{100 * value:.0f}\\%"
+    return f"{100 * value:.1f}\\%"
 
 
 def _stages(counts: dict) -> str:

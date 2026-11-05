@@ -719,6 +719,28 @@ is not comparable to figures that cannot be re-audited.
 
 ## Resume here
 
+**2026-11-05: second interruption, and two exploratory planner-only results.**
+`confirmatory_v3` and the prevalence run were both killed at ~09:20 UTC
+2026-11-04 when the Claude session that had launched them with `Start-Process`
+ended (last record 09:18 UTC, 407/720; newest records parse). Both resumed
+unchanged at 21:47 UTC as WMI-created processes; the blind check passes at
+438/720 (one commit, design, stack hash and image across both resumes; 9 trials
+needed a pre-mission retry under host load, none ended as an infrastructure
+failure). Exploratory, declared before their samples, outside the confirmatory
+analysis:
+- Prevalence (`studies/prevalence/`, 300 furnished generator-3 rooms): the full
+  transition test rejects the site chosen by `geometry_coupled` in 16 of the 299
+  rooms where it plans a transition (5.4%, Wilson 95% [3.3%, 8.5%]), and the
+  site chosen by `feasibility_coupled` in the same 16; every rejection is by
+  observability, none by a module trajectory or the verification maneuver.
+  The treatment plans 5 of those 16 and cannot plan 18 of all 300. Reported
+  in the paper exactly as declared, as a planner-decision rate on one
+  generator.
+- Route-first retry (`studies/route_first_retry/`): tuning is in progress on
+  out-of-design layouts; the declared design-layout run follows. A trace on the
+  same tuning layouts (`tuning_failure_trace.json`) corrected the paper's
+  account of why the frozen single-route rung fails.
+
 **`confirmatory_v3` running at `8a53344`, resumed after a host sleep
 (2026-11-04).** Launched 00:09 UTC 2026-11-02 after the full container suite;
 its planner manipulation check passed before any trial (41 of 45 manipulated
