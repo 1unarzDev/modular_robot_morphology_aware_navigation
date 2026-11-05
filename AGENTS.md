@@ -18,8 +18,12 @@ placement-robust station prediction (`43255f7`), 4x finer localization map
 (`9371593`), and RPP's narrow rotation no longer ratcheting on odometry
 (`971affb`; the narrow odometry over-reports ~0.2 rad/s, still unexplained).
 
-**Resume here (2026-11-05 05:00 UTC): only the confirmatory is still running.**
-543/720 at 04:33 UTC, blind check clean, ~25 trials/h, ETA ~12:00 UTC. Both
+**Resume here (2026-11-05 08:45 UTC): only the confirmatory is still running.**
+653/720 at 08:40 UTC, blind check clean at 601 (9 pre-mission retries, no
+infrastructure failure), ~26 trials/h, ETA ~11:15 UTC. It runs as a
+WMI-created `wsl.exe` (PID 31476) with `keep_awake.ps1` watching it, so it
+outlives the session; check the "done" marker in
+`results/run_confirmatory_v3.launch.log` first. Both
 exploratory studies are done, committed, and fill their Discussion paragraphs
 through `paper/conference/exploratory_macros.tex` (see `docs/current_status.md`).
 When the campaign's "done" marker appears: `tools/finish_confirmatory_v3.sh`,

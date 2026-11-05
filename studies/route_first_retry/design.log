@@ -1,0 +1,124 @@
+layout 1/60
+layout 2/60
+layout 3/60
+layout 4/60
+layout 5/60
+layout 6/60
+layout 7/60
+layout 8/60
+layout 9/60
+layout 10/60
+layout 11/60
+layout 12/60
+layout 13/60
+layout 14/60
+layout 15/60
+layout 16/60
+layout 17/60
+layout 18/60
+layout 19/60
+layout 20/60
+layout 21/60
+layout 22/60
+layout 23/60
+layout 24/60
+layout 25/60
+layout 26/60
+layout 27/60
+layout 28/60
+layout 29/60
+layout 30/60
+layout 31/60
+layout 32/60
+layout 33/60
+layout 34/60
+layout 35/60
+layout 36/60
+layout 37/60
+layout 38/60
+layout 39/60
+layout 40/60
+layout 41/60
+layout 42/60
+layout 43/60
+layout 44/60
+layout 45/60
+layout 46/60
+layout 47/60
+layout 48/60
+layout 49/60
+layout 50/60
+layout 51/60
+layout 52/60
+layout 53/60
+layout 54/60
+layout 55/60
+layout 56/60
+layout 57/60
+layout 58/60
+layout 59/60
+layout 60/60
+{
+  "layouts": 60,
+  "planned_within_k_routes": {
+    "1": 5,
+    "2": 7,
+    "3": 9,
+    "4": 15,
+    "5": 17,
+    "6": 21,
+    "7": 24,
+    "8": 27,
+    "9": 27,
+    "10": 29,
+    "11": 31,
+    "12": 31,
+    "13": 31,
+    "14": 31,
+    "15": 31,
+    "16": 33,
+    "17": 34,
+    "18": 34,
+    "19": 34,
+    "20": 34
+  },
+  "treatment_planned": 56,
+  "both_planned": 34,
+  "cost_ratio_to_treatment": [
+    0.9896,
+    0.9908,
+    0.9919,
+    0.9935,
+    0.9939,
+    0.9947,
+    0.9955,
+    0.9956,
+    0.9967,
+    0.9972,
+    0.9974,
+    0.9974,
+    0.9976,
+    0.9976,
+    0.998,
+    0.998,
+    0.9982,
+    0.9986,
+    0.9994,
+    0.9994,
+    0.9999,
+    1.0015,
+    1.0015,
+    1.0015,
+    1.0019,
+    1.0021,
+    1.0035,
+    1.0041,
+    1.0045,
+    1.0045,
+    1.0048,
+    1.0049,
+    1.0082,
+    1.0129
+  ],
+  "same_site_as_treatment": 33
+}
