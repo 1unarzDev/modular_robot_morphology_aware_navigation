@@ -1,0 +1,3983 @@
+{
+  "design_hash": "c939f12699e1eca0e7f74bfe9f5dc0ef69343c92fe82c1ce95e5c6af1dad5734",
+  "layout_generator": 3,
+  "layouts": [
+    {
+      "family": "reconfiguration_workspace",
+      "layout_index": 20,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 63
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 75
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 72
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 77
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 79
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 50.14
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 109.7887,
+        "planned": true,
+        "route_signature": "f270d42b26f3e9098b9c1f68aa5e4de7f3db60cb85a66121eee14fba41cf36f6",
+        "transition_site": [
+          25,
+          12
+        ]
+      },
+      "world_seed": 6452264661041705211
+    },
+    {
+      "family": "reconfiguration_workspace",
+      "layout_index": 21,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 87
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 82
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 76
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 73.11
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 111.1372,
+        "planned": true,
+        "route_signature": "42a2bb88ed6162cc25bf93fe67c0da27fd34de57090c57f1d5e0ce119658d354",
+        "transition_site": [
+          17,
+          15
+        ]
+      },
+      "world_seed": 9609317463055704554
+    },
+    {
+      "family": "reconfiguration_workspace",
+      "layout_index": 22,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 61
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 62.79
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 109.4031,
+        "planned": true,
+        "route_signature": "ee94e5f3393ad17ee5f59e26eadcd274507a1977827b7e9c6d6eb78d2645274b",
+        "transition_site": [
+          12,
+          21
+        ]
+      },
+      "world_seed": 914206906235373111
+    },
+    {
+      "family": "reconfiguration_workspace",
+      "layout_index": 23,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 73
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 89
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": true,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 109.22
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 110.5712,
+        "planned": true,
+        "route_signature": "d6ee4170a7307a40bfa50ee1fa9872c08696be6c4cdffe1af30007e936eeee51",
+        "transition_site": [
+          20,
+          21
+        ]
+      },
+      "world_seed": 8966094527322962932
+    },
+    {
+      "family": "reconfiguration_workspace",
+      "layout_index": 24,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 73
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 76
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 76
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 73
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 85
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 95
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 72
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 95
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 116.2
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 109.9549,
+        "planned": true,
+        "route_signature": "e053926ef6f41df6c67433eefa9716e64576da7fbe3c7d6fcc5092e17ed1ea6d",
+        "transition_site": [
+          30,
+          21
+        ]
+      },
+      "world_seed": 10418073680994001822
+    },
+    {
+      "family": "reconfiguration_workspace",
+      "layout_index": 25,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 76
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 79
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 73
+          },
+          {
+            "adapted": true,
+            "repeat": false,
+            "route_cells": 65
+          }
+        ],
+        "cost": 109.429,
+        "planned": true,
+        "route_signature": "4667d266df67efea58302c52e809f1504d8324b2351dcd70e42270f1aa7750c8",
+        "seconds": 40.27,
+        "transition_site": [
+          20,
+          16
+        ]
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 109.7386,
+        "planned": true,
+        "route_signature": "e0ef53b5d3a0520bd07ce24a9c5c2d70f99bda67a3c9123619d047f1c831ec11",
+        "transition_site": [
+          20,
+          16
+        ]
+      },
+      "world_seed": 1415680467817008301
+    },
+    {
+      "family": "reconfiguration_workspace",
+      "layout_index": 26,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 76
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 80
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 78
+          },
+          {
+            "adapted": true,
+            "repeat": false,
+            "route_cells": 66
+          }
+        ],
+        "cost": 110.2972,
+        "planned": true,
+        "route_signature": "a61fe411be977842dbf198d5b03155949052874026f3c815aabb8118aafce99f",
+        "seconds": 78.28,
+        "transition_site": [
+          13,
+          21
+        ]
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 110.8898,
+        "planned": true,
+        "route_signature": "2556aad7e7d11f76c40cb9c608f4bcf307aa28ea2843231b7f5742cb91168170",
+        "transition_site": [
+          13,
+          21
+        ]
+      },
+      "world_seed": 8144083920873591073
+    },
+    {
+      "family": "reconfiguration_workspace",
+      "layout_index": 27,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 65
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 72
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 80
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 84
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          },
+          {
+            "adapted": true,
+            "repeat": false,
+            "route_cells": 63
+          }
+        ],
+        "cost": 109.3673,
+        "planned": true,
+        "route_signature": "a45759acba476aab069efc5298c3fde619ad4954d1b4b9e648a50d10c4e6eeda",
+        "seconds": 65.31,
+        "transition_site": [
+          16,
+          19
+        ]
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 109.677,
+        "planned": true,
+        "route_signature": "6c5056967d779eb7853e3f237b95c3788cc4dbe6c737d80348afa45699a7f0d6",
+        "transition_site": [
+          16,
+          19
+        ]
+      },
+      "world_seed": 11014014435664512723
+    },
+    {
+      "family": "reconfiguration_workspace",
+      "layout_index": 28,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 65
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 63
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 65
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 65
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 77
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 77
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 63
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 63
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 78.31
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 109.4217,
+        "planned": true,
+        "route_signature": "0b81c1b33d80072f7e0416d0c622b0e3ba2dc9d395605599763745c5677036bc",
+        "transition_site": [
+          28,
+          26
+        ]
+      },
+      "world_seed": 2063678662836428358
+    },
+    {
+      "family": "reconfiguration_workspace",
+      "layout_index": 29,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": true,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 75
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 65
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 73
+          },
+          {
+            "adapted": true,
+            "repeat": false,
+            "route_cells": 62
+          }
+        ],
+        "cost": 108.9827,
+        "planned": true,
+        "route_signature": "253e73dec6bcce456892e30c9bb82457a4ae61abc1db66b087ad7c8cb17cfcb2",
+        "seconds": 111.53,
+        "transition_site": [
+          17,
+          25
+        ]
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 109.3808,
+        "planned": true,
+        "route_signature": "6bda26feaca69669233534558bf5f0a9eaf6eabefa903108ac9a40619281713a",
+        "transition_site": [
+          17,
+          25
+        ]
+      },
+      "world_seed": 13817328886010664902
+    },
+    {
+      "family": "reconfiguration_workspace",
+      "layout_index": 30,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": true,
+            "repeat": false,
+            "route_cells": 63
+          }
+        ],
+        "cost": 108.7157,
+        "planned": true,
+        "route_signature": "33bf6fd3237ebcd10826b3b435493739a0f3d35a53951c482c14023475c181be",
+        "seconds": 0.19,
+        "transition_site": [
+          16,
+          15
+        ]
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 108.5243,
+        "planned": true,
+        "route_signature": "d778e1c267e68b4c38e6a1dd8c332eb9942383ab6b879e7894edbf6f5304d868",
+        "transition_site": [
+          16,
+          15
+        ]
+      },
+      "world_seed": 16071440713578584278
+    },
+    {
+      "family": "reconfiguration_workspace",
+      "layout_index": 31,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 77
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 76
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 81
+          },
+          {
+            "adapted": true,
+            "repeat": false,
+            "route_cells": 67
+          }
+        ],
+        "cost": 110.3281,
+        "planned": true,
+        "route_signature": "9e04b3d6bb1d356880c0f5cc874126adc1a2c11e154465a29ddc1ac6680f9721",
+        "seconds": 77.23,
+        "transition_site": [
+          19,
+          18
+        ]
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 110.7879,
+        "planned": true,
+        "route_signature": "f6d2462717fa3942e38b2a7296b21ec08f7c518d5c8d0d4ddd415cfdf12a106c",
+        "transition_site": [
+          19,
+          18
+        ]
+      },
+      "world_seed": 9657034550965670199
+    },
+    {
+      "family": "reconfiguration_workspace",
+      "layout_index": 32,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 78
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 89
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 75
+          },
+          {
+            "adapted": true,
+            "repeat": false,
+            "route_cells": 69
+          }
+        ],
+        "cost": 110.3424,
+        "planned": true,
+        "route_signature": "fd0a9572b1349dd499912e7a3e1d506eb5c3c0cb2f15989049f4f5d7af732ba5",
+        "seconds": 39.16,
+        "transition_site": [
+          29,
+          14
+        ]
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 109.7383,
+        "planned": true,
+        "route_signature": "7c491e0378062b17d8ba41adcfcab2bf10fcdc8b2a3f6a69208ab16fd4b3dbf1",
+        "transition_site": [
+          29,
+          14
+        ]
+      },
+      "world_seed": 745805700491551448
+    },
+    {
+      "family": "reconfiguration_workspace",
+      "layout_index": 33,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 78
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 76
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 73
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 90.08
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 110.3504,
+        "planned": true,
+        "route_signature": "08bb786c14b96d5020740585bee6c55ba9379d40939078be916516f3ba898e23",
+        "transition_site": [
+          16,
+          21
+        ]
+      },
+      "world_seed": 991767103237362043
+    },
+    {
+      "family": "reconfiguration_workspace",
+      "layout_index": 34,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 72
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 77
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 88
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 72
+          },
+          {
+            "adapted": true,
+            "repeat": false,
+            "route_cells": 69
+          }
+        ],
+        "cost": 111.3658,
+        "planned": true,
+        "route_signature": "58b55cc26ffbbbeddbb237b7e2cb323dacdeacb4448b087baaa9866a3c7aa84c",
+        "seconds": 404.41,
+        "transition_site": [
+          17,
+          26
+        ]
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 110.8852,
+        "planned": true,
+        "route_signature": "2540c9d0e0640a60efe2771c4102d5e9a34ec1086280b5f0d38e4b1b35ab0872",
+        "transition_site": [
+          17,
+          26
+        ]
+      },
+      "world_seed": 8884489414424825616
+    },
+    {
+      "family": "reconfiguration_workspace",
+      "layout_index": 35,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 65
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 72
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          },
+          {
+            "adapted": true,
+            "repeat": false,
+            "route_cells": 65
+          }
+        ],
+        "cost": 108.9896,
+        "planned": true,
+        "route_signature": "b757ecd1e3fcd72c4d568fe823fa19a369dca4ed85df722057c130de54ab015b",
+        "seconds": 107.53,
+        "transition_site": [
+          18,
+          13
+        ]
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 109.6974,
+        "planned": true,
+        "route_signature": "1c8c0d50b3650769f35ae182d6a6503586c925fc67ee433e8a528de2648c3c59",
+        "transition_site": [
+          18,
+          13
+        ]
+      },
+      "world_seed": 32726252968865479
+    },
+    {
+      "family": "reconfiguration_workspace",
+      "layout_index": 36,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 73
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 73
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 77
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 73
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 76
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 80
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 80
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 197.13
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 110.3058,
+        "planned": true,
+        "route_signature": "211b08c580ca6356a3a8e33e0fe8bcd4161437214af8158fc58c69642dab60c9",
+        "transition_site": [
+          26,
+          14
+        ]
+      },
+      "world_seed": 7607985018199497609
+    },
+    {
+      "family": "reconfiguration_workspace",
+      "layout_index": 37,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 59
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 61
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 76
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 60
+          },
+          {
+            "adapted": false,
+            "repeat": true,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": true,
+            "route_cells": 61
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 109.36
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 108.9699,
+        "planned": true,
+        "route_signature": "da61226135bdf9651f65a9213a7152a56cc601e1e45ca67109826a4280a65483",
+        "transition_site": [
+          17,
+          11
+        ]
+      },
+      "world_seed": 7315389292614541309
+    },
+    {
+      "family": "reconfiguration_workspace",
+      "layout_index": 38,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 73
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 76
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 81
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 73
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 81
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 73
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 204.42
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 111.2034,
+        "planned": true,
+        "route_signature": "550989f651f7782f8e9592b41814479f39a7cc595245d2ce694abe78736a8e5e",
+        "transition_site": [
+          15,
+          18
+        ]
+      },
+      "world_seed": 17117180124002771691
+    },
+    {
+      "family": "reconfiguration_workspace",
+      "layout_index": 39,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": true,
+            "repeat": false,
+            "route_cells": 63
+          }
+        ],
+        "cost": 108.6272,
+        "planned": true,
+        "route_signature": "8d7b29f78b6087562c93bdc242f748bdee68febd0f16f20857ca630c6ec84dbc",
+        "seconds": 0.66,
+        "transition_site": [
+          19,
+          22
+        ]
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 108.1838,
+        "planned": true,
+        "route_signature": "5709a235cbb2739137be6f4e7e7082c3c5c7cdfb6881a4e13cd1c8cb86e654e4",
+        "transition_site": [
+          19,
+          22
+        ]
+      },
+      "world_seed": 6326617195635896661
+    },
+    {
+      "family": "docking_observability",
+      "layout_index": 20,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 63
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 65
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 65
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 75
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 77
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 72
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 155.66
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 109.4259,
+        "planned": true,
+        "route_signature": "4b90060a62e012f4e3ad837b5823eb22cff193652c29a4c4d3fed84e86306b45",
+        "transition_site": [
+          33,
+          17
+        ]
+      },
+      "world_seed": 13930865824733339563
+    },
+    {
+      "family": "docking_observability",
+      "layout_index": 21,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 76
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 89
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 73
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 162.55
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 113.7524,
+        "planned": true,
+        "route_signature": "0c5ef23de53d220d6ba1091a930f9cf5950144cd7164b4df15a273005f4aa1f1",
+        "transition_site": [
+          26,
+          12
+        ]
+      },
+      "world_seed": 11861467480861772580
+    },
+    {
+      "family": "docking_observability",
+      "layout_index": 22,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 65
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 73
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 75
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 76
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 276.5
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 112.9452,
+        "planned": true,
+        "route_signature": "d39ca702a409226054cbc73f0adb23a9a2f6189083f9d32e941ea492025de343",
+        "transition_site": [
+          21,
+          13
+        ]
+      },
+      "world_seed": 7692329873361232432
+    },
+    {
+      "family": "docking_observability",
+      "layout_index": 23,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 72
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 84
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 83
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 153.07
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 111.5875,
+        "planned": true,
+        "route_signature": "4d0907236c8f0b7e357db805339e56b71a0d55dcc4a09eaa7edaf83d2f839195",
+        "transition_site": [
+          21,
+          16
+        ]
+      },
+      "world_seed": 336039782062358857
+    },
+    {
+      "family": "docking_observability",
+      "layout_index": 24,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 65
+          },
+          {
+            "adapted": true,
+            "repeat": false,
+            "route_cells": 60
+          }
+        ],
+        "cost": 108.3105,
+        "planned": true,
+        "route_signature": "8fb98f35cbc0e8931f3b5c4feac100cbfeabe669c792f60ffef7aff124327802",
+        "seconds": 3.07,
+        "transition_site": [
+          32,
+          23
+        ]
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 108.4875,
+        "planned": true,
+        "route_signature": "91235258a2dcea10adc5cfeef00c79f2dcd374773ac8182cb2fa3c49b567e6c1",
+        "transition_site": [
+          32,
+          23
+        ]
+      },
+      "world_seed": 6768766176425343240
+    },
+    {
+      "family": "docking_observability",
+      "layout_index": 25,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 83
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 93
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 249.84
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 113.6604,
+        "planned": true,
+        "route_signature": "ea9d9779a4a154f36832a3b41b6e93d4c68f081e30cf7a8ae2988b3aef4bbbbd",
+        "transition_site": [
+          23,
+          11
+        ]
+      },
+      "world_seed": 15973892968551374399
+    },
+    {
+      "family": "docking_observability",
+      "layout_index": 26,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          },
+          {
+            "adapted": false,
+            "repeat": true,
+            "route_cells": 68
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 76
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 77
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 72
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 77
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 73
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 85
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 76
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 144.59
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 110.5745,
+        "planned": true,
+        "route_signature": "c6cad162b3e8bf7ca3e82901a06981ab45958a84a46563b800ec614f8ef4b299",
+        "transition_site": [
+          28,
+          12
+        ]
+      },
+      "world_seed": 6782591588287322107
+    },
+    {
+      "family": "docking_observability",
+      "layout_index": 27,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 76
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 79
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 85
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 86
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 242.97
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 116.0096,
+        "planned": true,
+        "route_signature": "a2713aabe6d5f182329ffb57d9a71e762bd435124d00b0d5afbd67194dc95b89",
+        "transition_site": [
+          25,
+          11
+        ]
+      },
+      "world_seed": 1571691766825718004
+    },
+    {
+      "family": "docking_observability",
+      "layout_index": 28,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 77
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 80
+          },
+          {
+            "adapted": true,
+            "repeat": false,
+            "route_cells": 63
+          }
+        ],
+        "cost": 108.6418,
+        "planned": true,
+        "route_signature": "58967aa240b0b718832c0b4bd8b00887715375a0a074b78cb95727140efb2648",
+        "seconds": 231.49,
+        "transition_site": [
+          28,
+          25
+        ]
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 109.04,
+        "planned": true,
+        "route_signature": "b6afcc0d1062ef15df7d92364ea39ae93640be2240a792c42cdc85d5c8a6dfe3",
+        "transition_site": [
+          28,
+          25
+        ]
+      },
+      "world_seed": 18145902568108498797
+    },
+    {
+      "family": "docking_observability",
+      "layout_index": 29,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 65
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 63
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 65
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 73
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 72
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 72
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 65
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 177.82
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 112.2356,
+        "planned": true,
+        "route_signature": "cdde6fd6694c3d457e49f1b25ee1de9504b6a22cb99596e7a3212d83321c5b96",
+        "transition_site": [
+          22,
+          11
+        ]
+      },
+      "world_seed": 4046704620607570100
+    },
+    {
+      "family": "docking_observability",
+      "layout_index": 30,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 65
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 79
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 65
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 168.51
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 112.2333,
+        "planned": true,
+        "route_signature": "11f1d66597fa9508380ea6cec6aa554794d4d47d257b51c973de7e165373e32b",
+        "transition_site": [
+          27,
+          13
+        ]
+      },
+      "world_seed": 6320140426245191131
+    },
+    {
+      "family": "docking_observability",
+      "layout_index": 31,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 77
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 85
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 65
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 80
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 284.79
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 113.8159,
+        "planned": true,
+        "route_signature": "d0132fb3a637d82c274db1728d167e222acc6c81231f64db948e91be2e3f552d",
+        "transition_site": [
+          24,
+          19
+        ]
+      },
+      "world_seed": 3665808988351938810
+    },
+    {
+      "family": "docking_observability",
+      "layout_index": 32,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": true,
+            "repeat": false,
+            "route_cells": 69
+          }
+        ],
+        "cost": 108.9181,
+        "planned": true,
+        "route_signature": "27a98bce168fb890b0a5fcdec98968d1f36ebbbd00f11a8e09c3206167288fc5",
+        "seconds": 0.63,
+        "transition_site": [
+          33,
+          15
+        ]
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 109.2412,
+        "planned": true,
+        "route_signature": "31b9e38d980eff647cb5bb606812c52d869cd250a52dcbd54fb636682e219555",
+        "transition_site": [
+          33,
+          15
+        ]
+      },
+      "world_seed": 13528960754860539541
+    },
+    {
+      "family": "docking_observability",
+      "layout_index": 33,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": true,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 85
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 76
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 231.65
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 112.2215,
+        "planned": true,
+        "route_signature": "2f6396a2fa0f6fead25dd24cea8250468535b30cdc5f0a11aa3b8f3c67810e72",
+        "transition_site": [
+          21,
+          11
+        ]
+      },
+      "world_seed": 14732472422480875420
+    },
+    {
+      "family": "docking_observability",
+      "layout_index": 34,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 65
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 73
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 63
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 92
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 63
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 161.94
+      },
+      "sensing_feasibility_coupled": {
+        "error": "NoPathError: no collision-free hybrid plan",
+        "planned": false
+      },
+      "world_seed": 847461959187894190
+    },
+    {
+      "family": "docking_observability",
+      "layout_index": 35,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 65
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 63
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 73
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 89
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 80
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 65
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 225.66
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 110.7591,
+        "planned": true,
+        "route_signature": "c373cf8ab57e784e23c25cb663a35b1c411b7afc7b4eae50c4e70ff7c284967a",
+        "transition_site": [
+          29,
+          12
+        ]
+      },
+      "world_seed": 177845505606743753
+    },
+    {
+      "family": "docking_observability",
+      "layout_index": 36,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 76
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 63
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 63
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 90
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 231.89
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 109.6694,
+        "planned": true,
+        "route_signature": "ce08096f9cbe2447f6bba403bced1679128afa477ee85ae345e0a1c28ed64d0d",
+        "transition_site": [
+          25,
+          20
+        ]
+      },
+      "world_seed": 17106216918032761143
+    },
+    {
+      "family": "docking_observability",
+      "layout_index": 37,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 72
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 79
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 79
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 72
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 87
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 1249.41
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 112.6432,
+        "planned": true,
+        "route_signature": "c77337eb568a3b76435f4dc310c882685c835e1fb7ebdcacd1381b45796fb104",
+        "transition_site": [
+          20,
+          11
+        ]
+      },
+      "world_seed": 11094653736807569252
+    },
+    {
+      "family": "docking_observability",
+      "layout_index": 38,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 78
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 81
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 83
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 61.89
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 112.0521,
+        "planned": true,
+        "route_signature": "74846c9665753e6716771854ebb0e8070412154004fd9a41f102995f91458ce5",
+        "transition_site": [
+          28,
+          16
+        ]
+      },
+      "world_seed": 8355867038861131820
+    },
+    {
+      "family": "docking_observability",
+      "layout_index": 39,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 65
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 81
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 43.12
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 111.5308,
+        "planned": true,
+        "route_signature": "80e7cee7490ae51df62fcf6d7ee20281dd6bcc9ca0125230929dc93474f08705",
+        "transition_site": [
+          21,
+          14
+        ]
+      },
+      "world_seed": 16323775088200151996
+    },
+    {
+      "family": "combined_constraints",
+      "layout_index": 20,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 76
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 75
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 79
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 83
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 52.34
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 109.3139,
+        "planned": true,
+        "route_signature": "31bbdba5802eb384241fec86bb78e3a78e07e30cf6792d6183d388d5d2e0c079",
+        "transition_site": [
+          32,
+          17
+        ]
+      },
+      "world_seed": 6649486888782203975
+    },
+    {
+      "family": "combined_constraints",
+      "layout_index": 21,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 65
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 75
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 77
+          },
+          {
+            "adapted": true,
+            "repeat": false,
+            "route_cells": 65
+          }
+        ],
+        "cost": 110.1363,
+        "planned": true,
+        "route_signature": "bc697ccdfd8fcba9b397ae0d95bb8283a0c308f0b75eaf5e7e661d5284befbdd",
+        "seconds": 77.5,
+        "transition_site": [
+          14,
+          26
+        ]
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 110.1811,
+        "planned": true,
+        "route_signature": "e2dcac75e52a448e243191072b5d87973b19b1cc1e072151dd541f61e940a4d0",
+        "transition_site": [
+          12,
+          25
+        ]
+      },
+      "world_seed": 16662083915398789402
+    },
+    {
+      "family": "combined_constraints",
+      "layout_index": 22,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 60
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 80
+          },
+          {
+            "adapted": true,
+            "repeat": false,
+            "route_cells": 60
+          }
+        ],
+        "cost": 110.0874,
+        "planned": true,
+        "route_signature": "6d2a586b68c22f903ecdd64072fe8cadc273349a80614d7f4c0587fbca45abf4",
+        "seconds": 65.61,
+        "transition_site": [
+          15,
+          16
+        ]
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 109.1334,
+        "planned": true,
+        "route_signature": "6362d1e61865418ab41beee775f5f705a8a9c2cd983dc63d2c6ec554a424708d",
+        "transition_site": [
+          15,
+          17
+        ]
+      },
+      "world_seed": 11548655944947948430
+    },
+    {
+      "family": "combined_constraints",
+      "layout_index": 23,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 65
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 76
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 76
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 123.11
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 110.0853,
+        "planned": true,
+        "route_signature": "eac3b2b95c6dcc159342f80e238082fd96ad534ac53fac37056e43c21b8e461d",
+        "transition_site": [
+          13,
+          24
+        ]
+      },
+      "world_seed": 7362912898083045893
+    },
+    {
+      "family": "combined_constraints",
+      "layout_index": 24,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 59
+          },
+          {
+            "adapted": false,
+            "repeat": true,
+            "route_cells": 59
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 63
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 63
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 76
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 61
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 72
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 61
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 61
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 69.08
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 108.3328,
+        "planned": true,
+        "route_signature": "af1f75e7c1c4f232cb4dfe824b958247ae003626a1367c7feb24bc154b8d549e",
+        "transition_site": [
+          29,
+          13
+        ]
+      },
+      "world_seed": 11879711320660893191
+    },
+    {
+      "family": "combined_constraints",
+      "layout_index": 25,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 76
+          },
+          {
+            "adapted": false,
+            "repeat": true,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 79
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 75
+          },
+          {
+            "adapted": true,
+            "repeat": false,
+            "route_cells": 67
+          }
+        ],
+        "cost": 112.0754,
+        "planned": true,
+        "route_signature": "b9bb789529515b7d07da2c9c93e04fffe34259298158023604653c5cfbbf7274",
+        "seconds": 76.76,
+        "transition_site": [
+          13,
+          18
+        ]
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 110.8279,
+        "planned": true,
+        "route_signature": "b3ae3f5f7a47eb1c215af438da82dc0b2a660f73dbfdd60a015fd1e0c7cc0431",
+        "transition_site": [
+          13,
+          19
+        ]
+      },
+      "world_seed": 12453996133040998275
+    },
+    {
+      "family": "combined_constraints",
+      "layout_index": 26,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": true,
+            "repeat": false,
+            "route_cells": 62
+          }
+        ],
+        "cost": 109.31,
+        "planned": true,
+        "route_signature": "d3d7e782d81b768005def94437946973a848663e50f7b943ffe2e59e6e48368f",
+        "seconds": 0.26,
+        "transition_site": [
+          14,
+          18
+        ]
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 108.6144,
+        "planned": true,
+        "route_signature": "fd3b9c2340a58b57c4f7aa7dafd3cb18e7cebdb5577cf28d2a3082b67c112126",
+        "transition_site": [
+          14,
+          18
+        ]
+      },
+      "world_seed": 5404468230196160181
+    },
+    {
+      "family": "combined_constraints",
+      "layout_index": 27,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 83
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 72
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 45.62
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 112.1945,
+        "planned": true,
+        "route_signature": "10db809fd258124b85c061ecf0669e3045d5b81763a93f00f75216bfb8d7e1ba",
+        "transition_site": [
+          12,
+          15
+        ]
+      },
+      "world_seed": 12683436055715491910
+    },
+    {
+      "family": "combined_constraints",
+      "layout_index": 28,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 61
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 59
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 63
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 63
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": true,
+            "route_cells": 69
+          },
+          {
+            "adapted": true,
+            "repeat": false,
+            "route_cells": 61
+          }
+        ],
+        "cost": 109.2643,
+        "planned": true,
+        "route_signature": "ed543c6dae9eac22b5e9eb4c85f77c969633d8a644e790eb293a3f5958a5c0e8",
+        "seconds": 106.02,
+        "transition_site": [
+          31,
+          13
+        ]
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 108.3063,
+        "planned": true,
+        "route_signature": "da06628bcab735e3c8a8a836887ca7446b55296b8f3f3492c64b8390fa4a4b16",
+        "transition_site": [
+          31,
+          13
+        ]
+      },
+      "world_seed": 13208499676403893816
+    },
+    {
+      "family": "combined_constraints",
+      "layout_index": 29,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 65
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 75
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 77
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 77
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 50.3
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 110.1014,
+        "planned": true,
+        "route_signature": "1873a048875237671ea027d025fd774831610e6a695e2008bc9eda711c08f1b6",
+        "transition_site": [
+          15,
+          16
+        ]
+      },
+      "world_seed": 15045087079430774281
+    },
+    {
+      "family": "combined_constraints",
+      "layout_index": 30,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": true,
+            "repeat": false,
+            "route_cells": 62
+          }
+        ],
+        "cost": 110.2627,
+        "planned": true,
+        "route_signature": "ba45edfdb74f0b343c3a65f40a5aa9ef689bf421bdc2c62425ea41b25fdb9458",
+        "seconds": 2.38,
+        "transition_site": [
+          12,
+          15
+        ]
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 110.0656,
+        "planned": true,
+        "route_signature": "dcaa35ae823e6bb724528e67517b12a0037463d7532fa759adaa85f8e242f51b",
+        "transition_site": [
+          12,
+          13
+        ]
+      },
+      "world_seed": 11177579225109467889
+    },
+    {
+      "family": "combined_constraints",
+      "layout_index": 31,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 65
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": true,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 60
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 65.11
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 110.6196,
+        "planned": true,
+        "route_signature": "482592bb98b2a556450d27e0f775f7f0506ddf610e7234e05d6b3977de4bc619",
+        "transition_site": [
+          12,
+          20
+        ]
+      },
+      "world_seed": 3819965883396422450
+    },
+    {
+      "family": "combined_constraints",
+      "layout_index": 32,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": true,
+            "repeat": false,
+            "route_cells": 66
+          }
+        ],
+        "cost": 109.5186,
+        "planned": true,
+        "route_signature": "c76414c179e2cef3448d43f8d8792758f9405258d3813eb754aa22ab80fd1334",
+        "seconds": 1.06,
+        "transition_site": [
+          25,
+          14
+        ]
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 109.6236,
+        "planned": true,
+        "route_signature": "541ca8b6542bc20ea7a89f5214a43c9501ccfc8ace01c12b1e07f17001ba5ce0",
+        "transition_site": [
+          25,
+          14
+        ]
+      },
+      "world_seed": 12823730837878083138
+    },
+    {
+      "family": "combined_constraints",
+      "layout_index": 33,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 72
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 75
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 73
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 87
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 59.7
+      },
+      "sensing_feasibility_coupled": {
+        "error": "NoPathError: no collision-free hybrid plan",
+        "planned": false
+      },
+      "world_seed": 16726351948964794850
+    },
+    {
+      "family": "combined_constraints",
+      "layout_index": 34,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 63
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 61
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 64
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 73
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 66
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 63.87
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 111.58,
+        "planned": true,
+        "route_signature": "c0ee11df310a10906df5a9a6e106293710aa65941b95a55c480bd431b7202987",
+        "transition_site": [
+          12,
+          19
+        ]
+      },
+      "world_seed": 5259877899411858086
+    },
+    {
+      "family": "combined_constraints",
+      "layout_index": 35,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 81
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 86
+          },
+          {
+            "adapted": true,
+            "repeat": false,
+            "route_cells": 67
+          }
+        ],
+        "cost": 111.0354,
+        "planned": true,
+        "route_signature": "42c4a891edfb9ffeac3ca912ea3f014a6fe6e40b3fcbf3c2d49e8e3a56b665e5",
+        "seconds": 129.28,
+        "transition_site": [
+          17,
+          26
+        ]
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 110.9206,
+        "planned": true,
+        "route_signature": "c78c14a023ecda019243cf46b016c78ff77a08a0a699568fd54cdd4589aa7b29",
+        "transition_site": [
+          16,
+          25
+        ]
+      },
+      "world_seed": 16910600067965033704
+    },
+    {
+      "family": "combined_constraints",
+      "layout_index": 36,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 58
+          },
+          {
+            "adapted": false,
+            "repeat": true,
+            "route_cells": 58
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 60
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 70
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 60
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 60
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 84
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 38.62
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 107.8096,
+        "planned": true,
+        "route_signature": "78f9e1e5f7f26e27290a763ec4e650c03f6bc67eef8ba3c862a336efa0051436",
+        "transition_site": [
+          31,
+          16
+        ]
+      },
+      "world_seed": 16489257992820141163
+    },
+    {
+      "family": "combined_constraints",
+      "layout_index": 37,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": true,
+            "repeat": false,
+            "route_cells": 64
+          }
+        ],
+        "cost": 108.9765,
+        "planned": true,
+        "route_signature": "2618012463e969512f9178feb74c8e05a0f4268a46fe4703f18830485f717391",
+        "seconds": 0.27,
+        "transition_site": [
+          15,
+          20
+        ]
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 108.5332,
+        "planned": true,
+        "route_signature": "1e5095a2dca0843aef072dc8d71f543c84abebe53bb6e701c292bbee4da9d800",
+        "transition_site": [
+          15,
+          20
+        ]
+      },
+      "world_seed": 5953379600223347387
+    },
+    {
+      "family": "combined_constraints",
+      "layout_index": 38,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 61
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 59
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 61
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 68
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 61
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 71
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 59
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 58
+          },
+          {
+            "adapted": false,
+            "repeat": true,
+            "route_cells": 59
+          },
+          {
+            "adapted": false,
+            "repeat": true,
+            "route_cells": 58
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 63.09
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 111.9617,
+        "planned": true,
+        "route_signature": "3ac2ee79c21c688992ea83aae82aad6d680c0b6c8e2ce77a5afb87b869ce7cc3",
+        "transition_site": [
+          12,
+          20
+        ]
+      },
+      "world_seed": 2232091005481341784
+    },
+    {
+      "family": "combined_constraints",
+      "layout_index": 39,
+      "route_first_retry": {
+        "attempts": [
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 60
+          },
+          {
+            "adapted": false,
+            "repeat": true,
+            "route_cells": 60
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 65
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 69
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 63
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 74
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 62
+          },
+          {
+            "adapted": false,
+            "repeat": false,
+            "route_cells": 67
+          }
+        ],
+        "error": "NoPathError: none of 10 spatial routes can be adapted with feasible transitions",
+        "planned": false,
+        "seconds": 117.13
+      },
+      "sensing_feasibility_coupled": {
+        "cost": 109.5512,
+        "planned": true,
+        "route_signature": "3348b793c06584f363e249ac6a0ecb9b659f55b9e7bab134fd2ca9470ca643a4",
+        "transition_site": [
+          12,
+          27
+        ]
+      },
+      "world_seed": 2259754241559085832
+    }
+  ],
+  "parameters": {
+    "epsilon": 2.5,
+    "heading_bins": 8,
+    "max_routes": 10,
+    "penalty_radius": 2,
+    "penalty_weight": 1.0
+  },
+  "purpose": "exploratory_route_first_retry",
+  "sample": "tuning",
+  "schema_version": 1,
+  "summary": {
+    "both_planned": 22,
+    "cost_ratio_to_treatment": [
+      0.9935,
+      0.9947,
+      0.9958,
+      0.9963,
+      0.9964,
+      0.997,
+      0.9972,
+      0.9972,
+      0.9984,
+      0.999,
+      0.9996,
+      1.001,
+      1.0018,
+      1.0018,
+      1.0041,
+      1.0041,
+      1.0043,
+      1.0055,
+      1.0064,
+      1.0087,
+      1.0088,
+      1.0113
+    ],
+    "layouts": 60,
+    "planned_within_k_routes": {
+      "1": 5,
+      "2": 8,
+      "3": 8,
+      "4": 8,
+      "5": 8,
+      "6": 8,
+      "7": 10,
+      "8": 12,
+      "9": 20,
+      "10": 22
+    },
+    "same_site_as_treatment": 17,
+    "treatment_planned": 58
+  }
+}
