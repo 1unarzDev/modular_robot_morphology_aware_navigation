@@ -736,10 +736,14 @@ analysis:
   The treatment plans 5 of those 16 and cannot plan 18 of all 300. Reported
   in the paper exactly as declared, as a planner-decision rate on one
   generator.
-- Route-first retry (`studies/route_first_retry/`): tuning is in progress on
-  out-of-design layouts; the declared design-layout run follows. A trace on the
-  same tuning layouts (`tuning_failure_trace.json`) corrected the paper's
-  account of why the frozen single-route rung fails.
+- Route-first retry (`studies/route_first_retry/`): the declared rule picked
+  configuration B (20 routes, radius 4, weight 2; tuning on 60 out-of-design
+  layouts: A 22, B 37, single route 5). On the 60 design layouts it plans 34
+  (5 with one route, as the manipulation check found), against the treatment's
+  56; where both plan, it uses the treatment's site in 33 of 34 at a median
+  cost ratio of 1.00. Replanning removes part of the rung's planning failures,
+  not most. A trace on the tuning layouts (`tuning_failure_trace.json`)
+  corrected the paper's account of why the single-route rung fails.
 
 **`confirmatory_v3` running at `8a53344`, resumed after a host sleep
 (2026-11-04).** Launched 00:09 UTC 2026-11-02 after the full container suite;

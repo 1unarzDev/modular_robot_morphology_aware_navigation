@@ -18,6 +18,13 @@ placement-robust station prediction (`43255f7`), 4x finer localization map
 (`9371593`), and RPP's narrow rotation no longer ratcheting on odometry
 (`971affb`; the narrow odometry over-reports ~0.2 rad/s, still unexplained).
 
+**Resume here (2026-11-05 05:00 UTC): only the confirmatory is still running.**
+543/720 at 04:33 UTC, blind check clean, ~25 trials/h, ETA ~12:00 UTC. Both
+exploratory studies are done, committed, and fill their Discussion paragraphs
+through `paper/conference/exploratory_macros.tex` (see `docs/current_status.md`).
+When the campaign's "done" marker appears: `tools/finish_confirmatory_v3.sh`,
+then build the paper and write the mechanism paragraph and Discussion.
+
 **2026-11-04 21:50 UTC: both runs were killed at ~09:20 UTC when the launching
 Claude session ended** (`Start-Process` children die with it; last record
 09:18 UTC, 407/720, the newest five parse as JSON; prevalence at 4/300). Both
