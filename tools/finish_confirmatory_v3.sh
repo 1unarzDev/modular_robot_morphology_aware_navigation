@@ -40,6 +40,15 @@ done
 tr -d '\r' < $REPO/paper/conference/make_failure_table.py > /tmp/make_failure_table.py
 python3 /tmp/make_failure_table.py $R/confirmatory_v3_raw \
   $REPO/paper/conference/failure_table.tex $DEST/failure_table.json
+# The declared mechanism rule needs the planner's station prediction at each
+# record's planned sites, so this generator runs in the container on the pinned
+# install (8a53344 has every function it imports, unchanged since).
+tr -d '\r' < $REPO/paper/conference/make_mechanism_table.py > $R/make_mechanism_table.py
+docker exec -w /home/roboboat/morphology_ws $C bash -lc "source /opt/ros/jazzy/setup.bash; source install/setup.bash; \
+  python3 results/confirmatory/make_mechanism_table.py results/confirmatory/confirmatory_v3_raw \
+  studies/confirmatory_v3/design.json results/confirmatory/mechanism_macros.tex results/confirmatory/mechanism.json"
+cp $R/mechanism_macros.tex $REPO/paper/conference/mechanism_macros.tex
+cp $R/mechanism.json $DEST/mechanism.json
 # The exploratory studies are independent of this campaign; regenerating their
 # macros here only keeps the paper's inputs in one place.
 tr -d '\r' < $REPO/paper/conference/make_exploratory_macros.py > /tmp/make_exploratory_macros.py

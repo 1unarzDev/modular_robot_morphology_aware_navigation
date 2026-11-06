@@ -400,6 +400,51 @@ def test_paper_failure_table_counts_status_by_method_and_family(tmp_path):
     assert r"\newcommand{\resTrialsSensingNeutral}{6}" in tex
 
 
+def test_paper_mechanism_counts_follow_the_declared_rule(tmp_path):
+    import importlib.util
+    from pathlib import Path
+    path = Path(__file__).resolve().parents[1] / "paper" / "conference" / "make_mechanism_table.py"
+    spec = importlib.util.spec_from_file_location("make_mechanism_table", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    design = generate_design(layouts_per_family=2, replicates=2)
+    store = TrialStore(tmp_path)
+    for record in _records(design):
+        if (record.spec.trial_id
+                == "reconfiguration_workspace-01-r0-geometry_coupled"):
+            record = replace(record, terminal_status="collision", collision_count=1,
+                             infrastructure_attempts=[{"attempt": 1,
+                                                       "terminal_status": "collision"}])
+        store.write_terminal(record)
+    # Blind at every planned site except in the combined family's replicate 1.
+    seen = []
+
+    def blind(record):
+        seen.append(record["spec"]["layout_id"])
+        return not (record["spec"]["family"] == "combined_constraints"
+                    and record["spec"]["replicate"] == 1)
+
+    scopes = module.tabulate(tmp_path, blind)
+    geometry, feasibility = scopes["Geom"], scopes["Feas"]
+    # Layout 00 is neutral and out of scope; layout 01 fails for every control.
+    assert (geometry["trials"], geometry["failures"], geometry["mechanism_count"]) == (2, 2, 1)
+    assert [e["reason"] for e in geometry["exceptions"]] == ["docking_failure"]
+    assert (feasibility["trials"], feasibility["failures"], feasibility["mechanism_count"]) == (4, 4, 3)
+    assert feasibility["exceptions"] == [{
+        "layout_id": "combined_constraints-01", "replicate": 1,
+        "terminal_status": "docking_failure",
+        "reason": "docking_failure at a site the station is predicted to see"}]
+    assert not any(layout.endswith("-00") for layout in seen)
+    assert module.classify({"terminal_status": "docking_failure"}, "blind_refusal",
+                           lambda record: None).endswith("no planned transition site")
+    tex = module.render(scopes)
+    assert r"\newcommand{\resMechGeomCount}{1}" in tex
+    assert r"\newcommand{\resMechFeasExceptions}{1}" in tex
+    assert ("combined layout 1 replicate 1: docking failure at a site the station "
+            "is predicted to see") in tex
+    assert r"\newcommand{\resMechGeomExceptionList}{workspace layout 1 replicate 1: docking failure}" in tex
+
+
 def test_paper_claim_words_follow_the_declared_interpretation_rules():
     import importlib.util
     from pathlib import Path

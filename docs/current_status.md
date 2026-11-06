@@ -727,6 +727,16 @@ records; the newest six parse. Resumed unchanged at 01:11 UTC 2026-11-06 with
 under `keep_awake.ps1`. As before, the interruption is wall-clock only: no
 outcome was read and an unfinished trial reruns from its seed.
 
+Also before unblinding (no confirmatory record read): the declared mechanism
+rule needs, for `feasibility_coupled`, refusals "at sites the station cannot
+see", which no generator computed. `paper/conference/make_mechanism_table.py`
+now classifies each in-scope failure per record (contact for
+`geometry_coupled` in the workspace family; for `feasibility_coupled` in the
+sensing families, docking refused where `station_observability_audit`,
+given the logged site and heading and no alignment, finds the station predicted
+blind) and lists every exception. `finish_confirmatory_v3.sh` runs it in the
+container; the Results sentence reads its macros.
+
 **2026-11-05: second interruption, and two exploratory planner-only results.**
 `confirmatory_v3` and the prevalence run were both killed at ~09:20 UTC
 2026-11-04 when the Claude session that had launched them with `Start-Process`
