@@ -1,0 +1,3 @@
+outcome,treatment,control,families,layout_count,estimate_treatment_minus_control,ci95_low,ci95_high,permutation_p,holm_adjusted_p
+completion_rate,sensing_feasibility_coupled,geometry_coupled,all,60,0.6777777777777777,0.5611111111111111,0.7944444444444444,9.99990000099999e-06,1.999980000199998e-05
+completion_rate,sensing_feasibility_coupled,feasibility_coupled,combined_constraints;docking_observability,40,0.6416666666666667,0.4916666666666667,0.7916666666666667,9.99990000099999e-06,1.999980000199998e-05

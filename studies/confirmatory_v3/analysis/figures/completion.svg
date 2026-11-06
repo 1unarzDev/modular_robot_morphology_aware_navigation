@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="780" height="340" viewBox="0 0 780 340">
+<title>Mission completion by method</title>
+<rect width="100%" height="100%" fill="white"/>
+<style>text{font-family:system-ui,sans-serif;fill:#172033}.title{font-size:20px;font-weight:700}.label{font-size:12px}.tick{font-size:11px;fill:#526071}.grid{stroke:#dce2e8;stroke-width:1}.axis{stroke:#7b8794;stroke-width:1.2}</style>
+<text class="title" x="24" y="30">Mission completion by method</text>
+<line class="grid" x1="205.0" y1="48" x2="205.0" y2="285"/>
+<text class="tick" x="205.0" y="305" text-anchor="middle">0.0</text>
+<line class="grid" x1="311.0" y1="48" x2="311.0" y2="285"/>
+<text class="tick" x="311.0" y="305" text-anchor="middle">0.2</text>
+<line class="grid" x1="417.0" y1="48" x2="417.0" y2="285"/>
+<text class="tick" x="417.0" y="305" text-anchor="middle">0.4</text>
+<line class="grid" x1="523.0" y1="48" x2="523.0" y2="285"/>
+<text class="tick" x="523.0" y="305" text-anchor="middle">0.6</text>
+<line class="grid" x1="629.0" y1="48" x2="629.0" y2="285"/>
+<text class="tick" x="629.0" y="305" text-anchor="middle">0.8</text>
+<line class="grid" x1="735.0" y1="48" x2="735.0" y2="285"/>
+<text class="tick" x="735.0" y="305" text-anchor="middle">1.0</text>
+<text class="label" x="195" y="84" text-anchor="end">route first</text>
+<rect x="205" y="70" width="44.2" height="20" fill="#64748b" opacity="0.75"/>
+<line x1="213.8" y1="80" x2="284.5" y2="80" stroke="#172033" stroke-width="2"/>
+<line x1="213.8" y1="74" x2="213.8" y2="86" stroke="#172033"/>
+<line x1="284.5" y1="74" x2="284.5" y2="86" stroke="#172033"/>
+<circle cx="249.2" cy="80" r="4" fill="#172033"/>
+<text class="label" x="195" y="136" text-anchor="end">geometry</text>
+<rect x="205" y="122" width="132.5" height="20" fill="#f59e0b" opacity="0.75"/>
+<line x1="284.5" y1="132" x2="399.3" y2="132" stroke="#172033" stroke-width="2"/>
+<line x1="284.5" y1="126" x2="284.5" y2="138" stroke="#172033"/>
+<line x1="399.3" y1="126" x2="399.3" y2="138" stroke="#172033"/>
+<circle cx="337.5" cy="132" r="4" fill="#172033"/>
+<text class="label" x="195" y="188" text-anchor="end">feasibility</text>
+<rect x="205" y="174" width="265.0" height="20" fill="#0ea5e9" opacity="0.75"/>
+<line x1="425.8" y1="184" x2="523.0" y2="184" stroke="#172033" stroke-width="2"/>
+<line x1="425.8" y1="178" x2="425.8" y2="190" stroke="#172033"/>
+<line x1="523.0" y1="178" x2="523.0" y2="190" stroke="#172033"/>
+<circle cx="470.0" cy="184" r="4" fill="#172033"/>
+<text class="label" x="195" y="240" text-anchor="end">sensing feasibility</text>
+<rect x="205" y="226" width="491.7" height="20" fill="#16a34a" opacity="0.75"/>
+<line x1="661.4" y1="236" x2="726.2" y2="236" stroke="#172033" stroke-width="2"/>
+<line x1="661.4" y1="230" x2="661.4" y2="242" stroke="#172033"/>
+<line x1="726.2" y1="230" x2="726.2" y2="242" stroke="#172033"/>
+<circle cx="696.7" cy="236" r="4" fill="#172033"/>
+<text class="label" x="470" y="330" text-anchor="middle">Completion proportion (95% layout-cluster bootstrap CI)</text>
+</svg>

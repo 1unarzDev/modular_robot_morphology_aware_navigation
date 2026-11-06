@@ -1,6 +1,6 @@
 # Current project status
 
-Updated 2026-11-04. This is the authoritative handoff for implementation and
+Updated 2026-11-06. This is the authoritative handoff for implementation and
 evidence state. The ledger rows below were last revised 2026-09-20 except where
 dated; the newest state is the top of "Resume here".
 
@@ -28,12 +28,12 @@ and citations are maintained in the literature review.
 | Navigation | ROS 2 Jazzy, Nav2, lidar/odometry localization, morphology-specific footprints/controllers, collision monitor | Doorway traversal exists only as engineering evidence |
 | Sensing | Wheel odometry and visibility/staleness/covariance-gated connector observations | Connector camera and latch remain idealized; connector visibility is a frustum test with no occlusion and covariance is a function of range alone, so no world geometry can degrade observability anywhere (ADR 0006) |
 | Experiment runner | Deterministic paired seeds, randomized method order, generated SDF/manifests, isolated process launch, immutable terminal records, resumability | Debug runs only; no accepted pilot records |
-| Statistics | Layout-balanced estimands, stratified bootstrap, sign-flip tests, Holm correction, power grids with Wilson bounds, and hierarchical logistic sensitivity analysis | Pipeline-tested; no confirmatory outcomes |
+| Statistics | Layout-balanced estimands, stratified bootstrap, sign-flip tests, Holm correction, power grids with Wilson bounds, and hierarchical logistic sensitivity analysis | Confirmatory analysis run on `confirmatory_v3` (2026-11-06); the hierarchical sensitivity model does not converge under quasi-complete separation |
 
 **As of 2026-11-04** Gate 0 is satisfied on the ADR 0014 platform, the
 `pilot_v3b` pilot is complete (144/144, `studies/pilot_v3b/`), and the frozen
 confirmatory design is `studies/confirmatory_v3/design.json` (720 trials, 60
-layouts, hash `c939f126...`), **running, no outcome read**. The generator-1
+layouts, hash `c939f126...`). **It is complete (720/720, 2026-11-06) and read**: both primary contrasts are established at or above the smallest effect of interest; see the top of "Resume here". The generator-1
 432-trial design `e9115d54...` below is superseded; it never ran a trial.
 
 Read the Gate 0 rows above with the retention finding below: the records
@@ -718,6 +718,30 @@ intends. And it does not revive the lost campaigns: it stands on its own and
 is not comparable to figures that cannot be re-audited.
 
 ## Resume here
+
+**2026-11-06: `confirmatory_v3` complete and read.** 720/720 at 03:15 UTC
+(design `c939f126...`, commit `8a53344`); status check clean (no integrity
+error, wrong hash, pending or unexpected record); records retained and
+verified as `studies/confirmatory_v3/records/confirmatory_v3_raw.tar.xz.part0{0,1,2}`
+against the gate1 audit. 12 launch attempts lost to infrastructure, 11 trials
+retried, none ended as an infrastructure failure. Completion: route first
+15/180, geometry 45/180, feasibility 90/180, treatment 167/180. Primary
+contrasts (frozen analysis, `studies/confirmatory_v3/analysis/`): vs
+`geometry_coupled` +0.678 [0.561, 0.794], vs `feasibility_coupled` (sensing
+families) +0.642 [0.492, 0.792], both Holm p = 2e-5; by the declared rules
+both are "an improvement of at least the smallest effect of interest", so the
+full claim (all families, plus the observability increment in the sensing
+families) is licensed. Family means all positive (+0.58 to +0.75). Mechanism
+rule (`mechanism.json`): 45/45 `geometry_coupled` workspace failures are
+contact, 90/90 `feasibility_coupled` sensing-family failures are refused
+docking at station-blind sites; no exception. Every coupled method completes
+45/45 neutral controls. The treatment's 13 failures: 12 planning (its 4
+unplannable layouts) and 1 controller failure; 0/336 transitions failed. The
+hierarchical sensitivity model does not converge (6/400 and 143/400 refits,
+neither point fit; quasi-complete separation drives the method coefficient to
+its bound of 12); its marginal differences (+0.54, +0.54) agree in sign and,
+by rule, change no claim. The paper's Results and Discussion are filled from
+generated macros (8 pages).
 
 **2026-11-06: third interruption, resumed.** An explicit sleep request (System
 log: Kernel-Power 42 "Sleep Reason: Application API", 187 `SetSuspendState`),

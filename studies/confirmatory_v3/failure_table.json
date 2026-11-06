@@ -1,0 +1,84 @@
+{
+  "counts": {
+    "combined_constraints": {
+      "feasibility_coupled": {
+        "Docking": 45,
+        "trials": 45
+      },
+      "geometry_coupled": {
+        "Docking": 45,
+        "trials": 45
+      },
+      "route_first_adaptation": {
+        "Planning": 45,
+        "trials": 45
+      },
+      "sensing_feasibility_coupled": {
+        "Completed": 35,
+        "Other": 1,
+        "Planning": 9,
+        "trials": 45
+      }
+    },
+    "docking_observability": {
+      "feasibility_coupled": {
+        "Docking": 45,
+        "trials": 45
+      },
+      "geometry_coupled": {
+        "Docking": 45,
+        "trials": 45
+      },
+      "route_first_adaptation": {
+        "Planning": 45,
+        "trials": 45
+      },
+      "sensing_feasibility_coupled": {
+        "Completed": 42,
+        "Planning": 3,
+        "trials": 45
+      }
+    },
+    "neutral": {
+      "feasibility_coupled": {
+        "Completed": 45,
+        "trials": 45
+      },
+      "geometry_coupled": {
+        "Completed": 45,
+        "trials": 45
+      },
+      "route_first_adaptation": {
+        "Completed": 6,
+        "Planning": 39,
+        "trials": 45
+      },
+      "sensing_feasibility_coupled": {
+        "Completed": 45,
+        "trials": 45
+      }
+    },
+    "reconfiguration_workspace": {
+      "feasibility_coupled": {
+        "Completed": 45,
+        "trials": 45
+      },
+      "geometry_coupled": {
+        "Contact": 45,
+        "trials": 45
+      },
+      "route_first_adaptation": {
+        "Completed": 9,
+        "Planning": 36,
+        "trials": 45
+      },
+      "sensing_feasibility_coupled": {
+        "Completed": 45,
+        "trials": 45
+      }
+    }
+  },
+  "other_statuses": {
+    "controller_failure": 1
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "bytes": 107884832,
+  "campaign_digest": "4ccbf7b9d2927da174b20f17e1d4cb18931392966e5fabe52d0b009c4b15fa7f",
+  "campaign_digest_checked": false,
+  "parts": [
+    "confirmatory_v3_raw.tar.xz.part00",
+    "confirmatory_v3_raw.tar.xz.part01",
+    "confirmatory_v3_raw.tar.xz.part02"
+  ],
+  "records": 720,
+  "unaudited_files_retained": 0,
+  "verified": true
+}

@@ -18,18 +18,17 @@ placement-robust station prediction (`43255f7`), 4x finer localization map
 (`9371593`), and RPP's narrow rotation no longer ratcheting on odometry
 (`971affb`; the narrow odometry over-reports ~0.2 rad/s, still unexplained).
 
-**Resume here (2026-11-06 01:15 UTC): only the confirmatory is still running.**
-A third interruption: an explicit sleep request (System log Kernel-Power 42,
-"Sleep Reason: Application API", event 187 `SetSuspendState`; not idle sleep,
-which `keep_awake.ps1` blocks) stopped it at 09:17 UTC 2026-11-05 with 671/720
-records, the newest six parsing. Resumed unchanged at 01:11 UTC 2026-11-06 as a
-WMI-created `wsl.exe` (PID 41420) with `keep_awake.ps1` (PID 9392) watching it;
-~26 trials/h, ETA ~03:15 UTC. Check the "done" marker in
-`results/run_confirmatory_v3.launch.log` (WSL clone) first. Both
-exploratory studies are done, committed, and fill their Discussion paragraphs
-through `paper/conference/exploratory_macros.tex` (see `docs/current_status.md`).
-When the campaign's "done" marker appears: `tools/finish_confirmatory_v3.sh`,
-then build the paper and write the mechanism paragraph and Discussion.
+**Resume here (2026-11-06 04:30 UTC): the confirmatory is complete, read, and
+written up.** `confirmatory_v3` finished 720/720 at 03:15 UTC (after a third,
+explicit-sleep interruption at 671); `finish_confirmatory_v3.sh` ran, and the
+records, audit, analysis and mechanism counts are committed in
+`studies/confirmatory_v3/`. Both primary contrasts are established at or
+above δ (vs geometry +0.678 [0.561, 0.794], vs feasibility +0.642 [0.492,
+0.792], Holm p = 2e-5), with no mechanism exception; details at the top of
+"Resume here" in `docs/current_status.md`. The paper builds at 8 pages with no
+PENDING left. Open: a full read-through of the paper for consistency with the
+result (the Introduction and Conclusion were written before data), and the
+WSL clone may now be reset to `main`.
 
 **2026-11-04 21:50 UTC: both runs were killed at ~09:20 UTC when the launching
 Claude session ended** (`Start-Process` children die with it; last record

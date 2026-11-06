@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="270" viewBox="0 0 820 270">
+<title>Primary paired completion effects</title>
+<rect width="100%" height="100%" fill="white"/>
+<style>text{font-family:system-ui,sans-serif;fill:#172033}.title{font-size:20px;font-weight:700}.label{font-size:12px}.tick{font-size:11px;fill:#526071}.grid{stroke:#dce2e8;stroke-width:1}.axis{stroke:#7b8794;stroke-width:1.2}</style>
+<text class="title" x="24" y="30">Primary paired completion effects</text>
+<line class="grid" x1="250.0" y1="50" x2="250.0" y2="205"/>
+<text class="tick" x="250.0" y="225" text-anchor="middle">-0.99</text>
+<line class="grid" x1="380.0" y1="50" x2="380.0" y2="205"/>
+<text class="tick" x="380.0" y="225" text-anchor="middle">-0.50</text>
+<line class="grid" x1="510.0" y1="50" x2="510.0" y2="205"/>
+<text class="tick" x="510.0" y="225" text-anchor="middle">0.00</text>
+<line class="grid" x1="640.0" y1="50" x2="640.0" y2="205"/>
+<text class="tick" x="640.0" y="225" text-anchor="middle">0.50</text>
+<line class="grid" x1="770.0" y1="50" x2="770.0" y2="205"/>
+<text class="tick" x="770.0" y="225" text-anchor="middle">0.99</text>
+<line x1="510.0" y1="45" x2="510.0" y2="205" stroke="#172033" stroke-width="1.5"/>
+<text class="label" x="240" y="94" text-anchor="end">sensing feasibility − geometry</text>
+<line x1="656.9" y1="90" x2="718.0" y2="90" stroke="#0f6c8d" stroke-width="3"/>
+<circle cx="687.5" cy="90" r="6" fill="#0f6c8d"/>
+<text class="label" x="240" y="166" text-anchor="end">sensing feasibility − feasibility</text>
+<line x1="638.7" y1="162" x2="717.3" y2="162" stroke="#0f6c8d" stroke-width="3"/>
+<circle cx="678.0" cy="162" r="6" fill="#0f6c8d"/>
+<text class="label" x="510" y="255" text-anchor="middle">Absolute completion-rate difference (treatment − control)</text>
+</svg>

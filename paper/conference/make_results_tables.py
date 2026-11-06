@@ -176,7 +176,7 @@ def method_table(result: dict) -> str:
         + r" terminal records on " + str(result["layout_count"]) + r" layouts. Completion"
         r" intervals resample whole layouts within family; failures are scored at 300\,s"
         r" in deadline-penalized time.}",
-        r"\label{tab:methods_results}",
+        r"\label{tab:methods_results}", r"\setlength{\tabcolsep}{4pt}",
         r"\begin{tabular}{@{}lrrrr@{}}", r"\toprule",
         r"Method & Completed & 95\% CI & Pen.\ time (s) & Work (J) \\", r"\midrule",
     ]

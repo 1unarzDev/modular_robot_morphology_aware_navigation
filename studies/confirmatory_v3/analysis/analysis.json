@@ -1,0 +1,519 @@
+{
+  "design_hash": "c939f12699e1eca0e7f74bfe9f5dc0ef69343c92fe82c1ce95e5c6af1dad5734",
+  "failure_taxonomy": {
+    "collision": 45,
+    "controller_failure": 1,
+    "planning_failure": 177,
+    "unsafe_topology": 180
+  },
+  "hierarchical_logistic_sensitivity": [
+    {
+      "bootstrap_draws_completed": 400,
+      "bootstrap_draws_converged": 6,
+      "bootstrap_draws_failed": 0,
+      "bootstrap_draws_nonconverged": 394,
+      "bootstrap_draws_requested": 400,
+      "ci95_layout_bootstrap": [
+        0.29576552259843253,
+        0.7154344625302063
+      ],
+      "coefficients": [
+        -3.079016711390187,
+        11.999988841690003,
+        -0.16600550901268826,
+        -5.694764397623163
+      ],
+      "control": "geometry_coupled",
+      "converged": false,
+      "families": "all",
+      "families_in_order": [
+        "combined_constraints",
+        "docking_observability",
+        "reconfiguration_workspace"
+      ],
+      "family_reference": "combined_constraints",
+      "inference_role": "predeclared_sensitivity_analysis",
+      "layout_count": 60,
+      "layout_random_intercept_sd": 7.660245467171189,
+      "log_likelihood": -66.84523935023073,
+      "marginal_probability_difference": 0.5375984790944879,
+      "method_log_odds_coefficient": 11.999988841690003,
+      "model": "binomial_logit_with_gaussian_layout_random_intercept",
+      "outcome": "completion",
+      "quadrature_points": 15,
+      "standardized_control_probability": 0.26864785509360917,
+      "standardized_treatment_probability": 0.806246334188097,
+      "treatment": "sensing_feasibility_coupled"
+    },
+    {
+      "bootstrap_draws_completed": 400,
+      "bootstrap_draws_converged": 143,
+      "bootstrap_draws_failed": 0,
+      "bootstrap_draws_nonconverged": 257,
+      "bootstrap_draws_requested": 400,
+      "ci95_layout_bootstrap": [
+        0.3027232722962433,
+        0.7469397464940535
+      ],
+      "coefficients": [
+        -3.4413481569103825,
+        11.999993830371134,
+        0.4742647082487713
+      ],
+      "control": "feasibility_coupled",
+      "converged": false,
+      "families": [
+        "combined_constraints",
+        "docking_observability"
+      ],
+      "families_in_order": [
+        "combined_constraints",
+        "docking_observability"
+      ],
+      "family_reference": "combined_constraints",
+      "inference_role": "predeclared_sensitivity_analysis",
+      "layout_count": 40,
+      "layout_random_intercept_sd": 7.729918208313824,
+      "log_likelihood": -43.92445873699853,
+      "marginal_probability_difference": 0.5357525290769172,
+      "method_log_odds_coefficient": 11.999993830371134,
+      "model": "binomial_logit_with_gaussian_layout_random_intercept",
+      "outcome": "completion",
+      "quadrature_points": 15,
+      "standardized_control_probability": 0.34202017528253853,
+      "standardized_treatment_probability": 0.8777727043594556,
+      "treatment": "sensing_feasibility_coupled"
+    }
+  ],
+  "layout_count": 60,
+  "methods": [
+    {
+      "completed": 15,
+      "completion_rate": 0.08333333333333333,
+      "completion_rate_ci95": [
+        0.016666666666666666,
+        0.15
+      ],
+      "deadline_penalized_time_s": 286.0994777777778,
+      "docking_attempts": 30,
+      "expanded_states": 29.011111111111113,
+      "localization_rmse_m": 0.02428948582606862,
+      "mechanical_work_j": 42.536352160643446,
+      "method": "route_first_adaptation",
+      "minimum_clearance_median_m": 0.22395361198133887,
+      "motion_qualification_failures": 0,
+      "motion_qualifications": 30,
+      "planning_latency_s": 1.0973113031611137,
+      "reconfiguration_failures": 0,
+      "recovery_actions": 3,
+      "successful_time_s": 133.19373333333334,
+      "trials": 180
+    },
+    {
+      "completed": 45,
+      "completion_rate": 0.25,
+      "completion_rate_ci95": [
+        0.15,
+        0.36666666666666664
+      ],
+      "deadline_penalized_time_s": 262.1486111111111,
+      "docking_attempts": 225,
+      "expanded_states": 14884.455555555556,
+      "localization_rmse_m": 0.035530822855673175,
+      "mechanical_work_j": 238.5190503626107,
+      "method": "geometry_coupled",
+      "minimum_clearance_median_m": 0.036276820443505664,
+      "motion_qualification_failures": 45,
+      "motion_qualifications": 135,
+      "planning_latency_s": 21.39469987383857,
+      "reconfiguration_failures": 90,
+      "recovery_actions": 0,
+      "successful_time_s": 148.59444444444443,
+      "trials": 180
+    },
+    {
+      "completed": 90,
+      "completion_rate": 0.5,
+      "completion_rate_ci95": [
+        0.4166666666666667,
+        0.6
+      ],
+      "deadline_penalized_time_s": 227.09623333333334,
+      "docking_attempts": 270,
+      "expanded_states": 14216.405555555555,
+      "localization_rmse_m": 0.023103781254715128,
+      "mechanical_work_j": 312.5194691627861,
+      "method": "feasibility_coupled",
+      "minimum_clearance_median_m": 0.09463385069712449,
+      "motion_qualification_failures": 0,
+      "motion_qualifications": 180,
+      "planning_latency_s": 34.14072137606133,
+      "reconfiguration_failures": 90,
+      "recovery_actions": 2,
+      "successful_time_s": 154.19246666666666,
+      "trials": 180
+    },
+    {
+      "completed": 167,
+      "completion_rate": 0.9277777777777778,
+      "completion_rate_ci95": [
+        0.861111111111111,
+        0.9833333333333333
+      ],
+      "deadline_penalized_time_s": 183.44283333333334,
+      "docking_attempts": 336,
+      "expanded_states": 16805.316666666666,
+      "localization_rmse_m": 0.02433533791591066,
+      "mechanical_work_j": 495.19056088476145,
+      "method": "sensing_feasibility_coupled",
+      "minimum_clearance_median_m": 0.04997307414553992,
+      "motion_qualification_failures": 0,
+      "motion_qualifications": 336,
+      "planning_latency_s": 45.73233375212862,
+      "reconfiguration_failures": 0,
+      "recovery_actions": 7,
+      "successful_time_s": 174.36952095808383,
+      "trials": 180
+    }
+  ],
+  "primary_contrasts": [
+    {
+      "absolute_completion_rate_difference": 0.6777777777777777,
+      "assignments": 100000,
+      "ci95_layout_bootstrap": [
+        0.5611111111111111,
+        0.7944444444444444
+      ],
+      "control": "geometry_coupled",
+      "estimate_treatment_minus_control": 0.6777777777777777,
+      "families": "all",
+      "family_effects": {
+        "combined_constraints": 0.5833333333333333,
+        "docking_observability": 0.7,
+        "reconfiguration_workspace": 0.75
+      },
+      "holm_adjusted_p": 1.999980000199998e-05,
+      "layout_count": 60,
+      "minimum_attainable_two_sided_p": null,
+      "monte_carlo_standard_error": 9.999850001874979e-06,
+      "outcome": "completion_rate",
+      "permutation_method": "monte_carlo_sign_flip_100000_draws",
+      "permutation_p": 9.99990000099999e-06,
+      "treatment": "sensing_feasibility_coupled"
+    },
+    {
+      "absolute_completion_rate_difference": 0.6416666666666667,
+      "assignments": 100000,
+      "ci95_layout_bootstrap": [
+        0.4916666666666667,
+        0.7916666666666667
+      ],
+      "control": "feasibility_coupled",
+      "estimate_treatment_minus_control": 0.6416666666666667,
+      "families": [
+        "combined_constraints",
+        "docking_observability"
+      ],
+      "family_effects": {
+        "combined_constraints": 0.5833333333333333,
+        "docking_observability": 0.7
+      },
+      "holm_adjusted_p": 1.999980000199998e-05,
+      "layout_count": 40,
+      "minimum_attainable_two_sided_p": null,
+      "monte_carlo_standard_error": 9.999850001874979e-06,
+      "outcome": "completion_rate",
+      "permutation_method": "monte_carlo_sign_flip_100000_draws",
+      "permutation_p": 9.99990000099999e-06,
+      "treatment": "sensing_feasibility_coupled"
+    }
+  ],
+  "route_decision_disagreement_vs_full": {
+    "feasibility_coupled": {
+      "different_route_or_transition_fraction": 0.48214285714285715,
+      "paired_blocks_with_signatures": 168
+    },
+    "geometry_coupled": {
+      "different_route_or_transition_fraction": 0.7440476190476191,
+      "paired_blocks_with_signatures": 168
+    },
+    "route_first_adaptation": {
+      "different_route_or_transition_fraction": 1.0,
+      "paired_blocks_with_signatures": 15
+    }
+  },
+  "schema_version": 2,
+  "secondary_contrasts": [
+    {
+      "ci95_layout_bootstrap": [
+        -92.31093333333334,
+        -64.40525555555556
+      ],
+      "control": "geometry_coupled",
+      "estimate_treatment_minus_control": -78.70577777777777,
+      "families": "all",
+      "family_effects": {
+        "combined_constraints": -68.05496666666667,
+        "docking_observability": -63.49656666666667,
+        "reconfiguration_workspace": -104.5658
+      },
+      "layout_count": 60,
+      "outcome": "deadline_penalized_time_s",
+      "treatment": "sensing_feasibility_coupled"
+    },
+    {
+      "ci95_layout_bootstrap": [
+        -80.97491666666667,
+        -49.96958333333333
+      ],
+      "control": "feasibility_coupled",
+      "estimate_treatment_minus_control": -66.01468333333334,
+      "families": [
+        "combined_constraints",
+        "docking_observability"
+      ],
+      "family_effects": {
+        "combined_constraints": -68.13770000000001,
+        "docking_observability": -63.891666666666666
+      },
+      "layout_count": 40,
+      "outcome": "deadline_penalized_time_s",
+      "treatment": "sensing_feasibility_coupled"
+    }
+  ],
+  "secondary_measures": {
+    "by_method": {
+      "feasibility_coupled": {
+        "infrastructure_attempt_rate": 0.0055248618784530384,
+        "infrastructure_attempts": 1,
+        "launch_attempts": 181,
+        "site_placement_max_m": 0.05168817090512646,
+        "site_placement_median_m": 0.018167773205844735,
+        "site_placement_p95_m": 0.034421211188312345,
+        "site_placements": 269,
+        "site_placements_beyond_nominal": 45,
+        "transition_failures": 90,
+        "transitions_begun": 270,
+        "transitions_with_logged_prediction": 270,
+        "trials": 180,
+        "trials_ending_infrastructure_failure": 0,
+        "trials_retried": 1,
+        "trials_with_contact": 0,
+        "trials_with_contact_evaluated": 180,
+        "trials_with_localization_loss": 0,
+        "trials_with_localization_loss_evaluated": 180
+      },
+      "geometry_coupled": {
+        "infrastructure_attempt_rate": 0.03225806451612903,
+        "infrastructure_attempts": 6,
+        "launch_attempts": 186,
+        "site_placement_max_m": 0.053184301010278275,
+        "site_placement_median_m": 0.020657661812390808,
+        "site_placement_p95_m": 0.03905869695370157,
+        "site_placements": 225,
+        "site_placements_beyond_nominal": 41,
+        "transition_failures": 90,
+        "transitions_begun": 225,
+        "transitions_with_logged_prediction": 225,
+        "trials": 180,
+        "trials_ending_infrastructure_failure": 0,
+        "trials_retried": 5,
+        "trials_with_contact": 45,
+        "trials_with_contact_evaluated": 180,
+        "trials_with_localization_loss": 14,
+        "trials_with_localization_loss_evaluated": 180
+      },
+      "route_first_adaptation": {
+        "infrastructure_attempt_rate": 0.021739130434782608,
+        "infrastructure_attempts": 4,
+        "launch_attempts": 184,
+        "site_placement_max_m": 0.03510243794515406,
+        "site_placement_median_m": 0.010699708983792699,
+        "site_placement_p95_m": 0.02984315379065178,
+        "site_placements": 30,
+        "site_placements_beyond_nominal": 2,
+        "transition_failures": 0,
+        "transitions_begun": 30,
+        "transitions_with_logged_prediction": 30,
+        "trials": 180,
+        "trials_ending_infrastructure_failure": 0,
+        "trials_retried": 4,
+        "trials_with_contact": 0,
+        "trials_with_contact_evaluated": 180,
+        "trials_with_localization_loss": 0,
+        "trials_with_localization_loss_evaluated": 180
+      },
+      "sensing_feasibility_coupled": {
+        "infrastructure_attempt_rate": 0.0055248618784530384,
+        "infrastructure_attempts": 1,
+        "launch_attempts": 181,
+        "site_placement_max_m": 0.05524492812384203,
+        "site_placement_median_m": 0.017606968968867955,
+        "site_placement_p95_m": 0.03461628837237604,
+        "site_placements": 336,
+        "site_placements_beyond_nominal": 34,
+        "transition_failures": 0,
+        "transitions_begun": 336,
+        "transitions_with_logged_prediction": 336,
+        "trials": 180,
+        "trials_ending_infrastructure_failure": 0,
+        "trials_retried": 1,
+        "trials_with_contact": 0,
+        "trials_with_contact_evaluated": 180,
+        "trials_with_localization_loss": 0,
+        "trials_with_localization_loss_evaluated": 180
+      }
+    },
+    "infrastructure_attempt_rate": 0.01639344262295082,
+    "infrastructure_attempts": 12,
+    "launch_attempts": 732,
+    "nominal_site_tolerance_m": 0.03
+  },
+  "transition_brier_by_method": {
+    "feasibility_coupled": 0.3053583333333333,
+    "geometry_coupled": 0.366025,
+    "route_first_adaptation": 0.002025000000000004,
+    "sensing_feasibility_coupled": 0.002025000000000004
+  },
+  "transition_brier_score": 0.19226890243902436,
+  "transition_calibration": [
+    {
+      "count": 861,
+      "lower": 0.9,
+      "mean_prediction": 0.955,
+      "observed_frequency": 0.7909407665505227,
+      "upper": 1.0
+    }
+  ],
+  "transition_calibration_by_method": {
+    "feasibility_coupled": [
+      {
+        "count": 270,
+        "lower": 0.9,
+        "mean_prediction": 0.9549999999999998,
+        "observed_frequency": 0.6666666666666666,
+        "upper": 1.0
+      }
+    ],
+    "geometry_coupled": [
+      {
+        "count": 225,
+        "lower": 0.9,
+        "mean_prediction": 0.955,
+        "observed_frequency": 0.6,
+        "upper": 1.0
+      }
+    ],
+    "route_first_adaptation": [
+      {
+        "count": 30,
+        "lower": 0.9,
+        "mean_prediction": 0.955,
+        "observed_frequency": 1.0,
+        "upper": 1.0
+      }
+    ],
+    "sensing_feasibility_coupled": [
+      {
+        "count": 336,
+        "lower": 0.9,
+        "mean_prediction": 0.955,
+        "observed_frequency": 1.0,
+        "upper": 1.0
+      }
+    ]
+  },
+  "transition_edge_counts_by_method": {
+    "feasibility_coupled": {
+      "accepted": 1958367,
+      "rejected": 600179
+    },
+    "geometry_coupled": {
+      "accepted": 2132846,
+      "rejected": 545972
+    },
+    "route_first_adaptation": {
+      "accepted": 4047,
+      "rejected": 4210
+    },
+    "sensing_feasibility_coupled": {
+      "accepted": 1648026,
+      "rejected": 1427385
+    }
+  },
+  "transition_rejection_reasons_by_method": {
+    "feasibility_coupled": {
+      "core:post_transition_collision": 51,
+      "planar_clearance": 535394,
+      "pod_0:environment_collision": 11799,
+      "pod_0:post_transition_collision": 22404,
+      "pod_1:environment_collision": 9648,
+      "pod_1:post_transition_collision": 13920,
+      "pod_2:environment_collision": 1725,
+      "pod_2:post_transition_collision": 5601,
+      "pod_3:environment_collision": 1308,
+      "pod_3:post_transition_collision": 8196,
+      "pod_4:environment_collision": 1899,
+      "pod_4:post_transition_collision": 5061,
+      "pod_5:environment_collision": 138,
+      "pod_5:post_transition_collision": 1992,
+      "target_footprint": 410757
+    },
+    "geometry_coupled": {
+      "planar_clearance": 545972,
+      "target_footprint": 418359
+    },
+    "route_first_adaptation": {
+      "planar_clearance": 2329,
+      "pod_0:connector_not_visible": 1038,
+      "pod_0:covariance_too_large": 1038,
+      "pod_0:environment_collision": 6,
+      "pod_0:post_transition_collision": 498,
+      "pod_1:connector_not_visible": 840,
+      "pod_1:covariance_too_large": 840,
+      "pod_1:environment_collision": 39,
+      "pod_1:post_transition_collision": 93,
+      "pod_2:connector_not_visible": 909,
+      "pod_2:covariance_too_large": 909,
+      "pod_3:connector_not_visible": 795,
+      "pod_3:covariance_too_large": 795,
+      "pod_4:connector_not_visible": 1059,
+      "pod_4:covariance_too_large": 1059,
+      "pod_4:environment_collision": 69,
+      "pod_4:post_transition_collision": 96,
+      "pod_5:connector_not_visible": 888,
+      "pod_5:covariance_too_large": 888,
+      "target_footprint": 1350
+    },
+    "sensing_feasibility_coupled": {
+      "core:post_transition_collision": 24,
+      "planar_clearance": 553856,
+      "pod_0:connector_not_visible": 587157,
+      "pod_0:covariance_too_large": 587157,
+      "pod_0:environment_collision": 11953,
+      "pod_0:post_transition_collision": 23051,
+      "pod_1:connector_not_visible": 572548,
+      "pod_1:covariance_too_large": 572548,
+      "pod_1:environment_collision": 9780,
+      "pod_1:post_transition_collision": 13959,
+      "pod_2:connector_not_visible": 596731,
+      "pod_2:covariance_too_large": 596731,
+      "pod_2:environment_collision": 1764,
+      "pod_2:post_transition_collision": 5625,
+      "pod_3:connector_not_visible": 583275,
+      "pod_3:covariance_too_large": 583275,
+      "pod_3:environment_collision": 1336,
+      "pod_3:post_transition_collision": 8679,
+      "pod_4:connector_not_visible": 628616,
+      "pod_4:covariance_too_large": 628616,
+      "pod_4:environment_collision": 1918,
+      "pod_4:post_transition_collision": 5442,
+      "pod_5:connector_not_visible": 612172,
+      "pod_5:covariance_too_large": 612172,
+      "pod_5:environment_collision": 142,
+      "pod_5:post_transition_collision": 2340,
+      "target_footprint": 418463
+    }
+  },
+  "trial_count": 720
+}
