@@ -719,6 +719,14 @@ is not comparable to figures that cannot be re-audited.
 
 ## Resume here
 
+**2026-11-06: third interruption, resumed.** An explicit sleep request (System
+log: Kernel-Power 42 "Sleep Reason: Application API", 187 `SetSuspendState`),
+not idle sleep, stopped `confirmatory_v3` at 09:17 UTC 2026-11-05 with 671/720
+records; the newest six parse. Resumed unchanged at 01:11 UTC 2026-11-06 with
+`resume_campaign.sh 8a53344 run_confirmatory_v3` as a WMI-created process
+under `keep_awake.ps1`. As before, the interruption is wall-clock only: no
+outcome was read and an unfinished trial reruns from its seed.
+
 **2026-11-05: second interruption, and two exploratory planner-only results.**
 `confirmatory_v3` and the prevalence run were both killed at ~09:20 UTC
 2026-11-04 when the Claude session that had launched them with `Start-Process`

@@ -18,12 +18,14 @@ placement-robust station prediction (`43255f7`), 4x finer localization map
 (`9371593`), and RPP's narrow rotation no longer ratcheting on odometry
 (`971affb`; the narrow odometry over-reports ~0.2 rad/s, still unexplained).
 
-**Resume here (2026-11-05 08:45 UTC): only the confirmatory is still running.**
-653/720 at 08:40 UTC, blind check clean at 601 (9 pre-mission retries, no
-infrastructure failure), ~26 trials/h, ETA ~11:15 UTC. It runs as a
-WMI-created `wsl.exe` (PID 31476) with `keep_awake.ps1` watching it, so it
-outlives the session; check the "done" marker in
-`results/run_confirmatory_v3.launch.log` first. Both
+**Resume here (2026-11-06 01:15 UTC): only the confirmatory is still running.**
+A third interruption: an explicit sleep request (System log Kernel-Power 42,
+"Sleep Reason: Application API", event 187 `SetSuspendState`; not idle sleep,
+which `keep_awake.ps1` blocks) stopped it at 09:17 UTC 2026-11-05 with 671/720
+records, the newest six parsing. Resumed unchanged at 01:11 UTC 2026-11-06 as a
+WMI-created `wsl.exe` (PID 41420) with `keep_awake.ps1` (PID 9392) watching it;
+~26 trials/h, ETA ~03:15 UTC. Check the "done" marker in
+`results/run_confirmatory_v3.launch.log` (WSL clone) first. Both
 exploratory studies are done, committed, and fill their Discussion paragraphs
 through `paper/conference/exploratory_macros.tex` (see `docs/current_status.md`).
 When the campaign's "done" marker appears: `tools/finish_confirmatory_v3.sh`,
