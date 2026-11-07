@@ -26,9 +26,12 @@ records, audit, analysis and mechanism counts are committed in
 above δ (vs geometry +0.678 [0.561, 0.794], vs feasibility +0.642 [0.492,
 0.792], Holm p = 2e-5), with no mechanism exception; details at the top of
 "Resume here" in `docs/current_status.md`. The paper builds at 8 pages with no
-PENDING left. Open: a full read-through of the paper for consistency with the
-result (the Introduction and Conclusion were written before data), and the
-WSL clone may now be reset to `main`.
+PENDING left. The read-through for consistency with the result is done
+(2026-11-06): a Conclusion was added, and the two exploratory paragraphs now
+say what their numbers mean (every natural-room rejection is observability;
+the replanning route-first variant finds the treatment's site but plans 34 of
+56). Open: reset the WSL clone to `main`, then make
+`TrialStore.write_terminal` atomic (temp file + rename).
 
 **2026-11-04 21:50 UTC: both runs were killed at ~09:20 UTC when the launching
 Claude session ended** (`Start-Process` children die with it; last record
