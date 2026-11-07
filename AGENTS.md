@@ -30,8 +30,9 @@ PENDING left. The read-through for consistency with the result is done
 (2026-11-06): a Conclusion was added, and the two exploratory paragraphs now
 say what their numbers mean (every natural-room rejection is observability;
 the replanning route-first variant finds the treatment's site but plans 34 of
-56). Open: reset the WSL clone to `main`, then make
-`TrialStore.write_terminal` atomic (temp file + rename).
+56). The WSL clone is reset to `main`
+and `TrialStore.write_terminal` is atomic (`2dbd895`, 346 container tests
+pass). Nothing from the confirmatory remains open.
 
 **2026-11-04 21:50 UTC: both runs were killed at ~09:20 UTC when the launching
 Claude session ended** (`Start-Process` children die with it; last record
