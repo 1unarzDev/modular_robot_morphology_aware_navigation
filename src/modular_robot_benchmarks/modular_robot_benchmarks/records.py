@@ -175,17 +175,44 @@ class TrialStore:
         self.root.mkdir(parents=True, exist_ok=True)
         path = self.path_for(record.spec.trial_id)
         payload = json.dumps(record.to_dict(), sort_keys=True, indent=2) + "\n"
+        if path.exists():
+            return self._existing(path, payload)
+        # A shutdown mid-write once left a truncated record under the final
+        # name, which resume then took as finished. The record is written and
+        # fsync'd under a name no loader reads, then hard-linked into place:
+        # the link appears whole or not at all, and fails if the name exists,
+        # so a record is still never overwritten.
+        temporary = self.root / f".{record.spec.trial_id}.{os.getpid()}.tmp"
         try:
-            descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o644)
-        except FileExistsError:
-            if path.read_text(encoding="utf-8") != payload:
-                raise FileExistsError(f"refusing to overwrite immutable record: {path}")
-            return path
-        with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
-            stream.write(payload)
-            stream.flush()
-            os.fsync(stream.fileno())
+            with open(temporary, "w", encoding="utf-8") as stream:
+                stream.write(payload)
+                stream.flush()
+                os.fsync(stream.fileno())
+            try:
+                os.link(temporary, path)
+            except FileExistsError:
+                return self._existing(path, payload)
+        finally:
+            temporary.unlink(missing_ok=True)
+        self._fsync_root()
         return path
+
+    @staticmethod
+    def _existing(path: Path, payload: str) -> Path:
+        if path.read_text(encoding="utf-8") != payload:
+            raise FileExistsError(f"refusing to overwrite immutable record: {path}")
+        return path
+
+    def _fsync_root(self) -> None:
+        # Directory fsync makes the new name durable; Windows cannot open a
+        # directory for it, and the host only writes records in tests.
+        if os.name != "posix":
+            return
+        descriptor = os.open(self.root, os.O_RDONLY)
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
 
     def load_all(self) -> list[TrialRecord]:
         records = []

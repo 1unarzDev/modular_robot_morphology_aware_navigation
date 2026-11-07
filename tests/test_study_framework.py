@@ -77,6 +77,24 @@ def test_trial_store_is_append_only_and_resumable(tmp_path):
                                          "attempt": 1, "terminal_status": "timeout"}]))
 
 
+def test_trial_store_never_leaves_a_partial_record(tmp_path, monkeypatch):
+    design = generate_design(layouts_per_family=1, replicates=1)
+    record = _records(design)[0]
+    store = TrialStore(tmp_path / "raw")
+
+    def interrupted(*_):
+        raise OSError("shutdown mid-write")
+    monkeypatch.setattr("modular_robot_benchmarks.records.os.link", interrupted)
+    with pytest.raises(OSError, match="mid-write"):
+        store.write_terminal(record)
+    assert not store.contains(record.spec.trial_id)
+    assert list(store.root.iterdir()) == []
+    monkeypatch.undo()
+    path = store.write_terminal(record)
+    assert [p.name for p in store.root.iterdir()] == [path.name]
+    assert store.load_all() == [record]
+
+
 def test_trial_store_round_trips_sensor_derived_pod_alignment(tmp_path):
     design = generate_design(layouts_per_family=1, replicates=1)
     alignment = [{
