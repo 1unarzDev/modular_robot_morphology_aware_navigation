@@ -102,7 +102,18 @@ def restore_campaign(destination: Path, into_dir: Path) -> Path:
             for part in parts:
                 stream.write(part.read_bytes())
         with tarfile.open(joined, "r:xz") as archive:
-            archive.extractall(into_dir, filter="data")
+            if hasattr(tarfile, "data_filter"):
+                archive.extractall(into_dir, filter="data")
+            else:
+                # Pythons before 3.10.12 have no extraction filters (the
+                # Windows host runs 3.10.11); refuse what "data" would.
+                for member in archive.getmembers():
+                    name = Path(member.name)
+                    if (not (member.isfile() or member.isdir())
+                            or name.is_absolute() or ".." in name.parts):
+                        raise tarfile.TarError(
+                            f"refusing archive member {member.name!r}")
+                archive.extractall(into_dir)
     return into_dir
 
 
