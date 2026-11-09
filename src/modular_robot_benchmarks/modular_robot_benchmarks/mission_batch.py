@@ -416,20 +416,21 @@ def run_batch(
         nominal_start_x, nominal_start_y = scenario.grid.cell_center(*scenario.start)
         stimulus_boxes = unperceived_obstacles(
             outcome_case, nominal_start_x, nominal_start_y)
-        world_path, scenario_manifest = export_confirmatory_sdf(
+        world_path, world_manifest = export_confirmatory_sdf(
             spec.family, layout_index, spec.world_seed,
             trial_artifacts / "world.sdf", catalog_path, spec.friction_seed,
             stimulus_boxes, generator, world_offset)
-        # What the planner reads: the world's own manifest unless it was offset.
-        planner_manifest = (scenario_manifest if is_zero_offset(world_offset)
-                            else prior_manifest_path(world_path))
+        # `scenario_manifest` is what the planner reads: the world's own
+        # manifest, unless the world was offset from its prior.
+        scenario_manifest = (world_manifest if is_zero_offset(world_offset)
+                             else prior_manifest_path(world_path))
         map_yaml, map_image = export_occupancy_map(
             scenario.grid, trial_artifacts / "map.yaml", MAP_UPSAMPLE)
         keepout_yaml, keepout_image = export_keepout_mask(
             scenario.grid, scenario.transition_obstacles, trial_artifacts / "keepout.yaml",
             MAP_UPSAMPLE)
         disturbance = json.loads(
-            scenario_manifest.read_text(encoding="utf-8"))["physical_disturbance"]
+            world_manifest.read_text(encoding="utf-8"))["physical_disturbance"]
         start_x = nominal_start_x + disturbance["initial_dx_m"]
         start_y = nominal_start_y + disturbance["initial_dy_m"]
         start_yaw = disturbance["initial_yaw_rad"]
@@ -478,8 +479,8 @@ def run_batch(
         config_paths = [
             *stack_paths,
             world_path,
-            scenario_manifest,
-            *([planner_manifest] if planner_manifest != scenario_manifest else []),
+            world_manifest,
+            *([scenario_manifest] if scenario_manifest != world_manifest else []),
             map_yaml,
             map_image,
             keepout_yaml,
@@ -522,9 +523,9 @@ def run_batch(
                  f"initial_yaw:={start_yaw + amcl_offset[2]}",
                  # Static 3D transition obstacles as a known prior map, like
                  # the occupancy map; no live simulator state is exposed.
-                 f"transition_environment:={planner_manifest.resolve()}",
-                 *([f"world_manifest:={scenario_manifest.resolve()}"]
-                   if planner_manifest != scenario_manifest else []),
+                 f"transition_environment:={scenario_manifest.resolve()}",
+                 *([f"world_manifest:={world_manifest.resolve()}"]
+                   if scenario_manifest != world_manifest else []),
                  *([f"prior_margin_m:={prior_margin_m}"]
                    if prior_margin_m else []),
                  # ADR 0006: a scenario that declares a workspace fiducial
