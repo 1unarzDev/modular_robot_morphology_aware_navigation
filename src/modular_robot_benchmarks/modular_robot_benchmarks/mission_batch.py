@@ -12,9 +12,12 @@ import signal
 import subprocess
 import sys
 import time
-from typing import Any
+from typing import Any, Sequence
 
-from .confirmatory_scenarios import make_confirmatory_scenario
+from .confirmatory_scenarios import (
+    WORLD_OFFSET_FIELDS, apply_world_offset, is_zero_offset,
+    make_confirmatory_scenario,
+)
 from .design import (
     FAULT_MATRIX_DESIGN_KINDS, GATE1_OUTCOMES_DESIGN_KIND, OutcomeCase, StudyDesign,
     fault_case_for_run, layout_generator_for, outcome_case_for_run,
@@ -25,7 +28,10 @@ from .evaluator_metrics import (
     world_obstacle_boxes,
 )
 from .records import TrialManifest, TrialRecord, TrialStore
-from .sdf_export import export_confirmatory_sdf, export_keepout_mask, export_occupancy_map
+from .sdf_export import (
+    export_confirmatory_sdf, export_keepout_mask, export_occupancy_map,
+    prior_manifest_path,
+)
 
 
 def classify_terminal(success: bool, message: str, timed_out: bool) -> str:
@@ -372,6 +378,7 @@ def run_batch(
     wall_watchdog_s: float,
     allow_dirty: bool,
     max_infrastructure_retries: int = 2,
+    only_trial_ids: Sequence[str] | None = None,
 ) -> dict:
     # Import ROS only in an installed/runtime environment; pure design and
     # manifest helpers remain host-testable.
@@ -383,6 +390,11 @@ def run_batch(
         store.pending(design.trials),
         key=lambda spec: (spec.family, spec.layout_id, spec.replicate, spec.method_order),
     )
+    if only_trial_ids is not None:
+        unknown = set(only_trial_ids) - {spec.trial_id for spec in design.trials}
+        if unknown:
+            raise ValueError(f"--only names trials not in the design: {sorted(unknown)}")
+        pending = [spec for spec in pending if spec.trial_id in set(only_trial_ids)]
     if max_trials is not None:
         pending = pending[:max_trials]
     revision = _git_revision(root, allow_dirty)
@@ -393,6 +405,11 @@ def run_batch(
         generator = layout_generator_for(design.design_kind)
         scenario = make_confirmatory_scenario(
             spec.family, layout_index, spec.world_seed, generator=generator)
+        # Offset-world pilot specs only: the simulated world differs from the
+        # planner's prior. Every other spec has neither attribute.
+        world_offset = getattr(spec, "world_offset", None)
+        prior_margin_m = float(getattr(spec, "prior_margin_m", 0.0))
+        world_scenario = apply_world_offset(scenario, world_offset)
         trial_artifacts = artifact_root / spec.trial_id
         trial_artifacts.mkdir(parents=True, exist_ok=True)
         outcome_case = outcome_case_for(design, spec)
@@ -402,7 +419,10 @@ def run_batch(
         world_path, scenario_manifest = export_confirmatory_sdf(
             spec.family, layout_index, spec.world_seed,
             trial_artifacts / "world.sdf", catalog_path, spec.friction_seed,
-            stimulus_boxes, generator)
+            stimulus_boxes, generator, world_offset)
+        # What the planner reads: the world's own manifest unless it was offset.
+        planner_manifest = (scenario_manifest if is_zero_offset(world_offset)
+                            else prior_manifest_path(world_path))
         map_yaml, map_image = export_occupancy_map(
             scenario.grid, trial_artifacts / "map.yaml", MAP_UPSAMPLE)
         keepout_yaml, keepout_image = export_keepout_mask(
@@ -435,6 +455,11 @@ def run_batch(
             parameters["gate1_unperceived_obstacles"] = [
                 {"name": name, "center": list(center), "size": list(size)}
                 for name, center, size in stimulus_boxes]
+        if hasattr(spec, "world_offset"):
+            parameters["world_offset"] = dict(zip(
+                WORLD_OFFSET_FIELDS, (float(v) for v in spec.world_offset)))
+            parameters["prior_margin_m"] = prior_margin_m
+            parameters["world_condition"] = spec.world_condition
         if failure_injection:
             parameters["failure_injection"] = failure_injection
             parameters["recovery_probe"] = True
@@ -454,6 +479,7 @@ def run_batch(
             *stack_paths,
             world_path,
             scenario_manifest,
+            *([planner_manifest] if planner_manifest != scenario_manifest else []),
             map_yaml,
             map_image,
             keepout_yaml,
@@ -474,7 +500,7 @@ def run_batch(
             parameters,
         )
         # The evaluator sees the whole world, stimulus included.
-        obstacle_boxes = world_obstacle_boxes(scenario) + [
+        obstacle_boxes = world_obstacle_boxes(world_scenario) + [
             (tuple(center), tuple(size)) for _, center, size in stimulus_boxes]
         setup_wall_s = time.monotonic() - setup_start
         infrastructure_attempts = []
@@ -496,7 +522,11 @@ def run_batch(
                  f"initial_yaw:={start_yaw + amcl_offset[2]}",
                  # Static 3D transition obstacles as a known prior map, like
                  # the occupancy map; no live simulator state is exposed.
-                 f"transition_environment:={scenario_manifest.resolve()}",
+                 f"transition_environment:={planner_manifest.resolve()}",
+                 *([f"world_manifest:={scenario_manifest.resolve()}"]
+                   if planner_manifest != scenario_manifest else []),
+                 *([f"prior_margin_m:={prior_margin_m}"]
+                   if prior_margin_m else []),
                  # ADR 0006: a scenario that declares a workspace fiducial
                  # station establishes connector observability through it, so
                  # the onboard cameras stop asserting it. Scenarios without a
@@ -668,6 +698,10 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--wall-watchdog", type=float, default=600.0)
     parser.add_argument("--max-infrastructure-retries", type=int, default=2)
     parser.add_argument("--allow-dirty", action="store_true")
+    parser.add_argument(
+        "--only", type=Path,
+        help="JSON list of trial ids; run only those still pending (a subset "
+             "of the frozen design, e.g. a smoke run that the full run resumes)")
     return parser
 
 
@@ -676,7 +710,8 @@ def main() -> None:
     result = run_batch(
         args.root.resolve(), args.design.resolve(), args.raw.resolve(),
         args.artifacts.resolve(), args.catalog.resolve(), args.max_trials,
-        args.wall_watchdog, args.allow_dirty, args.max_infrastructure_retries)
+        args.wall_watchdog, args.allow_dirty, args.max_infrastructure_retries,
+        json.loads(args.only.read_text(encoding="utf-8")) if args.only else None)
     print(json.dumps(result, indent=2, sort_keys=True))
 
 

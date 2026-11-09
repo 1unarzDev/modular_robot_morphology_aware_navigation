@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 from typing import Any, Iterable
 
-from .design import TrialSpec
+from .design import TrialSpec, trial_spec_from_dict
 
 
 FAILURE_REASONS = frozenset({
@@ -138,7 +138,7 @@ class TrialRecord:
     @classmethod
     def from_dict(cls, value: dict[str, Any]) -> "TrialRecord":
         value = dict(value)
-        value["spec"] = TrialSpec(**value["spec"])
+        value["spec"] = trial_spec_from_dict(value["spec"])
         value["manifest"] = TrialManifest(**value["manifest"])
         # Records written before bounded startup retries remain readable and
         # explicitly identify their single legacy launch attempt.

@@ -47,7 +47,11 @@ class FiducialStationNode(Node):
     def __init__(self) -> None:
         super().__init__("fiducial_station")
         self.declare_parameter("scenario_manifest", "")
-        manifest = str(self.get_parameter("scenario_manifest").value)
+        # The simulated world's own geometry, when it differs from the prior the
+        # planner reads (offset-world pilot); otherwise the shared manifest.
+        self.declare_parameter("world_manifest", "")
+        manifest = (str(self.get_parameter("world_manifest").value)
+                    or str(self.get_parameter("scenario_manifest").value))
         self.stations = load_fiducial_stations(manifest)
         self.obstacles = load_environment_boxes(manifest)
         self._warned_missing_fields = False

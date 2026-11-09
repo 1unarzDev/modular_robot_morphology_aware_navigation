@@ -9,7 +9,10 @@ from xml.etree.ElementTree import Element, ElementTree, SubElement
 from morphology_planner.grid import OCCUPIED
 from morphology_planner import load_catalog
 
-from .confirmatory_scenarios import make_confirmatory_scenario
+from .confirmatory_scenarios import (
+    WORLD_OFFSET_FIELDS, apply_world_offset, is_zero_offset,
+    make_confirmatory_scenario,
+)
 from .design import CONFIRMATORY_FAMILIES
 from .scenarios import FAMILIES, make_scenario
 
@@ -144,15 +147,25 @@ def export_confirmatory_sdf(
     output: Path, catalog_path: Path, friction_seed: int | None = None,
     unperceived_obstacles: tuple[tuple[str, tuple, tuple], ...] = (),
     generator: int = 1,
+    world_offset: tuple[float, float, float, float] | None = None,
 ) -> tuple[Path, Path]:
     """Write a complete Gazebo world plus its immutable scenario manifest.
+
+    `world_offset` (screen dx, dy, station dx, dy; see
+    `confirmatory_scenarios.apply_world_offset`) displaces the elevated screen
+    and the station in the SDF and in the returned manifest, which is what the
+    simulator's station node reads. The planner's prior is then written beside
+    it as `<output stem>.prior.manifest.json` (see `prior_manifest_path`).
+    With a zero or absent offset nothing differs from before: one manifest, the
+    same bytes.
 
     `unperceived_obstacles` are (name, center, size) boxes written to the world
     only. They are a Gate 1 stimulus: the scenario manifest, which the planner
     reads as its prior, and the occupancy map never mention them.
     """
-    scenario = make_confirmatory_scenario(
+    prior = make_confirmatory_scenario(
         family, layout_index, world_seed, generator=generator)
+    scenario = apply_world_offset(prior, world_offset)
     disturbance = physical_disturbance(friction_seed)
     catalog = load_catalog(catalog_path).supported_experiment_subset()
     sdf = Element("sdf", version="1.10")
@@ -218,12 +231,28 @@ def export_confirmatory_sdf(
     output.parent.mkdir(parents=True, exist_ok=True)
     ElementTree(sdf).write(output, encoding="unicode", xml_declaration=True)
     manifest_path = output.with_suffix(".manifest.json")
+    extra = {}
+    if not is_zero_offset(world_offset):
+        extra = {"world_offset": dict(zip(WORLD_OFFSET_FIELDS,
+                                          (float(v) for v in world_offset)))}
     manifest_path.write_text(
-        json.dumps({**scenario.manifest(), "friction_seed": friction_seed,
+        json.dumps({**scenario.manifest(), **extra, "friction_seed": friction_seed,
                     "physical_disturbance": disturbance},
                    indent=2, sort_keys=True) + "\n",
         encoding="utf-8")
+    if extra:
+        prior_manifest_path(output).write_text(
+            json.dumps({**prior.manifest(), "role": "planner_prior",
+                        "friction_seed": friction_seed,
+                        "physical_disturbance": disturbance},
+                       indent=2, sort_keys=True) + "\n",
+            encoding="utf-8")
     return output, manifest_path
+
+
+def prior_manifest_path(world_path: Path) -> Path:
+    """Where the planner's unperturbed prior sits beside an offset world."""
+    return world_path.with_suffix(".prior.manifest.json")
 
 
 def _box_model(world, name, center, size) -> None:

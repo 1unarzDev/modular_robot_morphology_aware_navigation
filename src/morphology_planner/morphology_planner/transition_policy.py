@@ -434,6 +434,82 @@ class CoupledTransitionPolicy:
 # station could not see pod_0 there.
 SITE_PLACEMENT_MARGIN_M = 0.08
 
+# Name of the elevated sight screen box in a scenario's 3D environment (ADR
+# 0006). The prior-map margin below inflates exactly this box.
+SIGHT_SCREEN_NAME = "elevated_sight_screen"
+
+
+def _docked_point(catalog: Catalog, transition: Transition, pod: str,
+                  base: Pose3) -> tuple[float, float, float]:
+    """World position a moved pod will have when docked, for a core at `base`."""
+    docked = _world_pose(
+        catalog.morphologies[transition.target].pod_poses[pod],
+        base, catalog.module_sizes[pod][2])
+    return (docked.x, docked.y, docked.z)
+
+
+def docked_pod_points(
+    catalog: Catalog,
+    transition: Transition,
+    grid: OccupancyGrid,
+    state: HybridState,
+    heading_bins: int,
+    placement: tuple[float, float] = (0.0, 0.0),
+    yaw_error: float = 0.0,
+) -> dict[str, tuple[float, float, float]]:
+    """Docked positions of the moved pods for a transition at a planned site.
+
+    `placement` (x, y) and `yaw_error` displace the core from the site's cell
+    centre and heading, as the placement error of a real transition would.
+    This is the geometry `station_sensing_provider` evaluates, exposed so that
+    an analysis can score the same points against a different world.
+    """
+    wx, wy = grid.cell_center(state.x, state.y)
+    yaw = state.heading * 2.0 * pi / heading_bins + yaw_error
+    base = Pose3(wx + placement[0], wy + placement[1], 0.0, yaw)
+    return {pod: _docked_point(catalog, transition, pod, base)
+            for pod in transition.moved_pods}
+
+
+def prior_margin_maps(
+    stations: tuple[FiducialStation, ...],
+    environment: tuple[Box3, ...],
+    margin_m: float,
+) -> list[tuple[tuple[FiducialStation, ...], tuple[Box3, ...]]]:
+    """The (stations, boxes) prior maps a site must be visible under.
+
+    The first entry is always the prior as declared, and supplies the
+    covariance trace. A positive `margin_m` adds a prior-map margin against a
+    world that is not exactly the prior: the sight screen is inflated by
+    `margin_m` on every side (all three axes) and the stations are displaced by
+    +/- `margin_m` along each axis in turn, so the screen's shadow may move that
+    far either way. Only the optical model is widened; collision geometry is
+    untouched. A margin of 0 returns the declared prior alone.
+    """
+    if margin_m < 0.0:
+        raise ValueError("prior margin must be nonnegative")
+    nominal = (stations, environment)
+    if margin_m == 0.0:
+        return [nominal]
+    boxes = tuple(
+        Box3(box.name, box.center, tuple(size + 2.0 * margin_m for size in box.size))
+        if box.name == SIGHT_SCREEN_NAME else box
+        for box in environment)
+    offsets = [
+        tuple(sign * margin_m if axis == moved else 0.0 for axis in range(3))
+        for moved in range(3) for sign in (1.0, -1.0)]
+    maps = [nominal]
+    maps.append((stations, boxes))
+    for offset in offsets:
+        shifted = tuple(
+            FiducialStation(
+                station.name,
+                tuple(c + o for c, o in zip(station.position, offset)),
+                station.max_range)
+            for station in stations)
+        maps.append((shifted, boxes))
+    return maps
+
 
 def station_sensing_provider(
     catalog: Catalog,
@@ -441,6 +517,7 @@ def station_sensing_provider(
     environment: tuple[Box3, ...],
     grid: OccupancyGrid,
     heading_bins: int,
+    prior_margin_m: float = 0.0,
 ) -> SensingProvider:
     """Predict station observability at each candidate site (ADR 0006).
 
@@ -452,7 +529,13 @@ def station_sensing_provider(
     physical fact the simulator's station synthesizes.
 
     Docked poses are used because that is where `docking_acceptance` runs.
+
+    `prior_margin_m` (default 0, the shipped behaviour) additionally requires
+    visibility under a prior map that may be wrong by that much; see
+    `prior_margin_maps`.
     """
+    maps = prior_margin_maps(stations, environment, prior_margin_m)
+
     def provider(transition: Transition, state: HybridState):
         cached = cache.get((transition.id, state.x, state.y, state.heading))
         if cached is not None:
@@ -469,12 +552,11 @@ def station_sensing_provider(
         for pod in transition.moved_pods:
             worst = None
             for base in bases:
-                docked = _world_pose(
-                    catalog.morphologies[transition.target].pod_poses[pod],
-                    base, catalog.module_sizes[pod][2])
-                point = (docked.x, docked.y, docked.z)
+                point = _docked_point(catalog, transition, pod, base)
                 station = observed_by_any(stations, point, environment)
-                if station is None:
+                if station is None or any(
+                        observed_by_any(map_stations, point, map_boxes) is None
+                        for map_stations, map_boxes in maps[1:]):
                     worst = None
                     break
                 trace = precise_trace(station.range_to(point))

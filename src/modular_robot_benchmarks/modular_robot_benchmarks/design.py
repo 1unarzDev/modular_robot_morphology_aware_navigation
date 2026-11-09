@@ -42,9 +42,14 @@ FAULT_MATRIX_DESIGN_KINDS = frozenset({
 # Engineering re-runs of chosen generator-3 trials, seeds copied verbatim, to
 # reproduce a failure and test a fix on the same worlds. Never study evidence.
 REPRO_V3_DESIGN_KIND = "engineering_repro_v3"
+# Offset-world pilot: confirmatory_v3 layouts re-run with the simulated screen
+# displaced from the planner's prior and with an optional planner prior-map
+# margin. Never study evidence; see studies/offset_world_pilot_v1/declaration.md.
+OFFSET_WORLD_PILOT_DESIGN_KIND = "offset_world_pilot_v1"
 LONG_ROOM_DESIGN_KINDS = frozenset({
     PILOT_V3_DESIGN_KIND, CONFIRMATORY_V3_DESIGN_KIND, ROUNDTRIP_V3_DESIGN_KIND,
-    FAULT_MATRIX_V3_DESIGN_KIND, REPRO_V3_DESIGN_KIND})
+    FAULT_MATRIX_V3_DESIGN_KIND, REPRO_V3_DESIGN_KIND,
+    OFFSET_WORLD_PILOT_DESIGN_KIND})
 
 
 def layout_generator_for(design_kind: str) -> int:
@@ -103,6 +108,30 @@ class TrialSpec:
 
 
 @dataclass(frozen=True)
+class OffsetTrialSpec(TrialSpec):
+    """A trial whose simulated world differs from the planner's prior.
+
+    A subclass, not extra fields on `TrialSpec`, so that every existing design
+    and terminal record serializes (and hashes) exactly as before.
+    `world_offset` is (screen dx, dy, station dx, dy) in metres; the planner
+    reads the unperturbed prior. `prior_margin_m` is the planner's prior-map
+    margin (0 = shipped behaviour).
+    """
+
+    world_offset: tuple[float, float, float, float] = (0.0, 0.0, 0.0, 0.0)
+    prior_margin_m: float = 0.0
+    world_condition: str = "ctl"
+
+
+def trial_spec_from_dict(value: dict) -> TrialSpec:
+    """Rebuild a spec from its JSON form; offset specs are recognised by key."""
+    if "world_offset" in value:
+        value = {**value, "world_offset": tuple(float(v) for v in value["world_offset"])}
+        return OffsetTrialSpec(**value)
+    return TrialSpec(**value)
+
+
+@dataclass(frozen=True)
 class StudyDesign:
     schema_version: int
     design_kind: str
@@ -149,11 +178,11 @@ class StudyDesign:
         value = dict(envelope["design"])
         value["methods"] = tuple(value["methods"])
         value["families"] = tuple(value["families"])
-        value["trials"] = tuple(TrialSpec(**trial) for trial in value["trials"])
+        value["trials"] = tuple(trial_spec_from_dict(trial) for trial in value["trials"])
         design = cls(**value)
         if envelope.get("design_hash") != design.design_hash:
             raise ValueError("frozen design hash does not match its contents")
-        if design.design_kind.startswith(("engineering_", "workshop_")):
+        if design.design_kind.startswith(("engineering_", "workshop_", "offset_world_pilot")):
             # Engineering qualification exercises one execution path; it is
             # never a method comparison.
             if not design.methods or not set(design.methods) <= set(METHODS):

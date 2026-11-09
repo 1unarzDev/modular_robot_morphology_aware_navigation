@@ -23,6 +23,8 @@ def generate_launch_description():
     failure_injection = LaunchConfiguration("failure_injection")
     transition_environment = LaunchConfiguration("transition_environment")
     station_gated_visibility = LaunchConfiguration("station_gated_visibility")
+    prior_margin_m = LaunchConfiguration("prior_margin_m")
+    world_manifest = LaunchConfiguration("world_manifest")
     keepout_mask = LaunchConfiguration("keepout_mask")
     has_map = PythonExpression(["'", map_file, "' != ''"])
     has_keepout = PythonExpression(["'", keepout_mask, "' != ''"])
@@ -46,6 +48,15 @@ def generate_launch_description():
                         "declared workspace fiducial station rather than by the "
                         "onboard connector cameras. Set when the scenario "
                         "manifest declares a station."),
+        DeclareLaunchArgument(
+            "prior_margin_m", default_value="0.0",
+            description="Planner prior-map margin (m) for station visibility; "
+                        "0 is the shipped predictor."),
+        DeclareLaunchArgument(
+            "world_manifest", default_value="",
+            description="Scenario manifest of the simulated world, when it "
+                        "differs from the planner's prior (offset-world pilot). "
+                        "Empty means the world is the prior."),
         DeclareLaunchArgument(
             "keepout_mask", default_value="",
             description="ADR 0012: Nav2 keepout filter mask of declared obstacles "
@@ -104,6 +115,7 @@ def generate_launch_description():
         Node(package="morphology_planner", executable="planner_server", output="screen", parameters=[{
             "use_sim_time": True,
             "transition_environment": ParameterValue(transition_environment, value_type=str),
+            "prior_margin_m": ParameterValue(prior_margin_m, value_type=float),
         }]),
         Node(package="reconfiguration_executor", executable="reconfiguration_executor", output="screen", parameters=[{
             "use_sim_time": True,
@@ -119,6 +131,7 @@ def generate_launch_description():
         Node(package="modular_robot_sim", executable="fiducial_station", output="screen", parameters=[{
             "use_sim_time": True,
             "scenario_manifest": ParameterValue(transition_environment, value_type=str),
+            "world_manifest": ParameterValue(world_manifest, value_type=str),
         }]),
         Node(package="modular_robot_bringup", executable="hybrid_navigator", output="screen", parameters=[{"use_sim_time": True}]),
     ])

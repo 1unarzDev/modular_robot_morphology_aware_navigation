@@ -51,6 +51,9 @@ class PlannerServer(Node):
         # keeps the live-sensing behaviour every world had before.
         self._stations = load_fiducial_stations(
             str(self.get_parameter("transition_environment").value))
+        # Prior-map margin (m) on the sight screen and station; 0 is the shipped
+        # predictor. See transition_policy.prior_margin_maps.
+        self.declare_parameter("prior_margin_m", 0.0)
         catalog = load_catalog(self.get_parameter("catalog").value)
         self._catalog = (
             catalog.supported_experiment_subset()
@@ -152,7 +155,8 @@ class PlannerServer(Node):
                 sensing_provider=(
                     station_sensing_provider(
                         self._catalog, self._stations, self._environment,
-                        planning_grid, heading_bins)
+                        planning_grid, heading_bins,
+                        float(self.get_parameter("prior_margin_m").value))
                     if self._stations else None
                 ),
                 cost_model=self._cost_model(),

@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from random import Random
 
 from morphology_planner import FiducialStation, HybridState, PodSensingState
 from morphology_planner.catalog import Transition
 from morphology_planner.grid import OCCUPIED, OccupancyGrid
+from morphology_planner.transition_policy import SIGHT_SCREEN_NAME
 from morphology_planner.transition_validation import Box3
 
 from .design import CONFIRMATORY_FAMILIES, WORKSHOP_VARIANTS
@@ -151,6 +152,44 @@ class ConfirmatoryScenario:
             "observability_regions": [asdict(region) for region in self.observability_regions],
             "fiducial_stations": [asdict(station) for station in self.fiducial_stations],
         }
+
+
+# Offset-world pilot: the simulated world may differ from the planner's prior.
+# (screen_dx, screen_dy, station_dx, station_dy) in metres, map frame. The
+# planner keeps reading the unperturbed scenario; the SDF and the station node
+# read `apply_world_offset(scenario, offset)`.
+WORLD_OFFSET_FIELDS = ("screen_dx", "screen_dy", "station_dx", "station_dy")
+
+
+def is_zero_offset(offset) -> bool:
+    return offset is None or all(float(value) == 0.0 for value in offset)
+
+
+def apply_world_offset(scenario: ConfirmatoryScenario, offset) -> ConfirmatoryScenario:
+    """The world as simulated when the screen and station are not where the prior says.
+
+    A zero or absent offset returns `scenario` itself, so every artifact built
+    from it is unchanged. Only the elevated sight screen and the fiducial
+    stations move, in x and y; the grid, start, goal, regions, and every other
+    box stay as declared.
+    """
+    if is_zero_offset(offset):
+        return scenario
+    if len(offset) != len(WORLD_OFFSET_FIELDS):
+        raise ValueError(f"world offset needs {WORLD_OFFSET_FIELDS}")
+    screen_dx, screen_dy, station_dx, station_dy = (float(v) for v in offset)
+    obstacles = tuple(
+        Box3(box.name, (box.center[0] + screen_dx, box.center[1] + screen_dy,
+                        box.center[2]), box.size)
+        if box.name == SIGHT_SCREEN_NAME else box
+        for box in scenario.transition_obstacles)
+    stations = tuple(
+        FiducialStation(station.name,
+                        (station.position[0] + station_dx,
+                         station.position[1] + station_dy, station.position[2]),
+                        station.max_range)
+        for station in scenario.fiducial_stations)
+    return replace(scenario, transition_obstacles=obstacles, fiducial_stations=stations)
 
 
 # ADR 0011: the layout population. Generator 1 is what every engineering
