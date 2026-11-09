@@ -300,7 +300,42 @@ def _site_dict(site) -> dict | None:
         "cell_x": site.x, "cell_y": site.y, "heading": site.heading}
 
 
+def refusal_distribution(probabilities_refused: list[float]) -> list[float]:
+    """Poisson-binomial law of the number of refusals among independent cells."""
+    law = [1.0]
+    for refusal in probabilities_refused:
+        step = [0.0] * (len(law) + 1)
+        for count, mass in enumerate(law):
+            step[count] += mass * (1.0 - refusal)
+            step[count + 1] += mass * refusal
+        law = step
+    return law
+
+
+def _quantile(law: list[float], level: float) -> int:
+    total = 0.0
+    for count, mass in enumerate(law):
+        total += mass
+        if total >= level:
+            return count
+    return len(law) - 1
+
+
+def _refusal_summary(cells: list[dict]) -> dict:
+    refused = [1.0 - cell["p_transition_accepted"] for cell in cells
+               if cell["p_transition_accepted"] is not None]
+    law = refusal_distribution(refused)
+    return {"cells": len(refused), "expected_refusals": round(sum(refused), 4),
+            "p_zero_refusals": law[0], "q05": _quantile(law, 0.05),
+            "q95": _quantile(law, 0.95), "q99": _quantile(law, 0.99)}
+
+
 def summarize(cells: list[dict]) -> dict:
+    """Counts by cell type, plus the refusal counts the placement model expects.
+
+    `expected_refusals` is under the wave-2 placement model and independent cells:
+    the reference an observed count is read against (see declaration.md).
+    """
     table: dict[str, dict[str, int]] = {}
     for cell in cells:
         key = f"m{round(cell['prior_margin_m'] * 100):02d}-{cell['world_condition']}"
@@ -308,7 +343,20 @@ def summarize(cells: list[dict]) -> dict:
                                      "marginal": 0})
         row[cell["predicted_transition"]] += 1
         row["marginal"] += int(cell["confidence"] == "marginal")
-    return {"cells": len(cells), "by_cell_type": dict(sorted(table.items()))}
+    toward_shipped = [c for c in cells if c["prior_margin_m"] == 0.0
+                      and c["world_condition"] == "t04"]
+    predicted_safe = [c for c in cells if c["predicted_transition"] == "accepted"
+                      and c not in toward_shipped]
+    toward_margin = [c for c in cells if c["prior_margin_m"] > 0.0
+                     and c["world_condition"] == "t04"]
+    return {
+        "cells": len(cells), "by_cell_type": dict(sorted(table.items())),
+        "refusal_reference": {
+            "t04_margin_0": _refusal_summary(toward_shipped),
+            "t04_margin_0p04": _refusal_summary(toward_margin),
+            "predicted_safe_cells": _refusal_summary(predicted_safe),
+        },
+    }
 
 
 def smoke_trial_ids(layouts: list[dict], cells: list[dict]) -> list[str]:
@@ -332,6 +380,86 @@ def smoke_trial_ids(layouts: list[dict], cells: list[dict]) -> list[str]:
     return sorted(ids)
 
 
+REFUSAL_STATUSES = frozenset({"docking_failure", "unsafe_topology"})
+
+
+def observed_refusal(record) -> bool:
+    """A transition the mission attempted and the docking gate refused."""
+    return (record.terminal_status in REFUSAL_STATUSES
+            or int(record.reconfiguration_failures) > 0)
+
+
+def score(predictions: dict, records: list) -> dict:
+    """Read executed records against the stated predictions (declaration.md).
+
+    Only counts and the declared decision rules; no significance test. Records
+    outside the design are ignored; cells without a record are `pending`.
+    """
+    cells = {cell["trial_id"]: cell for cell in predictions["cells"]}
+    reference = predictions["summary"]["refusal_reference"]
+    by_id = {record.spec.trial_id: record for record in records
+             if record.spec.trial_id in cells}
+    rows, site_mismatch, unrelated = [], [], []
+    for trial_id, cell in sorted(cells.items()):
+        record = by_id.get(trial_id)
+        if record is None:
+            rows.append({**_key(cell), "state": "pending"})
+            continue
+        refused = observed_refusal(record)
+        unrelated_failure = (not record.completed and not refused
+                             and record.terminal_status != "planning_failure")
+        if unrelated_failure:
+            unrelated.append(trial_id)
+        site = next((value for value in record.planned_transition_sites
+                     if value.get("transition_id") == QUALIFYING_TRANSITION), None)
+        if site is not None and cell["site"] is not None:
+            observed = (math.floor(float(site["x"]) / 0.1), math.floor(float(site["y"]) / 0.1))
+            if observed != (cell["site"]["cell_x"], cell["site"]["cell_y"]):
+                site_mismatch.append(trial_id)
+        rows.append({**_key(cell), "state": "done", "completed": record.completed,
+                     "refused": refused, "status": record.terminal_status,
+                     "predicted": cell["predicted_transition"]})
+
+    def count(predicate):
+        done = [row for row in rows if row["state"] == "done" and predicate(row)]
+        return {"n": len(done), "refused": sum(row["refused"] for row in done),
+                "completed": sum(row["completed"] for row in done)}
+
+    shipped_toward = count(lambda r: r["margin"] == 0.0 and r["condition"] == "t04")
+    margin_toward = count(lambda r: r["margin"] > 0.0 and r["condition"] == "t04"
+                          and r["predicted"] != "no_plan")
+    safe = count(lambda r: r["predicted"] == "accepted"
+                 and not (r["margin"] == 0.0 and r["condition"] == "t04"))
+    controls = count(lambda r: r["margin"] == 0.0 and r["condition"] == "ctl")
+    complete_t04 = shipped_toward["n"] == reference["t04_margin_0"]["cells"]
+    complete_safe = safe["n"] == reference["predicted_safe_cells"]["cells"]
+    return {
+        "t04_margin_0": shipped_toward, "t04_margin_0p04": margin_toward,
+        "predicted_safe_cells": safe, "control_cells": controls,
+        "site_mismatch": site_mismatch, "unrelated_failures": unrelated,
+        "verdicts": {
+            # Falsifiers, each decidable only once its cells are all in.
+            "controls_all_complete": (controls["completed"] == controls["n"]
+                                      if controls["n"] else None),
+            "safe_cells_refusals_within_q95": (
+                safe["refused"] <= reference["predicted_safe_cells"]["q95"]
+                if complete_safe else None),
+            "toward_4cm_shipped_shows_loss": (
+                shipped_toward["refused"] >= reference["t04_margin_0"]["q05"]
+                if complete_t04 else None),
+            "margin_removes_loss_at_4cm": (
+                margin_toward["refused"] <= reference["t04_margin_0p04"]["q95"]
+                if margin_toward["n"] == reference["t04_margin_0p04"]["cells"] else None),
+        },
+        "rows": rows,
+    }
+
+
+def _key(cell: dict) -> dict:
+    return {"trial_id": cell["trial_id"], "margin": cell["prior_margin_m"],
+            "condition": cell["world_condition"]}
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--source-design", type=Path,
@@ -343,11 +471,20 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--out", type=Path,
                         default=Path("studies/offset_world_pilot_v1"))
     parser.add_argument("--processes", type=int, default=3)
+    parser.add_argument("--score", type=Path, metavar="RAW_DIR",
+                        help="instead of generating, read the records in RAW_DIR "
+                             "against --out/predictions.json")
     return parser
 
 
 def main() -> None:
     args = _parser().parse_args()
+    if args.score:
+        from .records import TrialStore
+        predictions = json.loads((args.out / "predictions.json").read_text(encoding="utf-8"))
+        result = score(predictions, TrialStore(args.score).load_all())
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return
     source = StudyDesign.read_frozen(args.source_design)
     report = json.loads(args.manipulation_check.read_text(encoding="utf-8"))
     if report["design_hash"] != source.design_hash:

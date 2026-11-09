@@ -1,0 +1,6091 @@
+{
+  "cells": [
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-01",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": -1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 18,
+        "heading": 7
+      },
+      "trial_id": "combined_constraints-01-r0-sensing_feasibility_coupled-m00-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-01",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 0,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 18,
+        "heading": 7
+      },
+      "trial_id": "combined_constraints-01-r0-sensing_feasibility_coupled-m00-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-01",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 18,
+        "heading": 7
+      },
+      "trial_id": "combined_constraints-01-r0-sensing_feasibility_coupled-m00-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "marginal",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-01",
+      "p_transition_accepted": 0.895,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 18,
+        "heading": 7
+      },
+      "trial_id": "combined_constraints-01-r0-sensing_feasibility_coupled-m00-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": -0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-01",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": -1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 16,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-01-r0-sensing_feasibility_coupled-m04-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-01",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 0,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 16,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-01-r0-sensing_feasibility_coupled-m04-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-01",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 16,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-01-r0-sensing_feasibility_coupled-m04-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-01",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 16,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-01-r0-sensing_feasibility_coupled-m04-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": -0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-02",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": -1,
+      "site": {
+        "cell_x": 15,
+        "cell_y": 23,
+        "heading": 0
+      },
+      "trial_id": "combined_constraints-02-r0-sensing_feasibility_coupled-m00-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-02",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 0,
+      "site": {
+        "cell_x": 15,
+        "cell_y": 23,
+        "heading": 0
+      },
+      "trial_id": "combined_constraints-02-r0-sensing_feasibility_coupled-m00-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-02",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 15,
+        "cell_y": 23,
+        "heading": 0
+      },
+      "trial_id": "combined_constraints-02-r0-sensing_feasibility_coupled-m00-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-02",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 15,
+        "cell_y": 23,
+        "heading": 0
+      },
+      "trial_id": "combined_constraints-02-r0-sensing_feasibility_coupled-m00-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": -0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-02",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": -1,
+      "site": {
+        "cell_x": 14,
+        "cell_y": 23,
+        "heading": 0
+      },
+      "trial_id": "combined_constraints-02-r0-sensing_feasibility_coupled-m04-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-02",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 0,
+      "site": {
+        "cell_x": 14,
+        "cell_y": 23,
+        "heading": 0
+      },
+      "trial_id": "combined_constraints-02-r0-sensing_feasibility_coupled-m04-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-02",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 14,
+        "cell_y": 23,
+        "heading": 0
+      },
+      "trial_id": "combined_constraints-02-r0-sensing_feasibility_coupled-m04-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-02",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 14,
+        "cell_y": 23,
+        "heading": 0
+      },
+      "trial_id": "combined_constraints-02-r0-sensing_feasibility_coupled-m04-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": -0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-03",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": -1,
+      "site": {
+        "cell_x": 16,
+        "cell_y": 11,
+        "heading": 0
+      },
+      "trial_id": "combined_constraints-03-r0-sensing_feasibility_coupled-m00-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-03",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 0,
+      "site": {
+        "cell_x": 16,
+        "cell_y": 11,
+        "heading": 0
+      },
+      "trial_id": "combined_constraints-03-r0-sensing_feasibility_coupled-m00-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-03",
+      "p_transition_accepted": 0.98,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 16,
+        "cell_y": 11,
+        "heading": 0
+      },
+      "trial_id": "combined_constraints-03-r0-sensing_feasibility_coupled-m00-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "marginal",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [
+        "pod_0"
+      ],
+      "layout_id": "combined_constraints-03",
+      "p_transition_accepted": 0.0875,
+      "predicted_completion": false,
+      "predicted_terminal": "not_completed",
+      "predicted_transition": "refused",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 16,
+        "cell_y": 11,
+        "heading": 0
+      },
+      "trial_id": "combined_constraints-03-r0-sensing_feasibility_coupled-m00-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": -0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-03",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": -1,
+      "site": {
+        "cell_x": 13,
+        "cell_y": 11,
+        "heading": 0
+      },
+      "trial_id": "combined_constraints-03-r0-sensing_feasibility_coupled-m04-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-03",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 0,
+      "site": {
+        "cell_x": 13,
+        "cell_y": 11,
+        "heading": 0
+      },
+      "trial_id": "combined_constraints-03-r0-sensing_feasibility_coupled-m04-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-03",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 13,
+        "cell_y": 11,
+        "heading": 0
+      },
+      "trial_id": "combined_constraints-03-r0-sensing_feasibility_coupled-m04-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-03",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 13,
+        "cell_y": 11,
+        "heading": 0
+      },
+      "trial_id": "combined_constraints-03-r0-sensing_feasibility_coupled-m04-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": -0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-05",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": -1,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 14,
+        "heading": 7
+      },
+      "trial_id": "combined_constraints-05-r0-sensing_feasibility_coupled-m00-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-05",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 0,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 14,
+        "heading": 7
+      },
+      "trial_id": "combined_constraints-05-r0-sensing_feasibility_coupled-m00-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-05",
+      "p_transition_accepted": 0.9975,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 14,
+        "heading": 7
+      },
+      "trial_id": "combined_constraints-05-r0-sensing_feasibility_coupled-m00-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "marginal",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-05",
+      "p_transition_accepted": 0.8825,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 14,
+        "heading": 7
+      },
+      "trial_id": "combined_constraints-05-r0-sensing_feasibility_coupled-m00-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": -0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-05",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": -1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 13,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-05-r0-sensing_feasibility_coupled-m04-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-05",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 0,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 13,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-05-r0-sensing_feasibility_coupled-m04-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-05",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 13,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-05-r0-sensing_feasibility_coupled-m04-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-05",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 13,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-05-r0-sensing_feasibility_coupled-m04-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": -0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-06",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": -1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "combined_constraints-06-r0-sensing_feasibility_coupled-m00-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-06",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 0,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "combined_constraints-06-r0-sensing_feasibility_coupled-m00-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-06",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "combined_constraints-06-r0-sensing_feasibility_coupled-m00-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "marginal",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-06",
+      "p_transition_accepted": 0.76,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "combined_constraints-06-r0-sensing_feasibility_coupled-m00-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": -0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-06",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": -1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 15,
+        "heading": 7
+      },
+      "trial_id": "combined_constraints-06-r0-sensing_feasibility_coupled-m04-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-06",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 0,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 15,
+        "heading": 7
+      },
+      "trial_id": "combined_constraints-06-r0-sensing_feasibility_coupled-m04-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-06",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 15,
+        "heading": 7
+      },
+      "trial_id": "combined_constraints-06-r0-sensing_feasibility_coupled-m04-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-06",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 15,
+        "heading": 7
+      },
+      "trial_id": "combined_constraints-06-r0-sensing_feasibility_coupled-m04-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": -0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-10",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": -1,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 19,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-10-r0-sensing_feasibility_coupled-m00-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-10",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 0,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 19,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-10-r0-sensing_feasibility_coupled-m00-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-10",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 19,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-10-r0-sensing_feasibility_coupled-m00-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "marginal",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-10",
+      "p_transition_accepted": 0.86,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 19,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-10-r0-sensing_feasibility_coupled-m00-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": -0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-10",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": -1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 16,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-10-r0-sensing_feasibility_coupled-m04-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-10",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 0,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 16,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-10-r0-sensing_feasibility_coupled-m04-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-10",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 16,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-10-r0-sensing_feasibility_coupled-m04-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-10",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 16,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-10-r0-sensing_feasibility_coupled-m04-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": -0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-11",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": -1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 26,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-11-r0-sensing_feasibility_coupled-m00-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-11",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 0,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 26,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-11-r0-sensing_feasibility_coupled-m00-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-11",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 26,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-11-r0-sensing_feasibility_coupled-m00-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-11",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 26,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-11-r0-sensing_feasibility_coupled-m00-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": -0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-11",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": -1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 26,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-11-r0-sensing_feasibility_coupled-m04-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-11",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 0,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 26,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-11-r0-sensing_feasibility_coupled-m04-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-11",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 26,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-11-r0-sensing_feasibility_coupled-m04-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-11",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 26,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-11-r0-sensing_feasibility_coupled-m04-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": -0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-13",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": -1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 19,
+        "heading": 1
+      },
+      "trial_id": "combined_constraints-13-r0-sensing_feasibility_coupled-m00-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-13",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 0,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 19,
+        "heading": 1
+      },
+      "trial_id": "combined_constraints-13-r0-sensing_feasibility_coupled-m00-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-13",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 19,
+        "heading": 1
+      },
+      "trial_id": "combined_constraints-13-r0-sensing_feasibility_coupled-m00-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "marginal",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-13",
+      "p_transition_accepted": 0.5425,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 19,
+        "heading": 1
+      },
+      "trial_id": "combined_constraints-13-r0-sensing_feasibility_coupled-m00-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": -0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-13",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": -1,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 20,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-13-r0-sensing_feasibility_coupled-m04-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-13",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 0,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 20,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-13-r0-sensing_feasibility_coupled-m04-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-13",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 20,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-13-r0-sensing_feasibility_coupled-m04-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-13",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 20,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-13-r0-sensing_feasibility_coupled-m04-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": -0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-14",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": -1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 22,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-14-r0-sensing_feasibility_coupled-m00-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-14",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 0,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 22,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-14-r0-sensing_feasibility_coupled-m00-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-14",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 22,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-14-r0-sensing_feasibility_coupled-m00-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-14",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 22,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-14-r0-sensing_feasibility_coupled-m00-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": -0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-14",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": -1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 22,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-14-r0-sensing_feasibility_coupled-m04-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-14",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 0,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 22,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-14-r0-sensing_feasibility_coupled-m04-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-14",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 22,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-14-r0-sensing_feasibility_coupled-m04-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-14",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 22,
+        "heading": 2
+      },
+      "trial_id": "combined_constraints-14-r0-sensing_feasibility_coupled-m04-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": -0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-15",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": -1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 19,
+        "heading": 0
+      },
+      "trial_id": "combined_constraints-15-r0-sensing_feasibility_coupled-m00-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-15",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 0,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 19,
+        "heading": 0
+      },
+      "trial_id": "combined_constraints-15-r0-sensing_feasibility_coupled-m00-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-15",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 19,
+        "heading": 0
+      },
+      "trial_id": "combined_constraints-15-r0-sensing_feasibility_coupled-m00-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-15",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 19,
+        "heading": 0
+      },
+      "trial_id": "combined_constraints-15-r0-sensing_feasibility_coupled-m00-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": -0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-15",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": -1,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 19,
+        "heading": 7
+      },
+      "trial_id": "combined_constraints-15-r0-sensing_feasibility_coupled-m04-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-15",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 0,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 19,
+        "heading": 7
+      },
+      "trial_id": "combined_constraints-15-r0-sensing_feasibility_coupled-m04-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-15",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 19,
+        "heading": 7
+      },
+      "trial_id": "combined_constraints-15-r0-sensing_feasibility_coupled-m04-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-15",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 19,
+        "heading": 7
+      },
+      "trial_id": "combined_constraints-15-r0-sensing_feasibility_coupled-m04-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": -0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-17",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": -1,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 14,
+        "heading": 6
+      },
+      "trial_id": "combined_constraints-17-r0-sensing_feasibility_coupled-m00-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-17",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 0,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 14,
+        "heading": 6
+      },
+      "trial_id": "combined_constraints-17-r0-sensing_feasibility_coupled-m00-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-17",
+      "p_transition_accepted": 0.99,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 14,
+        "heading": 6
+      },
+      "trial_id": "combined_constraints-17-r0-sensing_feasibility_coupled-m00-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "marginal",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [
+        "pod_2"
+      ],
+      "layout_id": "combined_constraints-17",
+      "p_transition_accepted": 0.4375,
+      "predicted_completion": false,
+      "predicted_terminal": "not_completed",
+      "predicted_transition": "refused",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 14,
+        "heading": 6
+      },
+      "trial_id": "combined_constraints-17-r0-sensing_feasibility_coupled-m00-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": -0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-17",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": -1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 12,
+        "heading": 3
+      },
+      "trial_id": "combined_constraints-17-r0-sensing_feasibility_coupled-m04-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-17",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 0,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 12,
+        "heading": 3
+      },
+      "trial_id": "combined_constraints-17-r0-sensing_feasibility_coupled-m04-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-17",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 12,
+        "heading": 3
+      },
+      "trial_id": "combined_constraints-17-r0-sensing_feasibility_coupled-m04-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-17",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 11,
+        "cell_y": 12,
+        "heading": 3
+      },
+      "trial_id": "combined_constraints-17-r0-sensing_feasibility_coupled-m04-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": -0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-19",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": -1,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 18,
+        "heading": 7
+      },
+      "trial_id": "combined_constraints-19-r0-sensing_feasibility_coupled-m00-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-19",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 0,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 18,
+        "heading": 7
+      },
+      "trial_id": "combined_constraints-19-r0-sensing_feasibility_coupled-m00-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-19",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 18,
+        "heading": 7
+      },
+      "trial_id": "combined_constraints-19-r0-sensing_feasibility_coupled-m00-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-19",
+      "p_transition_accepted": 0.9975,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 18,
+        "heading": 7
+      },
+      "trial_id": "combined_constraints-19-r0-sensing_feasibility_coupled-m00-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": -0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-19",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": -1,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 18,
+        "heading": 6
+      },
+      "trial_id": "combined_constraints-19-r0-sensing_feasibility_coupled-m04-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-19",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 0,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 18,
+        "heading": 6
+      },
+      "trial_id": "combined_constraints-19-r0-sensing_feasibility_coupled-m04-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-19",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 18,
+        "heading": 6
+      },
+      "trial_id": "combined_constraints-19-r0-sensing_feasibility_coupled-m04-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-x",
+      "family": "combined_constraints",
+      "hidden_pods": [],
+      "layout_id": "combined_constraints-19",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 12,
+        "cell_y": 18,
+        "heading": 6
+      },
+      "trial_id": "combined_constraints-19-r0-sensing_feasibility_coupled-m04-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": -0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-02",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": -1,
+      "site": {
+        "cell_x": 27,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-02-r0-sensing_feasibility_coupled-m00-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-02",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 0,
+      "site": {
+        "cell_x": 27,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-02-r0-sensing_feasibility_coupled-m00-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-02",
+      "p_transition_accepted": 0.95,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 27,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-02-r0-sensing_feasibility_coupled-m00-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "marginal",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [
+        "pod_4"
+      ],
+      "layout_id": "docking_observability-02",
+      "p_transition_accepted": 0.4175,
+      "predicted_completion": false,
+      "predicted_terminal": "not_completed",
+      "predicted_transition": "refused",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 27,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-02-r0-sensing_feasibility_coupled-m00-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-02",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": -1,
+      "site": {
+        "cell_x": 29,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-02-r0-sensing_feasibility_coupled-m04-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-02",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 0,
+      "site": {
+        "cell_x": 29,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-02-r0-sensing_feasibility_coupled-m04-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-02",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 29,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-02-r0-sensing_feasibility_coupled-m04-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-02",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 29,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-02-r0-sensing_feasibility_coupled-m04-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-03",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": -1,
+      "site": {
+        "cell_x": 25,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-03-r0-sensing_feasibility_coupled-m00-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-03",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 0,
+      "site": {
+        "cell_x": 25,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-03-r0-sensing_feasibility_coupled-m00-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-03",
+      "p_transition_accepted": 0.9875,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 25,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-03-r0-sensing_feasibility_coupled-m00-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "marginal",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-03",
+      "p_transition_accepted": 0.6625,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 25,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-03-r0-sensing_feasibility_coupled-m00-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-03",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": -1,
+      "site": {
+        "cell_x": 27,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-03-r0-sensing_feasibility_coupled-m04-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-03",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 0,
+      "site": {
+        "cell_x": 27,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-03-r0-sensing_feasibility_coupled-m04-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-03",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 27,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-03-r0-sensing_feasibility_coupled-m04-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-03",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 27,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-03-r0-sensing_feasibility_coupled-m04-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-05",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": -1,
+      "site": {
+        "cell_x": 22,
+        "cell_y": 17,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-05-r0-sensing_feasibility_coupled-m00-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-05",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 0,
+      "site": {
+        "cell_x": 22,
+        "cell_y": 17,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-05-r0-sensing_feasibility_coupled-m00-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-05",
+      "p_transition_accepted": 0.9675,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 22,
+        "cell_y": 17,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-05-r0-sensing_feasibility_coupled-m00-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "marginal",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [
+        "pod_4"
+      ],
+      "layout_id": "docking_observability-05",
+      "p_transition_accepted": 0.4725,
+      "predicted_completion": false,
+      "predicted_terminal": "not_completed",
+      "predicted_transition": "refused",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 22,
+        "cell_y": 17,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-05-r0-sensing_feasibility_coupled-m00-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-05",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": -1,
+      "site": {
+        "cell_x": 24,
+        "cell_y": 16,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-05-r0-sensing_feasibility_coupled-m04-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-05",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 0,
+      "site": {
+        "cell_x": 24,
+        "cell_y": 16,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-05-r0-sensing_feasibility_coupled-m04-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-05",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 24,
+        "cell_y": 16,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-05-r0-sensing_feasibility_coupled-m04-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-05",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 24,
+        "cell_y": 16,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-05-r0-sensing_feasibility_coupled-m04-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-y",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-06",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": -1,
+      "site": {
+        "cell_x": 30,
+        "cell_y": 16,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-06-r0-sensing_feasibility_coupled-m00-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.02,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-06",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 0,
+      "site": {
+        "cell_x": 30,
+        "cell_y": 16,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-06-r0-sensing_feasibility_coupled-m00-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-y",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-06",
+      "p_transition_accepted": 0.9925,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 30,
+        "cell_y": 16,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-06-r0-sensing_feasibility_coupled-m00-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": -0.02,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "marginal",
+      "direction": "-y",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-06",
+      "p_transition_accepted": 0.935,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 30,
+        "cell_y": 16,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-06-r0-sensing_feasibility_coupled-m00-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": -0.04,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-y",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-06",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": -1,
+      "site": {
+        "cell_x": 31,
+        "cell_y": 15,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-06-r0-sensing_feasibility_coupled-m04-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.02,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-06",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 0,
+      "site": {
+        "cell_x": 31,
+        "cell_y": 15,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-06-r0-sensing_feasibility_coupled-m04-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-y",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-06",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 31,
+        "cell_y": 15,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-06-r0-sensing_feasibility_coupled-m04-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": -0.02,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-y",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-06",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 31,
+        "cell_y": 15,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-06-r0-sensing_feasibility_coupled-m04-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": -0.04,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-07",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": -1,
+      "site": {
+        "cell_x": 26,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-07-r0-sensing_feasibility_coupled-m00-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-07",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 0,
+      "site": {
+        "cell_x": 26,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-07-r0-sensing_feasibility_coupled-m00-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-07",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 26,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-07-r0-sensing_feasibility_coupled-m00-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "marginal",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-07",
+      "p_transition_accepted": 0.8675,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 26,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-07-r0-sensing_feasibility_coupled-m00-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-07",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": -1,
+      "site": {
+        "cell_x": 28,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-07-r0-sensing_feasibility_coupled-m04-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-07",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 0,
+      "site": {
+        "cell_x": 28,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-07-r0-sensing_feasibility_coupled-m04-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-07",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 28,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-07-r0-sensing_feasibility_coupled-m04-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-07",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 28,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-07-r0-sensing_feasibility_coupled-m04-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-09",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": -1,
+      "site": {
+        "cell_x": 26,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-09-r0-sensing_feasibility_coupled-m00-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-09",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 0,
+      "site": {
+        "cell_x": 26,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-09-r0-sensing_feasibility_coupled-m00-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-09",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 26,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-09-r0-sensing_feasibility_coupled-m00-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-09",
+      "p_transition_accepted": 0.99,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 26,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-09-r0-sensing_feasibility_coupled-m00-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-09",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": -1,
+      "site": {
+        "cell_x": 27,
+        "cell_y": 11,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-09-r0-sensing_feasibility_coupled-m04-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-09",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 0,
+      "site": {
+        "cell_x": 27,
+        "cell_y": 11,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-09-r0-sensing_feasibility_coupled-m04-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-09",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 27,
+        "cell_y": 11,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-09-r0-sensing_feasibility_coupled-m04-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-09",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 27,
+        "cell_y": 11,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-09-r0-sensing_feasibility_coupled-m04-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-10",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": -1,
+      "site": {
+        "cell_x": 26,
+        "cell_y": 14,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-10-r0-sensing_feasibility_coupled-m00-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-10",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 0,
+      "site": {
+        "cell_x": 26,
+        "cell_y": 14,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-10-r0-sensing_feasibility_coupled-m00-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-10",
+      "p_transition_accepted": 0.9825,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 26,
+        "cell_y": 14,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-10-r0-sensing_feasibility_coupled-m00-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "marginal",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-10",
+      "p_transition_accepted": 0.635,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 26,
+        "cell_y": 14,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-10-r0-sensing_feasibility_coupled-m00-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-10",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": -1,
+      "site": {
+        "cell_x": 28,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-10-r0-sensing_feasibility_coupled-m04-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-10",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 0,
+      "site": {
+        "cell_x": 28,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-10-r0-sensing_feasibility_coupled-m04-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-10",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 28,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-10-r0-sensing_feasibility_coupled-m04-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-10",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 28,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-10-r0-sensing_feasibility_coupled-m04-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-11",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": -1,
+      "site": {
+        "cell_x": 31,
+        "cell_y": 15,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-11-r0-sensing_feasibility_coupled-m00-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-11",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 0,
+      "site": {
+        "cell_x": 31,
+        "cell_y": 15,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-11-r0-sensing_feasibility_coupled-m00-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-11",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 31,
+        "cell_y": 15,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-11-r0-sensing_feasibility_coupled-m00-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-11",
+      "p_transition_accepted": 0.98,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 31,
+        "cell_y": 15,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-11-r0-sensing_feasibility_coupled-m00-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-11",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": -1,
+      "site": {
+        "cell_x": 32,
+        "cell_y": 14,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-11-r0-sensing_feasibility_coupled-m04-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-11",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 0,
+      "site": {
+        "cell_x": 32,
+        "cell_y": 14,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-11-r0-sensing_feasibility_coupled-m04-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-11",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 32,
+        "cell_y": 14,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-11-r0-sensing_feasibility_coupled-m04-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-11",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 32,
+        "cell_y": 14,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-11-r0-sensing_feasibility_coupled-m04-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-13",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": -1,
+      "site": {
+        "cell_x": 25,
+        "cell_y": 14,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-13-r0-sensing_feasibility_coupled-m00-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-13",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 0,
+      "site": {
+        "cell_x": 25,
+        "cell_y": 14,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-13-r0-sensing_feasibility_coupled-m00-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-13",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 25,
+        "cell_y": 14,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-13-r0-sensing_feasibility_coupled-m00-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-13",
+      "p_transition_accepted": 0.9975,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 25,
+        "cell_y": 14,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-13-r0-sensing_feasibility_coupled-m00-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-13",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": -1,
+      "site": {
+        "cell_x": 26,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-13-r0-sensing_feasibility_coupled-m04-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-13",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 0,
+      "site": {
+        "cell_x": 26,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-13-r0-sensing_feasibility_coupled-m04-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-13",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 26,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-13-r0-sensing_feasibility_coupled-m04-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-13",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 26,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-13-r0-sensing_feasibility_coupled-m04-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-14",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": -1,
+      "site": {
+        "cell_x": 28,
+        "cell_y": 15,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-14-r0-sensing_feasibility_coupled-m00-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-14",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 0,
+      "site": {
+        "cell_x": 28,
+        "cell_y": 15,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-14-r0-sensing_feasibility_coupled-m00-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-14",
+      "p_transition_accepted": 0.99,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 28,
+        "cell_y": 15,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-14-r0-sensing_feasibility_coupled-m00-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "marginal",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-14",
+      "p_transition_accepted": 0.57,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 28,
+        "cell_y": 15,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-14-r0-sensing_feasibility_coupled-m00-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-14",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": -1,
+      "site": {
+        "cell_x": 30,
+        "cell_y": 14,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-14-r0-sensing_feasibility_coupled-m04-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-14",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 0,
+      "site": {
+        "cell_x": 30,
+        "cell_y": 14,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-14-r0-sensing_feasibility_coupled-m04-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-14",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 30,
+        "cell_y": 14,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-14-r0-sensing_feasibility_coupled-m04-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-14",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 30,
+        "cell_y": 14,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-14-r0-sensing_feasibility_coupled-m04-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-y",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-15",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": -1,
+      "site": {
+        "cell_x": 26,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-15-r0-sensing_feasibility_coupled-m00-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.02,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-15",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 0,
+      "site": {
+        "cell_x": 26,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-15-r0-sensing_feasibility_coupled-m00-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-y",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-15",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 26,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-15-r0-sensing_feasibility_coupled-m00-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": -0.02,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-y",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-15",
+      "p_transition_accepted": 0.9675,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 26,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-15-r0-sensing_feasibility_coupled-m00-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": -0.04,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-y",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-15",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": -1,
+      "site": {
+        "cell_x": 27,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-15-r0-sensing_feasibility_coupled-m04-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.02,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-15",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 0,
+      "site": {
+        "cell_x": 27,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-15-r0-sensing_feasibility_coupled-m04-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-y",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-15",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 27,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-15-r0-sensing_feasibility_coupled-m04-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": -0.02,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-y",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-15",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 27,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-15-r0-sensing_feasibility_coupled-m04-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": -0.04,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-y",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-17",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": -1,
+      "site": {
+        "cell_x": 29,
+        "cell_y": 11,
+        "heading": 5
+      },
+      "trial_id": "docking_observability-17-r0-sensing_feasibility_coupled-m00-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.02,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-17",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 0,
+      "site": {
+        "cell_x": 29,
+        "cell_y": 11,
+        "heading": 5
+      },
+      "trial_id": "docking_observability-17-r0-sensing_feasibility_coupled-m00-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-y",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-17",
+      "p_transition_accepted": 0.98,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 29,
+        "cell_y": 11,
+        "heading": 5
+      },
+      "trial_id": "docking_observability-17-r0-sensing_feasibility_coupled-m00-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": -0.02,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "marginal",
+      "direction": "-y",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-17",
+      "p_transition_accepted": 0.775,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 29,
+        "cell_y": 11,
+        "heading": 5
+      },
+      "trial_id": "docking_observability-17-r0-sensing_feasibility_coupled-m00-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": -0.04,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-y",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-17",
+      "p_transition_accepted": null,
+      "predicted_completion": false,
+      "predicted_terminal": "planning_failure",
+      "predicted_transition": "no_plan",
+      "prior_margin_m": 0.04,
+      "sign": -1,
+      "site": null,
+      "trial_id": "docking_observability-17-r0-sensing_feasibility_coupled-m04-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.0,
+        "screen_dy": 0.02,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-17",
+      "p_transition_accepted": null,
+      "predicted_completion": false,
+      "predicted_terminal": "planning_failure",
+      "predicted_transition": "no_plan",
+      "prior_margin_m": 0.04,
+      "sign": 0,
+      "site": null,
+      "trial_id": "docking_observability-17-r0-sensing_feasibility_coupled-m04-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-y",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-17",
+      "p_transition_accepted": null,
+      "predicted_completion": false,
+      "predicted_terminal": "planning_failure",
+      "predicted_transition": "no_plan",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": null,
+      "trial_id": "docking_observability-17-r0-sensing_feasibility_coupled-m04-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": -0.02,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "-y",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-17",
+      "p_transition_accepted": null,
+      "predicted_completion": false,
+      "predicted_terminal": "planning_failure",
+      "predicted_transition": "no_plan",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": null,
+      "trial_id": "docking_observability-17-r0-sensing_feasibility_coupled-m04-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": -0.04,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-18",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": -1,
+      "site": {
+        "cell_x": 22,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-18-r0-sensing_feasibility_coupled-m00-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-18",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 0,
+      "site": {
+        "cell_x": 22,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-18-r0-sensing_feasibility_coupled-m00-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-18",
+      "p_transition_accepted": 0.9875,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 22,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-18-r0-sensing_feasibility_coupled-m00-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "marginal",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-18",
+      "p_transition_accepted": 0.51,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 22,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-18-r0-sensing_feasibility_coupled-m00-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-18",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": -1,
+      "site": {
+        "cell_x": 24,
+        "cell_y": 11,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-18-r0-sensing_feasibility_coupled-m04-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-18",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 0,
+      "site": {
+        "cell_x": 24,
+        "cell_y": 11,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-18-r0-sensing_feasibility_coupled-m04-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-18",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 24,
+        "cell_y": 11,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-18-r0-sensing_feasibility_coupled-m04-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-18",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 24,
+        "cell_y": 11,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-18-r0-sensing_feasibility_coupled-m04-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-19",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": -1,
+      "site": {
+        "cell_x": 30,
+        "cell_y": 14,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-19-r0-sensing_feasibility_coupled-m00-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-19",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 0,
+      "site": {
+        "cell_x": 30,
+        "cell_y": 14,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-19-r0-sensing_feasibility_coupled-m00-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-19",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 30,
+        "cell_y": 14,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-19-r0-sensing_feasibility_coupled-m00-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-19",
+      "p_transition_accepted": 0.9725,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.0,
+      "sign": 1,
+      "site": {
+        "cell_x": 30,
+        "cell_y": 14,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-19-r0-sensing_feasibility_coupled-m00-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-19",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": -1,
+      "site": {
+        "cell_x": 31,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-19-r0-sensing_feasibility_coupled-m04-a02",
+      "world_condition": "a02",
+      "world_offset": {
+        "screen_dx": -0.02,
+        "screen_dy": -0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": null,
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-19",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 0,
+      "site": {
+        "cell_x": 31,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-19-r0-sensing_feasibility_coupled-m04-ctl",
+      "world_condition": "ctl",
+      "world_offset": {
+        "screen_dx": 0.0,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-19",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 31,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-19-r0-sensing_feasibility_coupled-m04-t02",
+      "world_condition": "t02",
+      "world_offset": {
+        "screen_dx": 0.02,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    },
+    {
+      "confidence": "firm",
+      "direction": "+x",
+      "family": "docking_observability",
+      "hidden_pods": [],
+      "layout_id": "docking_observability-19",
+      "p_transition_accepted": 1.0,
+      "predicted_completion": true,
+      "predicted_terminal": "completed",
+      "predicted_transition": "accepted",
+      "prior_margin_m": 0.04,
+      "sign": 1,
+      "site": {
+        "cell_x": 31,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "trial_id": "docking_observability-19-r0-sensing_feasibility_coupled-m04-t04",
+      "world_condition": "t04",
+      "world_offset": {
+        "screen_dx": 0.04,
+        "screen_dy": 0.0,
+        "station_dx": 0.0,
+        "station_dy": 0.0
+      }
+    }
+  ],
+  "design_hash": "0bd851b8f37e621d803514ba342934664131c741af2930cdf7ba967e6e33d6ab",
+  "direction_rule": "The station S sees a pod P through the\nscreen's plane at a fraction `SCREEN_FRACTION` (0.5) of the way from S to P in\nthe horizontal, so a screen translated by t in the plane casts its shadow\ntranslated by t / SCREEN_FRACTION = 2 t in the SAME direction. The shadow edge a\nsite is chosen next to therefore moves toward the site exactly when the screen\nmoves in the direction in which the site's pods first become hidden. The rule\n(`toward_direction`) measures that directly with the shipped visibility\npredicate instead of assuming it:\n\n    for each of the four axis directions d in (+x, -x, +y, -y), the escape\n    distance s_d is the smallest screen translation along d, in 1 mm steps up\n    to 150 mm, that hides at least one moved pod at the planned site with the\n    core placed exactly at the site (no placement error), in the world where\n    only the screen has moved. \"Toward\" is the d with the smallest s_d (ties\n    in the order listed). \"Away\" is -d.",
+  "layouts": [
+    {
+      "direction_toward": "+x",
+      "escape_distance_m": {
+        "+x": 0.038,
+        "+y": null,
+        "-x": null,
+        "-y": 0.051
+      },
+      "family": "docking_observability",
+      "layout_id": "docking_observability-02",
+      "layout_index": 2,
+      "site_margin_0": {
+        "cell_x": 27,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "site_margin_0p04": {
+        "cell_x": 29,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "world_seed": 2016523062614691351
+    },
+    {
+      "direction_toward": "+x",
+      "escape_distance_m": {
+        "+x": 0.044,
+        "+y": null,
+        "-x": null,
+        "-y": 0.065
+      },
+      "family": "docking_observability",
+      "layout_id": "docking_observability-03",
+      "layout_index": 3,
+      "site_margin_0": {
+        "cell_x": 25,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "site_margin_0p04": {
+        "cell_x": 27,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "world_seed": 6999666141381533799
+    },
+    {
+      "direction_toward": "+x",
+      "escape_distance_m": {
+        "+x": 0.039,
+        "+y": null,
+        "-x": null,
+        "-y": 0.087
+      },
+      "family": "docking_observability",
+      "layout_id": "docking_observability-05",
+      "layout_index": 5,
+      "site_margin_0": {
+        "cell_x": 22,
+        "cell_y": 17,
+        "heading": 1
+      },
+      "site_margin_0p04": {
+        "cell_x": 24,
+        "cell_y": 16,
+        "heading": 1
+      },
+      "world_seed": 12225576789308056961
+    },
+    {
+      "direction_toward": "-y",
+      "escape_distance_m": {
+        "+x": 0.066,
+        "+y": null,
+        "-x": null,
+        "-y": 0.065
+      },
+      "family": "docking_observability",
+      "layout_id": "docking_observability-06",
+      "layout_index": 6,
+      "site_margin_0": {
+        "cell_x": 30,
+        "cell_y": 16,
+        "heading": 1
+      },
+      "site_margin_0p04": {
+        "cell_x": 31,
+        "cell_y": 15,
+        "heading": 1
+      },
+      "world_seed": 2301666007640024915
+    },
+    {
+      "direction_toward": "+x",
+      "escape_distance_m": {
+        "+x": 0.051,
+        "+y": null,
+        "-x": null,
+        "-y": 0.069
+      },
+      "family": "docking_observability",
+      "layout_id": "docking_observability-07",
+      "layout_index": 7,
+      "site_margin_0": {
+        "cell_x": 26,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "site_margin_0p04": {
+        "cell_x": 28,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "world_seed": 6675187000632711744
+    },
+    {
+      "direction_toward": "+x",
+      "escape_distance_m": {
+        "+x": 0.067,
+        "+y": null,
+        "-x": null,
+        "-y": 0.082
+      },
+      "family": "docking_observability",
+      "layout_id": "docking_observability-09",
+      "layout_index": 9,
+      "site_margin_0": {
+        "cell_x": 26,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "site_margin_0p04": {
+        "cell_x": 27,
+        "cell_y": 11,
+        "heading": 1
+      },
+      "world_seed": 11363186571641202249
+    },
+    {
+      "direction_toward": "+x",
+      "escape_distance_m": {
+        "+x": 0.045,
+        "+y": null,
+        "-x": null,
+        "-y": 0.067
+      },
+      "family": "docking_observability",
+      "layout_id": "docking_observability-10",
+      "layout_index": 10,
+      "site_margin_0": {
+        "cell_x": 26,
+        "cell_y": 14,
+        "heading": 1
+      },
+      "site_margin_0p04": {
+        "cell_x": 28,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "world_seed": 3043786137900454182
+    },
+    {
+      "direction_toward": "+x",
+      "escape_distance_m": {
+        "+x": 0.059,
+        "+y": null,
+        "-x": null,
+        "-y": 0.075
+      },
+      "family": "docking_observability",
+      "layout_id": "docking_observability-11",
+      "layout_index": 11,
+      "site_margin_0": {
+        "cell_x": 31,
+        "cell_y": 15,
+        "heading": 1
+      },
+      "site_margin_0p04": {
+        "cell_x": 32,
+        "cell_y": 14,
+        "heading": 1
+      },
+      "world_seed": 15278258401087204891
+    },
+    {
+      "direction_toward": "+x",
+      "escape_distance_m": {
+        "+x": 0.072,
+        "+y": null,
+        "-x": null,
+        "-y": 0.103
+      },
+      "family": "docking_observability",
+      "layout_id": "docking_observability-13",
+      "layout_index": 13,
+      "site_margin_0": {
+        "cell_x": 25,
+        "cell_y": 14,
+        "heading": 1
+      },
+      "site_margin_0p04": {
+        "cell_x": 26,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "world_seed": 1871560538605367750
+    },
+    {
+      "direction_toward": "+x",
+      "escape_distance_m": {
+        "+x": 0.044,
+        "+y": null,
+        "-x": null,
+        "-y": 0.063
+      },
+      "family": "docking_observability",
+      "layout_id": "docking_observability-14",
+      "layout_index": 14,
+      "site_margin_0": {
+        "cell_x": 28,
+        "cell_y": 15,
+        "heading": 1
+      },
+      "site_margin_0p04": {
+        "cell_x": 30,
+        "cell_y": 14,
+        "heading": 1
+      },
+      "world_seed": 6220393337234391738
+    },
+    {
+      "direction_toward": "-y",
+      "escape_distance_m": {
+        "+x": 0.074,
+        "+y": null,
+        "-x": null,
+        "-y": 0.072
+      },
+      "family": "docking_observability",
+      "layout_id": "docking_observability-15",
+      "layout_index": 15,
+      "site_margin_0": {
+        "cell_x": 26,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "site_margin_0p04": {
+        "cell_x": 27,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "world_seed": 6508444546419427326
+    },
+    {
+      "direction_toward": "-y",
+      "escape_distance_m": {
+        "+x": 0.056,
+        "+y": null,
+        "-x": null,
+        "-y": 0.054
+      },
+      "family": "docking_observability",
+      "layout_id": "docking_observability-17",
+      "layout_index": 17,
+      "site_margin_0": {
+        "cell_x": 29,
+        "cell_y": 11,
+        "heading": 5
+      },
+      "site_margin_0p04": null,
+      "world_seed": 325803406928502903
+    },
+    {
+      "direction_toward": "+x",
+      "escape_distance_m": {
+        "+x": 0.041,
+        "+y": null,
+        "-x": null,
+        "-y": 0.063
+      },
+      "family": "docking_observability",
+      "layout_id": "docking_observability-18",
+      "layout_index": 18,
+      "site_margin_0": {
+        "cell_x": 22,
+        "cell_y": 12,
+        "heading": 1
+      },
+      "site_margin_0p04": {
+        "cell_x": 24,
+        "cell_y": 11,
+        "heading": 1
+      },
+      "world_seed": 7096837043557376143
+    },
+    {
+      "direction_toward": "+x",
+      "escape_distance_m": {
+        "+x": 0.058,
+        "+y": null,
+        "-x": null,
+        "-y": 0.072
+      },
+      "family": "docking_observability",
+      "layout_id": "docking_observability-19",
+      "layout_index": 19,
+      "site_margin_0": {
+        "cell_x": 30,
+        "cell_y": 14,
+        "heading": 1
+      },
+      "site_margin_0p04": {
+        "cell_x": 31,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "world_seed": 5797070747694498948
+    },
+    {
+      "direction_toward": "-x",
+      "escape_distance_m": {
+        "+x": null,
+        "+y": null,
+        "-x": 0.058,
+        "-y": null
+      },
+      "family": "combined_constraints",
+      "layout_id": "combined_constraints-01",
+      "layout_index": 1,
+      "site_margin_0": {
+        "cell_x": 11,
+        "cell_y": 18,
+        "heading": 7
+      },
+      "site_margin_0p04": {
+        "cell_x": 11,
+        "cell_y": 16,
+        "heading": 2
+      },
+      "world_seed": 12181379787453922624
+    },
+    {
+      "direction_toward": "-x",
+      "escape_distance_m": {
+        "+x": null,
+        "+y": null,
+        "-x": 0.067,
+        "-y": null
+      },
+      "family": "combined_constraints",
+      "layout_id": "combined_constraints-02",
+      "layout_index": 2,
+      "site_margin_0": {
+        "cell_x": 15,
+        "cell_y": 23,
+        "heading": 0
+      },
+      "site_margin_0p04": {
+        "cell_x": 14,
+        "cell_y": 23,
+        "heading": 0
+      },
+      "world_seed": 6620421303002990590
+    },
+    {
+      "direction_toward": "-x",
+      "escape_distance_m": {
+        "+x": null,
+        "+y": null,
+        "-x": 0.033,
+        "-y": 0.073
+      },
+      "family": "combined_constraints",
+      "layout_id": "combined_constraints-03",
+      "layout_index": 3,
+      "site_margin_0": {
+        "cell_x": 16,
+        "cell_y": 11,
+        "heading": 0
+      },
+      "site_margin_0p04": {
+        "cell_x": 13,
+        "cell_y": 11,
+        "heading": 0
+      },
+      "world_seed": 10695656350572606728
+    },
+    {
+      "direction_toward": "-x",
+      "escape_distance_m": {
+        "+x": null,
+        "+y": null,
+        "-x": 0.058,
+        "-y": null
+      },
+      "family": "combined_constraints",
+      "layout_id": "combined_constraints-05",
+      "layout_index": 5,
+      "site_margin_0": {
+        "cell_x": 12,
+        "cell_y": 14,
+        "heading": 7
+      },
+      "site_margin_0p04": {
+        "cell_x": 11,
+        "cell_y": 13,
+        "heading": 2
+      },
+      "world_seed": 6909332325242935905
+    },
+    {
+      "direction_toward": "-x",
+      "escape_distance_m": {
+        "+x": null,
+        "+y": null,
+        "-x": 0.044,
+        "-y": 0.124
+      },
+      "family": "combined_constraints",
+      "layout_id": "combined_constraints-06",
+      "layout_index": 6,
+      "site_margin_0": {
+        "cell_x": 11,
+        "cell_y": 13,
+        "heading": 1
+      },
+      "site_margin_0p04": {
+        "cell_x": 11,
+        "cell_y": 15,
+        "heading": 7
+      },
+      "world_seed": 10967622185595517203
+    },
+    {
+      "direction_toward": "-x",
+      "escape_distance_m": {
+        "+x": null,
+        "+y": null,
+        "-x": 0.051,
+        "-y": null
+      },
+      "family": "combined_constraints",
+      "layout_id": "combined_constraints-10",
+      "layout_index": 10,
+      "site_margin_0": {
+        "cell_x": 12,
+        "cell_y": 19,
+        "heading": 2
+      },
+      "site_margin_0p04": {
+        "cell_x": 11,
+        "cell_y": 16,
+        "heading": 2
+      },
+      "world_seed": 172173394336851691
+    },
+    {
+      "direction_toward": "-x",
+      "escape_distance_m": {
+        "+x": null,
+        "+y": null,
+        "-x": 0.123,
+        "-y": null
+      },
+      "family": "combined_constraints",
+      "layout_id": "combined_constraints-11",
+      "layout_index": 11,
+      "site_margin_0": {
+        "cell_x": 11,
+        "cell_y": 26,
+        "heading": 2
+      },
+      "site_margin_0p04": {
+        "cell_x": 11,
+        "cell_y": 26,
+        "heading": 2
+      },
+      "world_seed": 15808211883977027743
+    },
+    {
+      "direction_toward": "-x",
+      "escape_distance_m": {
+        "+x": null,
+        "+y": null,
+        "-x": 0.041,
+        "-y": null
+      },
+      "family": "combined_constraints",
+      "layout_id": "combined_constraints-13",
+      "layout_index": 13,
+      "site_margin_0": {
+        "cell_x": 11,
+        "cell_y": 19,
+        "heading": 1
+      },
+      "site_margin_0p04": {
+        "cell_x": 12,
+        "cell_y": 20,
+        "heading": 2
+      },
+      "world_seed": 12872651929577437390
+    },
+    {
+      "direction_toward": "-x",
+      "escape_distance_m": {
+        "+x": null,
+        "+y": null,
+        "-x": 0.129,
+        "-y": null
+      },
+      "family": "combined_constraints",
+      "layout_id": "combined_constraints-14",
+      "layout_index": 14,
+      "site_margin_0": {
+        "cell_x": 11,
+        "cell_y": 22,
+        "heading": 2
+      },
+      "site_margin_0p04": {
+        "cell_x": 11,
+        "cell_y": 22,
+        "heading": 2
+      },
+      "world_seed": 3398622890395029144
+    },
+    {
+      "direction_toward": "-x",
+      "escape_distance_m": {
+        "+x": null,
+        "+y": null,
+        "-x": 0.06,
+        "-y": null
+      },
+      "family": "combined_constraints",
+      "layout_id": "combined_constraints-15",
+      "layout_index": 15,
+      "site_margin_0": {
+        "cell_x": 11,
+        "cell_y": 19,
+        "heading": 0
+      },
+      "site_margin_0p04": {
+        "cell_x": 12,
+        "cell_y": 19,
+        "heading": 7
+      },
+      "world_seed": 16679464777233732615
+    },
+    {
+      "direction_toward": "-x",
+      "escape_distance_m": {
+        "+x": null,
+        "+y": null,
+        "-x": 0.039,
+        "-y": 0.112
+      },
+      "family": "combined_constraints",
+      "layout_id": "combined_constraints-17",
+      "layout_index": 17,
+      "site_margin_0": {
+        "cell_x": 12,
+        "cell_y": 14,
+        "heading": 6
+      },
+      "site_margin_0p04": {
+        "cell_x": 11,
+        "cell_y": 12,
+        "heading": 3
+      },
+      "world_seed": 15950785418377555174
+    },
+    {
+      "direction_toward": "-x",
+      "escape_distance_m": {
+        "+x": null,
+        "+y": null,
+        "-x": 0.073,
+        "-y": null
+      },
+      "family": "combined_constraints",
+      "layout_id": "combined_constraints-19",
+      "layout_index": 19,
+      "site_margin_0": {
+        "cell_x": 12,
+        "cell_y": 18,
+        "heading": 7
+      },
+      "site_margin_0p04": {
+        "cell_x": 12,
+        "cell_y": 18,
+        "heading": 6
+      },
+      "world_seed": 4187475835491575355
+    }
+  ],
+  "placement_model": {
+    "bias_m": 0.012,
+    "firm_probability": 0.95,
+    "samples": 400,
+    "sigma_m": 0.011,
+    "yaw_sigma_rad": 0.03490658503988659
+  },
+  "purpose": "offset_world_pilot_v1 predictions, written before any trial",
+  "schema_version": 1,
+  "source_design_hash": "c939f12699e1eca0e7f74bfe9f5dc0ef69343c92fe82c1ce95e5c6af1dad5734",
+  "summary": {
+    "by_cell_type": {
+      "m00-a02": {
+        "accepted": 26,
+        "marginal": 0,
+        "no_plan": 0,
+        "refused": 0
+      },
+      "m00-ctl": {
+        "accepted": 26,
+        "marginal": 0,
+        "no_plan": 0,
+        "refused": 0
+      },
+      "m00-t02": {
+        "accepted": 26,
+        "marginal": 0,
+        "no_plan": 0,
+        "refused": 0
+      },
+      "m00-t04": {
+        "accepted": 22,
+        "marginal": 16,
+        "no_plan": 0,
+        "refused": 4
+      },
+      "m04-a02": {
+        "accepted": 25,
+        "marginal": 0,
+        "no_plan": 1,
+        "refused": 0
+      },
+      "m04-ctl": {
+        "accepted": 25,
+        "marginal": 0,
+        "no_plan": 1,
+        "refused": 0
+      },
+      "m04-t02": {
+        "accepted": 25,
+        "marginal": 0,
+        "no_plan": 1,
+        "refused": 0
+      },
+      "m04-t04": {
+        "accepted": 25,
+        "marginal": 0,
+        "no_plan": 1,
+        "refused": 0
+      }
+    },
+    "cells": 208,
+    "refusal_reference": {
+      "predicted_safe_cells": {
+        "cells": 178,
+        "expected_refusals": 0.195,
+        "p_zero_refusals": 0.8206298440208278,
+        "q05": 0,
+        "q95": 1,
+        "q99": 2
+      },
+      "t04_margin_0": {
+        "cells": 26,
+        "expected_refusals": 5.785,
+        "p_zero_refusals": 0.00014767569984170442,
+        "q05": 3,
+        "q95": 9,
+        "q99": 10
+      },
+      "t04_margin_0p04": {
+        "cells": 25,
+        "expected_refusals": 0.0,
+        "p_zero_refusals": 1.0,
+        "q05": 0,
+        "q95": 0,
+        "q99": 0
+      }
+    }
+  }
+}
