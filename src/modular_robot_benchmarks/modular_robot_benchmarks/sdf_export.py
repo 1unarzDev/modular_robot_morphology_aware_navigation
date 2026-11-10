@@ -139,24 +139,10 @@ def export_sdf(family: str, seed: int, output: Path) -> None:
     ElementTree(sdf).write(output, encoding="unicode", xml_declaration=True)
 
 
-def export_confirmatory_sdf(
-    family: str, layout_index: int, world_seed: int,
-    output: Path, catalog_path: Path, friction_seed: int | None = None,
-    unperceived_obstacles: tuple[tuple[str, tuple, tuple], ...] = (),
-    generator: int = 1,
-) -> tuple[Path, Path]:
-    """Write a complete Gazebo world plus its immutable scenario manifest.
-
-    `unperceived_obstacles` are (name, center, size) boxes written to the world
-    only. They are a Gate 1 stimulus: the scenario manifest, which the planner
-    reads as its prior, and the occupancy map never mention them.
-    """
-    scenario = make_confirmatory_scenario(
-        family, layout_index, world_seed, generator=generator)
-    disturbance = physical_disturbance(friction_seed)
-    catalog = load_catalog(catalog_path).supported_experiment_subset()
+def _world_skeleton(world_name: str, catalog, disturbance: dict) -> tuple[Element, Element]:
+    """Physics, systems, the topology plugin, light and ground shared by every world."""
     sdf = Element("sdf", version="1.10")
-    world = SubElement(sdf, "world", name=scenario.layout_id.replace("-", "_"))
+    world = SubElement(sdf, "world", name=world_name)
     physics = SubElement(world, "physics", name="physics", type="ignored")
     SubElement(physics, "max_step_size").text = "0.002"
     SubElement(physics, "real_time_factor").text = "1"
@@ -195,7 +181,27 @@ def export_confirmatory_sdf(
     ode = SubElement(friction, "ode")
     SubElement(ode, "mu").text = str(disturbance["ground_friction"])
     SubElement(ode, "mu2").text = str(disturbance["ground_friction"])
+    return sdf, world
 
+
+def export_confirmatory_sdf(
+    family: str, layout_index: int, world_seed: int,
+    output: Path, catalog_path: Path, friction_seed: int | None = None,
+    unperceived_obstacles: tuple[tuple[str, tuple, tuple], ...] = (),
+    generator: int = 1,
+) -> tuple[Path, Path]:
+    """Write a complete Gazebo world plus its immutable scenario manifest.
+
+    `unperceived_obstacles` are (name, center, size) boxes written to the world
+    only. They are a Gate 1 stimulus: the scenario manifest, which the planner
+    reads as its prior, and the occupancy map never mention them.
+    """
+    scenario = make_confirmatory_scenario(
+        family, layout_index, world_seed, generator=generator)
+    disturbance = physical_disturbance(friction_seed)
+    catalog = load_catalog(catalog_path).supported_experiment_subset()
+    sdf, world = _world_skeleton(
+        scenario.layout_id.replace("-", "_"), catalog, disturbance)
     for y in range(scenario.grid.height):
         for x in range(scenario.grid.width):
             if scenario.grid.value(x, y) == OCCUPIED:
@@ -220,6 +226,40 @@ def export_confirmatory_sdf(
     manifest_path = output.with_suffix(".manifest.json")
     manifest_path.write_text(
         json.dumps({**scenario.manifest(), "friction_seed": friction_seed,
+                    "physical_disturbance": disturbance},
+                   indent=2, sort_keys=True) + "\n",
+        encoding="utf-8")
+    return output, manifest_path
+
+
+def export_doorway_sdf(
+    course, output: Path, catalog_path: Path, friction_seed: int | None = None,
+) -> tuple[Path, Path]:
+    """World and scenario manifest for an ExperimentChoice offset-doorway course.
+
+    Same physics, systems, ground and robot include as a confirmatory world.
+    The walls are the course's exact rectangles, one static box each, instead of
+    one box per 0.1 m grid cell, and the robot spawns at the course's start pose
+    (plus the seeded spawn disturbance every family applies).
+    """
+    from .doorway_scenarios import scenario_manifest, wall_boxes_m
+
+    disturbance = physical_disturbance(friction_seed)
+    catalog = load_catalog(catalog_path).supported_experiment_subset()
+    sdf, world = _world_skeleton(f"offset_doorway_{course.course_id}", catalog, disturbance)
+    for name, center, size in wall_boxes_m(course):
+        _box_model(world, name, center, size)
+    start_x, start_y, start_yaw = course.start
+    _include(world, "model://modular_robot", "core", (
+        start_x + disturbance["initial_dx_m"],
+        start_y + disturbance["initial_dy_m"], 0.18,
+        start_yaw + disturbance["initial_yaw_rad"],
+    ))
+    output.parent.mkdir(parents=True, exist_ok=True)
+    ElementTree(sdf).write(output, encoding="unicode", xml_declaration=True)
+    manifest_path = output.with_suffix(".manifest.json")
+    manifest_path.write_text(
+        json.dumps({**scenario_manifest(course), "friction_seed": friction_seed,
                     "physical_disturbance": disturbance},
                    indent=2, sort_keys=True) + "\n",
         encoding="utf-8")

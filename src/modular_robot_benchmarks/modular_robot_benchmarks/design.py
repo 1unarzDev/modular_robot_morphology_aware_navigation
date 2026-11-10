@@ -45,6 +45,18 @@ REPRO_V3_DESIGN_KIND = "engineering_repro_v3"
 LONG_ROOM_DESIGN_KINDS = frozenset({
     PILOT_V3_DESIGN_KIND, CONFIRMATORY_V3_DESIGN_KIND, ROUNDTRIP_V3_DESIGN_KIND,
     FAULT_MATRIX_V3_DESIGN_KIND, REPRO_V3_DESIGN_KIND})
+# ExperimentChoice offset-doorway courses (exploratory, a separate research
+# track): one fixed morphology driven by stock Nav2 (NavigateToPose) under one of
+# two frozen Nav2 parameter files. No morphology planning, no reconfiguration.
+# Kept out of METHODS and of every generator above, so no existing design,
+# record or hash changes. See `doorway_scenarios.py` and `doorway_design.py`.
+EXPCHOICE_DOORWAY_DESIGN_KIND = "expchoice_doorway_v0"
+DOORWAY_FAMILY = "offset_doorway"
+# method id -> arm label. A rotates to heading and never commands reverse; B
+# (MPPI DiffDrive) and C (pure pursuit on Reeds-Shepp paths) may reverse. The
+# parameter files are bound in `doorway_design.py`.
+DOORWAY_METHODS = {
+    "rpp_rotate_navfn": "A", "mppi_reverse_navfn": "B", "rpp_reverse_smac_rs": "C"}
 
 
 def layout_generator_for(design_kind: str) -> int:
@@ -103,6 +115,46 @@ class TrialSpec:
 
 
 @dataclass(frozen=True)
+class DoorwayTrialSpec(TrialSpec):
+    """One offset-doorway trial: a course, a morphology, a frozen Nav2 file.
+
+    A subclass, not extra fields on `TrialSpec`, so every existing design and
+    record serializes (and hashes) exactly as before. The course is carried in
+    full as the integer centimetres the ExperimentChoice manifest hashes, so the
+    design hash covers the geometry and no trial depends on a file outside the
+    design. `run_order` is the global execution rank (0 first); the job queue
+    runs one `run_order` per seed.
+    """
+
+    run_order: int = 0
+    arm: str = ""
+    morphology: str = "compact_diff"
+    nav2_config: str = ""            # repository-relative parameter file
+    nav2_config_sha256: str = ""
+    deadline_s: float = 120.0
+    course_id: str = ""
+    w_cm: int = 0
+    e_cm: int = 0
+    d_cm: int = 0
+    B_cm: int = 0
+    t_cm: int = 0
+    wall_cm: int = 0
+    exit_depth_cm: int = 0
+    start_x_cm: int = 0
+    start_y_cm: int = 0
+    start_yaw_mrad: int = 0
+    goal_x_cm: int = 0
+    goal_y_cm: int = 0
+
+
+def trial_spec_from_dict(value: dict) -> TrialSpec:
+    """Rebuild a spec from its JSON form; doorway specs are recognised by key."""
+    if "course_id" in value:
+        return DoorwayTrialSpec(**value)
+    return TrialSpec(**value)
+
+
+@dataclass(frozen=True)
 class StudyDesign:
     schema_version: int
     design_kind: str
@@ -149,11 +201,18 @@ class StudyDesign:
         value = dict(envelope["design"])
         value["methods"] = tuple(value["methods"])
         value["families"] = tuple(value["families"])
-        value["trials"] = tuple(TrialSpec(**trial) for trial in value["trials"])
+        value["trials"] = tuple(trial_spec_from_dict(trial) for trial in value["trials"])
         design = cls(**value)
         if envelope.get("design_hash") != design.design_hash:
             raise ValueError("frozen design hash does not match its contents")
-        if design.design_kind.startswith(("engineering_", "workshop_")):
+        if design.design_kind == EXPCHOICE_DOORWAY_DESIGN_KIND:
+            if not design.methods or not set(design.methods) <= set(DOORWAY_METHODS):
+                raise ValueError("frozen design has an unsupported method set")
+            if any(not isinstance(trial, DoorwayTrialSpec) for trial in design.trials):
+                raise ValueError("a doorway design holds only doorway trials")
+        elif any(isinstance(trial, DoorwayTrialSpec) for trial in design.trials):
+            raise ValueError("doorway trials belong only to a doorway design")
+        elif design.design_kind.startswith(("engineering_", "workshop_")):
             # Engineering qualification exercises one execution path; it is
             # never a method comparison.
             if not design.methods or not set(design.methods) <= set(METHODS):

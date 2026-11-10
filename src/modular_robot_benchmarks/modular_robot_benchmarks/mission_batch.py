@@ -12,11 +12,12 @@ import signal
 import subprocess
 import sys
 import time
-from typing import Any
+from typing import Any, Sequence
 
 from .confirmatory_scenarios import make_confirmatory_scenario
 from .design import (
-    FAULT_MATRIX_DESIGN_KINDS, GATE1_OUTCOMES_DESIGN_KIND, OutcomeCase, StudyDesign,
+    EXPCHOICE_DOORWAY_DESIGN_KIND, FAULT_MATRIX_DESIGN_KINDS,
+    GATE1_OUTCOMES_DESIGN_KIND, OutcomeCase, StudyDesign,
     fault_case_for_run, layout_generator_for, outcome_case_for_run,
 )
 from .evaluator_metrics import (
@@ -362,6 +363,26 @@ def _terminate_pids(pids: set[int]) -> None:
             return
 
 
+def pending_trials(design: StudyDesign, store: TrialStore,
+                   only_trial_ids: Sequence[str] | None = None) -> list:
+    """Trials still to run, in execution order, optionally restricted by --only.
+
+    `run_order` exists only on specs that declare one (the doorway family);
+    plain specs have none, sort as 0, and keep the order they always had.
+    """
+    pending = sorted(
+        store.pending(design.trials),
+        key=lambda spec: (getattr(spec, "run_order", 0), spec.family, spec.layout_id,
+                          spec.replicate, spec.method_order),
+    )
+    if only_trial_ids is not None:
+        unknown = set(only_trial_ids) - {spec.trial_id for spec in design.trials}
+        if unknown:
+            raise ValueError(f"--only names trials not in the design: {sorted(unknown)}")
+        pending = [spec for spec in pending if spec.trial_id in set(only_trial_ids)]
+    return pending
+
+
 def run_batch(
     root: Path,
     design_path: Path,
@@ -372,17 +393,21 @@ def run_batch(
     wall_watchdog_s: float,
     allow_dirty: bool,
     max_infrastructure_retries: int = 2,
+    only_trial_ids: Sequence[str] | None = None,
 ) -> dict:
+    design = StudyDesign.read_frozen(design_path)
+    if design.design_kind == EXPCHOICE_DOORWAY_DESIGN_KIND:
+        # A different scenario family, stack file and driver; see doorway_batch.
+        from .doorway_batch import run_doorway_batch
+        return run_doorway_batch(
+            root, design, raw_root, artifact_root, catalog_path, max_trials,
+            wall_watchdog_s, allow_dirty, max_infrastructure_retries, only_trial_ids)
     # Import ROS only in an installed/runtime environment; pure design and
     # manifest helpers remain host-testable.
     from .mission_trial import MissionObservation, execute_mission_isolated
 
-    design = StudyDesign.read_frozen(design_path)
     store = TrialStore(raw_root)
-    pending = sorted(
-        store.pending(design.trials),
-        key=lambda spec: (spec.family, spec.layout_id, spec.replicate, spec.method_order),
-    )
+    pending = pending_trials(design, store, only_trial_ids)
     if max_trials is not None:
         pending = pending[:max_trials]
     revision = _git_revision(root, allow_dirty)
@@ -668,6 +693,10 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--wall-watchdog", type=float, default=600.0)
     parser.add_argument("--max-infrastructure-retries", type=int, default=2)
     parser.add_argument("--allow-dirty", action="store_true")
+    parser.add_argument(
+        "--only", type=Path,
+        help="JSON list of trial ids; run only those still pending (a subset "
+             "of the frozen design, e.g. one trial per job-queue seed)")
     return parser
 
 
@@ -676,7 +705,8 @@ def main() -> None:
     result = run_batch(
         args.root.resolve(), args.design.resolve(), args.raw.resolve(),
         args.artifacts.resolve(), args.catalog.resolve(), args.max_trials,
-        args.wall_watchdog, args.allow_dirty, args.max_infrastructure_retries)
+        args.wall_watchdog, args.allow_dirty, args.max_infrastructure_retries,
+        json.loads(args.only.read_text(encoding="utf-8")) if args.only else None)
     print(json.dumps(result, indent=2, sort_keys=True))
 
 

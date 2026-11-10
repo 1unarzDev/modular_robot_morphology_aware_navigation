@@ -24,6 +24,7 @@ def generate_launch_description():
     transition_environment = LaunchConfiguration("transition_environment")
     station_gated_visibility = LaunchConfiguration("station_gated_visibility")
     keepout_mask = LaunchConfiguration("keepout_mask")
+    nav2_params = LaunchConfiguration("nav2_params")
     has_map = PythonExpression(["'", map_file, "' != ''"])
     has_keepout = PythonExpression(["'", keepout_mask, "' != ''"])
     localization_params = os.path.join(bringup, "config", "localization.yaml")
@@ -51,6 +52,10 @@ def generate_launch_description():
             description="ADR 0012: Nav2 keepout filter mask of declared obstacles "
                         "below the lidar that the planner routes around. Empty "
                         "leaves both costmaps' keepout filters inactive."),
+        DeclareLaunchArgument(
+            "nav2_params", default_value=os.path.join(bringup, "config", "nav2.yaml"),
+            description="Nav2 parameter file. Every study but the ExperimentChoice "
+                        "doorway family leaves this at the default."),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(os.path.join(sim, "launch", "simulation.launch.py")),
             launch_arguments={"world": world}.items()),
@@ -95,7 +100,7 @@ def generate_launch_description():
              }]),
         TimerAction(period=3.0, actions=[IncludeLaunchDescription(
             PythonLaunchDescriptionSource(os.path.join(nav2, "launch", "navigation_launch.py")),
-            launch_arguments={"params_file": os.path.join(bringup, "config", "nav2.yaml"), "use_sim_time": "true"}.items(),
+            launch_arguments={"params_file": nav2_params, "use_sim_time": "true"}.items(),
         )]),
         Node(package="morphology_manager", executable="morphology_manager", output="screen", parameters=[{"use_sim_time": True}]),
         Node(package="modular_robot_bringup", executable="assembly_drive_adapter", output="screen", parameters=[{"use_sim_time": True}]),
