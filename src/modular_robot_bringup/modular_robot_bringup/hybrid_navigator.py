@@ -172,11 +172,7 @@ class HybridNavigator(Node):
         stale_revisions = 0
         method = goal_handle.request.planner_method
         ledger = self._predetach_ledger(method)
-        # A pre-detach rejection is a replan that is neither an execution
-        # failure nor a committed transformation; it gets its own pass so the
-        # attempt cap, not the loop guard, bounds it. Zero for other methods.
-        while passes < max_replans + 1 + MAX_PLANNED_REPLANS + (
-                ledger.rejection_count if ledger else 0):
+        while passes < max_replans + 1 + MAX_PLANNED_REPLANS:
             if execution_failures > max_replans:
                 break
             if self.morphology is None:
@@ -313,6 +309,11 @@ class HybridNavigator(Node):
                             self._predetach_publish(ledger.record(
                                 "replan", self._sim_time_s(),
                                 rejections=ledger.rejection_count))
+                            # A pre-detach rejection is neither an execution
+                            # failure nor a committed transformation: its pass
+                            # is handed back, so the attempt cap, not the loop
+                            # guard, bounds it. Never reached by other methods.
+                            passes -= 1
                             replan_requested = True
                             break
                     success = await self._execute_transition(segment)
