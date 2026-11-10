@@ -8,7 +8,11 @@ from typing import Literal, Mapping
 from .catalog import Catalog
 from .cost_model import EdgeCostModel
 from .grid import OccupancyGrid
+from .observability import FiducialStation
 from .planner import HybridPlan, HybridState, MorphologyAStar
+from .predetach_check import (
+    CHECKED_METHODS, ExcludingTransitionPolicy, SiteExclusionFilter, SiteRejection,
+)
 from .route_first import RouteFirstAdaptationPlanner
 from .transition_policy import CoupledTransitionPolicy, PodSensingState, SensingProvider
 from .transition_validation import Box3, TransitionTrajectoryValidator
@@ -19,6 +23,11 @@ PlannerMethod = Literal[
     "geometry_coupled",
     "feasibility_coupled",
     "sensing_feasibility_coupled",
+    # Proposal (predetach_check_v1): feasibility_coupled plus a live pre-detach
+    # station check executed by the navigator; the planner only applies the
+    # rejections it reports. See predetach_check.py.
+    "feasibility_checked",
+    "feasibility_probed",
 ]
 
 
@@ -92,6 +101,8 @@ def make_method_planner(
     cost_model: EdgeCostModel | None = None,
     topology_revision: int = 0,
     sensing_revision: int = 0,
+    site_rejections: tuple[SiteRejection, ...] = (),
+    stations: tuple[FiducialStation, ...] = (),
 ) -> MethodPlanner:
     """Construct one frozen ablation over common search and execution inputs."""
     if method == "route_first_adaptation":
@@ -101,12 +112,22 @@ def make_method_planner(
         "sensing_feasibility_coupled",
     }:
         policy_method = method
+    elif method in CHECKED_METHODS:
+        # No prediction model: the shipped feasibility predicate, plus the
+        # rejections the robot observed (applied below).
+        policy_method = "feasibility_coupled"
     else:
         raise ValueError(f"unsupported planner method: {method}")
     policy = CoupledTransitionPolicy(
         policy_method, catalog, grid, heading_bins, environment, static_modules,
         sensing, sensing_provider, trajectory_validator,
     )
+    if site_rejections and method not in CHECKED_METHODS:
+        raise ValueError(f"{method} does not take pre-detach site rejections")
+    validator = policy
+    if method in CHECKED_METHODS:
+        validator = ExcludingTransitionPolicy(policy, SiteExclusionFilter(
+            catalog, grid, heading_bins, tuple(stations), tuple(site_rejections)))
     planner_type = (
         RouteFirstAdaptationPlanner
         if method == "route_first_adaptation" else MorphologyAStar
@@ -115,7 +136,7 @@ def make_method_planner(
     # validation distinguishes them.
     planner = planner_type(
         catalog, grid, heading_bins=heading_bins,
-        transition_validator=policy, cost_model=cost_model,
+        transition_validator=validator, cost_model=cost_model,
         drive_obstacles=environment,
     )
     return MethodPlanner(

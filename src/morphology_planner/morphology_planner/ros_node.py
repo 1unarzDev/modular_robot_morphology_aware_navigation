@@ -22,6 +22,7 @@ from .grid import OccupancyGrid
 from .methods import make_method_planner
 from .observability import load_fiducial_stations
 from .planner import HybridState, NoPathError
+from .predetach_check import CHECKED_METHODS, parse_site_exclusions
 from .transition_policy import PodSensingState, station_sensing_provider
 from .transition_validation import load_environment_boxes
 
@@ -144,6 +145,16 @@ class PlannerServer(Node):
             )
             method = str(request.planner_method or self.get_parameter("planner_method").value)
             heading_bins = self.get_parameter("heading_bins").value
+            # Proposal (predetach_check_v1): only the checked baselines take the
+            # rejections their navigator observed; every other method plans
+            # exactly as before and ignores the (empty) field.
+            checked = {}
+            if method in CHECKED_METHODS:
+                checked = {
+                    "site_rejections": parse_site_exclusions(
+                        str(getattr(request, "site_exclusions_json", "") or "")),
+                    "stations": self._stations,
+                }
             planner = make_method_planner(
                 method, self._catalog, planning_grid,
                 heading_bins=heading_bins,
@@ -158,6 +169,7 @@ class PlannerServer(Node):
                 cost_model=self._cost_model(),
                 topology_revision=self._topology_revision,
                 sensing_revision=self._sensing_revision,
+                **checked,
             )
             sx, sy = planning_grid.world_to_cell(
                 request.start.pose.position.x, request.start.pose.position.y

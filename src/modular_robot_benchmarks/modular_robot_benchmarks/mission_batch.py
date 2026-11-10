@@ -12,7 +12,7 @@ import signal
 import subprocess
 import sys
 import time
-from typing import Any
+from typing import Any, Sequence
 
 from .confirmatory_scenarios import make_confirmatory_scenario
 from .design import (
@@ -372,6 +372,7 @@ def run_batch(
     wall_watchdog_s: float,
     allow_dirty: bool,
     max_infrastructure_retries: int = 2,
+    only_trial_ids: Sequence[str] | None = None,
 ) -> dict:
     # Import ROS only in an installed/runtime environment; pure design and
     # manifest helpers remain host-testable.
@@ -381,8 +382,16 @@ def run_batch(
     store = TrialStore(raw_root)
     pending = sorted(
         store.pending(design.trials),
-        key=lambda spec: (spec.family, spec.layout_id, spec.replicate, spec.method_order),
+        # `run_order` exists on predetach_check_v1 specs only (as on the offset
+        # pilot's); plain specs have none and keep their original order.
+        key=lambda spec: (getattr(spec, "run_order", 0), spec.family, spec.layout_id,
+                          spec.replicate, spec.method_order),
     )
+    if only_trial_ids is not None:
+        unknown = set(only_trial_ids) - {spec.trial_id for spec in design.trials}
+        if unknown:
+            raise ValueError(f"--only names trials not in the design: {sorted(unknown)}")
+        pending = [spec for spec in pending if spec.trial_id in set(only_trial_ids)]
     if max_trials is not None:
         pending = pending[:max_trials]
     revision = _git_revision(root, allow_dirty)
@@ -438,6 +447,12 @@ def run_batch(
         if failure_injection:
             parameters["failure_injection"] = failure_injection
             parameters["recovery_probe"] = True
+        # predetach_check_v1 specs only; every other spec has no such field.
+        exclusion_rule = getattr(spec, "exclusion_rule", None)
+        if exclusion_rule is not None:
+            parameters["predetach"] = {
+                "exclusion_rule": exclusion_rule, "arm": spec.arm,
+                "source_trial_id": spec.source_trial_id, "run_order": spec.run_order}
         stack_paths = [
             catalog_path,
             root / "src/modular_robot_bringup/config/nav2.yaml",
@@ -503,7 +518,9 @@ def run_batch(
                  # station keep the pre-ADR-0006 behaviour.
                  "station_gated_visibility:="
                  f"{'true' if scenario.fiducial_stations else 'false'}",
-                 *([f"failure_injection:={failure_injection}"] if failure_injection else [])],
+                 *([f"failure_injection:={failure_injection}"] if failure_injection else []),
+                 *([f"predetach_exclusion_rule:={exclusion_rule}"]
+                   if exclusion_rule else [])],
                 cwd=root, stdout=launch_log, stderr=subprocess.STDOUT,
                 text=True, start_new_session=True,
             )
@@ -668,6 +685,10 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--wall-watchdog", type=float, default=600.0)
     parser.add_argument("--max-infrastructure-retries", type=int, default=2)
     parser.add_argument("--allow-dirty", action="store_true")
+    parser.add_argument(
+        "--only", type=Path,
+        help="JSON list of trial ids; run only those still pending (a subset "
+             "of the frozen design, e.g. a smoke run that the full run resumes)")
     return parser
 
 
@@ -676,7 +697,8 @@ def main() -> None:
     result = run_batch(
         args.root.resolve(), args.design.resolve(), args.raw.resolve(),
         args.artifacts.resolve(), args.catalog.resolve(), args.max_trials,
-        args.wall_watchdog, args.allow_dirty, args.max_infrastructure_retries)
+        args.wall_watchdog, args.allow_dirty, args.max_infrastructure_retries,
+        json.loads(args.only.read_text(encoding="utf-8")) if args.only else None)
     print(json.dumps(result, indent=2, sort_keys=True))
 
 

@@ -189,6 +189,15 @@ class MissionObserver(Node):
             lambda message: self.fired_injections.append(json.loads(message.data)),
             QoSProfile(depth=16, durability=DurabilityPolicy.TRANSIENT_LOCAL,
                        reliability=ReliabilityPolicy.RELIABLE))
+        # Proposal (predetach_check_v1): the navigator's pre-detach check
+        # ledger. Only the checked methods publish on it; for every other
+        # method it stays empty and the record is unchanged.
+        self.predetach_check_events: list[dict] = []
+        self.create_subscription(
+            String, "predetach_check_events",
+            lambda message: self.predetach_check_events.append(json.loads(message.data)),
+            QoSProfile(depth=100, durability=DurabilityPolicy.VOLATILE,
+                       reliability=ReliabilityPolicy.RELIABLE))
         self.lifecycle_clients = {
             name: self.create_client(Trigger, f"/{name}/is_active")
             for name in LIFECYCLE_MANAGERS}
@@ -831,6 +840,8 @@ def _observation(node, status, completed, message, simulated, wall_start, attemp
         recovery_actions=(int(navigation_result.recovery_actions) if navigation_result else 0),
         controller_diagnostics={
             **node.controller_diagnostic(),
-            "clock_discontinuities": list(node.clock_discontinuities)},
+            "clock_discontinuities": list(node.clock_discontinuities),
+            **({"predetach_checks": list(node.predetach_check_events)}
+               if getattr(node, "predetach_check_events", None) else {})},
         fired_injections=list(node.fired_injections),
     )

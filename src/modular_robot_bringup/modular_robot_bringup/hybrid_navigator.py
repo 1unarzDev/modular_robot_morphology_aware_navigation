@@ -17,6 +17,7 @@ from rclpy.executors import SingleThreadedExecutor
 from rclpy.node import Node
 from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
 from rclpy.task import Future
+from std_msgs.msg import String
 from std_srvs.srv import SetBool
 from tf2_ros import Buffer, TransformException, TransformListener
 
@@ -24,6 +25,11 @@ from .qualification import (
     VERIFICATION_SEQUENCE, CommandWindow, PlanarPose, RotationStallWatch,
     goal_position_reached, motion_delta, path_pieces, qualification_pass,
     shortest_angle, site_alignment_command,
+)
+from .predetach import (
+    CHECKED_METHODS, DEFAULT_DWELL_S, DEFAULT_MAX_ATTEMPTS,
+    DEFAULT_MAX_PROBE_OFFSET_M, ESTIMATOR_STALE_WINDOW_S, EVENT_TOPIC,
+    PROBED_METHOD, CheckLedger, EstimateWindow, offset_pose, probe_plan, unseen,
 )
 
 
@@ -85,6 +91,23 @@ class HybridNavigator(Node):
         # The 1.76 m narrow body reached a 0.70 m door 0.95 m after a cut
         # vertex too far off its line to pass, in 16 of 20 approaches.
         self.declare_parameter("vertex_turn_controllers", ["FollowPathNarrow"])
+        # Proposal (predetach_check_v1). Read only when the mission's method is
+        # `feasibility_checked` / `feasibility_probed`; every other method never
+        # touches them, so their behaviour is unchanged.
+        self.declare_parameter("predetach_dwell_s", DEFAULT_DWELL_S)
+        self.declare_parameter("predetach_exclusion_rule", "radius")
+        self.declare_parameter("predetach_radius_m", 0.3)
+        self.declare_parameter("predetach_wedge_deg", 10.0)
+        self.declare_parameter("predetach_max_attempts", DEFAULT_MAX_ATTEMPTS)
+        self.declare_parameter("predetach_max_probe_offset_m", DEFAULT_MAX_PROBE_OFFSET_M)
+        self.declare_parameter("catalog", "")
+        self._predetach_catalog = None
+        # The estimator's own per-pod output: the only visibility input.
+        self.estimate_window = EstimateWindow()
+        self.predetach_events = self.create_publisher(
+            String, EVENT_TOPIC, QoSProfile(
+                depth=100, durability=DurabilityPolicy.VOLATILE,
+                reliability=ReliabilityPolicy.RELIABLE))
         qos = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL,
                          reliability=ReliabilityPolicy.RELIABLE)
         self.morphology: MorphologyState | None = None
@@ -122,6 +145,10 @@ class HybridNavigator(Node):
         # when their subscriptions receive pod samples in different orders.
         self.sensing_revision = max(
             self.sensing_revision, int(message.sensing_revision))
+        stamp = message.header.stamp
+        self.estimate_window.add(
+            str(message.pod_id), float(stamp.sec) + float(stamp.nanosec) * 1e-9,
+            bool(message.connector_visible), tuple(message.sources))
 
     def _on_costmap_footprint(self, name: str, message: PolygonStamped) -> None:
         self.costmap_footprints[name] = self._footprint_shape_signature(
@@ -143,7 +170,13 @@ class HybridNavigator(Node):
         # revision-change loop from spinning.
         passes = 0
         stale_revisions = 0
-        while passes < max_replans + 1 + MAX_PLANNED_REPLANS:
+        method = goal_handle.request.planner_method
+        ledger = self._predetach_ledger(method)
+        # A pre-detach rejection is a replan that is neither an execution
+        # failure nor a committed transformation; it gets its own pass so the
+        # attempt cap, not the loop guard, bounds it. Zero for other methods.
+        while passes < max_replans + 1 + MAX_PLANNED_REPLANS + (
+                ledger.rejection_count if ledger else 0):
             if execution_failures > max_replans:
                 break
             if self.morphology is None:
@@ -163,7 +196,8 @@ class HybridNavigator(Node):
                 return result
             planning_started = time.monotonic()
             plan_result = await self._plan(
-                start, goal_handle.request.goal, goal_handle.request.planner_method)
+                start, goal_handle.request.goal, goal_handle.request.planner_method,
+                ledger)
             planning_latency += time.monotonic() - planning_started
             if plan_result is not None:
                 result.transition_decision_json = [
@@ -192,6 +226,14 @@ class HybridNavigator(Node):
                 result.message = (
                     f"execution failed; replanning failed: {planning_message}"
                     if execution_failures else planning_message)
+                if ledger is not None:
+                    if ledger.rejection_count:
+                        result.message = (
+                            f"pre-detach check rejected {ledger.rejection_count} "
+                            f"site(s); replanning failed: {planning_message}")
+                    self._predetach_publish(ledger.record(
+                        "final", self._sim_time_s(), outcome="no_plan",
+                        rejections=ledger.rejection_count, message=planning_message))
                 self._set_plan_metrics(
                     result, selected_plans, planning_latency, expanded_states)
                 result.observed_time = time.monotonic() - started
@@ -201,6 +243,16 @@ class HybridNavigator(Node):
             plan = plan_result.plan
             expanded_states += int(plan.expanded_states)
             selected_plans.append(plan)
+            if ledger is not None:
+                self._predetach_publish(ledger.record(
+                    "plan", self._sim_time_s(), pass_index=passes,
+                    rejections_applied=ledger.rejection_count,
+                    sites=[{"transition_id": s.transition_id,
+                            "x": s.execution_pose.pose.position.x,
+                            "y": s.execution_pose.pose.position.y,
+                            "yaw": self._yaw(s.execution_pose)}
+                           for s in plan.segments
+                           if s.kind == HybridSegment.RECONFIGURE]))
             execution_failed = False
             replan_requested = False
             for index, segment in enumerate(plan.segments):
@@ -235,6 +287,34 @@ class HybridNavigator(Node):
                             "could not align to the planned transition site; not transforming")
                         execution_failed = True
                         break
+                    if ledger is not None:
+                        verdict = await self._predetach_check(segment, ledger)
+                        if verdict == "misaligned":
+                            # Returning from a probe failed: as for any failed
+                            # alignment, replan rather than transform.
+                            execution_failed = True
+                            break
+                        if verdict == "rejected":
+                            if ledger.cap_reached:
+                                result.message = (
+                                    "pre-detach check rejected "
+                                    f"{ledger.rejection_count} site(s); attempt cap "
+                                    "reached")
+                                self._predetach_publish(ledger.record(
+                                    "final", self._sim_time_s(), outcome="attempt_cap",
+                                    rejections=ledger.rejection_count))
+                                result.observed_time = time.monotonic() - started
+                                result.reconfiguration_count = reconfigurations
+                                self._set_plan_metrics(
+                                    result, selected_plans, planning_latency,
+                                    expanded_states)
+                                goal_handle.abort()
+                                return result
+                            self._predetach_publish(ledger.record(
+                                "replan", self._sim_time_s(),
+                                rejections=ledger.rejection_count))
+                            replan_requested = True
+                            break
                     success = await self._execute_transition(segment)
                     reconfigurations += 1
                     # Pair the planner's pre-action risk with the committed,
@@ -291,6 +371,11 @@ class HybridNavigator(Node):
                         result.message = (
                             "reconfiguration failed; observed topology requires recovery"
                         )
+                        if ledger is not None:
+                            self._predetach_publish(ledger.record(
+                                "final", self._sim_time_s(), outcome="docking_refused",
+                                transition_id=segment.transition_id,
+                                rejections=ledger.rejection_count))
                         result.observed_time = time.monotonic() - started
                         result.reconfiguration_count = reconfigurations
                         self._set_plan_metrics(
@@ -309,6 +394,10 @@ class HybridNavigator(Node):
                         "path follower reported success outside terminal position tolerance")
                     execution_failed = True
                 else:
+                    if ledger is not None:
+                        self._predetach_publish(ledger.record(
+                            "final", self._sim_time_s(), outcome="completed",
+                            rejections=ledger.rejection_count))
                     result.success = True
                     result.message = "hybrid navigation completed"
                     result.observed_time = time.monotonic() - started
@@ -327,6 +416,112 @@ class HybridNavigator(Node):
         self._set_plan_metrics(result, selected_plans, planning_latency, expanded_states)
         goal_handle.abort()
         return result
+
+    # --- Proposal (predetach_check_v1): the live pre-detach station check ---
+
+    def _predetach_ledger(self, method: str) -> CheckLedger | None:
+        if method not in CHECKED_METHODS:
+            return None
+        ledger = CheckLedger(
+            method, str(self.get_parameter("predetach_exclusion_rule").value),
+            float(self.get_parameter("predetach_radius_m").value),
+            float(self.get_parameter("predetach_wedge_deg").value),
+            float(self.get_parameter("predetach_dwell_s").value),
+            int(self.get_parameter("predetach_max_attempts").value))
+        self._predetach_publish(ledger.record(
+            "start", self._sim_time_s(), parameters=ledger.parameters()))
+        return ledger
+
+    def _predetach_publish(self, event: dict) -> None:
+        message = String()
+        message.data = json.dumps(event, sort_keys=True)
+        self.predetach_events.publish(message)
+        self.get_logger().info(f"predetach {event['event']}: {message.data}")
+
+    def _sim_time_s(self) -> float:
+        return self.get_clock().now().nanoseconds / 1e9
+
+    @staticmethod
+    def _yaw(pose: PoseStamped) -> float:
+        orientation = pose.pose.orientation
+        return 2.0 * atan2(orientation.z, orientation.w)
+
+    def _catalog_ports(self):
+        if self._predetach_catalog is None:
+            from morphology_planner.catalog import load_catalog
+            path = str(self.get_parameter("catalog").value)
+            if not path:
+                from ament_index_python.packages import get_package_share_directory
+                path = (get_package_share_directory("modular_robot_description")
+                        + "/config/morphologies.yaml")
+            self._predetach_catalog = load_catalog(path)
+        return self._predetach_catalog
+
+    async def _dwell_and_assess(self, pods) -> dict:
+        start = self._sim_time_s()
+        await self._sleep(float(self.get_parameter("predetach_dwell_s").value))
+        return self.estimate_window.assess(pods, start + ESTIMATOR_STALE_WINDOW_S)
+
+    def _planar_pose(self):
+        current = self._current_pose()
+        if current is None:
+            return None
+        return (current.pose.position.x, current.pose.position.y, self._yaw(current))
+
+    async def _predetach_check(self, segment, ledger: CheckLedger) -> str:
+        """Before detaching: does the station now see every pod this moves?
+
+        Returns "passed", "rejected" (recorded in the ledger, nothing moved) or
+        "misaligned" (a probe could not return to the site).
+        """
+        catalog = self._catalog_ports()
+        transition = next(t for t in catalog.transitions
+                          if t.id == segment.transition_id)
+        site_pose = segment.execution_pose
+        site = (site_pose.pose.position.x, site_pose.pose.position.y,
+                self._yaw(site_pose))
+        compact = await self._dwell_and_assess(transition.moved_pods)
+        actual = self._planar_pose()
+        probes: list[dict] = []
+        if ledger.method == PROBED_METHOD and not unseen(compact):
+            plan, unreachable = probe_plan(
+                catalog.morphologies[transition.source].pod_poses,
+                catalog.morphologies[transition.target].pod_poses,
+                transition.moved_pods,
+                float(self.get_parameter("predetach_max_probe_offset_m").value))
+            for probe in plan:
+                x, y, yaw = offset_pose(*site, probe.offset_m)
+                target = PoseStamped()
+                target.header = site_pose.header
+                target.pose.position.x, target.pose.position.y = x, y
+                target.pose.orientation.z = sin(yaw / 2.0)
+                target.pose.orientation.w = cos(yaw / 2.0)
+                reached = await self._align_to_site(target)
+                seen = (await self._dwell_and_assess(
+                    [pod for pod, _ in probe.pairs]) if reached else {})
+                probes.append({
+                    "offset_m": probe.offset_m, "reached": bool(reached),
+                    "actual_pose": self._planar_pose(),
+                    # An unreachable probe pose counts as unseen: the
+                    # variant cannot vouch for that docked point.
+                    "pairs": [{**(seen.get(pod, {})),
+                               "probe_pod": pod, "docked_pod": docked,
+                               "seen": bool(reached and seen[pod]["seen"])}
+                              for pod, docked in probe.pairs]})
+                if not reached or not all(p["seen"] for p in probes[-1]["pairs"]):
+                    break
+            if unreachable:
+                probes.append({"offset_m": None, "reached": False,
+                               "unprobeable_pods": list(unreachable), "pairs": []})
+        event = ledger.record_check(
+            self._sim_time_s(), segment.transition_id, site, actual, compact, probes)
+        self._predetach_publish(event)
+        if probes and probes[0].get("offset_m") is not None:
+            # Back to the planned site before transforming or replanning.
+            if not await self._align_to_site(site_pose):
+                self.get_logger().error("could not return to the site after probing")
+                return "rejected" if not event["passed"] else "misaligned"
+        return "passed" if event["passed"] else "rejected"
 
     def _unsafe_state_message(self) -> str:
         state = self.morphology.execution_state if self.morphology else -1
@@ -456,7 +651,7 @@ class HybridNavigator(Node):
             float(self.get_parameter("terminal_position_tolerance").value),
         )
 
-    async def _plan(self, start, goal, planner_method):
+    async def _plan(self, start, goal, planner_method, ledger=None):
         if not self.planner.wait_for_server(timeout_sec=3.0):
             return None
         request = ComputeHybridPlan.Goal()
@@ -467,6 +662,8 @@ class HybridNavigator(Node):
         request.planner_method = planner_method
         request.expected_topology_revision = self.morphology.topology_revision
         request.expected_sensing_revision = self.sensing_revision
+        if ledger is not None and ledger.rejections:
+            request.site_exclusions_json = json.dumps(ledger.rejections, sort_keys=True)
         handle = await self.planner.send_goal_async(request)
         if not handle.accepted:
             return None

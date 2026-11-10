@@ -5,6 +5,10 @@ float32 initial_epsilon
 string planner_method
 uint64 expected_topology_revision
 uint64 expected_sensing_revision
+# Proposal (predetach_check_v1): sites the navigator's pre-detach station check
+# rejected, as a JSON list (morphology_planner.predetach_check.SiteRejection).
+# Empty for every other method, and ignored unless the method is a checked one.
+string site_exclusions_json
 ---
 bool success
 string message

@@ -42,9 +42,18 @@ FAULT_MATRIX_DESIGN_KINDS = frozenset({
 # Engineering re-runs of chosen generator-3 trials, seeds copied verbatim, to
 # reproduce a failure and test a fix on the same worlds. Never study evidence.
 REPRO_V3_DESIGN_KIND = "engineering_repro_v3"
+# Proposal: the pre-detach-check baseline executed on confirmatory_v3 layouts
+# (seeds copied) plus a fresh-layout arm. Never pooled with confirmatory data;
+# see studies/predetach_check_v1/declaration.md.
+PREDETACH_CHECK_DESIGN_KIND = "predetach_check_v1"
+# Methods only that design may name: feasibility_coupled plus the navigator's
+# live pre-detach station check (and its docked-point probe variant). Kept out
+# of METHODS, which every other design generator and hash depends on.
+CHECKED_METHODS = ("feasibility_checked", "feasibility_probed")
 LONG_ROOM_DESIGN_KINDS = frozenset({
     PILOT_V3_DESIGN_KIND, CONFIRMATORY_V3_DESIGN_KIND, ROUNDTRIP_V3_DESIGN_KIND,
-    FAULT_MATRIX_V3_DESIGN_KIND, REPRO_V3_DESIGN_KIND})
+    FAULT_MATRIX_V3_DESIGN_KIND, REPRO_V3_DESIGN_KIND,
+    PREDETACH_CHECK_DESIGN_KIND})
 
 
 def layout_generator_for(design_kind: str) -> int:
@@ -103,6 +112,31 @@ class TrialSpec:
 
 
 @dataclass(frozen=True)
+class PredetachTrialSpec(TrialSpec):
+    """A predetach_check_v1 trial.
+
+    A subclass, not extra fields on `TrialSpec`, so that every existing design
+    and record serializes (and hashes) exactly as before. `exclusion_rule` is
+    the checked methods' site exclusion after a failed check ("" for the
+    reference methods); `arm` is "same_layout" (confirmatory_v3 seeds) or
+    "fresh"; `source_trial_id` names the confirmatory_v3 trial whose seeds
+    were copied; `run_order` is the global execution rank (0 first).
+    """
+
+    exclusion_rule: str = ""
+    arm: str = "same_layout"
+    source_trial_id: str = ""
+    run_order: int = 0
+
+
+def trial_spec_from_dict(value: dict) -> TrialSpec:
+    """Rebuild a spec from its JSON form; predetach specs are recognised by key."""
+    if "exclusion_rule" in value:
+        return PredetachTrialSpec(**value)
+    return TrialSpec(**value)
+
+
+@dataclass(frozen=True)
 class StudyDesign:
     schema_version: int
     design_kind: str
@@ -149,11 +183,15 @@ class StudyDesign:
         value = dict(envelope["design"])
         value["methods"] = tuple(value["methods"])
         value["families"] = tuple(value["families"])
-        value["trials"] = tuple(TrialSpec(**trial) for trial in value["trials"])
+        value["trials"] = tuple(trial_spec_from_dict(trial) for trial in value["trials"])
         design = cls(**value)
         if envelope.get("design_hash") != design.design_hash:
             raise ValueError("frozen design hash does not match its contents")
-        if design.design_kind.startswith(("engineering_", "workshop_")):
+        if design.design_kind == PREDETACH_CHECK_DESIGN_KIND:
+            if not design.methods or not set(design.methods) <= (
+                    set(METHODS) | set(CHECKED_METHODS)):
+                raise ValueError("frozen design has an unsupported method set")
+        elif design.design_kind.startswith(("engineering_", "workshop_")):
             # Engineering qualification exercises one execution path; it is
             # never a method comparison.
             if not design.methods or not set(design.methods) <= set(METHODS):

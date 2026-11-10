@@ -24,6 +24,7 @@ def generate_launch_description():
     transition_environment = LaunchConfiguration("transition_environment")
     station_gated_visibility = LaunchConfiguration("station_gated_visibility")
     keepout_mask = LaunchConfiguration("keepout_mask")
+    predetach_exclusion_rule = LaunchConfiguration("predetach_exclusion_rule")
     has_map = PythonExpression(["'", map_file, "' != ''"])
     has_keepout = PythonExpression(["'", keepout_mask, "' != ''"])
     localization_params = os.path.join(bringup, "config", "localization.yaml")
@@ -46,6 +47,11 @@ def generate_launch_description():
                         "declared workspace fiducial station rather than by the "
                         "onboard connector cameras. Set when the scenario "
                         "manifest declares a station."),
+        DeclareLaunchArgument(
+            "predetach_exclusion_rule", default_value="radius",
+            description="Proposal (predetach_check_v1): site exclusion after a "
+                        "failed pre-detach check, radius or ray_wedge. Read only "
+                        "by the feasibility_checked/feasibility_probed methods."),
         DeclareLaunchArgument(
             "keepout_mask", default_value="",
             description="ADR 0012: Nav2 keepout filter mask of declared obstacles "
@@ -120,5 +126,8 @@ def generate_launch_description():
             "use_sim_time": True,
             "scenario_manifest": ParameterValue(transition_environment, value_type=str),
         }]),
-        Node(package="modular_robot_bringup", executable="hybrid_navigator", output="screen", parameters=[{"use_sim_time": True}]),
+        Node(package="modular_robot_bringup", executable="hybrid_navigator", output="screen", parameters=[{
+            "use_sim_time": True,
+            "predetach_exclusion_rule": ParameterValue(predetach_exclusion_rule, value_type=str),
+        }]),
     ])
