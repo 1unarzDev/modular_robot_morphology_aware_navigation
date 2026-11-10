@@ -22,8 +22,8 @@ set -euo pipefail
 MODE=${1:?smoke|full}
 COMMIT=${2:?commit}
 C=morphology_navigation_dev
-WS=/home/checker/morphology_ws
-CW=/home/roboboat/morphology_ws
+WS=${WS:-/home/checker/morphology_ws}   # host path of the repo mounted into the container
+CW=${CW:-/home/roboboat/morphology_ws}
 STUDY=studies/offset_world_pilot_v1
 R=results/offset_world_pilot
 case "$MODE" in smoke) ONLY="--only $STUDY/smoke_trial_ids.json";; full) ONLY="";; *) echo "mode?"; exit 2;; esac

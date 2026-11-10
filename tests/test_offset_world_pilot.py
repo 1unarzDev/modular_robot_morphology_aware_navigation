@@ -260,7 +260,7 @@ def test_pilot_design_shape_and_pairing(committed):
     ids = [spec.trial_id for spec in design.trials]
     assert len(set(ids)) == len(ids) == design.expected_trials
     assert design.expected_trials == len(predictions["cells"])
-    assert design.expected_trials == 8 * len({s.layout_id for s in design.trials})
+    assert design.expected_trials == 10 * len({s.layout_id for s in design.trials})
     source = StudyDesign.read_frozen(V3_DESIGN)
     report = json.loads((ROOT / "studies/confirmatory_v3/manipulation_check.json").read_text())
     assert predictions["source_design_hash"] == source.design_hash
@@ -278,7 +278,7 @@ def test_pilot_design_shape_and_pairing(committed):
     for specs in by_layout.values():
         assert {(s.prior_margin_m, s.world_condition) for s in specs} == {
             (m, c) for m in pilot.MARGINS_M for c, _, _ in pilot.WORLD_CONDITIONS}
-        assert sorted(s.method_order for s in specs) == list(range(8))
+        assert sorted(s.method_order for s in specs) == list(range(10))
         for s in specs:
             if s.world_condition == "ctl":
                 assert s.world_offset == (0.0, 0.0, 0.0, 0.0)
@@ -423,3 +423,23 @@ def test_score_counts_refusals_against_the_reference(committed):
     # Four refusals sit inside the model's 3..9 interval for 4 cm toward.
     assert result["verdicts"]["toward_4cm_shipped_shows_loss"] is True
     assert pilot.score(predictions, [])["verdicts"]["controls_all_complete"] is None
+
+
+def test_run_order_puts_the_interim_cells_first_and_smoke_has_the_best_refusal(committed):
+    design, predictions, smoke = committed
+    ordered = sorted(design.trials, key=lambda s: s.run_order)
+    assert [s.run_order for s in ordered] == list(range(design.expected_trials))
+    first = ordered[:pilot.INTERIM_TRIALS]
+    assert {(s.prior_margin_m, s.world_condition) for s in first} == {
+        (0.0, "t06"), (0.0, "ctl")}
+    # Paired cells of a layout run back to back within a tier.
+    assert all(a.layout_id == b.layout_id for a, b in zip(first[::2], first[1::2]))
+    cells = {c["trial_id"]: c for c in predictions["cells"]}
+    best = min((c for c in cells.values() if c["prior_margin_m"] == 0.0
+                and c["world_condition"] == "t06"
+                and cells[pilot.cell_id(c["layout_id"], 0.04, "t06")]["site"] is not None),
+               key=lambda c: (c["p_transition_accepted"], c["layout_id"]))
+    for margin in (0.0, 0.04):
+        for condition in ("ctl", "t06"):
+            assert pilot.cell_id(best["layout_id"], margin, condition) in smoke
+    assert len(smoke) == 12

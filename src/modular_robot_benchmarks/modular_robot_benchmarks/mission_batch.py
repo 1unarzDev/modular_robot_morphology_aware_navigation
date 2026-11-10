@@ -388,7 +388,8 @@ def run_batch(
     store = TrialStore(raw_root)
     pending = sorted(
         store.pending(design.trials),
-        key=lambda spec: (spec.family, spec.layout_id, spec.replicate, spec.method_order),
+        key=lambda spec: (getattr(spec, "run_order", 0), spec.family, spec.layout_id,
+                          spec.replicate, spec.method_order),
     )
     if only_trial_ids is not None:
         unknown = set(only_trial_ids) - {spec.trial_id for spec in design.trials}

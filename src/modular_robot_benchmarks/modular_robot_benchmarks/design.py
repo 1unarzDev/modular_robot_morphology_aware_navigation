@@ -121,6 +121,10 @@ class OffsetTrialSpec(TrialSpec):
     world_offset: tuple[float, float, float, float] = (0.0, 0.0, 0.0, 0.0)
     prior_margin_m: float = 0.0
     world_condition: str = "ctl"
+    # Global execution rank (0 = first). The runner sorts by it before anything
+    # else, so a design can run its most informative cells first; plain specs
+    # have none and keep their (family, layout, replicate, method_order) order.
+    run_order: int = 0
 
 
 def trial_spec_from_dict(value: dict) -> TrialSpec:

@@ -37,6 +37,7 @@ import argparse
 import json
 import math
 from pathlib import Path
+from dataclasses import replace
 from random import Random
 
 from morphology_planner import (
@@ -67,9 +68,20 @@ WORLD_CONDITIONS = (
     ("ctl", 0.0, 0),
     ("t02", 0.02, +1),
     ("t04", 0.04, +1),
+    ("t06", 0.06, +1),
     ("a02", 0.02, -1),
 )
-SMOKE_CONDITIONS = ("ctl", "t04")
+SMOKE_CONDITIONS = ("ctl", "t06")
+
+# Execution tiers: (margin, condition) cells run in this order. Tier 1 is the
+# interim look (declaration.md): 6 cm at the shipped planner and its controls.
+TIERS = (
+    ((0.0, "t06"), (0.0, "ctl")),
+    ((0.0, "t04"), (0.04, "t06")),
+    ((0.04, "t04"), (0.04, "ctl")),
+    ((0.0, "t02"), (0.0, "a02"), (0.04, "t02"), (0.04, "a02")),
+)
+INTERIM_TRIALS = 52
 
 AXIS_DIRECTIONS = (("+x", (1.0, 0.0)), ("-x", (-1.0, 0.0)),
                    ("+y", (0.0, 1.0)), ("-y", (0.0, -1.0)))
@@ -210,13 +222,22 @@ def predict_cell(prior, catalog, site, offset, layout_id: str) -> dict:
 
 def layout_block(task: tuple) -> tuple[dict, list[OffsetTrialSpec], list[dict]]:
     """Everything the pilot needs for one layout: its record, trials and cells."""
-    family, index, source, generator, catalog_path = task
+    family, index, source, generator, catalog_path, reuse = task
     catalog = load_catalog(str(catalog_path)).supported_experiment_subset()
     layout_id = f"{family}-{index:02d}"
     prior = make_confirmatory_scenario(
         family, index, source.world_seed, generator=generator)
-    sites = {margin: plan_site(prior, catalog, margin) for margin in MARGINS_M}
-    escape = escape_distances(prior, catalog, sites[0.0])
+    if reuse is None:
+        sites = {margin: plan_site(prior, catalog, margin) for margin in MARGINS_M}
+        escape = escape_distances(prior, catalog, sites[0.0])
+    else:
+        # Planning is deterministic: take the sites an earlier run of this very
+        # generator recorded (same layout and world seed) instead of replanning.
+        if reuse["world_seed"] != source.world_seed:
+            raise ValueError(f"{layout_id}: reused plans belong to another world")
+        sites = {0.0: _site_from_dict(reuse["site_margin_0"]),
+                 0.04: _site_from_dict(reuse["site_margin_0p04"])}
+        escape = reuse["escape_distance_m"]
     direction = toward_direction(escape)
     if direction is None:
         raise ValueError(f"{layout_id}: no screen translation hides a pod")
@@ -253,15 +274,36 @@ def layout_block(task: tuple) -> tuple[dict, list[OffsetTrialSpec], list[dict]]:
     return layout, trials, cells
 
 
+def assign_run_order(trials: list[OffsetTrialSpec]) -> list[OffsetTrialSpec]:
+    """Give every trial its global rank: tier by tier, layouts shuffled per tier
+    (seeded), a layout's cells in the tier adjacent so paired cells run together."""
+    layout_ids = sorted({trial.layout_id for trial in trials})
+    by_key = {(t.layout_id, t.prior_margin_m, t.world_condition): t for t in trials}
+    rank, ranked = 0, {}
+    for tier_index, tier in enumerate(TIERS):
+        order = list(layout_ids)
+        Random(_seed(MASTER_SEED, "tier", tier_index)).shuffle(order)
+        for layout_id in order:
+            for margin, condition in tier:
+                ranked[by_key[(layout_id, margin, condition)].trial_id] = rank
+                rank += 1
+    if rank != len(trials):
+        raise ValueError("tiers do not cover the design exactly")
+    return sorted((replace(t, run_order=ranked[t.trial_id]) for t in trials),
+                  key=lambda t: t.run_order)
+
+
 def build(source_design: StudyDesign, report: dict, catalog_path: Path,
-          processes: int = 1):
+          processes: int = 1, reuse_plans: dict | None = None):
     """The pilot design and its prediction table, from geometry alone."""
     generator = layout_generator_for(source_design.design_kind)
     sources = {(spec.family, spec.layout_id): spec for spec in source_design.trials
                if spec.method == METHOD and spec.replicate == 0}
     chosen = eligible_layouts(report)
     tasks = [(family, index, sources[(family, f"{family}-{index:02d}")],
-              generator, catalog_path) for family, index in chosen]
+              generator, catalog_path,
+              None if reuse_plans is None else reuse_plans[f"{family}-{index:02d}"])
+             for family, index in chosen]
     if processes > 1:
         from multiprocessing import Pool
         with Pool(processes) as pool:
@@ -269,7 +311,7 @@ def build(source_design: StudyDesign, report: dict, catalog_path: Path,
     else:
         blocks = [layout_block(task) for task in tasks]
     layouts = [block[0] for block in blocks]
-    trials = [trial for block in blocks for trial in block[1]]
+    trials = assign_run_order([trial for block in blocks for trial in block[1]])
     cells = sorted((cell for block in blocks for cell in block[2]),
                    key=lambda cell: cell["trial_id"])
     design = StudyDesign(
@@ -293,6 +335,11 @@ def build(source_design: StudyDesign, report: dict, catalog_path: Path,
         "summary": summarize(cells),
     }
     return design, predictions, smoke_trial_ids(layouts, cells)
+
+
+def _site_from_dict(value) -> HybridState | None:
+    return None if value is None else HybridState(
+        value["cell_x"], value["cell_y"], value["heading"], "compact_diff")
 
 
 def _site_dict(site) -> dict | None:
@@ -345,39 +392,50 @@ def summarize(cells: list[dict]) -> dict:
         row["marginal"] += int(cell["confidence"] == "marginal")
     toward_shipped = [c for c in cells if c["prior_margin_m"] == 0.0
                       and c["world_condition"] == "t04"]
-    predicted_safe = [c for c in cells if c["predicted_transition"] == "accepted"
-                      and c not in toward_shipped]
     toward_margin = [c for c in cells if c["prior_margin_m"] > 0.0
                      and c["world_condition"] == "t04"]
+    six_shipped = [c for c in cells if c["prior_margin_m"] == 0.0
+                   and c["world_condition"] == "t06"]
+    six_margin = [c for c in cells if c["prior_margin_m"] > 0.0
+                  and c["world_condition"] == "t06"]
+    loss_cells = toward_shipped + six_shipped + six_margin
+    predicted_safe = [c for c in cells if c["predicted_transition"] == "accepted"
+                      and c not in loss_cells]
     return {
         "cells": len(cells), "by_cell_type": dict(sorted(table.items())),
         "refusal_reference": {
             "t04_margin_0": _refusal_summary(toward_shipped),
             "t04_margin_0p04": _refusal_summary(toward_margin),
+            "t06_margin_0": _refusal_summary(six_shipped),
+            "t06_margin_0p04": _refusal_summary(six_margin),
             "predicted_safe_cells": _refusal_summary(predicted_safe),
         },
     }
 
 
 def smoke_trial_ids(layouts: list[dict], cells: list[dict]) -> list[str]:
-    """3 layouts x 2 margins x {ctl, t04}: lowest, median and highest escape distance.
+    """3 layouts x {margin 0, 0.04} x {ctl, t06} = 12 trials.
 
-    Fixed rule, applied to layouts that plan under both margins, ranked by the
-    escape distance along their own direction (ties by layout id).
+    Fixed rule over layouts that plan under both margins: (1) the layout whose
+    margin-0 6 cm cell has the highest predicted refusal probability (ties by
+    id), with its margin-0.04 and no-offset partners; (2) the median and (3) the
+    highest layout by escape distance along its direction, excluding (1).
     """
     planned = {cell["layout_id"] for cell in cells
                if cell["prior_margin_m"] > 0 and cell["predicted_transition"] != "no_plan"}
+    refusal = {cell["layout_id"]: 1.0 - cell["p_transition_accepted"] for cell in cells
+               if cell["prior_margin_m"] == 0.0 and cell["world_condition"] == "t06"
+               and cell["layout_id"] in planned}
+    first = min(refusal, key=lambda layout_id: (-refusal[layout_id], layout_id))
     ranked = sorted(
-        (item for item in layouts if item["layout_id"] in planned),
+        (item for item in layouts if item["layout_id"] in planned
+         and item["layout_id"] != first),
         key=lambda item: (item["escape_distance_m"][item["direction_toward"]],
                           item["layout_id"]))
-    chosen = [ranked[0], ranked[len(ranked) // 2], ranked[-1]]
-    ids = []
-    for item in chosen:
-        for margin in MARGINS_M:
-            for condition in SMOKE_CONDITIONS:
-                ids.append(cell_id(item["layout_id"], margin, condition))
-    return sorted(ids)
+    chosen = [first, ranked[len(ranked) // 2]["layout_id"], ranked[-1]["layout_id"]]
+    return sorted(cell_id(layout_id, margin, condition)
+                  for layout_id in chosen for margin in MARGINS_M
+                  for condition in SMOKE_CONDITIONS)
 
 
 REFUSAL_STATUSES = frozenset({"docking_failure", "unsafe_topology"})
@@ -428,13 +486,19 @@ def score(predictions: dict, records: list) -> dict:
     shipped_toward = count(lambda r: r["margin"] == 0.0 and r["condition"] == "t04")
     margin_toward = count(lambda r: r["margin"] > 0.0 and r["condition"] == "t04"
                           and r["predicted"] != "no_plan")
+    six_shipped = count(lambda r: r["margin"] == 0.0 and r["condition"] == "t06")
+    six_margin = count(lambda r: r["margin"] > 0.0 and r["condition"] == "t06"
+                       and r["predicted"] != "no_plan")
     safe = count(lambda r: r["predicted"] == "accepted"
-                 and not (r["margin"] == 0.0 and r["condition"] == "t04"))
+                 and not (r["condition"] in ("t04", "t06")
+                          and (r["margin"] == 0.0 or r["condition"] == "t06")))
     controls = count(lambda r: r["margin"] == 0.0 and r["condition"] == "ctl")
+    complete_t06 = six_shipped["n"] == reference["t06_margin_0"]["cells"]
     complete_t04 = shipped_toward["n"] == reference["t04_margin_0"]["cells"]
     complete_safe = safe["n"] == reference["predicted_safe_cells"]["cells"]
     return {
         "t04_margin_0": shipped_toward, "t04_margin_0p04": margin_toward,
+        "t06_margin_0": six_shipped, "t06_margin_0p04": six_margin,
         "predicted_safe_cells": safe, "control_cells": controls,
         "site_mismatch": site_mismatch, "unrelated_failures": unrelated,
         "verdicts": {
@@ -444,6 +508,13 @@ def score(predictions: dict, records: list) -> dict:
             "safe_cells_refusals_within_q95": (
                 safe["refused"] <= reference["predicted_safe_cells"]["q95"]
                 if complete_safe else None),
+            # Interim look (declaration.md): below q05 at 6 cm stops the pilot.
+            "toward_6cm_shipped_shows_loss": (
+                six_shipped["refused"] >= reference["t06_margin_0"]["q05"]
+                if complete_t06 else None),
+            "margin_removes_loss_at_6cm": (
+                six_margin["refused"] <= reference["t06_margin_0p04"]["q95"]
+                if six_margin["n"] == reference["t06_margin_0p04"]["cells"] else None),
             "toward_4cm_shipped_shows_loss": (
                 shipped_toward["refused"] >= reference["t04_margin_0"]["q05"]
                 if complete_t04 else None),
@@ -471,6 +542,10 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--out", type=Path,
                         default=Path("studies/offset_world_pilot_v1"))
     parser.add_argument("--processes", type=int, default=3)
+    parser.add_argument("--reuse-plans", type=Path, metavar="PREDICTIONS_JSON",
+                        help="take each layout's planned sites and escape distances "
+                             "from an earlier predictions.json instead of replanning "
+                             "(planning is deterministic; used for the 6 cm amendment)")
     parser.add_argument("--score", type=Path, metavar="RAW_DIR",
                         help="instead of generating, read the records in RAW_DIR "
                              "against --out/predictions.json")
@@ -489,7 +564,11 @@ def main() -> None:
     report = json.loads(args.manipulation_check.read_text(encoding="utf-8"))
     if report["design_hash"] != source.design_hash:
         raise ValueError("manipulation check does not belong to the source design")
-    design, predictions, smoke = build(source, report, args.catalog, args.processes)
+    reuse = None
+    if args.reuse_plans:
+        old = json.loads(args.reuse_plans.read_text(encoding="utf-8"))
+        reuse = {item["layout_id"]: item for item in old["layouts"]}
+    design, predictions, smoke = build(source, report, args.catalog, args.processes, reuse)
     args.out.mkdir(parents=True, exist_ok=True)
     design.write_frozen(args.out / "design.json")
     (args.out / "predictions.json").write_text(
