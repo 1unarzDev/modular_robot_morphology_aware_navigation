@@ -127,6 +127,13 @@ placement shift.
   fails, or (b) more than 6 of the 60 refused-layout tier-1 cells end in a
   different outcome class than predicted (excluding infrastructure), which
   would mean the model is not fit to interpret tiers 2–4. Otherwise continue.
+- **Probe safety (tier 3).** The navigator does not test probe poses against
+  the map; the model reports, per probed check, whether every probe pose is
+  free for the compact footprint (`probe_geometry.all_free`, summarized above)
+  but does not penalize a non-free probe. If any probed trial ends in
+  `collision`, or a probe alignment fails, during probing (check events with
+  `reached: false`), stop tier 3 and diagnose; the probed variant's
+  predictions are then void for sites whose probes are not free.
 - Infrastructure failures are retried by `mission_batch` (2 retries) and
   reported, never counted as robot outcomes.
 - No parameter (dwell, radius, wedge, cap) is changed after the first trial.
