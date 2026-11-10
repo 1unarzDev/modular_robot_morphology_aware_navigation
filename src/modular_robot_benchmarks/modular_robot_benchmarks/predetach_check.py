@@ -87,7 +87,6 @@ CELLS = (
     ("feasibility_probed", "radius"),
     ("sensing_feasibility_coupled", ""),
 )
-SMOKE_SIZE = 10
 # Wall-time model for the hour estimate (min per trial), from confirmatory_v3
 # records: a completed mission about 4.3 min of wall time plus setup/teardown,
 # a docking refusal about 1.2 min, a planning failure about 0.2 min.
@@ -358,8 +357,8 @@ def layout_world_seed(layout_id: str, source: StudyDesign | None) -> tuple[int, 
                              "source_trial_id": spec.trial_id}
 
 
-def build_design(source: StudyDesign, predictions: dict | None = None) -> StudyDesign:
-    """The frozen predetach_check_v1 design; `predictions` sets run_order."""
+def build_design(source: StudyDesign) -> StudyDesign:
+    """The frozen predetach_check_v1 design (independent of the predictions)."""
     rows = []
     for arm, layouts in (("same_layout", REFUSED_LAYOUTS + CONTROL_LAYOUTS),
                          ("fresh", FRESH_LAYOUTS)):
@@ -379,7 +378,7 @@ def build_design(source: StudyDesign, predictions: dict | None = None) -> StudyD
                     friction_seed=seeds["friction_seed"],
                     fault_seed=seeds["fault_seed"], exclusion_rule=rule, arm=arm,
                     source_trial_id=source_trial_id, run_order=0))
-    ranks = run_order(rows, predictions)
+    ranks = run_order(rows)
     trials = tuple(replace(row, run_order=ranks[row.trial_id]) for row in rows)
     trials = tuple(sorted(trials, key=lambda t: t.run_order))
     return StudyDesign(
@@ -389,10 +388,40 @@ def build_design(source: StudyDesign, predictions: dict | None = None) -> StudyD
         trials)
 
 
-def tier_of(spec, predictions: dict | None) -> int:
-    """Execution tier: 0 smoke, 1 checked on same layouts + controls (interim
-    look after it), 2 fresh arm, 3 probed, 4 references on same layouts."""
-    if predictions and spec.trial_id in predictions.get("smoke_trial_ids", ()):
+# Layouts whose confirmatory_v3 records show the refused pod already hidden at
+# its compact port at transition start (review r9 / wave-4 sourcing addendum:
+# 26 of 90 refused records; combined-09 in replicates 0 and 2). The check is
+# expected to fire there, so they run first within each tier. An ordering
+# choice only; it fixes no outcome.
+COMPACT_HIDDEN_LAYOUTS = (
+    "docking_observability-01", "docking_observability-02", "docking_observability-03",
+    "docking_observability-09", "docking_observability-10", "docking_observability-11",
+    "docking_observability-17", "docking_observability-19", "combined_constraints-09",
+)
+# Smoke subset (run first, run_order 0..9), fixed by rule rather than by the
+# predictions: the check where it should fire (both rules), where it should
+# pass and the docking still be refused, the probe on both kinds, two
+# controls, and one fresh layout.
+SMOKE_TRIAL_IDS = (
+    "pdc-docking_observability-01-r0-feasibility_checked-ray_wedge",
+    "pdc-docking_observability-01-r0-feasibility_checked-radius",
+    "pdc-docking_observability-02-r0-feasibility_checked-ray_wedge",
+    "pdc-combined_constraints-09-r0-feasibility_checked-ray_wedge",
+    "pdc-docking_observability-05-r0-feasibility_checked-ray_wedge",
+    "pdc-docking_observability-05-r0-feasibility_probed-ray_wedge",
+    "pdc-combined_constraints-01-r0-feasibility_probed-ray_wedge",
+    "pdc-docking_observability-00-r0-feasibility_checked-ray_wedge",
+    "pdc-reconfiguration_workspace-01-r0-feasibility_checked-ray_wedge",
+    "pdc-docking_observability-21-fresh-feasibility_checked-ray_wedge",
+)
+TIERS = {0: "smoke", 1: "feasibility_checked, same layouts and controls (interim look after)",
+         2: "fresh arm, every cell (confirmatory)", 3: "feasibility_probed, same layouts and controls",
+         4: "references (feasibility_coupled, sensing_feasibility_coupled), same layouts and controls"}
+
+
+def tier_of(spec) -> int:
+    """Execution tier, see TIERS."""
+    if spec.trial_id in SMOKE_TRIAL_IDS:
         return 0
     if spec.arm == "fresh":
         return 2
@@ -403,13 +432,14 @@ def tier_of(spec, predictions: dict | None) -> int:
     return 4
 
 
-def run_order(rows, predictions: dict | None) -> dict[str, int]:
-    def informative(spec) -> tuple:
-        cell = (predictions or {}).get("cells", {}).get(spec.trial_id, {})
-        # Within a tier: cells where the check is predicted to change the
-        # outcome first, then the rest, then a stable id order.
-        return (0 if cell.get("check_changes_outcome") else 1, spec.trial_id)
-    ordered = sorted(rows, key=lambda s: (tier_of(s, predictions), *informative(s)))
+def run_order(rows) -> dict[str, int]:
+    smoke = {trial: rank for rank, trial in enumerate(SMOKE_TRIAL_IDS)}
+
+    def key(spec) -> tuple:
+        return (tier_of(spec), smoke.get(spec.trial_id, 0),
+                0 if spec.layout_id in COMPACT_HIDDEN_LAYOUTS else 1,
+                spec.layout_id, spec.method_order)
+    ordered = sorted(rows, key=key)
     return {spec.trial_id: rank for rank, spec in enumerate(ordered)}
 
 
@@ -463,37 +493,6 @@ def summarize(cells: dict) -> dict:
     return summary
 
 
-def choose_smoke(cells: dict) -> list[str]:
-    """At most 10 informative trials: predicted rejection-then-completion for
-    each checked rule in both families, a predicted post-check refusal, the
-    probed variant once per rule, and two controls."""
-    chosen: list[str] = []
-
-    def take(predicate, n=1):
-        for trial, cell in sorted(cells.items()):
-            if len(chosen) >= SMOKE_SIZE or n <= 0:
-                return
-            if trial not in chosen and predicate(cell):
-                chosen.append(trial)
-                n -= 1
-
-    same = lambda c: c["arm"] == "same_layout" and c["layout_id"] in REFUSED_LAYOUTS
-    for family in ("docking_observability", "combined_constraints"):
-        for rule in ("ray_wedge", "radius"):
-            take(lambda c: same(c) and c["layout_id"].startswith(family)
-                 and c["method"] == "feasibility_checked" and c["rule"] == rule
-                 and c["rejections"] > 0 and c["outcome"] == "completed")
-    take(lambda c: same(c) and c["method"] == "feasibility_checked"
-         and c["rejections"] == 0 and c["outcome"] == "docking_refused")
-    for rule in ("ray_wedge", "radius"):
-        take(lambda c: same(c) and c["method"] == "feasibility_probed"
-             and c["rule"] == rule and c["rejections"] > 0)
-    take(lambda c: c["layout_id"] in CONTROL_LAYOUTS
-         and c["method"] == "feasibility_checked" and c["rule"] == "ray_wedge", 2)
-    take(lambda c: c["arm"] == "fresh" and c["method"] == "feasibility_checked")
-    return chosen[:SMOKE_SIZE]
-
-
 def hours(cells: dict, trial_ids: Iterable[str] | None = None) -> float:
     ids = list(cells) if trial_ids is None else list(trial_ids)
     minutes = 0.0
@@ -519,21 +518,21 @@ def build_all(source_path: Path, catalog_path: Path,
             raise ValueError(f"precomputed cells missing {len(missing)} trials")
         cells = {s.trial_id: cells[s.trial_id] for s in provisional.trials}
         _mark_changes(cells)
-    smoke = choose_smoke(cells)
-    design = build_design(source, {"cells": cells, "smoke_trial_ids": smoke})
+    smoke = list(SMOKE_TRIAL_IDS)
+    design = provisional
     by_tier: dict[int, list[str]] = {}
     for spec in design.trials:
-        by_tier.setdefault(tier_of(spec, {"smoke_trial_ids": smoke}), []).append(
-            spec.trial_id)
+        by_tier.setdefault(tier_of(spec), []).append(spec.trial_id)
     predictions = {
         "schema_version": 1,
         "purpose": "predetach_check_v1 planner-level predictions, generated before any trial",
         "design_hash": design.design_hash,
         "model": ("simulate_mission: method planner with accumulated site rejections; "
                   "true station rule at the nominal site placement (planner "
-                  "convention); first transition site of each plan; replan from "
-                  "the site after a rejection, from the committed state after a "
+                  "convention) at each planned site in order; replan from the "
+                  "site after a rejection; the plan's suffix after a "
                   "transformation"),
+        "tier_meaning": {str(k): v for k, v in TIERS.items()},
         "parameters": {"heading_bins": HEADING_BINS, "epsilon": EPSILON,
                        "max_attempts": MAX_ATTEMPTS, "radius_m": 0.3,
                        "wedge_deg": 10.0, "fragility_shift_m": FRAGILITY_SHIFT_M,
@@ -593,6 +592,8 @@ def main() -> None:
                                         "write cells to --cells-dir/shard_i.json")
     parser.add_argument("--cells-dir", type=Path,
                         help="read precomputed shard_*.json cells (or write a shard)")
+    parser.add_argument("--design-only", action="store_true",
+                        help="write design.json and smoke_trial_ids.json only")
     args = parser.parse_args()
     if args.shard:
         index, count = (int(v) for v in args.shard.split("/"))
@@ -608,6 +609,18 @@ def main() -> None:
     if args.score:
         predictions = json.loads((args.out / "predictions.json").read_text(encoding="utf-8"))
         print(json.dumps(score(args.score, predictions), indent=2, sort_keys=True))
+        return
+    if args.design_only:
+        design = build_design(_source_design(args.source))
+        missing = set(SMOKE_TRIAL_IDS) - {t.trial_id for t in design.trials}
+        if missing:
+            raise ValueError(f"smoke ids not in the design: {sorted(missing)}")
+        args.out.mkdir(parents=True, exist_ok=True)
+        design.write_frozen(args.out / "design.json")
+        (args.out / "smoke_trial_ids.json").write_text(
+            json.dumps(list(SMOKE_TRIAL_IDS), indent=1) + "\n", encoding="utf-8")
+        print(json.dumps({"design_hash": design.design_hash,
+                          "trials": len(design.trials)}, sort_keys=True))
         return
     cells = None
     if args.cells_dir:
