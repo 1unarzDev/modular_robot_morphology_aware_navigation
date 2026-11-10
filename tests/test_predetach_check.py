@@ -404,3 +404,26 @@ def test_predictions_agree_with_a_direct_geometric_check(catalog):
             assert cell["outcome"] == "completed", trial
         else:
             assert cell["outcome"] in {"docking_refused", "no_plan"}, trial
+
+
+def test_navigator_check_paths_are_gated_on_the_checked_methods():
+    """Every new step in the mission loop runs only when a ledger exists, and a
+    ledger exists only for feasibility_checked / feasibility_probed."""
+    source = (ROOT / "src/modular_robot_bringup/modular_robot_bringup/"
+              "hybrid_navigator.py").read_text(encoding="utf-8")
+    loop = source.split("async def _execute(self, goal_handle):", 1)[1].split(
+        "# --- Proposal (predetach_check_v1)", 1)[0]
+    assert loop.count("passes -= 1") == 1
+    assert loop.index('if verdict == "rejected":') < loop.index("passes -= 1")
+    lines = loop.splitlines()
+    for number, line in enumerate(lines):
+        if "ledger." in line or "_predetach_check(" in line:
+            guard = next(lines[k] for k in range(number, -1, -1)
+                         if "if ledger is not None" in lines[k]
+                         or "ledger.rejection_count if ledger" in lines[k]
+                         or "def _plan" in lines[k] or "ledger = self._predetach_ledger" in lines[k])
+            assert "ledger" in guard, line
+    ledger = source.split("def _predetach_ledger", 1)[1].split("def ", 1)[0]
+    assert "if method not in CHECKED_METHODS:\n            return None" in ledger
+    plan = source.split("async def _plan(", 1)[1].split("async def ", 1)[0]
+    assert "if ledger is not None and ledger.rejections:" in plan
