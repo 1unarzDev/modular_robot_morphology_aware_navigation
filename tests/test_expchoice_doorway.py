@@ -796,3 +796,54 @@ def test_published_footprint_is_reduced_to_its_edge_lengths():
     corners = [(0.29, -0.34), (0.29, 0.34), (-0.29, 0.34), (-0.29, -0.34)]
     assert footprint_edges(corners) == [0.58, 0.58, 0.68, 0.68]
     assert footprint_edges([]) == []
+
+
+# ---------------------------------------------------------------- batch v1
+
+STUDY_V1 = ROOT / "studies/expchoice_doorway_v1"
+V1_MANIFESTS = sorted((STUDY_V1 / "courses").glob("course_*.json"))
+V1_CANARY = "a96f269f80ad17d1"
+
+
+def test_v1_design_is_frozen_paired_and_leads_with_the_roomiest_course():
+    courses = load_courses(V1_MANIFESTS)
+    frozen = StudyDesign.read_frozen(STUDY_V1 / "design.json")
+    assert frozen == build_design(courses, canary_course_id=V1_CANARY)
+    assert frozen.design_hash != StudyDesign.read_frozen(STUDY / "design.json").design_hash
+    trials = frozen.trials
+    assert len(trials) == 40 and [trial.run_order for trial in trials] == list(range(40))
+    assert frozen.methods == DEFAULT_METHODS
+    assert {trial.course_id for trial in trials[:2]} == {V1_CANARY}
+    assert {trial.arm for trial in trials[:2]} == {"A", "B"}
+    assert max(course.d_cm for course in courses) == trials[0].d_cm == 160
+    for first, second in zip(trials[0::2], trials[1::2]):
+        assert (first.course_id, first.replicate, first.friction_seed) == (
+            second.course_id, second.replicate, second.friction_seed)
+        assert {first.arm, second.arm} == {"A", "B"}
+    assert json.loads((STUDY_V1 / "canary_trial_ids.json").read_text()) == [
+        trial.trial_id for trial in trials[:2]]
+    # Five courses carried over from v0, five new; the requested (d, e) in centimetres.
+    assert {(course.d_cm, course.e_cm) for course in courses} == {
+        (85, 70), (90, 70), (105, 70), (110, 70), (120, 70),
+        (120, 45), (130, 65), (145, 85), (130, 45), (160, 20)}
+    assert len({course.course_id for course in courses}
+               & {path.stem.removeprefix("course_") for path in BATCH_MANIFESTS}) == 5
+    for course in courses:
+        assert course.w_cm == 90 and course.B_cm == 500 and course.t_cm == 20
+        assert course.map_exactness() == {
+            "exact_at_map_resolution": True, "off_lattice_edges": [], "exact_at_0p05_m": True}
+
+
+@pytest.mark.parametrize("path", V1_MANIFESTS, ids=_ids(V1_MANIFESTS))
+def test_v1_world_and_map_agree_with_the_manifest(path, tmp_path):
+    manifest = _manifest(path)
+    course = course_from_manifest(manifest)
+    world, _ = export_doorway_sdf(course, tmp_path / "world.sdf", CATALOG, 3)
+    walls = _sdf_walls(world)
+    for wall in manifest["walls"]:
+        assert walls[wall["name"]] == pytest.approx(
+            (wall["xmin"], wall["xmax"], wall["ymin"], wall["ymax"]), abs=1e-9)
+    truth, measured = manifest["parameters_m"], measure_map(course, rasterize(course))
+    assert (measured["door_width_m"], measured["door_centre_m"], measured["bay_depth_m"],
+            measured["door_wall_thickness_m"]) == pytest.approx(
+        (truth["w"], truth["e"], truth["d"], truth["t"]), abs=1e-9)
