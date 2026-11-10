@@ -362,6 +362,24 @@ def _terminate_pids(pids: set[int]) -> None:
             return
 
 
+def pending_trials(design: StudyDesign, store: TrialStore,
+                   only_trial_ids: Sequence[str] | None = None) -> list:
+    """Trials still to run, in execution order, optionally restricted by --only."""
+    pending = sorted(
+        store.pending(design.trials),
+        # `run_order` exists on predetach_check_v1 specs only (as on the offset
+        # pilot's); plain specs have none and keep their original order.
+        key=lambda spec: (getattr(spec, "run_order", 0), spec.family, spec.layout_id,
+                          spec.replicate, spec.method_order),
+    )
+    if only_trial_ids is not None:
+        unknown = set(only_trial_ids) - {spec.trial_id for spec in design.trials}
+        if unknown:
+            raise ValueError(f"--only names trials not in the design: {sorted(unknown)}")
+        pending = [spec for spec in pending if spec.trial_id in set(only_trial_ids)]
+    return pending
+
+
 def run_batch(
     root: Path,
     design_path: Path,
@@ -380,18 +398,7 @@ def run_batch(
 
     design = StudyDesign.read_frozen(design_path)
     store = TrialStore(raw_root)
-    pending = sorted(
-        store.pending(design.trials),
-        # `run_order` exists on predetach_check_v1 specs only (as on the offset
-        # pilot's); plain specs have none and keep their original order.
-        key=lambda spec: (getattr(spec, "run_order", 0), spec.family, spec.layout_id,
-                          spec.replicate, spec.method_order),
-    )
-    if only_trial_ids is not None:
-        unknown = set(only_trial_ids) - {spec.trial_id for spec in design.trials}
-        if unknown:
-            raise ValueError(f"--only names trials not in the design: {sorted(unknown)}")
-        pending = [spec for spec in pending if spec.trial_id in set(only_trial_ids)]
+    pending = pending_trials(design, store, only_trial_ids)
     if max_trials is not None:
         pending = pending[:max_trials]
     revision = _git_revision(root, allow_dirty)
