@@ -592,6 +592,8 @@ def main() -> None:
                                         "write cells to --cells-dir/shard_i.json")
     parser.add_argument("--cells-dir", type=Path,
                         help="read precomputed shard_*.json cells (or write a shard)")
+    parser.add_argument("--layouts", help="with --shard: only these layout ids (comma list)")
+    parser.add_argument("--part", help="with --layouts: suffix for the shard file name")
     parser.add_argument("--design-only", action="store_true",
                         help="write design.json and smoke_trial_ids.json only")
     args = parser.parse_args()
@@ -601,9 +603,12 @@ def main() -> None:
         catalog = load_catalog(str(args.catalog)).supported_experiment_subset()
         rows = build_design(source).trials
         layouts = sorted({r.layout_id for r in rows})[index::count]
+        if args.layouts:
+            layouts = [layout for layout in args.layouts.split(",") if layout in layouts]
         cells = predict([r for r in rows if r.layout_id in layouts], catalog)
         args.cells_dir.mkdir(parents=True, exist_ok=True)
-        (args.cells_dir / f"shard_{index}.json").write_text(
+        name = f"shard_{index}" + (f"_{args.part}" if args.part else "")
+        (args.cells_dir / f"{name}.json").write_text(
             json.dumps(cells, sort_keys=True), encoding="utf-8")
         return
     if args.score:
