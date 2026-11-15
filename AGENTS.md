@@ -26,8 +26,16 @@ generated-room prevalence question asked of real buildings. Runs detached on
 the Windows host as a WMI process (command in the declaration, log
 `studies/real_buildings/run.log`, checkpoint
 `real_buildings_20261115.json.partial.jsonl`, do not commit the partial) with
-`keep_awake.ps1`; ~1.3 min per building on 7 workers, ETA ~20 h. If it was
-interrupted, rerun the declaration's command; it resumes. HM3D lives outside
+`keep_awake.ps1`. **Update 2026-11-15 ~08:00 UTC:** the first process died at
+138/900 (~05:30 UTC, no error or event logged; the user's game, with its
+anti-cheat, was starting then, unconfirmed). It now runs under
+`tools/supervise_real_buildings.ps1` (WMI-launched; restarts from the
+checkpoint up to 20 times, logs each attempt and the interruption in
+`run.log`), at below-normal priority so the user's own use of the machine
+wins. 390/900 at ~08:00 UTC, ~1.3 buildings/min idle, much slower while the
+user games; ETA ~15:00 UTC 2026-11-15 if idle. If the supervisor itself is
+gone and no report exists, relaunch it (usage in its header); it resumes. Do
+not look at partial outcomes before the report exists. HM3D lives outside
 the repo at `C:\Users\risha\datasets\hm3d` (Matterport token in the user
 environment variables `MATTERPORT_TOKEN_ID`/`_SECRET`; academic terms, never
 commit meshes). When `real_buildings_20261115.json` exists: commit it and
