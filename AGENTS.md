@@ -31,8 +31,12 @@ interrupted, rerun the declaration's command; it resumes. HM3D lives outside
 the repo at `C:\Users\risha\datasets\hm3d` (Matterport token in the user
 environment variables `MATTERPORT_TOKEN_ID`/`_SECRET`; academic terms, never
 commit meshes). When `real_buildings_20261115.json` exists: commit it and
-report exactly the declared rates, as an exploratory paragraph beside the
-generated-room one in the paper's Discussion.
+regenerate `paper/conference/exploratory_macros.tex` (command in
+`make_exploratory_macros.py`; the real-buildings report is its 4th argument).
+The paragraph "In scanned real buildings (exploratory)" is already drafted on
+macros, outcome-neutral; only its interpretation is written after the
+result. It pushes the paper to 9 pages (four references spill): fit it then,
+most likely by folding the generated-room paragraph into it.
 
 **Earlier (2026-11-06 04:30 UTC): the confirmatory is complete, read, and
 written up.** `confirmatory_v3` finished 720/720 at 03:15 UTC (after a third,
