@@ -33,7 +33,11 @@ anti-cheat, was starting then, unconfirmed). It now runs under
 checkpoint up to 20 times, logs each attempt and the interruption in
 `run.log`), at below-normal priority so the user's own use of the machine
 wins. 390/900 at ~08:00 UTC, ~1.3 buildings/min idle, much slower while the
-user games; ETA ~15:00 UTC 2026-11-15 if idle. If the supervisor itself is
+user games; ETA ~15:00 UTC 2026-11-15 if idle. **Update 2026-11-15 ~21:00
+UTC:** the supervisor and run were found dead at 417/900; the System log shows
+a user logoff at 08:44 UTC followed by sleep, which ends every process in the
+session, WMI-created ones included. Relaunched unchanged at 20:58 UTC with
+`keep_awake.ps1`; it resumes from the checkpoint. If the supervisor itself is
 gone and no report exists, relaunch it (usage in its header); it resumes. Do
 not look at partial outcomes before the report exists. HM3D lives outside
 the repo at `C:\Users\risha\datasets\hm3d` (Matterport token in the user
