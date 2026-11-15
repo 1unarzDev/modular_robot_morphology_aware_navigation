@@ -1,6 +1,6 @@
 # Current project status
 
-Updated 2026-11-06. This is the authoritative handoff for implementation and
+Updated 2026-11-15. This is the authoritative handoff for implementation and
 evidence state. The ledger rows below were last revised 2026-09-20 except where
 dated; the newest state is the top of "Resume here".
 
@@ -718,6 +718,29 @@ intends. And it does not revive the lost campaigns: it stands on its own and
 is not comparable to figures that cannot be re-audited.
 
 ## Resume here
+
+**2026-11-15: exploratory real-buildings study declared and running; no
+result yet.** The generated-room prevalence rate (5.4%) is "for this
+generator, not for real buildings". `studies/real_buildings/declaration.md`
+(pushed at `877b99a` before any sample building was evaluated) asks the same
+planner-level question of 900 scanned HM3D buildings: up to 3 missions per
+building that the compact body cannot complete, drawn on the planner's own
+lattice (`lattice_reach`), a station beside the forcing passage, each
+control's site re-tested under the full test. The scan conversion
+(`building_mesh`) keeps the study's world model: what crosses the 0.05--0.14 m
+floor band is grid-mapped; only what the scan plane misses is a raised box in
+sweeps and driving; every box blocks sight lines. Development on the 10
+`minival` buildings found and fixed three pipeline defects (a reachability
+approximation the forward-only planner could not use, wall boxes entering
+sweeps the 1.0 m planar disk already covers, a station reach that crossed
+interior walls); each fix and the development outcomes seen (7 of 27 control
+sites rejected, all at observability) are disclosed in the declaration. The
+planner's sight-line and swept-volume scans gained an exact spatial pre-filter
+for scanned worlds (`spatial_index`; 352 container tests pass). Known limits,
+declared: unscanned floor (under beds) is occupied, so raised-obstacle stages
+are lower bounds; stations are placed by rule. HM3D is used under the
+Matterport academic licence (`studies/real_buildings/DATA_TERMS.md`); only
+derived records are committed.
 
 **2026-11-06: `confirmatory_v3` complete and read.** 720/720 at 03:15 UTC
 (design `c939f126...`, commit `8a53344`); status check clean (no integrity
