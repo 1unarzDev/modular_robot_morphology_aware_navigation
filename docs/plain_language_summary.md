@@ -10,7 +10,7 @@ narrow one for squeezing through a doorway. Earlier work treats the change of
 shape as a switch: if both shapes fit at a spot, the robot can change there.
 But changing shape is a physical event. Pods detach, drive around each other
 and dock again; the robot then checks its new body by wiggling; and docking
-needs a camera to see the pods precisely. A spot where both shapes fit can
+needs a fixed camera in the room to see the pods precisely. A spot where both shapes fit can
 still fail any of those steps.
 
 **What I built.** A planner that chooses the route, the shape, and *where* to
@@ -23,8 +23,10 @@ sensors and rooms.
 advance, then ran 720 full simulated missions in 60 generated room layouts,
 pairing every method on identical rooms.
 
-**What I found.** My planner completed 167 of 180 missions; planners that
-ignored the physical steps completed 45 and 90 of 180. Measured as the study
+**What I found.** My planner completed 167 of 180 missions. A planner that
+only checked that both shapes fit completed 45 of 180, and one that also
+checked the pods' paths and the wiggle, but not whether the camera could see
+the dock, completed 90. Measured as the study
 declared in advance (averaged over room layouts, and against the
 feasibility-only planner only in the rooms where docking visibility can
 matter), the improvements were 68 and 64 percentage points, far beyond the
@@ -33,7 +35,8 @@ simpler planners was caused by exactly the check they skipped. And none of
 my planner's 336 shape changes failed.
 
 **Does it matter in real buildings?** In 300 randomly furnished generated
-rooms, the simpler planners' chosen spot would fail about 5% of the time.
+rooms, the simpler planners' chosen spot failed my planner's full check about 5%
+of the time, always because the camera could not see the dock.
 REAL-BUILDINGS RESULT: in 900 scanned real homes, offices and shops, ...
 
 **What I learned.** Changing shape is not free, and where you do it matters
