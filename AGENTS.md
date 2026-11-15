@@ -47,8 +47,12 @@ regenerate `paper/conference/exploratory_macros.tex` (command in
 `make_exploratory_macros.py`; the real-buildings report is its 4th argument).
 The paragraph "In scanned real buildings (exploratory)" is already drafted on
 macros, outcome-neutral; only its interpretation is written after the
-result. It pushes the paper to 9 pages (four references spill): fit it then,
-most likely by folding the generated-room paragraph into it.
+result. Fitting was done ahead, outcome-independently (2026-11-15): the two
+exploratory paragraphs are folded into one, the Gate 0 table is folded into
+its text, and Section VI/V prose tightened; with realistic-length values the
+paper is 8 pages plus one spilled reference (~3 lines), so the interpretation
+sentence (~3 lines) still needs ~6 lines found, and the real-building figure,
+if it goes in, ~20 more (it may have to stay out).
 
 **Earlier (2026-11-06 04:30 UTC): the confirmatory is complete, read, and
 written up.** `confirmatory_v3` finished 720/720 at 03:15 UTC (after a third,
