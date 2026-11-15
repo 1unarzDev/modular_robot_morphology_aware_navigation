@@ -319,8 +319,14 @@ class MorphologyAStar:
         c, s = cos(yaw), sin(yaw)
         polygon = tuple((wx + c * x - s * y, wy + s * x + c * y)
                         for x, y in (footprint or morphology.footprint))
+        # The same bounding-box rejection polygon_intersects_rectangle makes,
+        # computed once per pose instead of once per rectangle.
+        xs, ys = [x for x, _ in polygon], [y for _, y in polygon]
+        low_x, high_x, low_y, high_y = min(xs), max(xs), min(ys), max(ys)
         return any(polygon_intersects_rectangle(polygon, *rectangle)
-                   for rectangle in rectangles)
+                   for rectangle in rectangles
+                   if not (high_x < rectangle[0] or low_x > rectangle[2]
+                           or high_y < rectangle[1] or low_y > rectangle[3]))
 
     def _validate_transition(self, transition: Transition, state: HybridState) -> bool:
         wx, wy = self.grid.cell_center(state.x, state.y)

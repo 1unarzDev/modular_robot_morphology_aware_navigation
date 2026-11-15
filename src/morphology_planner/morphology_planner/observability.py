@@ -20,6 +20,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from math import sqrt
 
+from .spatial_index import cached_index
 from .transition_validation import Box3
 
 
@@ -104,6 +105,12 @@ def station_observes(
     """Whether the station has an unoccluded sight line to `point` in range."""
     if station.range_to(point) > station.max_range:
         return False
+    index = cached_index(obstacles)
+    if index is not None:
+        # A segment can only cross a box whose ground extent meets its own.
+        obstacles = index.candidates(
+            min(station.position[0], point[0]), min(station.position[1], point[1]),
+            max(station.position[0], point[0]), max(station.position[1], point[1]))
     return not any(
         segment_intersects_box(station.position, point, obstacle)
         for obstacle in obstacles

@@ -4,6 +4,12 @@ from dataclasses import dataclass
 from math import cos, hypot, sin
 from typing import Mapping
 
+from .spatial_index import BoxIndex
+
+# Hundreds of swept boxes meet each call's obstacles, so an index built per
+# call pays for itself well below the sight-line threshold.
+SWEPT_INDEX_MIN_BOXES = 16
+
 
 @dataclass(frozen=True)
 class Pose3:
@@ -176,13 +182,22 @@ class TransitionTrajectoryValidator:
         reason: str = "environment_collision",
     ) -> TransitionValidationResult:
         reasons: set[str] = set()
+        # Overlap needs the ground extents to meet; with many obstacles only
+        # those candidates are tested, which gives the same answer.
+        index = (BoxIndex(environment) if len(environment) >= SWEPT_INDEX_MIN_BOXES
+                 and len(swept_boxes) >= SWEPT_INDEX_MIN_BOXES else None)
         for box in swept_boxes:
             translated = Box3(
                 box.name,
                 (box.center[0] + offset_x, box.center[1] + offset_y, box.center[2]),
                 box.size,
             )
-            if any(_overlap(translated, obstacle) for obstacle in environment):
+            candidates = environment if index is None else index.candidates(
+                translated.center[0] - translated.size[0] / 2.0,
+                translated.center[1] - translated.size[1] / 2.0,
+                translated.center[0] + translated.size[0] / 2.0,
+                translated.center[1] + translated.size[1] / 2.0)
+            if any(_overlap(translated, obstacle) for obstacle in candidates):
                 reasons.add(f"{box.name.split('/', 1)[0]}:{reason}")
         return TransitionValidationResult(
             not reasons, tuple(sorted(reasons)), len(swept_boxes))
