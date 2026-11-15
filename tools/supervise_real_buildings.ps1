@@ -10,7 +10,8 @@ $log = "$dir\run.log"
 for ($attempt = 1; $attempt -le 20; $attempt++) {
     if (Test-Path $output) { break }
     Add-Content $log "SUPERVISOR $(Get-Date -Format o) start attempt $attempt"
-    cmd.exe /c ".venv-host\Scripts\python.exe tools\run_real_buildings_host.py --buildings $dir\sample.txt --data-root C:\Users\risha\datasets\hm3d --master-seed 20261115 --workers 7 --output $output >> $log 2>&1"
+    # Below normal priority: the host is the user's own machine (2026-11-15).
+    cmd.exe /c "start `"`" /belownormal /b /wait .venv-host\Scripts\python.exe tools\run_real_buildings_host.py --buildings $dir\sample.txt --data-root C:\Users\risha\datasets\hm3d --master-seed 20261115 --workers 7 --output $output >> $log 2>&1"
     Add-Content $log "SUPERVISOR $(Get-Date -Format o) attempt $attempt exited with $LASTEXITCODE"
     if (-not (Test-Path $output)) { Start-Sleep -Seconds 30 }
 }
