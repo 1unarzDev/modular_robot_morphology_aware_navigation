@@ -18,7 +18,23 @@ placement-robust station prediction (`43255f7`), 4x finer localization map
 (`9371593`), and RPP's narrow rotation no longer ratcheting on odometry
 (`971affb`; the narrow odometry over-reports ~0.2 rad/s, still unexplained).
 
-**Resume here (2026-11-06 04:30 UTC): the confirmatory is complete, read, and
+**Resume here (2026-11-15 04:05 UTC): the exploratory real-buildings study
+is running.** Declared and pushed before its sample (`877b99a`,
+`studies/real_buildings/declaration.md`): 900 scanned HM3D buildings, up to 3
+missions each that need a shape change, station beside the passage, the
+generated-room prevalence question asked of real buildings. Runs detached on
+the Windows host as a WMI process (command in the declaration, log
+`studies/real_buildings/run.log`, checkpoint
+`real_buildings_20261115.json.partial.jsonl`, do not commit the partial) with
+`keep_awake.ps1`; ~1.3 min per building on 7 workers, ETA ~20 h. If it was
+interrupted, rerun the declaration's command; it resumes. HM3D lives outside
+the repo at `C:\Users\risha\datasets\hm3d` (Matterport token in the user
+environment variables `MATTERPORT_TOKEN_ID`/`_SECRET`; academic terms, never
+commit meshes). When `real_buildings_20261115.json` exists: commit it and
+report exactly the declared rates, as an exploratory paragraph beside the
+generated-room one in the paper's Discussion.
+
+**Earlier (2026-11-06 04:30 UTC): the confirmatory is complete, read, and
 written up.** `confirmatory_v3` finished 720/720 at 03:15 UTC (after a third,
 explicit-sleep interruption at 671); `finish_confirmatory_v3.sh` ran, and the
 records, audit, analysis and mechanism counts are committed in
