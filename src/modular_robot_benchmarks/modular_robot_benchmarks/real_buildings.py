@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from math import hypot
 from pathlib import Path
 from random import Random
@@ -78,7 +79,32 @@ def _route_metres(path) -> float:
     return sum(hypot(b[3] - a[3], b[2] - a[2]) for a, b in zip(path, path[1:])) * RESOLUTION
 
 
-def draw_missions(levels, catalog, rng: Random, accept=None) -> tuple[list[dict], dict]:
+def _save_draw_state(path: Path, identity: dict, stats: dict, missions: list,
+                     rng: Random) -> None:
+    """The draw loop's whole state before its next draw, replaced atomically."""
+    version, internal, gauss = rng.getstate()
+    payload = {"identity": identity, "stats": stats, "missions": missions,
+               "rng": [version, list(internal), gauss]}
+    scratch = path.with_name(path.name + ".tmp")
+    scratch.write_text(json.dumps(payload), encoding="utf-8")
+    os.replace(scratch, path)
+
+
+def _load_draw_state(path: Path, identity: dict) -> dict | None:
+    """A saved draw state for exactly this building and these constants, else None.
+
+    Anything unreadable or saved for another building, seed or constant is
+    ignored, and the building is then drawn from its seed as if never begun.
+    """
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    return payload if payload.get("identity") == identity else None
+
+
+def draw_missions(levels, catalog, rng: Random, accept=None, checkpoint: Path | None = None,
+                  tag: str = "") -> tuple[list[dict], dict]:
     """Missions that need a shape change, with a station beside the passage.
 
     On the planner's own lattice (`lattice_reach`): a start is a uniformly
@@ -92,6 +118,13 @@ def draw_missions(levels, catalog, rng: Random, accept=None) -> tuple[list[dict]
     and STATION_RADIUS_M of the passage, at STATION_HEIGHT_M, with nothing
     scanned at that height in its cell. A drawn mission enters the sample only
     if `accept(level, mission)` holds (the caller plans it).
+
+    With `checkpoint`, the loop's state (counts, accepted missions, the
+    generator's state) is written there before every draw and read back on
+    entry, so a building interrupted mid-way resumes at the draw it was on and
+    returns what an uninterrupted call returns: no draw is skipped, repeated
+    with another state, or reordered (`tests/test_real_buildings.py`). `tag`
+    names the building and seed the state belongs to.
     """
     frames = []
     for level in levels:
@@ -106,8 +139,19 @@ def draw_missions(levels, catalog, rng: Random, accept=None) -> tuple[list[dict]
     stats = {"levels": len(levels), "start_states": len(starts), "attempts": 0,
              "no_goal": 0, "no_station": 0, "geometry_unplanned": 0}
     missions: list[dict] = []
+    identity = {"tag": tag, "levels": stats["levels"], "start_states": stats["start_states"],
+                "constants": [MISSIONS_PER_BUILDING, DRAW_ATTEMPTS, list(ROUTE_STEPS),
+                              WINDOW_MARGIN_M, STATION_HEIGHT_M, STATION_RADIUS_M,
+                              STATION_REACH_M, HEADING_BINS, EPSILON]}
+    saved = _load_draw_state(checkpoint, identity) if checkpoint is not None else None
+    if saved is not None:
+        stats, missions = saved["stats"], saved["missions"]
+        version, internal, gauss = saved["rng"]
+        rng.setstate((version, tuple(internal), gauss))
     forward = [t for t in catalog.transitions if t.source == START_MORPHOLOGY]
     while starts and len(missions) < MISSIONS_PER_BUILDING and stats["attempts"] < DRAW_ATTEMPTS:
+        if checkpoint is not None:
+            _save_draw_state(checkpoint, identity, stats, missions, rng)
         stats["attempts"] += 1
         index, sh, sy, sx = rng.choice(starts)
         level, model = frames[index]
@@ -211,7 +255,8 @@ def evaluate_mission(level, mission: dict, catalog) -> dict:
     return result
 
 
-def evaluate_building(path: Path, master_seed: int, catalog) -> dict:
+def evaluate_building(path: Path, master_seed: int, catalog,
+                      checkpoint: Path | None = None) -> dict:
     name = path.stem
     rng = Random(building_seed(master_seed, name))
     levels = build_levels(read_glb_triangles(path))
@@ -220,7 +265,8 @@ def evaluate_building(path: Path, master_seed: int, catalog) -> dict:
         mission["result"] = evaluate_mission(level, mission, catalog)
         return mission["result"]["methods"][CONTROLS[0]]["planned"]
 
-    missions, stats = draw_missions(levels, catalog, rng, accept)
+    missions, stats = draw_missions(levels, catalog, rng, accept, checkpoint,
+                                    f"{master_seed}:{name}")
     return {"building": name, "draw": stats, "missions": missions}
 
 
@@ -288,11 +334,16 @@ def summarize(buildings: list[dict], bootstrap: int = 2000, seed: int = 0) -> di
     return summary
 
 
+def _draw_checkpoint(draws: Path, building: str) -> Path:
+    return Path(draws) / f"{building}.json"
+
+
 def _worker(args):
-    path, master_seed, catalog_path = args
+    path, master_seed, catalog_path, draws = args
     catalog = load_catalog(str(catalog_path)).supported_experiment_subset()
     try:
-        return evaluate_building(Path(path), master_seed, catalog)
+        return evaluate_building(Path(path), master_seed, catalog,
+                                 _draw_checkpoint(draws, Path(path).stem) if draws else None)
     except Exception as error:  # recorded, never dropped silently
         return {"building": Path(path).stem, "error": f"{type(error).__name__}: {error}",
                 "draw": None, "missions": []}
@@ -319,13 +370,19 @@ def main() -> None:
             if line.strip():
                 entry = json.loads(line)
                 done[entry["building"]] = entry
-    jobs = [(p, args.master_seed, args.catalog) for p in paths if Path(p).stem not in done]
-    checkpoint.parent.mkdir(parents=True, exist_ok=True)
+    # A building's own draw loop is checkpointed too (one small file each, gone
+    # once the building is kept): the slowest take hours, longer than the host
+    # stays up, and without it an interrupted one starts over every time.
+    draws = args.output.with_name(args.output.name + ".partial.draws")
+    draws.mkdir(parents=True, exist_ok=True)
+    jobs = [(p, args.master_seed, args.catalog, draws) for p in paths
+            if Path(p).stem not in done]
     with checkpoint.open("a", encoding="utf-8") as stream:
         def keep(entry):
             done[entry["building"]] = entry
             stream.write(json.dumps(entry, sort_keys=True) + "\n")
             stream.flush()
+            _draw_checkpoint(draws, entry["building"]).unlink(missing_ok=True)
             print(f"building {len(done)}/{len(paths)} {entry['building']} "
                   f"missions={len(entry['missions'])}{' ERROR' if 'error' in entry else ''}",
                   flush=True)
@@ -342,6 +399,10 @@ def main() -> None:
               "master_seed": args.master_seed, "buildings": len(paths),
               "summary": summarize(buildings), "results": buildings}
     args.output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    try:
+        draws.rmdir()
+    except OSError:
+        pass
     print(json.dumps(report["summary"], indent=2, sort_keys=True))
 
 
