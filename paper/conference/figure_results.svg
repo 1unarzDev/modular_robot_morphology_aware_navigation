@@ -44,7 +44,7 @@
 <text x="160" y="230" text-anchor="end" class="label">vs. geometry</text>
 <line x1="381.5" y1="226.0" x2="442.4" y2="226.0" stroke="#16a34a" stroke-width="2" stroke-linecap="round"/>
 <circle cx="412.0" cy="226.0" r="5" fill="#16a34a" stroke="#16a34a" stroke-width="2"/>
-<text x="496" y="218" text-anchor="end" class="tick" paint-order="stroke" stroke="white" stroke-width="4">60 layouts, Holm p < 0.001</text>
+<text x="496" y="218" text-anchor="end" class="tick" paint-order="stroke" stroke="white" stroke-width="4">60 layouts, Holm p &lt; 0.001</text>
 <text x="160" y="256" text-anchor="end" class="small">combined</text>
 <circle cx="387.3" cy="252.0" r="4" fill="white" stroke="#64748b" stroke-width="2"/>
 <text x="160" y="282" text-anchor="end" class="small">docking observ.</text>
@@ -54,7 +54,7 @@
 <text x="160" y="334" text-anchor="end" class="label">vs. feasibility</text>
 <line x1="363.4" y1="330.0" x2="441.7" y2="330.0" stroke="#16a34a" stroke-width="2" stroke-linecap="round"/>
 <circle cx="402.5" cy="330.0" r="5" fill="#16a34a" stroke="#16a34a" stroke-width="2"/>
-<text x="496" y="322" text-anchor="end" class="tick" paint-order="stroke" stroke="white" stroke-width="4">40 layouts, Holm p < 0.001</text>
+<text x="496" y="322" text-anchor="end" class="tick" paint-order="stroke" stroke="white" stroke-width="4">40 layouts, Holm p &lt; 0.001</text>
 <text x="160" y="360" text-anchor="end" class="small">combined</text>
 <circle cx="387.3" cy="356.0" r="4" fill="white" stroke="#64748b" stroke-width="2"/>
 <text x="160" y="386" text-anchor="end" class="small">docking observ.</text>

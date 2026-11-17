@@ -59,7 +59,7 @@ def _interval(x, y: float, value: float, low: float, high: float, color: str,
 
 
 def _p(value: float) -> str:
-    return "p < 0.001" if value < 0.001 else f"p = {value:.3f}"
+    return "p &lt; 0.001" if value < 0.001 else f"p = {value:.3f}"  # SVG text: escaped
 
 
 def render(result: dict) -> str:

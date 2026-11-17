@@ -719,6 +719,29 @@ is not comparable to figures that cannot be re-audited.
 
 ## Resume here
 
+**2026-11-17: paper claim audit; three factual errors corrected, none
+outcome-dependent.** A read-only audit of the paper against the code found:
+(1) localization odometry is not wheel odometry: `/odom` and the odom TF come
+from Gazebo's `OdometryPublisher` on the core (`sensor_core/model.sdf:46`), the
+simulated base pose with no noise, so dead reckoning is perfect between AMCL
+updates and localization error is AMCL's alone. Shared by all four methods, so
+no contrast changes; the paper now says so (Sensing, truth isolation,
+Limitations) and the ledger's "wheel odometry" is wrong in the same way.
+(2) The lidar plane is 0.30 m above the floor (core spawned at 0.18 m, lidar
++0.12 m), not 0.12 m; the real-buildings declaration and `building_mesh` give
+0.12 m as the reason for the 0.05--0.14 m mapping band. The band is a declared
+constant and is **not changed** (the sample is being evaluated); the paper now
+calls it a declared convention. (3) Fig. 3 had built as an empty box since
+2026-11-06: the SVG held a bare `p < 0.001`; escaped, regenerated from the
+committed `analysis.json`, and a test now parses every figure. Also tightened:
+route-first differs in search, not only in its test; the predicted
+observability check includes the 0.08 m placement margin; a station that
+cannot see a pod reports it not visible (0.04 is only the predictor's value);
+the Discussion no longer pre-judges the real-buildings rate as "much smaller";
+the abstract scopes the feasibility contrast to the 40 sensing-family layouts.
+The integrity, design and results sections and the five reviewer passes were
+not completed (usage limit) and are owed.
+
 **2026-11-15: exploratory real-buildings study declared and running; no
 result yet.** The generated-room prevalence rate (5.4%) is "for this
 generator, not for real buildings". `studies/real_buildings/declaration.md`
