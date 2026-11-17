@@ -719,6 +719,28 @@ is not comparable to figures that cannot be re-audited.
 
 ## Resume here
 
+**2026-11-17: real-buildings study complete (900/900) and written up.** Report
+`studies/real_buildings/real_buildings_20261115.json`, finished 07:27 UTC after
+three interruptions (all wall-clock only; every building is seeded from its id).
+Exactly as declared: 737 of 900 buildings yielded a mission (2210 missions); 2
+buildings failed processing (GLB node transforms, refused by design). The full
+test rejects the site `geometry_coupled` plans in the first mission of 187 of
+721 buildings (25.9%, Wilson 95% [22.9%, 29.3%]) and in 556 of 2156 missions
+overall (25.8%, building bootstrap [23.8%, 27.8%]); stages over rejected sites:
+observability 556, verification maneuver 1, no module trajectory.
+`feasibility_coupled` has the same counts (bootstrap [23.9%, 27.6%]),
+observability only. Neither control fails to plan any mission; the treatment
+still plans 346 of the 556 rejected missions and cannot plan 210 of 2210.
+Draws: 74,201 attempts, 71,991 with no goal, 0 with no station, 0
+geometry-unplanned. Reading (written after the result): about five times the
+generated-room rate (5.4%), again only through observability, and stations are
+placed by rule, so it is a rate under that rule, not of real infrastructure;
+unlike the generated rooms (5 of 16), the full test usually finds another
+admissible site. The paper reports it in the exploratory paragraph (8 pages;
+three low-value sentences cut to fit: a morphology-set aside, the risk-prior
+future-work sentence, the Conclusion's next-tests sentence; route-first
+parameters shortened).
+
 **2026-11-17: paper claim audit; three factual errors corrected, none
 outcome-dependent.** A read-only audit of the paper against the code found:
 (1) localization odometry is not wheel odometry: `/odom` and the odom TF come

@@ -18,8 +18,13 @@ placement-robust station prediction (`43255f7`), 4x finer localization map
 (`9371593`), and RPP's narrow rotation no longer ratcheting on odometry
 (`971affb`; the narrow odometry over-reports ~0.2 rad/s, still unexplained).
 
-**Resume here (2026-11-15 04:05 UTC): the exploratory real-buildings study
-is running.** Declared and pushed before its sample (`877b99a`,
+**Resume here (2026-11-17): the real-buildings study is complete and in the
+paper** (`docs/current_status.md`, top). Owed: the paper audit's unfinished
+parts (design, integrity, results sections; reviewer passes; a related-work
+sweep). History of the run follows.
+
+**Earlier (2026-11-15 04:05 UTC): the exploratory real-buildings study
+was running.** Declared and pushed before its sample (`877b99a`,
 `studies/real_buildings/declaration.md`): 900 scanned HM3D buildings, up to 3
 missions each that need a shape change, station beside the passage, the
 generated-room prevalence question asked of real buildings. Runs detached on
