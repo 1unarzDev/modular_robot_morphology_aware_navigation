@@ -1,0 +1,18 @@
+{
+  "building": "HaxA7YrQdEC",
+  "draws": 6,
+  "draws_on_record_at_each_kill": [
+    1,
+    1,
+    5
+  ],
+  "errored": false,
+  "identical": true,
+  "kills": 3,
+  "master_seed": 1,
+  "missions": 3,
+  "purpose": "real_buildings_resume_equivalence_check",
+  "resumed_entry_sha256": "56077b19148e0bf6c53275586de55f0423ade2726a627b4d3b0d89ff3f3f9392",
+  "unbroken_entry_sha256": "56077b19148e0bf6c53275586de55f0423ade2726a627b4d3b0d89ff3f3f9392",
+  "unbroken_seconds": 257.9
+}
