@@ -758,9 +758,13 @@ planner's models are the executor's, so model error is tested only through
 placement; (3) the Monte Carlo p is stated as the floor 1/(N+1); (4) the
 hierarchical-model and Brier text shortened. Cut to fit: the manipulation
 table (its totals are in the text), the probe anecdote, the power-defect
-narrative compressed, the morphology limitation merged. Not acted on, left for
-the author: rewriting the abstract around one CI, renaming project jargon
-("rung", "sensing families"), merging the failure tables, and two candidate
+narrative compressed, the morphology limitation merged. Then, as an agent decision under the author's standing delegation: the
+abstract was rewritten as problem, idea, study, result, plus the caveat that
+layouts are built so a condition binds, set against the exploratory
+real-building rate (187 of 721 first missions, generated macros); "sensing
+families" is now defined where the families are; the Contribution's
+result sentence, which duplicated the abstract and Conclusion, was cut.
+Not acted on: merging the failure tables, and two candidate
 citations without a confirmed DOI (Cheah et al. ICRA 2021; Fan et al. IROS
 2019). Hardware transfer remains the most damaging limitation and needs
 new work, not wording.
