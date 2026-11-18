@@ -40,6 +40,14 @@ SCOPES = (
     ("Feas", "feasibility_coupled",
      ("docking_observability", "combined_constraints"), "blind_refusal"),
 )
+# Added 2026-11-17, after unblinding, and outside the declared rule: the same
+# per-record blind-site test applied to `geometry_coupled`'s refusals in the
+# two sensing families, which the Discussion's "no exception" also covers.
+# Descriptive only; it carries no claim word of the interpretation rules.
+DESCRIPTIVE_SCOPES = (
+    ("GeomSens", "geometry_coupled",
+     ("docking_observability", "combined_constraints"), "blind_refusal"),
+)
 FAMILY_NAMES = {"reconfiguration_workspace": "workspace",
                 "docking_observability": "docking",
                 "combined_constraints": "combined"}
@@ -67,18 +75,18 @@ def classify(record: dict, mechanism: str, blind) -> str:
     return "mechanism" if verdict else f"{status} at a site the station is predicted to see"
 
 
-def tabulate(raw: Path, blind) -> dict:
+def tabulate(raw: Path, blind, declared=SCOPES) -> dict:
     scopes = {key: {"method": method, "families": list(families),
                     "mechanism": mechanism, "trials": 0, "failures": 0,
                     "mechanism_count": 0, "exceptions": []}
-              for key, method, families, mechanism in SCOPES}
+              for key, method, families, mechanism in declared}
     for path in sorted(Path(raw).glob("*.json")):
         with path.open(encoding="utf-8") as stream:
             record = json.load(stream)
         spec = record["spec"]
         if _neutral(spec["layout_id"]):
             continue
-        for key, method, families, mechanism in SCOPES:
+        for key, method, families, mechanism in declared:
             if spec["method"] != method or spec["family"] not in families:
                 continue
             scope = scopes[key]
@@ -154,7 +162,9 @@ def station_blindness(design_path: Path, catalog_path: Path = CATALOG):
 
 
 def main() -> None:
-    scopes = tabulate(Path(sys.argv[1]), station_blindness(Path(sys.argv[2])))
+    blind = station_blindness(Path(sys.argv[2]))
+    scopes = tabulate(Path(sys.argv[1]), blind)
+    scopes.update(tabulate(Path(sys.argv[1]), blind, DESCRIPTIVE_SCOPES))
     Path(sys.argv[3]).write_text(render(scopes), encoding="utf-8")
     if len(sys.argv) > 4:
         Path(sys.argv[4]).write_text(json.dumps(scopes, indent=2, sort_keys=True) + "\n",
