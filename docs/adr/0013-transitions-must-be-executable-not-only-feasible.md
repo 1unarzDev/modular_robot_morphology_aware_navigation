@@ -44,6 +44,8 @@ tracks a straight line closely and a turn loosely; the plan has to know that.
    at all: margins of 0.00/0.03/0.05/0.10 m planned it in 5/5/2/0 of the five
    re-qualification layouts. Generator 3 is generator 2 with the interior wall
    at 3.6--4.2 m and the arena 7.1--8.0 m wide; everything else is unchanged.
+   (Correction 2026-11-17: the code draws the wall at 3.9 m plus -4..+4 cells,
+   3.5--4.3 m, as the paper states; the 3.6--4.2 m above was never the code.)
    On a screening sample every method planned in every manipulated layout and
    the treatment's site separated from both controls. Design kinds `pilot_v3`,
    `confirmatory_v3`, `engineering_roundtrip_v3`.

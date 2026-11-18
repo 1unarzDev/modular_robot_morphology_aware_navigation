@@ -66,8 +66,9 @@ def localization_error_track(
 
 # Localization loss is defined against evaluator truth, not by the autonomy's
 # own report (decision 2026-10-28): an estimate that has silently diverged is
-# lost whether or not the navigator says so. The threshold is about three times
-# the worst error AMCL has shown while working normally (0.1021 m, ADR 0008), so
+# lost whether or not the navigator says so. The threshold is about 2.4 times
+# the worst error AMCL has shown while working normally (0.126 m over 124
+# qualification records; ADR 0008's 0.1021 m was an earlier sample), so
 # ordinary imprecision never counts; three consecutive 2 Hz samples (1 s) keep a
 # single bad match from counting either.
 LOCALIZATION_LOSS_ERROR_M = 0.30
