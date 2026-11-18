@@ -125,6 +125,8 @@ def macros(result: dict) -> str:
             f"Rate{key}": f"{row['completion_rate']:.2f}",
             f"RateLow{key}": f"{low:.2f}", f"RateHigh{key}": f"{high:.2f}",
             f"Time{key}": f"{row['deadline_penalized_time_s']:.1f}",
+            f"Latency{key}": f"{row['planning_latency_s']:.1f}",
+            f"Expanded{key}": f"{row['expanded_states']:,.0f}".replace(",", r"\,"),
             f"Brier{key}": _brier(result["transition_brier_by_method"].get(row["method"])),
         })
     secondary = {row["control"]: row for row in result["secondary_contrasts"]

@@ -20,8 +20,9 @@ placement-robust station prediction (`43255f7`), 4x finer localization map
 
 **Resume here (2026-11-17): the real-buildings study is complete and in the
 paper** (`docs/current_status.md`, top). The design, integrity and results
-sections were audited 2026-11-17 (status doc, top dated entry). Owed: the
-five reviewer passes and a related-work sweep. History of the run follows.
+sections were audited 2026-11-17 (status doc, top dated entry). Reviewer passes
+and the related-work sweep followed the same day (status doc, top). Open:
+the author-level presentation choices listed there. History of the run follows.
 
 **Earlier (2026-11-15 04:05 UTC): the exploratory real-buildings study
 was running.** Declared and pushed before its sample (`877b99a`,

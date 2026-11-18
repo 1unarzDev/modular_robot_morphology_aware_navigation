@@ -741,6 +741,30 @@ three low-value sentences cut to fit: a morphology-set aside, the risk-prior
 future-work sentence, the Conclusion's next-tests sentence; route-first
 parameters shortened).
 
+**2026-11-17 (latest): reviewer passes and related-work sweep done; paper
+still 8 pages.** Five simulated reviews (statistics, baseline fairness,
+modular robotics, motion planning, clarity) and a search-based related-work
+sweep. No threat to the novelty claim was found; three citations were added to
+the literature review and the paper (Raghavan et al. 2022 on room to
+reconfigure along a route; Prentice and Roy 2009 and Zhang and Scaramuzza 2018
+as the lineage of planning for estimate quality). Acted on: (1) planning
+latency, a declared secondary measure never reported, now is (wall time summed
+over replans, charged to the simulated deadline: 21.4/34.1/45.7 s for
+geometry/feasibility/treatment; generated macros); (2) a Limitations paragraph
+on what the ladder isolates: no external system or 3D-costmap geometry
+control was run; a refused dock ends every method's mission fail-closed
+(`hybrid_navigator.py:153`, so online retry at another site is untested); the
+planner's models are the executor's, so model error is tested only through
+placement; (3) the Monte Carlo p is stated as the floor 1/(N+1); (4) the
+hierarchical-model and Brier text shortened. Cut to fit: the manipulation
+table (its totals are in the text), the probe anecdote, the power-defect
+narrative compressed, the morphology limitation merged. Not acted on, left for
+the author: rewriting the abstract around one CI, renaming project jargon
+("rung", "sensing families"), merging the failure tables, and two candidate
+citations without a confirmed DOI (Cheah et al. ICRA 2021; Fan et al. IROS
+2019). Hardware transfer remains the most damaging limitation and needs
+new work, not wording.
+
 **2026-11-17 (later): paper audit of the design, integrity and results
 sections; no number or claim changes, wording and disclosures corrected.**
 Every results macro regenerates byte-identical from the committed JSON, and
