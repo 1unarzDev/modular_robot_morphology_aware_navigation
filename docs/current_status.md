@@ -741,6 +741,16 @@ three low-value sentences cut to fit: a morphology-set aside, the risk-prior
 future-work sentence, the Conclusion's next-tests sentence; route-first
 parameters shortened).
 
+**2026-11-17: mechanism counts recomputed from the raw records.** In the
+container, `make_mechanism_table.py` run on all 720 records extracted from
+the retained archive reproduces `mechanism.json` and `mechanism_macros.tex`
+exactly. A descriptive scope was then added (after unblinding, outside the
+declared rule, kept separate from the declared scopes): all 90 of
+`geometry_coupled`'s failures in the two sensing families are refusals at a
+site the station is predicted not to see, so the Discussion's "no exception"
+holds for both coupled controls in every scope it names. Reported in the
+paper as such; 8 pages after cutting a redundant Discussion sentence.
+
 **2026-11-17 (latest): reviewer passes and related-work sweep done; paper
 still 8 pages.** Five simulated reviews (statistics, baseline fairness,
 modular robotics, motion planning, clarity) and a search-based related-work

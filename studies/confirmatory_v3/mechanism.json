@@ -21,5 +21,17 @@
     "mechanism_count": 45,
     "method": "geometry_coupled",
     "trials": 45
+  },
+  "GeomSens": {
+    "exceptions": [],
+    "failures": 90,
+    "families": [
+      "docking_observability",
+      "combined_constraints"
+    ],
+    "mechanism": "blind_refusal",
+    "mechanism_count": 90,
+    "method": "geometry_coupled",
+    "trials": 90
   }
 }
