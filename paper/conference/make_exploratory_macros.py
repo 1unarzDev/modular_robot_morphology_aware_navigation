@@ -88,6 +88,13 @@ def real_buildings_macros(report: dict) -> str:
     out += _macro("realWithMission", summary["buildings_with_mission"])
     out += _macro("realMissions", summary["missions"])
     out += _macro("realErrors", errors)
+    # Missions every method plans with no transition at all: the sampler's
+    # lattice said the compact body cannot reach the goal, the planner found it can.
+    no_transition = sum(
+        all(method.get("planned") and method.get("sites") == []
+            for method in mission["result"]["methods"].values())
+        for building in report["results"] for mission in building.get("missions", []))
+    out += _macro("realNoTransition", no_transition)
     out += _macro("realTreatUnplanned", summary["sensing_feasibility_coupled"]["unplanned"])
     for control, tag in CONTROLS:
         entry = summary[control]

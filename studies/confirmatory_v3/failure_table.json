@@ -78,6 +78,14 @@
       }
     }
   },
+  "infrastructure_attempts": {
+    "before_mission": 8,
+    "during_mission": 4,
+    "during_mission_then_completed": {
+      "feasibility_coupled": 1
+    },
+    "trials_retried": 11
+  },
   "other_statuses": {
     "controller_failure": 1
   }

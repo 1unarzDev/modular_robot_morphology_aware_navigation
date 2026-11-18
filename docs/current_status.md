@@ -741,6 +741,46 @@ three low-value sentences cut to fit: a morphology-set aside, the risk-prior
 future-work sentence, the Conclusion's next-tests sentence; route-first
 parameters shortened).
 
+**2026-11-17 (later): paper audit of the design, integrity and results
+sections; no number or claim changes, wording and disclosures corrected.**
+Every results macro regenerates byte-identical from the committed JSON, and
+the failure table regenerates identically from the retained archive
+(`make_failure_table.py` now streams the split `tar.xz` directly). Found and
+corrected: (1) start and goal are drawn up to 0.3/0.6 m off the door line, a
+range that includes zero, so not every route must turn; (2) the runner retries
+not only pre-mission failures but any `infrastructure_failure` while the
+launch is alive (DDS transport, stack process death, clock discontinuity,
+observer wall kill; both rules predate the 2026-11-01 freeze). Of the
+confirmatory's 12 infrastructure attempts, 8 were readiness timeouts before
+the mission and 4 relabelled a mission under way; the one retry that changed
+an outcome made a `feasibility_coupled` failure a completion
+(`reconfiguration_workspace-16-r2`), against the treatment, and no
+treatment trial was retried mid-mission. The paper said all 12 were before
+the mission; it now gives the split (generated macros,
+`infrastructure_macros.tex`). (3) Fix (i), the 0.10 m turning margin, was
+confirmed by the Gate 0 round trips, not by reproductions of failing seeds;
+(4) fix (v): the long body *crossed* the door in 4 of 20 short-run-in
+approaches (not "met it off its line in 16 of 20"), and the vertex-turn
+acceptance's failed route-offset criterion (measure defect, corrected) is now
+disclosed; (5) the straight-approach rule lost layouts where both coupled
+controls planned (route-first plans almost none); (6) rotation varies 0.6%
+per direction, 1.0% across both; (7) the abstract now says geometry-only
+also fails by refused docking (90 of its 135 failures); (8) route-first's
+disagreement fraction is over the 15 blocks it plans; neutral controls agree
+on the site before any trial, and at least 2 executed neutral blocks differ in
+route or site; (9) the Monte Carlo SE of the sign-flip p values (1e-5 over
+100,000 draws) is now reported as the analysis section promises; (10) in 54
+of 2210 real-building missions every method plans with no transition (the
+sampler's lattice is stricter than the planner), excluded by the declared
+"missions where it plans a transition" denominator, now disclosed. Removed as
+unauditable (scratch runs never committed): the clock-stall counts 4/78 and
+0/14 vs 3/13; and the route-first failure trace, which has no committed
+artifact. ADR 0013's wall range (3.6--4.2 m) never matched the code
+(3.5--4.3 m) and is annotated. Still 8 pages. Not verified, needing the
+container: mechanism counts from raw records beyond the committed JSON,
+which neutral blocks differ in executed plans. The five reviewer passes and
+the related-work sweep remain owed.
+
 **2026-11-17: paper claim audit; three factual errors corrected, none
 outcome-dependent.** A read-only audit of the paper against the code found:
 (1) localization odometry is not wheel odometry: `/odom` and the odom TF come

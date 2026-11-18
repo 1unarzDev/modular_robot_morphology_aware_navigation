@@ -48,6 +48,20 @@ def _p_expression(value: float) -> str:
     return r"$p < 0.001$" if value < 0.001 else f"$p = {value:.3f}$"
 
 
+def _sci(value: float | None) -> str:
+    r"""A small probability in LaTeX scientific notation, e.g. $1.0\times10^{-5}$."""
+    if value is None:
+        return "--"
+    mantissa, exponent = f"{value:.1e}".split("e")
+    return rf"${mantissa}\times10^{{{int(exponent)}}}$"
+
+
+def _draws(method: str) -> str:
+    """The Monte Carlo draw count named by `permutation_method`, "--" if exhaustive."""
+    parts = method.split("_")
+    return f"{int(parts[-2]):,}".replace(",", r"\,") if parts[-1] == "draws" else "--"
+
+
 def _brier(value: float | None) -> str:
     return "--" if value is None else f"{value:.3f}"
 
@@ -129,6 +143,9 @@ def macros(result: dict) -> str:
             f"CILow{key}": _signed(low, 3), f"CIHigh{key}": _signed(high, 3),
             f"RawP{key}": _p_expression(row["permutation_p"]),
             f"HolmP{key}": _p_expression(row["holm_adjusted_p"]),
+            f"RawPSci{key}": _sci(row["permutation_p"]),
+            f"MCSE{key}": _sci(row["monte_carlo_standard_error"]),
+            f"MCDraws{key}": _draws(row["permutation_method"]),
             f"Claim{key}": claim(row["estimate_treatment_minus_control"],
                                  row["holm_adjusted_p"], low, high),
             f"TimeDelta{key}": _signed(time_row["estimate_treatment_minus_control"], 1),

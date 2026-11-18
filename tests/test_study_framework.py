@@ -418,6 +418,35 @@ def test_paper_failure_table_counts_status_by_method_and_family(tmp_path):
     assert r"\newcommand{\resTrialsSensingNeutral}{6}" in tex
 
 
+def test_paper_failure_table_splits_infrastructure_attempts_by_mission_start(tmp_path):
+    import importlib.util
+    from pathlib import Path
+    path = Path(__file__).resolve().parents[1] / "paper" / "conference" / "make_failure_table.py"
+    spec = importlib.util.spec_from_file_location("make_failure_table", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    design = generate_design(layouts_per_family=2, replicates=2)
+    store = TrialStore(tmp_path)
+    readiness = {"attempt": 1, "terminal_status": "infrastructure_failure",
+                 "message": "stack readiness timeout: {}"}
+    transport = {"attempt": 1, "terminal_status": "infrastructure_failure",
+                 "message": "execution failed; DDS transport initialization failed on x"}
+    for record in _records(design):
+        trial = record.spec.trial_id
+        if trial == "reconfiguration_workspace-01-r0-geometry_coupled":
+            record = replace(record, infrastructure_attempts=[
+                readiness, {"attempt": 2, "terminal_status": record.terminal_status}])
+        elif trial == "reconfiguration_workspace-01-r1-feasibility_coupled":
+            record = replace(record, infrastructure_attempts=[
+                transport, {"attempt": 2, "terminal_status": record.terminal_status}])
+        store.write_terminal(record)
+    split = module.tabulate(tmp_path)["infrastructure_attempts"]
+    assert (split["before_mission"], split["during_mission"], split["trials_retried"]) == (1, 1, 2)
+    tex = module.infrastructure_macros(module.tabulate(tmp_path))
+    assert r"\newcommand{\resInfraBeforeMission}{1}" in tex
+    assert r"\newcommand{\resInfraDuringThenCompletedSensing}{0}" in tex
+
+
 def test_paper_mechanism_counts_follow_the_declared_rule(tmp_path):
     import importlib.util
     from pathlib import Path

@@ -19,9 +19,9 @@ placement-robust station prediction (`43255f7`), 4x finer localization map
 (`971affb`; the narrow odometry over-reports ~0.2 rad/s, still unexplained).
 
 **Resume here (2026-11-17): the real-buildings study is complete and in the
-paper** (`docs/current_status.md`, top). Owed: the paper audit's unfinished
-parts (design, integrity, results sections; reviewer passes; a related-work
-sweep). History of the run follows.
+paper** (`docs/current_status.md`, top). The design, integrity and results
+sections were audited 2026-11-17 (status doc, top dated entry). Owed: the
+five reviewer passes and a related-work sweep. History of the run follows.
 
 **Earlier (2026-11-15 04:05 UTC): the exploratory real-buildings study
 was running.** Declared and pushed before its sample (`877b99a`,
