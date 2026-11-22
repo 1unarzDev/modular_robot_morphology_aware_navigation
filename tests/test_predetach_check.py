@@ -68,8 +68,11 @@ def test_methods_tuple_and_frozen_design_hashes_are_unchanged():
         assert design.design_hash == envelope["design_hash"]
         if path.parent.name in known:
             assert design.design_hash == known[path.parent.name]
-        if path.parent.name != "predetach_check_v1":
-            assert all(type(spec) is TrialSpec for spec in design.trials)
+        # predetach studies (v1, and v2 with fresh seeds) use the PredetachTrialSpec
+        # subclass; every other frozen design keeps plain TrialSpec rows.
+        expected = (PredetachTrialSpec if path.parent.name in
+                    ("predetach_check_v1", "predetach_check_v2") else TrialSpec)
+        assert all(type(spec) is expected for spec in design.trials), path.parent.name
 
 
 def test_unchanged_feasibility_plan_on_a_confirmatory_layout(catalog):
